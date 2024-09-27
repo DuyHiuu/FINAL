@@ -213,6 +213,7 @@ const AboutPage = () => {
     },
   ];
   const handelclick = () => {};
+  const handleSubmit = () => {};
   return (
     <div className="flex flex-col items-center">
       {/* Banner Image */}
