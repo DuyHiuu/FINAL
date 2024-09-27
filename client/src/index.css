@@ -1,0 +1,5 @@
+/* Chỉ thị của Tailwind để nạp các lớp tiện ích cơ bản */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
