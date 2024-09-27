@@ -84,7 +84,7 @@ const AboutPage = () => {
       ),
     },
   ];
-  
+
   const chungchis = [
     {
       title: "Chứng chỉ về chăm sóc thú y (Veterinary Care Certification)",
@@ -212,7 +212,7 @@ const AboutPage = () => {
       imageUrl: "/images/anh2.webp",
     },
   ];
-
+  const handelclick = () => {};
   return (
     <div className="flex flex-col items-center">
       {/* Banner Image */}
