@@ -1,56 +1,20 @@
 // pages/website/Blog.js
 import React, { useEffect, useState } from "react";
 import { fetchBlogs } from "../../api";
+import useFetchBlogs from "../../api/useFetchBlogs";
 const Blog = () => {
-  const [blogs, setBlogs] = useState<any[]>([]);
-  useEffect(() => {
-    const loadRooms = async () => {
-      const data = await fetchBlogs();
-      setBlogs(data);
-    };
-
-    loadRooms();
-  }, []);
-  // return (
-  //   <div>
-  //     <h1>Room List</h1>
-  //     <ul>
-  //       {blogs.map((blog) => (
-  //         <li key={blog.id}>
-  //           description: {blog.description} - Title: {blog.title}
-  //         </li>
-  //       ))}
-  //     </ul>
-  //   </div>
-  // );
-  // const khuonItems = [
-  //   {
-  //     title: "Tắm",
-  //     description:
-  //       "Sử dụng các sản phầm 100% được kiểm định về an toàn cho các bế",
-  //     imageUrl: "/images/anh1.webp",
-  //   },
-  //   {
-  //     title: "Tỉa lông",
-  //     description: "Chuyên nghiệp - Gọn gàng - Đẹp mắt",
-  //     imageUrl: "/images/anh2.webp",
-  //   },
-  //   {
-  //     title: "Tiêm vắc xin",
-  //     description:
-  //       "Mô tả chĐược các bác sĩ thú y tư vấn và trực tiếp tiêm cho các béo khuôn 3",
-  //     imageUrl: "/images/anh3.webp",
-  //   },
-  // ];
-
+  const { blog } = useFetchBlogs();
+  console.log(blog);
   return (
     <div className="flex flex-col items-center">
       {/* Banner Image */}
       <img
         className="w-full h-[450px] object-cover"
-        src="/images/OIP.jpg"
+        src="/images/img.webp"
         alt="PetSpa"
       />
+
+      {/* Search Box */}
       <div className="flex justify-center mt-10">
         <div className="relative w-full max-w-md">
           <input
@@ -74,34 +38,36 @@ const Blog = () => {
         </div>
       </div>
 
+      {/* Blog Section */}
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold mt-10">Blog</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-20">
-          {/* Hàng khuôn ảnh với tiêu đề và mô tả */}
-          {blogs.map((blog) => (
+
+        {/* Grid layout for blog cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10 px-4 md:px-12">
+          {blog?.map((blog: any) => (
             <div
               key={blog.id}
-              className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg"
+              className="flex flex-col items-center bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl"
             >
-              {/* <img
-                src={khuon.imageUrl}
-                alt={khuon.title}
-                className="w-full h-[300px] object-cover rounded-md mb-2"
-              /> */}
-              <h1 className="text-lg font-semibold">{blog.title}</h1>
-              <p className="text-sm text-center">{blog.description}</p>
-              <p className="text-sm text-center">
+              {/* Image placeholder - can replace with actual image if available */}
+              <div className="w-full h-[200px] bg-gray-200 rounded-md mb-4"></div>
+
+              <h1 className="text-lg font-semibold mb-2">{blog.title}</h1>
+              <p className="text-sm text-gray-600 text-center mb-4">
+                {blog.description}
+              </p>
+              <p className="text-sm text-gray-500 text-center">
                 Mô tả thêm về dịch vụ này.
-              </p>{" "}
-              {/* Thêm thẻ p thứ hai */}
+              </p>
             </div>
           ))}
         </div>
-      </div>
 
-      <button className="mt-10 bg-[#064749] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300">
-        Đọc thêm
-      </button>
+        {/* Read More Button */}
+        <button className="mt-10 bg-[#064749] text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-500 transition-colors duration-300">
+          Đọc thêm
+        </button>
+      </div>
     </div>
   );
 };

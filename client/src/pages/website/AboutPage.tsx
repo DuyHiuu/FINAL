@@ -219,7 +219,7 @@ const AboutPage = () => {
       {/* Banner Image */}
       <img
         className="w-full h-[450px] object-cover"
-        src="/images/OIP.jpg"
+        src="/images/img.webp"
         alt="PetSpa"
       />
       <div className="flex justify-center mt-10">

@@ -11,8 +11,8 @@ const Header = () => {
           <a href="#" className="-m-1.5 p-1.5">
             <span className="sr-only">Your Company</span>
             <img
-              className="h-8 w-auto"
-              src="/images/vn-11134207-7r98o-lr2r1cqo1rbt74.webp"
+              className="h-20 w-auto"
+              src="/images/logo.webp"
               alt=""
             />
           </a>
