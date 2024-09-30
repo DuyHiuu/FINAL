@@ -10,11 +10,7 @@ const Header = () => {
         <div className="flex lg:flex-1">
           <a href="#" className="-m-1.5 p-1.5">
             <span className="sr-only">Your Company</span>
-            <img
-              className="h-20 w-auto"
-              src="/images/logo.webp"
-              alt=""
-            />
+            <img className="h-20 w-auto" src="/images/logo.webp" alt="" />
           </a>
         </div>
         <div className="flex lg:hidden">
@@ -27,13 +23,13 @@ const Header = () => {
               className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
+              strokeWidth="1.5"
               stroke="currentColor"
               aria-hidden="true"
             >
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
               />
             </svg>
@@ -63,10 +59,7 @@ const Header = () => {
           <a href="/register" className="text-sm font-semibold leading-6 text-gray-900">
             Đăng ký
           </a>
-          <a
-            href="login"
-            className="ml-6 text-sm font-semibold leading-6 text-gray-900"
-          >
+          <a href="login" className="ml-6 text-sm font-semibold leading-6 text-gray-900">
             Đăng nhập
           </a>
         </div>
@@ -75,4 +68,21 @@ const Header = () => {
   );
 };
 
-export default Header;
+const MainContent = () => {
+  return (
+    <div className="mt-[120px]">
+     
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <div>
+      <Header />
+      <MainContent />
+    </div>
+  );
+};
+
+export default App;
