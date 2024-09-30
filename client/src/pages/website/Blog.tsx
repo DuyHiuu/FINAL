@@ -43,24 +43,24 @@ const Blog = () => {
         <h1 className="text-3xl font-bold mt-10">Blog</h1>
 
         {/* Grid layout for blog cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10 px-4 md:px-12">
-          {blog?.map((blog: any) => (
-            <div
-              key={blog.id}
-              className="flex flex-col items-center bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl"
-            >
-              {/* Image placeholder - can replace with actual image if available */}
-              <div className="w-full h-[200px] bg-gray-200 rounded-md mb-4"></div>
-
-              <h1 className="text-lg font-semibold mb-2">{blog.title}</h1>
-              <p className="text-sm text-gray-600 text-center mb-4">
-                {blog.description}
-              </p>
-              <p className="text-sm text-gray-500 text-center">
-                Mô tả thêm về dịch vụ này.
-              </p>
-            </div>
-          ))}
+        <div className="flex justify-center mt-6">
+          <div className="flex space-x-4">
+            {blog?.map((blog: any, index: number) => (
+              <div
+                key={blog.id}
+                className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-[400px] h-[500px]"
+              >
+                {/* Image placeholder - can replace with actual image if available */}
+                <div className="w-full h-[200px] bg-gray-200 rounded-md mb-4"></div>
+                <h1 className="text-lg font-semibold mb-2">{blog.title}</h1>
+                <p className="text-sm text-center">{blog.description}</p>
+                <p className="text-sm text-center">
+                  Mô tả thêm về dịch vụ này.
+                </p>{" "}
+                {/* Thêm thẻ p thứ hai */}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Read More Button */}
