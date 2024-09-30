@@ -47,9 +47,9 @@ const Lienhe = () => {
       {/* Phần hình ảnh bên phải */}
       <div className="w-full lg:w-1/2 p-6 mt-6 lg:mt-0">
         <img
-          src="/images/anh3.webp"
+          src="/images/img.webp"
           alt="Liên hệ với chúng tôi"
-          className="w-full h-full object-cover rounded-lg shadow-md"
+          className="w-full h-[400px] object-cover rounded-lg shadow-md"
         />
       </div>
     </div>
