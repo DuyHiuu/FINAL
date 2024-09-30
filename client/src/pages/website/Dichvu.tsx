@@ -22,7 +22,7 @@ const Dichvu = () => {
       ),
       description: "Vị trí 01  |  Tầng 1  |  Phòng bé",
       additionalInfo: "Trống 22/9/2024",
-      time: "từ 80.000 vnđ / ngày",
+      time: "Từ 80.000 vnđ / ngày",
     },
     // Thêm các dòng khác ở đây theo mẫu
   ];
