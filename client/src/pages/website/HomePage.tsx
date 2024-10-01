@@ -1,7 +1,20 @@
 // pages/website/HomePage.js
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleClickDanhsachphong = () => {
+    navigate("/dichvu"); // Điều hướng đến trang /dichvu
+  };
+  const handleClickDocthem = () => {
+    navigate("/blog"); // Điều hướng đến trang /dichvu
+  };
+
   const cards = [
     {
       title: "Thời gian linh hoạt",
@@ -191,10 +204,12 @@ const HomePage = () => {
           ))}
         </div>
       </div>
-      <button className="mt-10 bg-[#33CCFF] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300">
+      <button
+        className="mt-10 bg-[#33CCFF] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300"
+        onClick={handleClickDanhsachphong}
+      >
         Danh sách phòng
       </button>
-
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold mt-10">Các dịch vụ chăm sóc</h1>
         <div className="flex justify-center mt-6">
@@ -217,60 +232,62 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-     
-      
+
       <div className="flex flex-col items-center">
-  <h1 className="text-3xl font-bold mt-10"> Đánh giá</h1>
-  <p className="text-lg text-center mt-2">
-      Một số đánh giá tiêu biểu
-      </p>
-  <div className="flex justify-center mt-6">
-    {/* Hàng khuôn ảnh với tiêu đề và mô tả */}
-    <div className="flex space-x-4">
-      {khuonItems.map((khuon, index) => (
-        <div
-          key={index}
-          className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-[500px] h-[150px]" // Cập nhật màu nền
-        >
-         
-          <h1 className="text-lg font-semibold">{khuon.title}</h1>
-          <p className="text-sm text-center">{khuon.description}</p>
-          <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p> {/* Thêm thẻ p thứ hai */}
+        <h1 className="text-3xl font-bold mt-10"> Đánh giá</h1>
+        <p className="text-lg text-center mt-2">Một số đánh giá tiêu biểu</p>
+        <div className="flex justify-center mt-6">
+          {/* Hàng khuôn ảnh với tiêu đề và mô tả */}
+          <div className="flex space-x-4">
+            {khuonItems.map((khuon, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-[500px] h-[150px]" // Cập nhật màu nền
+              >
+                <h1 className="text-lg font-semibold">{khuon.title}</h1>
+                <p className="text-sm text-center">{khuon.description}</p>
+                <p className="text-sm text-center">
+                  Mô tả thêm về dịch vụ này.
+                </p>{" "}
+                {/* Thêm thẻ p thứ hai */}
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
+      </div>
 
-
-
-<div className="flex flex-col items-center">
-  <h1 className="text-3xl font-bold mt-10">Blog</h1>
-  <div className="flex justify-center mt-6">
-    {/* Hàng khuôn ảnh với tiêu đề và mô tả */}
-    <div className="flex space-x-4">
-      {khuonItems.map((khuon, index) => (
-        <div
-          key={index}
-          className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-[400px] h-[500px]"
-        >
-          <img
-            src={khuon.imageUrl}
-            alt={khuon.title}
-            className="w-full h-[450px] object-cover rounded-md mb-2"
-          />
-          <h1 className="text-lg font-semibold">{khuon.title}</h1>
-          <p className="text-sm text-center">{khuon.description}</p>
-          <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p> {/* Thêm thẻ p thứ hai */}
+      <div className="flex flex-col items-center">
+        <h1 className="text-3xl font-bold mt-10">Blog</h1>
+        <div className="flex justify-center mt-6">
+          {/* Hàng khuôn ảnh với tiêu đề và mô tả */}
+          <div className="flex space-x-4">
+            {khuonItems.map((khuon, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-[400px] h-[500px]"
+              >
+                <img
+                  src={khuon.imageUrl}
+                  alt={khuon.title}
+                  className="w-full h-[450px] object-cover rounded-md mb-2"
+                />
+                <h1 className="text-lg font-semibold">{khuon.title}</h1>
+                <p className="text-sm text-center">{khuon.description}</p>
+                <p className="text-sm text-center">
+                  Mô tả thêm về dịch vụ này.
+                </p>{" "}
+                {/* Thêm thẻ p thứ hai */}
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
-
-      <button className="mb-10 mt-10 bg-[#064749] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300">
-        Đọc thêm
-      </button>
+        <button
+          className="mt-10 bg-[#064749]  text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300"
+          onClick={handleClickDocthem}
+        >
+          Đọc thêm
+        </button>
+      </div>
     </div>
   );
 };
