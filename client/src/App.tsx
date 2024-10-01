@@ -14,6 +14,7 @@ import Login from "./pages/website/Login";
 import Register from "./pages/website/Register";
 import Dichvu from "./pages/website/Dichvu";
 import Detail from "./pages/website/Detail";
+import PaymentConfirmation from "./pages/website/PaymentConfirmation";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -30,6 +31,7 @@ function App() {
         <Route path="/lienhe" element={<Lienhe />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/paymentconfirmation" element={<PaymentConfirmation />} />
       </Routes>
       <Footer />
     </Router>
