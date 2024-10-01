@@ -3,6 +3,7 @@ const Footer = () => {
   return (
     <>
       {/* component */}
+      <hr />
       <div className="flex items-end w-full mt-[50px] bg-white">
         <footer className="w-full text-black bg-white body-font">
           <div className="container flex flex-col flex-wrap px-5 py-24 mx-auto md:items-center lg:items-start md:flex-row md:flex-no-wrap">

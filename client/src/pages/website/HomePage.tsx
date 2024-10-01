@@ -268,7 +268,7 @@ const HomePage = () => {
   </div>
 </div>
 
-      <button className="mt-10 bg-[#064749] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300">
+      <button className="mb-10 mt-10 bg-[#064749] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300">
         Đọc thêm
       </button>
     </div>

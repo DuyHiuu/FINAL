@@ -62,7 +62,7 @@ const Blog = () => {
   </div>
 
   {/* Read More Button */}
-  <button className="mt-10 bg-[#064749] text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-500 transition-colors duration-300">
+  <button className="mb-10 mt-10 bg-[#064749] text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-500 transition-colors duration-300">
     Đọc thêm
   </button>
 </div>
