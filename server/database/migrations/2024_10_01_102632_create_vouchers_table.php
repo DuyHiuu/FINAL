@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('blogs', function (Blueprint $table) {
+        Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('description');
-            $table->string('image')->nullable();
-            $table->unsignedBigInteger('user_id');
+            $table->string('name');
+            $table->string('code');
+            $table->integer('discount');
+            $table->integer('quantity');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users');
             $table->softDeletes();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('blogs');
+        Schema::dropIfExists('vouchers');
     }
 };
