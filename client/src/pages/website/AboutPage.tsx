@@ -218,12 +218,12 @@ const AboutPage = () => {
     <div className="flex flex-col items-center">
       {/* Banner Image */}
       <img
-        className="w-full h-[450px] object-cover"
+        className="w-full h-[250px] sm:h-[350px] lg:h-[450px] object-cover"
         src="/images/img.webp"
         alt="PetSpa"
       />
       <div className="flex justify-center mt-10">
-        <div className="relative w-full max-w-md">
+        <div className="relative w-full max-w-xs sm:max-w-md">
           <input
             type="text"
             placeholder="Tìm kiếm..."
@@ -255,14 +255,14 @@ const AboutPage = () => {
       <p>Liên hệ hotline : 0868403204</p>
 
       {/* Tạo 4 khuôn chữ nhật bo tròn */}
-      <div className="flex flex-wrap justify-center mt-10 space-x-4">
+      <div className="flex flex-wrap justify-center mt-10 gap-4">
         {cards.map((card, index) => (
           <div
             key={index}
-            className="flex flex-col items-center justify-center w-64 h-40 bg-[#E2F1E8] text-black rounded-lg shadow-lg p-4"
+            className="flex flex-col items-center justify-center w-full sm:w-[45%] md:w-[30%] lg:w-64 h-40 bg-[#E2F1E8] text-black rounded-lg shadow-lg p-4"
           >
             <div className="mb-2">{card.icon}</div>
-            <h1 className="text-xl font-bold">{card.title}</h1>
+            <h1 className="text-xl font-bold text-center">{card.title}</h1>
             <p className="text-sm text-center">{card.description}</p>
           </div>
         ))}
@@ -277,44 +277,46 @@ const AboutPage = () => {
       <div className="flex flex-col items-center">
         <div className="flex justify-center mt-6">
           {/* Hàng khuôn ảnh với tiêu đề và mô tả */}
-          <div className="flex space-x-4">
-            {khuonItems.slice(0, 2).map((khuon, index) => (
+          <div className="flex flex-wrap justify-center mt-6 gap-4">
+            {khuonItems.map((khuon, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-[600px] h-[400px]"
+                className="flex flex-col sm:flex-row items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-full sm:w-[600px] h-[400px]"
               >
                 <img
                   src={khuon.imageUrl}
                   alt={khuon.title}
-                  className="w-full h-[450px] object-cover rounded-md mb-2"
+                  className="w-full sm:w-[50%] h-[300px] object-cover rounded-md mb-2 sm:mb-0"
                 />
+                <div className="p-4">
+                  <h2 className="text-2xl font-bold">{khuon.title}</h2>
+                  <p className="mt-2 text-sm">{khuon.description}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center mt-40 space-x-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
         {chungchis.map((chungchi, index) => (
           <div
             key={index}
-            className="flex flex-col items-center justify-center w-64 h-70 bg-[white text-black rounded-lg shadow-lg p-4"
+            className="flex flex-col items-center justify-center bg-white text-black rounded-lg shadow-lg p-4"
           >
             <div className="mb-2">{chungchi.icon}</div>
-            <h1 className="text-xl font-bold">{chungchi.title}</h1>
+            <h1 className="text-xl font-bold text-center">{chungchi.title}</h1>
             <p className="text-sm text-center">{chungchi.description}</p>
           </div>
         ))}
       </div>
-      <div className="flex justify-center items-center h-screen bg-100">
-        <div className="flex flex-row items-center bg-white rounded-lg shadow-lg p-6 max-w-4xl">
-          {/* Ảnh bên trái */}
-          <img
-            src="/images/anh2.webp" // Thay thế bằng URL ảnh của bạn
-            alt="Example"
-            className="w-48 h-48 object-cover rounded-md mr-6"
-          />
 
-          {/* Thẻ p bên phải */}
+      <div className="flex justify-center items-center h-screen bg-100">
+        <div className="flex flex-col lg:flex-row items-center bg-white rounded-lg shadow-lg p-6 max-w-4xl mt-10">
+          <img
+            src="/images/anh2.webp"
+            alt="Example"
+            className="w-full lg:w-48 h-48 object-cover rounded-md mb-4 lg:mb-0 lg:mr-6"
+          />
           <p className="text-lg text-gray-700">
             Giới thiệu Khách sạn Thú Cưng Petspa Chào mừng bạn đến với Petspa,
             khách sạn thú cưng cao cấp, nơi mà chúng tôi coi chó mèo của bạn là
