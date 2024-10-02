@@ -276,7 +276,7 @@ const AboutPage = () => {
       </p>
       <div className="flex flex-col items-center">
         <div className="flex justify-center mt-6">
-          {/* Hàng khuôn ảnh với tiêu đề và mô tả */}
+          {/* Hàng khuôn ảnh với tiêu đề và mô tảa */}
           <div className="flex flex-wrap justify-center mt-6 gap-4">
             {khuonItems.map((khuon, index) => (
               <div

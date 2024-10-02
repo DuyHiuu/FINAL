@@ -139,7 +139,7 @@ const Detail = () => {
           </p>
         </div>
 
-        {/* Phần thông tin đặt phòng */}
+        {/* Phần thông tin đặt phòngg */}
         <div className="lg:w-1/3 p-4 mt-10 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-auto lg:h-96">
           <h2 className="text-2xl font-semibold mb-5">80.000/Ngày</h2>
 

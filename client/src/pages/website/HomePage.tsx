@@ -245,7 +245,7 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Blog Section */}
+      {/* Blog Sectii */}
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold mt-10">Blog</h1>
         <div className="flex flex-wrap justify-center mt-6">

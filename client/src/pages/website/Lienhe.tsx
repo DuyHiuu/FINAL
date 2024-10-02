@@ -43,7 +43,7 @@ const Lienhe = () => {
         </form>
       </div>
 
-      {/* Phần hình ảnh bên phải */}
+      {/* Phần hình ảnh bên phảii */}
       <div className="w-full lg:w-1/2 p-6 mt-6 lg:mt-0">
         <img
           src="/images/img.webp"
