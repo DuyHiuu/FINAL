@@ -10,7 +10,7 @@ const Lienhe = () => {
           Chúng tôi rất mong được nghe phản hồi từ bạn. Vui lòng liên hệ qua các
           thông tin dưới đây:
         </p>
-        
+
         {/* Form liên hệ */}
         <form className="flex flex-col space-y-4 mt-4">
           <input
@@ -32,7 +32,6 @@ const Lienhe = () => {
 
           <textarea
             placeholder="Tin nhắn của bạn"
-            rows="4"
             className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           ></textarea>
           <button
@@ -49,7 +48,7 @@ const Lienhe = () => {
         <img
           src="/images/img.webp"
           alt="Liên hệ với chúng tôi"
-          className="w-full h-[400px] object-cover rounded-lg shadow-md"
+          className="w-full h-auto lg:h-[400px] object-cover rounded-lg shadow-md"
         />
       </div>
     </div>

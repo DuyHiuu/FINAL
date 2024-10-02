@@ -1,7 +1,7 @@
 // pages/website/Blog.js
-import React, { useEffect, useState } from "react";
-import { fetchBlogs } from "../../api";
+import React from "react";
 import useFetchBlogs from "../../api/useFetchBlogs";
+
 const Blog = () => {
   const { blog } = useFetchBlogs();
   console.log(blog);
@@ -39,34 +39,31 @@ const Blog = () => {
       </div>
 
       {/* Blog Section */}
-      <div className="flex flex-col items-center">
-  <h1 className="text-3xl font-bold mt-10">Blog</h1>
+      <div className="flex flex-col items-center mt-10">
+        <h1 className="text-3xl font-bold">Blog</h1>
 
-  {/* Grid layout for blog cards */}
-  <div className="flex justify-center mt-6">
-    <div className="flex space-x-4">
-      {blog?.map((blog: any, index: number) => (
-        <div
-          key={blog.id}
-          className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-[400px] h-[500px]"
-        >
-          {/* Image placeholder - can replace with actual image if available */}
-          <div className="w-full h-[200px] bg-gray-200 rounded-md mb-4"></div>
+        {/* Grid layout for blog cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6 px-4">
+          {blog?.map((blog: any) => (
+            <div
+              key={blog.id}
+              className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg"
+            >
+              {/* Image placeholder - can replace with actual image if available */}
+              <div className="w-full h-[200px] bg-gray-200 rounded-md mb-4"></div>
 
-          <h1 className="text-lg font-semibold mb-2">{blog.title}</h1>
-          <p className="text-sm text-center">{blog.description}</p>
-          <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p> {/* Thêm thẻ p thứ hai */}
+              <h1 className="text-lg font-semibold mb-2">{blog.title}</h1>
+              <p className="text-sm text-center">{blog.description}</p>
+              <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p> {/* Thêm thẻ p thứ hai */}
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  </div>
 
-  {/* Read More Button */}
-  <button className="mb-10 mt-10 bg-[#064749] text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-500 transition-colors duration-300">
-    Đọc thêm
-  </button>
-</div>
-
+        {/* Read More Button */}
+        <button className="mb-10 mt-10 bg-[#064749] text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-500 transition-colors duration-300">
+          Đọc thêm
+        </button>
+      </div>
     </div>
   );
 };

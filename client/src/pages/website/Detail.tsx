@@ -21,11 +21,11 @@ const Detail = () => {
   ];
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="container mx-auto p-4 lg:p-8">
       {/* Phần hình ảnh */}
-      <div className="flex mb-8">
+      <div className="flex flex-col lg:flex-row mb-8">
         {/* Hình ảnh lớn bên trái */}
-        <div className="w-2/3 p-2 h-96">
+        <div className="lg:w-2/3 p-2 h-96">
           <img
             src={largeImageSrc}
             alt="Large"
@@ -34,7 +34,7 @@ const Detail = () => {
         </div>
 
         {/* Hình ảnh nhỏ bên phải */}
-        <div className="w-1/3 p-2 flex flex-col">
+        <div className="lg:w-1/3 p-2 flex flex-col">
           <div className="flex mb-2 h-48">
             <img
               src={smallImageSrcs[0]}
@@ -63,9 +63,9 @@ const Detail = () => {
       </div>
 
       {/* Phần thông tin */}
-      <div className="flex">
+      <div className="flex flex-col lg:flex-row">
         {/* Phần thông tin phòng */}
-        <div className="w-2/3 p-4">
+        <div className="lg:w-2/3 p-4">
           <div className="text-left">
             <strong className="text-5xl">P.100</strong>
             <div className="flex items-center mt-10">
@@ -140,16 +140,16 @@ const Detail = () => {
         </div>
 
         {/* Phần thông tin đặt phòng */}
-        <div className="w-1/3 p-4 mt-10 border rounded-lg shadow-lg ml-4 bg-[#F2F0F2] h-96">
+        <div className="lg:w-1/3 p-4 mt-10 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-auto lg:h-96">
           <h2 className="text-2xl font-semibold mb-5">80.000/Ngày</h2>
 
           {/* Ngày vào và Ngày ra nằm ngang */}
-          <div className="flex space-x-4 mb-4">
-            <label className="text-left block w-1/2">
+          <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 mb-4">
+            <label className="text-left block w-full lg:w-1/2">
               <strong>Ngày vào</strong>
               <input type="date" className="border p-1 w-full mt-1" />
             </label>
-            <label className="text-left block w-1/2">
+            <label className="text-left block w-full lg:w-1/2">
               <strong>Ngày ra</strong>
               <input type="date" className="border p-1 w-full mt-1" />
             </label>
