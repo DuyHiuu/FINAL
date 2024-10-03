@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymethodController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ServiceController;
 use Illuminate\Http\Request;
@@ -41,3 +44,7 @@ Route::prefix('blogs')->group(function () {
     Route::get('/{id}', [BlogController::class, 'show']);
 
 });
+
+Route::resource('paymethods', PaymethodController::class);
+Route::resource('payments', PaymentController::class);
+Route::resource('bookings', BookingController::class);

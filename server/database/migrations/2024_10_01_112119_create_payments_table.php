@@ -28,6 +28,7 @@ return new class extends Migration
             $table->foreign('booking_id')->references('id')->on('bookings');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('paymethod_id')->references('id')->on('paymethods');
+            $table->softDeletes();
         });
     }
 
