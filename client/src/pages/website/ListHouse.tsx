@@ -1,6 +1,6 @@
 import React from "react";
 
-const Dichvu = () => {
+const ListHouse = () => {
   const rows = [
     {
       imageSrc: "/images/anh3.webp", // Đường dẫn ảnh mẫu
@@ -18,6 +18,7 @@ const Dichvu = () => {
     },
     // Thêm các dòng khác ở đây theo mẫu
   ];
+  
 
   return (
     <div className="container mx-auto p-4 lg:p-8 flex flex-col lg:flex-row">
@@ -74,4 +75,4 @@ const Dichvu = () => {
   );
 };
 
-export default Dichvu;
+export default ListHouse;

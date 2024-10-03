@@ -12,8 +12,12 @@ import Blog from "./pages/website/Blog";
 import Lienhe from "./pages/website/Lienhe";
 import Login from "./pages/website/Login";
 import Register from "./pages/website/Register";
-import Dichvu from "./pages/website/Dichvu";
+import ListHouse from "./pages/website/ListHouse";
 import Detail from "./pages/website/Detail";
+import Pay1 from "./pages/website/Pay1";
+import Pay2 from "./pages/website/Pay2";
+import History1 from "./pages/website/History1";
+import History2 from "./pages/website/History2";
 import PaymentConfirmation from "./pages/website/PaymentConfirmation";
 
 function App() {
@@ -25,13 +29,17 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/dichvu" element={<Dichvu />} />
+        <Route path="/danhsach" element={<ListHouse />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/detail" element={<Detail />} />
         <Route path="/lienhe" element={<Lienhe />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/paymentconfirmation" element={<PaymentConfirmation />} />
+        <Route path="/pay1" element={<Pay1 />} />
+        <Route path="/pay2" element={<Pay2 />} />
+        <Route path="/history1" element={<History1 />} />
+        <Route path="/history2" element={<History2 />} />
       </Routes>
       <Footer />
     </Router>

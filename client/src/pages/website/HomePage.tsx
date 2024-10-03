@@ -9,10 +9,10 @@ const HomePage = () => {
   }, []);
 
   const handleClickDanhsachphong = () => {
-    navigate("/dichvu"); // Điều hướng đến trang /dichvu
+    navigate("/danhsach"); // Điều hướng đến trang /danhsach
   };
   const handleClickDocthem = () => {
-    navigate("/blog"); // Điều hướng đến trang /dichvu
+    navigate("/blog"); // Điều hướng đến trang /blog
   };
 
   const cards = [
@@ -128,7 +128,7 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center mb-20">
       {/* Banner Image */}
       <img
         className="w-full h-auto max-h-[450px] sm:max-h-[350px] md:max-h-[450px] lg:max-h-[600px] object-cover"
@@ -202,7 +202,9 @@ const HomePage = () => {
         ))}
       </div>
 
-      <button className="mt-10 bg-[#33CCFF] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300">
+      <button
+      onClick={handleClickDanhsachphong} 
+      className="mt-10 bg-[#33CCFF] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300">
         Danh sách phòng
       </button>
 
@@ -265,6 +267,11 @@ const HomePage = () => {
             </div>
           ))}
         </div>
+        <button
+      onClick={handleClickDocthem} 
+      className="mt-10 bg-[#33CCFF] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300">
+        Đọc thêm
+      </button>
       </div>
     </div>
   );
