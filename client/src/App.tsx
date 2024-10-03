@@ -16,6 +16,8 @@ import Dichvu from "./pages/website/Dichvu";
 import Detail from "./pages/website/Detail";
 import Pay1 from "./pages/website/Pay1";
 import Pay2 from "./pages/website/Pay2";
+import History1 from "./pages/website/History1";
+import History2 from "./pages/website/History2";
 import PaymentConfirmation from "./pages/website/PaymentConfirmation";
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
         <Route path="/paymentconfirmation" element={<PaymentConfirmation />} />
         <Route path="/pay1" element={<Pay1 />} />
         <Route path="/pay2" element={<Pay2 />} />
+        <Route path="/history1" element={<History1 />} />
+        <Route path="/history2" element={<History2 />} />
       </Routes>
       <Footer />
     </Router>

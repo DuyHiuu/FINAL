@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Pay2 = () => {
+const History2 = () => {
     const row = [
         {
             icon: (
@@ -15,28 +15,13 @@ const Pay2 = () => {
 
     const image = "/images/anh8.webp"; // Đường dẫn ảnh lớn
 
-    const [openPopUp, setOpenPopUp] = useState(false);
-    const [openPopUp1, setOpenPopUp1] = useState(false);
-
-    const open = () => {
-        setOpenPopUp(true);
-    };
-
-    const close = () => {
-        setOpenPopUp(false);
-    };
-
-    const confirm = () => {
-        close(); // Đóng pop-up xác nhận
-        setOpenPopUp1(true); // Mở pop-up cảm ơn
-    };
 
     return (
         <div className="flex flex-col lg:flex-row pb-20">
-            {/* Phần thông tin khách hàng */}
+            {/* Phần thông tin đặt hàng */}
             <div className="lg:w-2/3 p-4">
                 <div className="text-left">
-                    <strong className="text-5xl">Thông tin khách hàng</strong>
+                    <strong className="text-5xl">Thông tin đặt hàng</strong>
                     <div className="antialiased text-gray-900 px-6">
                         <div className="max-w-xl py-12 divide-y md:max-w-4xl">
                             <div className="max-w-md">
@@ -48,7 +33,7 @@ const Pay2 = () => {
                                             <input
                                                 type={label === 'Email' ? 'email' : 'text'}
                                                 className="mt-1 block w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2"
-                                                placeholder={label === 'Tên' ? 'Nguyễn Văn Nam' : label === 'Địa chỉ' ? 'Trịnh Văn Bô, Nam Từ Liêm, Hà Nội' : label === 'Email' ? 'nguyenvannam@gmail.com' : label === 'Số điện thoại' ? '0966456789' : 'Cali'}
+                                                value={label === 'Tên' ? 'Nguyễn Văn Nam' : label === 'Địa chỉ' ? 'Trịnh Văn Bô, Nam Từ Liêm, Hà Nội' : label === 'Email' ? 'nguyenvannam@gmail.com' : label === 'Số điện thoại' ? '0966456789' : 'Cali'}
                                             />
                                         </label>
                                     ))}
@@ -71,7 +56,7 @@ const Pay2 = () => {
                                             <option>Khỏe mạnh</option>
                                             <option>Có vấn đề về sức khỏe</option>
                                         </select>
-                                        <textarea className="mt-1 block w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2" rows='3' placeholder='Mô tả chi tiết tình trạng của bé gặp phải (Nếu có)'></textarea>
+                                        {/* <textarea className="mt-1 block w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2" rows='3' placeholder='Mô tả chi tiết tình trạng của bé gặp phải (Nếu có)'></textarea> */}
                                     </label>
                                 </div>
                             </div>
@@ -99,41 +84,11 @@ const Pay2 = () => {
                 </div>
 
                 <button 
-                    onClick={open}
+                
                     className="mt-20 text-white px-10 py-2 rounded-full bg-[#064749]"
                 >
-                    Xác nhận
+                    <a href="/history1">Quay lại</a>
                 </button>
-
-                {/* Pop-up xác nhận thông tin */}
-                {openPopUp && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                            <h2 className="text-2xl font-bold mb-4">Xác nhận thông tin</h2>
-                            <p className="mb-4">Bạn có chắc chắn muốn xác nhận thông tin đặt phòng này?</p>
-                            <div className="flex justify-end">
-                                <button onClick={close} className="px-4 py-2 text-white bg-red-600 rounded-lg mr-2">Hủy</button>
-                                <button onClick={confirm} className="px-4 py-2 text-white bg-green-600 rounded-lg">Xác nhận</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Pop-up cảm ơn */}
-                {openPopUp1 && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">    
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                            <h2 className="text-2xl font-bold mb-4">
-                                Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của Petspa
-                            </h2>
-                            <center>
-                                <button className="text-white px-10 py-2 rounded-full bg-[#064749]">
-                                    <a href="/history1">Lịch sử đặt phòng</a>
-                                </button>
-                            </center>
-                        </div>
-                    </div>
-                )}
             </div>
 
             {/* Phần thông tin đặt phòng */}
@@ -164,7 +119,16 @@ const Pay2 = () => {
                     </label>
                 </div>
 
-                <p className="text-left mt-4">Mọi chi phí đã được tính tổng</p>
+                <h3 className="text-left text-2xl font-semibold mt-10">Dịch vụ kèm thêm</h3>
+          <div className="mt-2">
+            <label className="flex items-center mb-2">
+              <input
+                type="checkbox"
+                className="mr-2 appearance-none bg-[#064749] border rounded-full w-4 h-4 cursor-pointer"
+              />
+              <span>Tắm</span>
+            </label>
+          </div>
 
                 {/* Chi phí chia dọc hai bên */}
                 <div className="flex justify-between mt-4">
@@ -175,11 +139,10 @@ const Pay2 = () => {
                         <p className="font-bold mt-2">1.121.000</p>
                     </div>
                 </div>
-                
-                <p className="font-bold mt-5 text-red-500 text-xs">Phòng chỉ có thể được hủy trước ngày check-in 48 tiếng !</p>
+            
             </div>
         </div>
     );
 }
 
-export default Pay2;
+export default History2;
