@@ -14,6 +14,8 @@ import Login from "./pages/website/Login";
 import Register from "./pages/website/Register";
 import Dichvu from "./pages/website/Dichvu";
 import Detail from "./pages/website/Detail";
+import Pay1 from "./pages/website/Pay1";
+import Pay2 from "./pages/website/Pay2";
 import PaymentConfirmation from "./pages/website/PaymentConfirmation";
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/paymentconfirmation" element={<PaymentConfirmation />} />
+        <Route path="/pay1" element={<Pay1 />} />
+        <Route path="/pay2" element={<Pay2 />} />
       </Routes>
       <Footer />
     </Router>

@@ -179,7 +179,7 @@ const Detail = () => {
           </div>
 
           <button className="mt-2 text-white px-10 py-2 rounded-full bg-[#064749]">
-            Đặt phòng
+            <a href="/pay1">Đặt phòng</a>
           </button>
         </div>
       </div>
