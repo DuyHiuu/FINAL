@@ -137,7 +137,7 @@ const Pay2 = () => {
             </div>
 
             {/* Phần thông tin đặt phòng */}
-            <div className="lg:w-1/3 p-4 mt-20 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2]">
+            <div className="lg:w-1/3 p-4 mt-20 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-2/3">
                 <img
                     src={image}
                     alt="Large"

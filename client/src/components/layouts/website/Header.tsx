@@ -50,8 +50,8 @@ const Header = () => {
           <a href="/about" className="text-sm font-semibold leading-6 text-gray-900">
             Giới Thiệu
           </a>
-          <a href="dichvu" className="text-sm font-semibold leading-6 text-gray-900">
-            Dịch vụ
+          <a href="/danhsach" className="text-sm font-semibold leading-6 text-gray-900">
+            Dach sách phòng
           </a>
           <a href="/lienhe" className="text-sm font-semibold leading-6 text-gray-900">
             Liên hệ
@@ -59,7 +59,7 @@ const Header = () => {
           <a href="/blog" className="text-sm font-semibold leading-6 text-gray-900">
             Blog
           </a>
-          <a href="detail" className="text-sm font-semibold leading-6 text-gray-900">
+          <a href="/history1" className="text-sm font-semibold leading-6 text-gray-900">
             Lịch sử mua hàng
           </a>
         </div>

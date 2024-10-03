@@ -21,16 +21,16 @@ const Pay1 = () => {
             <div className="lg:w-2/3 p-4">
                 <div className="text-left">
                     <strong className="text-5xl">Xác nhận thanh toán</strong>
-                    <div className="flex items-center mt-20">
+                    <div className="flex justify-between mt-20 w-auto">
                         <div className="mr-4 sm:mr-20">
                             <p className="text-left">Giá phòng:</p>
                             <p className="text-left mt-2 mb-10">Phí dịch vụ:</p>
                             <p className="text-left font-bold mt-2">Tổng:</p>
                         </div>
                         <div className="text-right ml-4 sm:ml-20">
-                            <p>880.000</p>
-                            <p className="mt-2 mb-10">330.000</p>
-                            <p className="font-bold mt-2">1.121.000</p>
+                            <p className="">880.000</p>
+                            <p className=" mt-2 mb-10">330.000</p>
+                            <p className=" font-bold mt-2">1.121.000</p>
                         </div>
                     </div>
                 </div>
