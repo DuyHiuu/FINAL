@@ -12,7 +12,7 @@ import Blog from "./pages/website/Blog";
 import Lienhe from "./pages/website/Lienhe";
 import Login from "./pages/website/Login";
 import Register from "./pages/website/Register";
-import ListHouse from "./pages/website/ListHouse";
+import ListRoom from "./pages/website/ListRoom";
 import Detail from "./pages/website/Detail";
 import Pay1 from "./pages/website/Pay1";
 import Pay2 from "./pages/website/Pay2";
@@ -29,7 +29,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/danhsach" element={<ListHouse />} />
+        <Route path="/danhsach" element={<ListRoom />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/detail" element={<Detail />} />
         <Route path="/lienhe" element={<Lienhe />} />
