@@ -15,7 +15,8 @@ class RoomController extends Controller
     {
         $room = Room::join('sizes','rooms.size_id','=','sizes.id')
             ->join('room_images','rooms.roomImg_id','=','room_images.id')
-            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description','room_images.image')
+            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description','room_images.image',
+            'rooms.size_id')
             ->orderBy('rooms.id','desc')
             ->whereNull('rooms.deleted_at')
             ->get();
