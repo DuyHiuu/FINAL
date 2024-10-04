@@ -24,11 +24,6 @@ const ListRoom = () => {
           <div className="flex items-center space-x-2">
             <label htmlFor="size" className='font-semibold'>Size:</label>
             <select id="size" name="size" className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-              {room?.map((room: any) => (
-
-                  <option key={room.size_id} value="">{room.size_name}</option>
-
-              ))}
 
             </select>
           </div>
