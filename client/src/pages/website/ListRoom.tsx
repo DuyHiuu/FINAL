@@ -10,7 +10,7 @@ const ListRoom = () => {
   return (
     <div>
       <form action="">
-        <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-lg">
+        <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-lg border">
 
           <div className="flex items-center space-x-2">
             <label htmlFor="price" className='font-semibold'>Giá:</label>

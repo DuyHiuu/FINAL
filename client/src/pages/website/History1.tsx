@@ -28,7 +28,7 @@ const History1 = () => {
 
   return (
     <div>
-      <strong className="text-4xl font-bold">Lịch sử đặt hàng</strong>
+      <strong className="text-4xl font-semibold">Lịch sử mua hàng</strong>
       <div className="container mx-auto p-4 lg:p-8 flex flex-col lg:flex-row">
         {/* Phần bên trái */}
         <div className="flex-1 w-full lg:w-1/2">
@@ -71,7 +71,7 @@ const History1 = () => {
         </div>
 
         {/* Phần bên phảii */}
-        <div className="lg:w-1/3 p-4  border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2]">
+        <div className="lg:w-1/3 p-4  border rounded-lg shadow-lg ml-0 lg:ml-4 bg-white">
           <div className="flex items-center">
             <div className="mr-4 sm:mr-20">
               <p className="text-left font-bold mt-2">Tổng số phòng đã đặt:</p>
