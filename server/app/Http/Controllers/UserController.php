@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Dotenv\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -74,4 +76,42 @@ class UserController extends Controller
     {
         //
     }
+
+    public function update_new_pass(Request $request)
+    {
+        $data =$request->all();
+        $token_random = Str::random();
+        $user = User::where('email',$data['email'])->where('user_token',$data['token'])->first();
+        if($user){
+            $validator = Validator::make(
+                $data,
+                [
+                    'password' => [
+                        'required',
+                        'confirmed',
+                        'min:8',
+                        'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/'
+                    ]
+                ],
+                [
+                    'password.required'=>"Mật khẩu không được để trống",
+                    'password.confirmed'=>"Mật khẩu không trùng khớp",
+                    'password.min'|'password.regex'=>"Yêu cầu mật khẩu có ít nhất 8 ký tự, chứa các chữ cái và bao gồm các ký tự đặc biệt(*@!#...)."
+                ]
+
+            );
+            if ($validator->fails()) {
+                return response()->json($validator->messages());
+            } else {
+                $reset = User::find($user->id);
+                $reset->password = bcrypt($data['password']);
+                $reset->user_token = $token_random;
+                $reset->save();
+                return response()->json(["message" => "Đổi mật khẩu thành công. Vui lòng đăng nhập lại"]);
+            }
+        } else {
+            return response()->json(["error" => "Vui lòng thực hiện lại vì link đã quá hạn"]);
+        }
+    }
+
 }
