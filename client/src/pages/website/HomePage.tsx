@@ -131,7 +131,7 @@ const HomePage = () => {
     <div className="flex flex-col items-center mb-20">
       {/* Banner Image */}
       <img
-        className="w-full h-[450px] object-cover"
+        className="w-full h-auto max-h-[450px] sm:max-h-[350px] md:max-h-[450px] lg:max-h-[600px] object-cover"
         src="/images/img.webp"
         alt="PetSpa"
       />

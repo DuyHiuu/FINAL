@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymethodController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ServiceController;
 use Illuminate\Http\Request;
@@ -20,7 +24,8 @@ use Illuminate\Support\Facades\Route;
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //    return $request->user();
 //});
-
+Route::match(['GET','POST'],'/login',[AuthController::class,'login']);
+Route::post('/register', [AuthController::class, 'register']);
 Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
 
@@ -39,3 +44,7 @@ Route::prefix('blogs')->group(function () {
     Route::get('/{id}', [BlogController::class, 'show']);
 
 });
+
+Route::resource('paymethods', PaymethodController::class);
+Route::resource('payments', PaymentController::class);
+Route::resource('bookings', BookingController::class);

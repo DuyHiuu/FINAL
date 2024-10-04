@@ -9,7 +9,7 @@ const Blog = () => {
     <div className="flex flex-col items-center mb-10">
       {/* Banner Image */}
       <img
-        className="w-full h-[450px] object-cover"
+        className="w-full h-auto max-h-[450px] sm:max-h-[350px] md:max-h-[450px] lg:max-h-[600px] object-cover"
         src="/images/img.webp"
         alt="PetSpa"
       />
@@ -49,11 +49,14 @@ const Blog = () => {
               key={blog.id}
               className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg"
             >
-              {/* Image */}
-              <img src={blog.image} alt="" />
-
+              {/* Image placeholder - can replace with actual image if available */}
+              <div className="w-full h-[200px] bg-gray-200 rounded-md mb-4"></div>
               <h1 className="text-lg font-semibold mb-2">{blog.title}</h1>
               <p className="text-sm text-center">{blog.description}</p>
+              <p className="text-sm text-center">
+                Mô tả thêm về dịch vụ này.
+              </p>{" "}
+              {/* Thêm thẻ p thứ hai */}
             </div>
           ))}
         </div>
