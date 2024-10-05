@@ -20,30 +20,22 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Reset error message
+    setError('');
 
-    // Check if passwords match
+    // Kiểm tra mật khẩu
     if (formData.password !== formData.confirmPassword) {
       setError("Mật khẩu và mật khẩu xác nhận không khớp");
       return;
     }
 
     try {
-      // Gửi dữ liệu đăng ký đến backend
       const response = await fetch('http://localhost:8000/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
-          address: formData.address,
-        }),
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
-        // Chuyển hướng đến trang đăng nhập
         navigate('/login');
       } else {
         const result = await response.json();
@@ -65,12 +57,10 @@ const Register = () => {
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         {error && <p className="text-red-500 text-center">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Các trường nhập khác... */}
           {/* Trường nhập Tên */}
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
+            <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
               Tên
             </label>
             <div className="mt-2">
@@ -79,20 +69,16 @@ const Register = () => {
                 name="name"
                 type="text"
                 required
-                placeholder="Tên của bạn"
                 value={formData.name}
                 onChange={handleChange}
+                placeholder="Tên của bạn"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>
-
           {/* Trường nhập Email */}
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
+            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
               Email
             </label>
             <div className="mt-2">
@@ -101,21 +87,16 @@ const Register = () => {
                 name="email"
                 type="email"
                 required
-                autoComplete="email"
-                placeholder="Email của bạn"
                 value={formData.email}
                 onChange={handleChange}
+                placeholder="Email của bạn"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>
-
           {/* Trường nhập Số điện thoại */}
           <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
+            <label htmlFor="phone" className="block text-sm font-medium leading-6 text-gray-900">
               Số điện thoại
             </label>
             <div className="mt-2">
@@ -124,20 +105,16 @@ const Register = () => {
                 name="phone"
                 type="tel"
                 required
-                placeholder="Số điện thoại của bạn"
                 value={formData.phone}
                 onChange={handleChange}
+                placeholder="Số điện thoại của bạn"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>
-
           {/* Trường nhập Mật khẩu */}
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
+            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
               Mật khẩu
             </label>
             <div className="mt-2">
@@ -146,21 +123,16 @@ const Register = () => {
                 name="password"
                 type="password"
                 required
-                autoComplete="new-password"
-                placeholder="Mật khẩu của bạn"
                 value={formData.password}
                 onChange={handleChange}
+                placeholder="Mật khẩu của bạn"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>
-
           {/* Trường nhập Xác nhận Mật khẩu */}
           <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
+            <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6 text-gray-900">
               Xác nhận mật khẩu
             </label>
             <div className="mt-2">
@@ -169,20 +141,16 @@ const Register = () => {
                 name="confirmPassword"
                 type="password"
                 required
-                placeholder="Nhập lại mật khẩu"
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                placeholder="Nhập lại mật khẩu"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>
-
           {/* Trường nhập Địa chỉ */}
           <div>
-            <label
-              htmlFor="address"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
+            <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
               Địa chỉ
             </label>
             <div className="mt-2">
@@ -190,14 +158,13 @@ const Register = () => {
                 id="address"
                 name="address"
                 required
-                placeholder="Địa chỉ của bạn"
                 value={formData.address}
                 onChange={handleChange}
+                placeholder="Địa chỉ của bạn"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>
-
           {/* Nút Đăng ký */}
           <div>
             <button
@@ -208,13 +175,9 @@ const Register = () => {
             </button>
           </div>
         </form>
-
         <p className="mt-10 text-center text-sm text-gray-500">
           Bạn đã có tài khoản?{' '}
-          <a
-            href="/login"
-            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-          >
+          <a href="/login" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
             Đăng Nhập
           </a>
         </p>
