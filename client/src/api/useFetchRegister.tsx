@@ -1,20 +1,27 @@
-import React, { useEffect, useState } from "react";
-
+import { useEffect, useState } from "react";
 const API_URL = "http://localhost:8000/api";
 
+interface RegisterRequest {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  address: string;
+  role_id?: number; // role_id có thể là tùy chọn
+}
 interface RegisterResponse {
-  token: string; // Token trả về
-  message?: string; // Thông báo lỗi (nếu có)
+  token: string; // Token trả về từ API nếu đăng ký thành công
+  message?: string; // Thông báo lỗi nếu có, có thể không bắt buộc
 }
 
-const useFetchRegister = (email: string, password: string) => {
-  const [registerData, setRegisterData] = useState<RegisterResponse | null>(null); 
+const useFetchRegister = (registerData: RegisterRequest) => {
+  const [response, setResponse] = useState<RegisterResponse | null>(null); 
   const [loading, setLoading] = useState<boolean>(true); 
   const [error, setError] = useState<string | null>(null); 
 
   useEffect(() => {
     const fetchRegister = async () => {
-      if (!email || !password) return; 
+      if (!registerData.email || !registerData.password) return; // Kiểm tra nếu thiếu email hoặc mật khẩu
       setLoading(true); 
       setError(null); 
 
@@ -24,7 +31,7 @@ const useFetchRegister = (email: string, password: string) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }), 
+          body: JSON.stringify(registerData), // Gửi toàn bộ dữ liệu đăng ký
         });
 
         if (!res.ok) {
@@ -33,7 +40,7 @@ const useFetchRegister = (email: string, password: string) => {
         }
 
         const data: RegisterResponse = await res.json(); 
-        setRegisterData(data); 
+        setResponse(data); 
       } catch (error) {
         setError((error as Error).message); 
       } finally {
@@ -42,9 +49,9 @@ const useFetchRegister = (email: string, password: string) => {
     };
 
     fetchRegister(); 
-  }, [email, password]); 
+  }, [registerData]); 
 
-  return { registerData, loading, error }; 
+  return { response, loading, error }; 
 };
 
 export default useFetchRegister;

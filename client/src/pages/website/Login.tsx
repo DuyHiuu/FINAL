@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
   const handleSubmit = async (e) => {
     e.preventDefault(); // Ngăn chặn hành vi reload của form
     setError(""); // Reset lại lỗi trước mỗi lần submit
@@ -28,20 +27,16 @@ const Login = () => {
       });
 
       if (response.ok) {
-        // Kiểm tra nếu có nội dung trong phản hồi
-        if (response.status === 204) {
-          // Nếu không có token, chỉ cần chuyển hướng
-          navigate("/"); // Chuyển hướng người dùng về trang chủ
-          return;
-        } else {
-          const data = await response.json(); // Chỉ phân tích khi không phải 204
-          localStorage.setItem("token", data.token); // Lưu token vào localStorage
-          navigate("/"); // Chuyển hướng người dùng về trang chủ
-        }
+        const data = await response.json();
+        console.log(data);
+        // Chỉ phân tích khi không phải 204
+        localStorage.setItem("token", data.accessToken); // Lưu token vào localStorage
+        localStorage.setItem("name", data.user.name); // Lưu tên người dùng vào localStorage
+        window.location.href = "/";
       } else {
         const data = await response.json();
         // Nếu có lỗi, hiển thị thông báo lỗi
-        setError(data.message || "Đăng nhập thất bại!");
+        setError(data.message || "Đăng nhập không thành công!");
       }
     } catch (error) {
       // Hiển thị lỗi nếu có vấn đề khi gọi API
