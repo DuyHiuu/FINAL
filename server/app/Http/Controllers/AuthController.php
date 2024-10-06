@@ -71,6 +71,7 @@ class AuthController extends Controller
         else{
             $data = $request->all();
             $data['password'] = bcrypt($data['password']);
+            $data['role_id'] = '1';
             $data['address']= $request->address ?? null;
             $user = User::create($data);
             return response(new UserResource($user),201);

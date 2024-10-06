@@ -14,13 +14,12 @@ class RoomController extends Controller
     public function index()
     {
         $room = Room::join('sizes','rooms.size_id','=','sizes.id')
-            ->join('room_images','rooms.roomImg_id','=','room_images.id')
-            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description','room_images.image',
+            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description',
             'rooms.size_id')
             ->orderBy('rooms.id','desc')
             ->whereNull('rooms.deleted_at')
             ->get();
-        $room->makeHidden(['size_id','roomImg_id']);
+        $room->makeHidden(['size_id']);
         return response()->json($room);
     }
 
@@ -46,8 +45,7 @@ class RoomController extends Controller
     public function show(string $id)
     {
         $room = Room::join('sizes','rooms.size_id','=','sizes.id')
-            ->join('room_images','rooms.roomImg_id','=','room_images.id')
-            ->select('rooms.*','sizes.name','sizes.description','room_images.image')
+            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description')
             ->where('rooms.id',$id)
             ->whereNull('rooms.deleted_at')
             ->first();
