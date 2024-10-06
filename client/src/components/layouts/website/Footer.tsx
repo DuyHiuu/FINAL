@@ -12,7 +12,7 @@ const Footer = () => {
                 <span className="sr-only">Your Company</span>
                 <img
                   className="h-20 w-auto"
-                  src="/images/logo.webp"
+                  src="/images/logo.png"
                   alt=""
                 />
               </a>
