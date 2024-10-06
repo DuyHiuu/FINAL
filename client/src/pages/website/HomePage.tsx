@@ -1,6 +1,9 @@
 // pages/website/HomePage.js
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import useFetchRooms from "../../api/useFetchRooms";
+import useFetchServices from "../../api/useFetchServices";
+import useFetchBlogs from "../../api/useFetchBlogs";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -98,14 +101,7 @@ const HomePage = () => {
     },
   ];
 
-  const cardItems = [
-    { title: "Nhà 2 tầng", imageUrl: "/images/anh1.webp" },
-    { title: "Đơn giản", imageUrl: "/images/anh2.webp" },
-    { title: "Phong cách", imageUrl: "/images/anh3.webp" },
-    { title: "Tiện nghi", imageUrl: "/images/anh4.webp" },
-    { title: "Cổ điển", imageUrl: "/images/anh5.webp" },
-    { title: "Chắc chắn", imageUrl: "/images/anh6.webp" },
-  ];
+  const {room} = useFetchRooms();
 
   const khuonItems = [
     {
@@ -127,8 +123,12 @@ const HomePage = () => {
     },
   ];
 
+  const {service} = useFetchServices();
+
+  const {blog} = useFetchBlogs();
+
   return (
-    <div className="flex flex-col items-center mb-20">
+    <div className="flex flex-col items-center mb-20 mt-20">
       {/* Banner Image */}
       <img
         className="w-full h-auto max-h-[450px] sm:max-h-[350px] md:max-h-[450px] lg:max-h-[600px] object-cover"
@@ -185,17 +185,16 @@ const HomePage = () => {
         Một số hình ảnh PetHose
       </h1>
       <div className="flex flex-wrap justify-center mt-10">
-        {cardItems.map((card, index) => (
+        {room?.map((room:any) => (
           <div
-            key={index}
+            key={room.id}
             className="flex flex-col items-center m-2 p-4 border rounded-lg shadow-lg bg-white w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
           >
             <h2 className="mt-2 text-lg font-semibold text-center">
-              {card.title}
+              {room.size_name}
             </h2>
             <img
-              src={card.imageUrl}
-              alt={card.title}
+              src={room.image1}
               className="w-full h-32 object-cover rounded-md"
             />
           </div>
@@ -212,18 +211,17 @@ const HomePage = () => {
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold mt-10">Các dịch vụ chăm sóc</h1>
         <div className="flex flex-wrap justify-center mt-6">
-          {khuonItems.map((khuon, index) => (
+          {service?.map((service:any) => (
             <div
-              key={index}
+              key={service.id}
               className="flex flex-col items-center bg-[#E2F1E8] p-4 rounded-lg shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 m-2" // Responsive width
             >
               <img
-                src={khuon.imageUrl}
-                alt={khuon.title}
+                src="/images/anh1.webp"
                 className="w-full h-[450px] object-cover rounded-md mb-2"
               />
-              <h1 className="text-lg font-semibold">{khuon.title}</h1>
-              <p className="text-sm text-center">{khuon.description}</p>
+              <h1 className="text-lg font-semibold">{service.name}</h1>
+              <p className="text-sm text-center">{service.description}</p>
             </div>
           ))}
         </div>
@@ -251,19 +249,18 @@ const HomePage = () => {
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold mt-10">Blog</h1>
         <div className="flex flex-wrap justify-center mt-6">
-          {khuonItems.map((khuon, index) => (
+          {blog?.map((blog:any) => (
             <div
-              key={index}
+              key={blog.id}
               className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 m-2"
             >
               <img
-                src={khuon.imageUrl}
-                alt={khuon.title}
+                src={blog.image}
+                alt={blog.title}
                 className="w-full h-[450px] object-cover rounded-md mb-2"
               />
-              <h1 className="text-lg font-semibold">{khuon.title}</h1>
-              <p className="text-sm text-center">{khuon.description}</p>
-              <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p>
+              <h1 className="text-lg font-semibold">{blog.title}</h1>
+              <p className="text-sm text-center">{blog.description}</p>
             </div>
           ))}
         </div>

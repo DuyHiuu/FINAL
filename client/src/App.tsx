@@ -31,7 +31,7 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/danhsach" element={<ListRoom />} />
         <Route path="/blog" element={<Blog />} />
-        <Route path="/detail" element={<Detail />} />
+        <Route path="/detail/:id" element={<Detail />} />
         <Route path="/lienhe" element={<Lienhe />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

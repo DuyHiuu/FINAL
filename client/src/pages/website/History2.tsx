@@ -17,7 +17,7 @@ const History2 = () => {
 
 
     return (
-        <div className="flex flex-col lg:flex-row pb-20">
+        <div className="flex flex-col lg:flex-row pb-20 mt-20">
             {/* Phần thông tin đặt hàng */}
             <div className="lg:w-2/3 p-4">
                 <div className="text-left">
