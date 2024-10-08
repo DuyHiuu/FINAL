@@ -1,40 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import useFetchRooms from "../../../api/useFetchRooms";
 
-const ProductList = () => {
-  const products = [
-    {
-      id: 1,
-      name: "Áo Thun Basic",
-      price: "200.000 VND",
-      quantity: 50,
-      status: "Còn hàng",
-      image: "https://via.placeholder.com/100", // Hình ảnh placeholderr
-    },
-    {
-      id: 2,
-      name: "Quần Jean Slimfit",
-      price: "400.000 VND",
-      quantity: 30,
-      status: "Hết hàng",
-      image: "https://via.placeholder.com/100", // Hình ảnh placeholder
-    },
-    {
-      id: 3,
-      name: "Giày Sneaker",
-      price: "1.200.000 VND",
-      quantity: 20,
-      status: "Còn hàng",
-      image: "https://via.placeholder.com/100", // Hình ảnh placeholder
-    },
-  ];
+const RoomList = () => {
+
+  const {room} = useFetchRooms();
+  console.log(room);
+  
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-gray-800">Danh Sách Sản Phẩm</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Danh Sách Phòng</h1>
         <Link to="/admin/add" className="bg-blue-600 text-white px-4 py-2 rounded shadow">
-          Thêm Sản Phẩm
+          Thêm Phòng
         </Link>
       </div>
       <div className="overflow-x-auto">
@@ -43,7 +22,7 @@ const ProductList = () => {
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">STT</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Hình Ảnh</th>
-              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Tên Sản Phẩm</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Size Phòng</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Giá</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Số Lượng</th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Trạng Thái</th>
@@ -51,24 +30,24 @@ const ProductList = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product, index) => (
-              <tr key={product.id} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-2">{index + 1}</td>
+            {room?.map((room:any) => (
+              <tr key={room.id} className="border-b hover:bg-gray-50">
+                <td className="px-4 py-2">{room.id}</td>
                 <td className="px-4 py-2">
-                  <img src={product.image} alt={product.name} className="w-20 h-20 object-cover rounded" />
+                  <img src={room.img_thumbnail} alt={room.size_name} className="w-20 h-20 object-cover rounded" />
                 </td>
-                <td className="px-4 py-2">{product.name}</td>
-                <td className="px-4 py-2">{product.price}</td>
-                <td className="px-4 py-2">{product.quantity}</td>
+                <td className="px-4 py-2">{room.size_name}</td>
+                <td className="px-4 py-2">{room.price}</td>
+                <td className="px-4 py-2">{room.quantity}</td>
                 <td className="px-4 py-2">
                   <span
                     className={`px-2 py-1 rounded text-sm ${
-                      product.status === "Còn hàng"
+                      room.statusroom === "Còn phòng"
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {product.status}
+                    {room.statusroom}
                   </span>
                 </td>
                 <td className="px-4 py-2">
@@ -94,4 +73,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default RoomList;

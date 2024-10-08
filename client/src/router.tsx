@@ -15,7 +15,7 @@ import History1 from "./pages/website/History1";
 import History2 from "./pages/website/History2";
 import Blog from "./pages/website/Blog";
 import LayoutAdmin from "./components/layouts/admin/LayoutAdmin";
-import ProductList from "./components/layouts/admin/ProductList";
+import RoomList from "./components/layouts/admin/RoomList";
 import AddProduct from "./components/layouts/admin/AddProduct";
 import EditProduct from "./components/layouts/admin/EditProduct";
 
@@ -43,8 +43,8 @@ export const router = createBrowserRouter([
     element: <LayoutAdmin />, // Layout chính
     path: "/admin",
     children: [
-      { path: "", element: <Navigate to="/admin/product" /> }, // Điều hướng tới danh sách sản phẩmm
-      { path: "product", element: <ProductList /> },  // Hiển thị ProductList ở /admin/product
+      { path: "", element: <Navigate to="/admin/rooms" /> }, // Điều hướng tới danh sách sản phẩmm
+      { path: "rooms", element: <RoomList /> },  // Hiển thị RoomList ở /admin/product
       { path: "add", element: <AddProduct /> },
       { path: "edit", element: <EditProduct /> }, // Hiển thị AddProduct ở /admin/add
     ],

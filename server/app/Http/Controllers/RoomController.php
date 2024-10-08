@@ -17,6 +17,7 @@ class RoomController extends Controller
     public function index()
     {
         $room = Room::join('sizes','rooms.size_id','=','sizes.id')
+
             ->select('rooms.*','sizes.name as size_name','sizes.description as size_description','sizes.quantity as quantity',
             'rooms.size_id')
             ->orderBy('rooms.id','desc')

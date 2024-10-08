@@ -21,7 +21,7 @@ const user = {
 };
 const navigation = [
   { name: "PestSpa", href: "/admin", current: true },
-  { name: "Danh sách phòng", href: "/admin/product", current: false }, // Cập nhật href ở đây
+  { name: "Danh sách phòng", href: "/admin/rooms", current: false }, // Cập nhật href ở đây
   { name: "Khách hàng", href: "#", current: false },
   { name: "Bình luận", href: "#", current: false },
   { name: "Thống kê", href: "#", current: false },
