@@ -14,9 +14,17 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $blog = Blog::all();
-
-        return response()->json($blog);
+        $blog = Blog::join('users', 'blogs.user_id', '=', 'users.id')
+            ->select('blogs.*', 'users.name as user_name')
+            ->orderBy('blogs.id', 'desc')
+            ->whereNull('blogs.deleted_at')
+            ->get();
+        $blog->makeHidden(['user_id']);
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách thành công',
+            'data' => $blog
+        ]);
     }
 
     /**
@@ -38,9 +46,22 @@ class BlogController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Blog $blog)
+    public function show(string $id)
     {
-        //
+        $blog = Blog::join('users', 'blogs.user_id', '=', 'users.id')
+            ->select('blogs.*', 'users.name as user_name')
+            ->where('blogs.id', $id)
+            ->whereNull('blogs.deleted_at')
+            ->first();
+        if ($blog) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Lấy danh sách thành công',
+                'data' => $blog
+            ]);
+        } else {
+            return response()->json(['message' => 'Không tồn tại'], 404);
+        }
     }
 
     /**

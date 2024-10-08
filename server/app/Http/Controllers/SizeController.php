@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ServiceResource;
-use App\Models\Service;
-use App\Http\Requests\StoreServiceRequest;
-use App\Http\Requests\UpdateServiceRequest;
+use App\Models\Size;
+use App\Http\Requests\StoreSizeRequest;
+use App\Http\Requests\UpdateSizeRequest;
+use App\Http\Resources\SizeResource;
 use Illuminate\Http\Request;
+use Nette\Utils\Strings;
 
-class ServiceController extends Controller
+class SizeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $service = Service::all();
+        $size = Size::all();
 
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách thành công',
-            'data' => $service
+            'data' => $size
         ]);
     }
 
@@ -37,13 +38,12 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        $service = Service::query()->create([
+        $size = Size::query()->create([
             'name' => $request->name,
-            'description'  => $request->description,
-            'quantity' => $request->quantity,
-            'price' => $request->price
+            'quantity'  => $request->quantity,
+            'description'  => $request->description
         ]);
-        return response()->json(new ServiceResource($service), 201);
+        return response()->json(new SizeResource($size), 201);
     }
 
     /**
@@ -51,23 +51,23 @@ class ServiceController extends Controller
      */
     public function show(string $id)
     {
-        $service = Service::find($id);
+        $size = Size::find($id);
 
-        if ($service) {
+        if($size){
             return response()->json([
                 'status' => true,
                 'message' => 'Lấy danh sách thành công',
-                'data' => $service
+                'data' => $size
             ]);
-        } else {
-            return response()->json(['message' => 'Không tồn tại'], 404);
+        }else{
+            return response()->json(['message' => 'Không tồn tại', 404]);
         }
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Service $service)
+    public function edit(Size $size)
     {
         //
     }
@@ -77,18 +77,16 @@ class ServiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $service = Service::query()->where('id', $id)->first();
-
-        $service ->update([
+        $size = Size::query()->where('id', $id)->first();
+        $size ->update([
             'name' => $request->name,
-            'description'  => $request->description,
-            'quantity' => $request->quantity,
-            'price' => $request->price
+            'quantity'  => $request->quantity,
+            'description'  => $request->description
         ]);
         $arr = [
             'status' => true,
             'message' => 'Cập nhật thông tin thành công',
-            'data' => new ServiceResource($service)
+            '$data' => new SizeResource($size)
         ];
         return response()->json($arr, 200);
     }
@@ -98,17 +96,17 @@ class ServiceController extends Controller
      */
     public function destroy(string $id)
     {
-        $service = Service::query()->where('id', $id)->first();
+        $size = Size::query()->where('id', $id)->first();
 
-        if(!$service){
+        if(!$size){
             $arr = [
                 'status' => false,
-                'message' => 'Không tìm thấy Service cần xóa',
-                'data' => []
+                'message' => 'Không tìm thấy size cần xóa',
+                '$data' => []
             ];
     
         }else{
-            $service->delete();
+            $size->delete();
             $arr = [
                 'status' => true,
                 'message' => 'Xóa thành công',

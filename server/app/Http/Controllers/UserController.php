@@ -14,7 +14,19 @@ class UserController extends Controller
      */
     public function index()
     {
-        return UserResource::collection(User::all());
+        // return UserResource::collection(User::all());
+
+        $user = User::join('roles', 'users.role_id', '=', 'roles.id')
+            ->select('users.*', 'roles.name as role_name', 'roles.description as role_description')
+            ->orderBy('users.id', 'desc')
+            ->whereNull('users.deleted_at')
+            ->get();
+        $user->makeHidden(['role_id']);
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách thành công',
+            'data' => $user
+        ]);
     }
 
     /**
@@ -42,10 +54,18 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
-        $user = User::find($id);
+        // $user = User::find($id);
+        $user = User::join('roles', 'users.role_id', '=', 'roles.id')
+            ->select('users.*', 'roles.name as role_name', 'roles.description as role_description')
+            ->where('users.id', $id)
+            ->whereNull('users.deleted_at')
+            ->first();
         if ($user) {
-            return response()->json($user);
+            return response()->json([
+                'status' => true,
+                'message' => 'Lấy danh sách thành công',
+                'data' => $user
+            ]);
         } else {
             return response()->json(['message' => 'Không tồn tại'], 404);
         }

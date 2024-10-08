@@ -11,7 +11,8 @@ class Room_Image extends Model
     use HasFactory,SoftDeletes;
     protected $table = 'room_images';
     protected $fillable = [
-        'image'
+        'image',
+        'room_id'
 
     ];
 }
