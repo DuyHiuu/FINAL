@@ -6,7 +6,7 @@ const Blog = () => {
   const { blog } = useFetchBlogs();
   console.log(blog);
   return (
-    <div className="flex flex-col items-center mb-10 mt-20">
+    <div className="flex flex-col items-center mb-10 mt-24">
       {/* Banner Image */}
       <img
         className="w-full h-auto max-h-[450px] sm:max-h-[350px] md:max-h-[450px] lg:max-h-[600px] object-cover"
@@ -50,7 +50,7 @@ const Blog = () => {
               className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg"
             >
               {/* Image placeholder - can replace with actual image if available */}
-              <div className="w-full h-[200px] bg-gray-200 rounded-md mb-4">
+              <div className="w-full h-[200px] bg-gray-200 rounded-md mb-24">
                 <img src={blog.image} alt="" />
               </div>
               <h1 className="text-lg font-semibold mb-2">{blog.title}</h1>

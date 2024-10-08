@@ -17,7 +17,7 @@ const History2 = () => {
 
 
     return (
-        <div className="flex flex-col lg:flex-row pb-20 mt-20">
+        <div className="flex flex-col lg:flex-row pb-20 mt-24">
             {/* Phần thông tin đặt hàng */}
             <div className="lg:w-2/3 p-4">
                 <div className="text-left">
@@ -83,12 +83,15 @@ const History2 = () => {
                     </div>
                 </div>
 
+                <center>
                 <button 
                 
                     className="mt-20 text-white px-10 py-2 rounded-full bg-[#064749]"
                 >
                     <a href="/history1">Quay lại</a>
                 </button>
+                </center>
+
             </div>
 
             {/* Phần thông tin đặt phòng */}
