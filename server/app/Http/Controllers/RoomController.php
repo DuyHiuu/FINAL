@@ -18,8 +18,8 @@ class RoomController extends Controller
     {
         $room = Room::join('sizes','rooms.size_id','=','sizes.id')
             ->select('rooms.*','sizes.name as size_name','sizes.description as size_description',
-            'rooms.size_id')
-            ->orderBy('rooms.id','desc')
+            'rooms.size_id','sizes.quantity as quantity')
+            ->orderBy('rooms.id')
             ->whereNull('rooms.deleted_at')
             ->get();
         $room->makeHidden(['size_id']);
