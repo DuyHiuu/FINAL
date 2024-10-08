@@ -17,7 +17,7 @@ class RoomController extends Controller
     public function index()
     {
         $room = Room::join('sizes','rooms.size_id','=','sizes.id')
-            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description',
+            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description','sizes.quantity as quantity',
             'rooms.size_id')
             ->orderBy('rooms.id','desc')
             ->whereNull('rooms.deleted_at')
@@ -102,10 +102,10 @@ class RoomController extends Controller
                 'description.required' => "Mô tả không được để trống",
                 'statusroom.required' => "Trạng thái phòng không được để trống",
                 'size_id.required' => "Kích thước không được để trống",
-                'image_thumnail.required' => "Hình ảnh không được để trống",
-                'image_thumnail.image' => "Tập tin không phải là hình ảnh",
-                'image_thumnail.mimes' => "Hình ảnh phải là một trong các định dạng: jpeg, png, jpg, gif.",
-                'image_thumnail.max' => "Hình ảnh không được vượt quá 2MB.",
+                'img_thumnail.required' => "Hình ảnh không được để trống",
+                'img_thumnail.image' => "Tập tin không phải là hình ảnh",
+                'img_thumnail.mimes' => "Hình ảnh phải là một trong các định dạng: jpeg, png, jpg, gif.",
+                'img_thumnail.max' => "Hình ảnh không được vượt quá 2MB.",
             ]
         );
 
@@ -156,7 +156,7 @@ class RoomController extends Controller
     public function show(string $id)
     {
         $room = Room::join('sizes','rooms.size_id','=','sizes.id')
-            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description')
+            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description','sizes.quantity as quantity')
             ->where('rooms.id',$id)
             ->whereNull('rooms.deleted_at')
             ->first();
