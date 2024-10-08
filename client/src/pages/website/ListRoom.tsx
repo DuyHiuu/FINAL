@@ -62,7 +62,7 @@ const ListRoom = () => {
                   <img
                     
 
-                    src={room.image1}
+                    src={room.img_thumbnail}
 
                     alt={`image-${room.id}`}
                     className="w-24 h-24 rounded-md"
