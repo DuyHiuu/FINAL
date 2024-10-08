@@ -77,4 +77,11 @@ class AuthController extends Controller
             return response(new UserResource($user),201);
         }
     }
+    public function logout(Request $request)
+    {
+        $user=$request->user();
+        //huy token
+        $user->currentAccessToken()->delete();
+        return response(['mesage'=>"Đăng xuất thành công"],200);
+    }
 }

@@ -26,9 +26,10 @@ use Illuminate\Support\Facades\Route;
 //});
 Route::match(['GET','POST'],'/login',[AuthController::class,'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout',[AuthController::class,'logout']);
 Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
-
+    Route::post('/', [RoomController::class, 'store']);
     Route::get('/{id}', [RoomController::class, 'show']);
 
 });
