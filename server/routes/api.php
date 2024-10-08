@@ -6,6 +6,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymethodController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\SizeController;
 use App\Http\Controllers\ServiceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,14 @@ Route::prefix('rooms')->group(function () {
     Route::get('/{id}', [RoomController::class, 'show']);
 
 });
+Route::prefix('sizes')->group(function () {
+    Route::get('/', [SizeController::class, 'index']); // Lấy danh sách các size
+    Route::post('/', [SizeController::class, 'store']); // Tạo mới một size
+    Route::get('/{id}', [SizeController::class, 'show']); // Hiển thị chi tiết một size
+    Route::put('/{id}', [SizeController::class, 'update']); // Cập nhật một size
+    Route::delete('/{id}', [SizeController::class, 'destroy']); // Xóa một size
+});
+
 Route::prefix('services')->group(function () {
     Route::get('/', [ServiceController::class, 'index']);
 

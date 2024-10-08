@@ -18,6 +18,8 @@ import LayoutAdmin from "./components/layouts/admin/LayoutAdmin";
 import RoomList from "./components/layouts/admin/RoomList";
 import AddProduct from "./components/layouts/admin/AddProduct";
 import EditProduct from "./components/layouts/admin/EditProduct";
+import SizeList from "./components/layouts/admin/size/SizeList";
+import AddSize from "./components/layouts/admin/size/AddSize";
 
 export const router = createBrowserRouter([
   {
@@ -47,6 +49,10 @@ export const router = createBrowserRouter([
       { path: "rooms", element: <RoomList /> },  // Hiển thị RoomList ở /admin/product
       { path: "add", element: <AddProduct /> },
       { path: "edit", element: <EditProduct /> }, // Hiển thị AddProduct ở /admin/add
+      { path: "sizes", element: <SizeList /> }, // Hiển thị AddProduct ở /admin/add
+      { path: "addsizes", element: <AddSize /> }, // Hiển thị AddProduct ở /admin/add
+
+
     ],
   },
   
