@@ -17,10 +17,15 @@ return new class extends Migration
             $table->string('description');
             $table->string('statusroom');
             $table->unsignedBigInteger('size_id');
-            $table->unsignedBigInteger('roomImg_id');
+            $table->string('image1');
+            $table->string('image2');
+            $table->string('image3');
+            $table->string('image4');
+            $table->string('image5');
+
             $table->timestamps();
             $table->foreign('size_id')->references('id')->on('sizes');
-            $table->foreign('roomImg_id')->references('id')->on('room_images');
+
             $table->softDeletes();
         });
     }
