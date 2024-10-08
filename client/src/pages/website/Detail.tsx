@@ -1,7 +1,11 @@
-import React from "react";
+import React,{ useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import useFetchServices from "../../api/useFetchServices";
 
 const Detail = () => {
-  const largeImageSrc = "/images/anh8.webp"; // Đường dẫn ảnh lớn
+
+  const {service} = useFetchServices();
+
   const smallImageSrcs = [
     "/images/anh9.webp", // Đường dẫn ảnh nhỏ 1
     "/images/anh10.webp", // Đường dẫn ảnh nhỏ 2
@@ -20,14 +24,43 @@ const Detail = () => {
     },
   ];
 
+  const API_URL = "http://localhost:8000/api";
+
+  const {id} = useParams();
+
+  const [room, setRoom] = useState<any>();
+  //hàm để get dữ liệu
+  useEffect(() => {
+    try {
+      // fetroom để get dữ liệu
+      const fetroom = async () => {
+        const res = await fetch(`${API_URL}/rooms/${id}`, {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
+        }
+
+        const data = await res.json(); // Chuyển dữ liệu thành JSON
+        setRoom(data); // Lưu dữ liệu vào state
+      };
+      fetroom();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+  
   return (
-    <div className="container mx-auto p-4 lg:p-8">
+    <div className="container mx-auto p-4 lg:p-8 mt-10">
       {/* Phần hình ảnh */}
       <div className="flex flex-col lg:flex-row mb-8">
         {/* Hình ảnh lớn bên trái */}
         <div className="lg:w-2/3 p-2 h-96">
           <img
-            src={largeImageSrc}
+            src={room?.image1}
             alt="Large"
             className="w-full h-full object-cover rounded-lg shadow"
           />
@@ -67,81 +100,37 @@ const Detail = () => {
         {/* Phần thông tin phòng */}
         <div className="lg:w-2/3 p-4">
           <div className="text-left">
-            <strong className="text-5xl">P.100</strong>
+            <strong className="text-5xl">{room?.size_name}</strong>
             <div className="flex items-center mt-10">
-              <span className="flex items-center justify-center mr-2">
-                {row[0].icon}
-              </span>
-              <p className="flex items-center">1 thú cưng</p>
+              <p className="flex items-center">{room?.statusroom}</p>
             </div>
-            <p>Vị trí 01 | Tầng 1 | Phòng bé</p>
           </div>
           <h3 className="text-left text-2xl font-semibold mt-10">Dịch vụ kèm thêm</h3>
           <div className="mt-2">
+          {service?.map((service:any) => (
             <label className="flex items-center mb-2">
+              <div key={service.id}>
               <input
-                type="checkbox"
-                className="mr-2 appearance-none checked:bg-[#064749] border rounded-full w-4 h-4 cursor-pointer"
-              />
-              <span>Tắm</span>
-            </label>
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                className="mr-2 appearance-none checked:bg-[#064749] border rounded-full w-4 h-4 cursor-pointer"
-              />
-              <span>Tỉa lông</span>
-            </label>
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                className="mr-2 appearance-none checked:bg-[#064749] border rounded-full w-4 h-4 cursor-pointer"
-              />
-              <span>Tiêm vắc xin</span>
-            </label>
+              type="checkbox"
+              className="mr-2 appearance-none checked:bg-[#064749] border rounded-full w-4 h-4 cursor-pointer"
+            />
+            <span>{service?.name}</span>
+              </div>
+
+          </label>
+          ))}
+
           </div>
 
           <h3 className="text-left text-2xl font-semibold mt-10">Mô tả</h3>
           <p className="text-left mt-1">
-            Phòng khách sạn cho chó mèo thường được thiết kế để đảm bảo sự thoải mái và an toàn cho thú cưng khi chủ của chúng vắng mặt. Dưới đây là một số đặc điểm phổ biến của loại phòng này:
-            <br />
-            <strong>Diện Tích và Bố Trí:</strong>
-            <br />
-            Phòng thường có diện tích đủ rộng để chó mèo có thể di chuyển tự do.
-            <br />
-            Có khu vực nghỉ ngơi riêng biệt, thường là giường mềm hoặc nệm êm.
-            <br />
-            Có khu vực chơi với các đồ chơi như bóng, chuông, hoặc các vật dụng kích thích khác.
-            <br />
-            <strong>Điều Kiện An Toàn:</strong>
-            <br />
-            Phòng có hàng rào hoặc cửa chắn an toàn để ngăn không cho thú cưng ra ngoài.
-            <br />
-            Sàn phòng được làm từ vật liệu dễ vệ sinh và chống trơn trượt.
-            <br />
-            <strong>Dịch Vụ và Tiện Nghi:</strong>
-            <br />
-            Cung cấp thức ăn và nước uống đầy đủ, có thể theo yêu cầu của chủ thú cưng.
-            <br />
-            Có dịch vụ vệ sinh và chăm sóc hàng ngày, bao gồm việc dọn dẹp và thay đổi đồ dùng.
-            <br />
-            Có nhân viên chăm sóc tận tình, thường là những người yêu động vật và có kinh nghiệm.
-            <br />
-            <strong>Hỗ Trợ Y Tế:</strong>
-            <br />
-            Có sẵn dịch vụ y tế cơ bản, như kiểm tra sức khỏe định kỳ hoặc hỗ trợ trong trường hợp khẩn cấp.
-            <br />
-            <strong>Không Gian Xanh:</strong>
-            <br />
-            Một số khách sạn còn có khu vực ngoài trời cho thú cưng có thể chạy nhảy hoặc thư giãn.
-            <br />
-            Tùy vào từng khách sạn, phòng có thể được trang trí theo nhiều phong cách khác nhau, từ hiện đại đến cổ điển, để phù hợp với nhu cầu và sở thích của chủ nuôi.
+            {room?.description}
           </p>
         </div>
 
         {/* Phần thông tin đặt phòngg */}
         <div className="lg:w-1/3 p-4 mt-10 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-auto lg:h-96">
-          <h2 className="text-2xl font-semibold mb-5">80.000/Ngày</h2>
+          <h2 className="text-2xl font-semibold mb-5">{room?.price}/Ngày</h2>
 
           {/* Ngày vào và Ngày ra nằm ngang */}
           <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 mb-4">
@@ -157,10 +146,7 @@ const Detail = () => {
 
           {/* Số lượng thú cưng */}
           <div className="flex items-center mt-1">
-              <span className="flex items-center justify-center mr-2">
-                {row[0].icon}
-              </span>
-              <p className="flex items-center">1 thú cưng</p>
+              <p className="flex items-center">{room?.size_name}</p>
             </div>
           <p className="text-left mt-4">Mọi chi phí đã được tính tổng</p>
 

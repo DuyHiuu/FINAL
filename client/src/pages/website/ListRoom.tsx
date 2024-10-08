@@ -6,7 +6,7 @@ const ListRoom = () => {
   console.log(room);
 
   return (
-    <div>
+    <div className="mt-20">
       <form action="">
         <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-lg border">
           <div className="flex items-center space-x-2">
@@ -49,16 +49,21 @@ const ListRoom = () => {
       <div className="container mx-auto p-4 lg:p-8 flex flex-col lg:flex-row">
         {/* Phần danh sách dịch vụ bên trái */}
         <div className="flex-1 w-full lg:w-1/2">
-          <a href="detail">
+           
             {room?.map((room: any) => (
               <div
                 key={room.id}
-                className="flex flex-col lg:flex-row items-center mb-6 p-4 bg-white shadow rounded-lg"
+                
               >
+              <a  className="flex flex-col lg:flex-row items-center mb-6 p-4 bg-white shadow rounded-lg"
+              href={`detail/${room.id}`}>
                 {/* Hình ảnh bên trái */}
                 <div className="flex-shrink-0 mb-4 lg:mb-0 lg:mr-4">
                   <img
-                    src={room.img_thumnail}
+                    
+
+                    src={room.image1}
+
                     alt={`image-${room.id}`}
                     className="w-24 h-24 rounded-md"
                   />
@@ -81,9 +86,11 @@ const ListRoom = () => {
                   </div>
                   <span className="ml-2 text-gray-500">Giá: {room.price}</span>
                 </div>
+                </a>
               </div>
+              
             ))}
-          </a>
+          
         </div>
 
         {/* Phần Google Maps bên phảii */}

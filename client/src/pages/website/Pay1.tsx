@@ -16,7 +16,7 @@ const Pay1 = () => {
     const image = "/images/anh8.webp"; // Đường dẫn ảnh lớn
 
     return (
-        <div className="flex flex-col lg:flex-row pb-20">
+        <div className="flex flex-col lg:flex-row pb-20 mt-20">
             {/* Phần thông tin thanh toán */}
             <div className="lg:w-2/3 p-4">
                 <div className="text-left">
