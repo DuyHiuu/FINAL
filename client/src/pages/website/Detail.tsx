@@ -60,7 +60,7 @@ const Detail = () => {
         {/* Hình ảnh lớn bên trái */}
         <div className="lg:w-2/3 p-2 h-96">
           <img
-            src={room?.image1}
+            src={room?.img_thumbnail}
             alt="Large"
             className="w-full h-full object-cover rounded-lg shadow"
           />
