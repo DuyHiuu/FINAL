@@ -2,19 +2,22 @@ import React from "react";
 import useFetchRooms from "../../api/useFetchRooms";
 
 const ListRoom = () => {
-
   const { room } = useFetchRooms();
   console.log(room);
-
 
   return (
     <div className="mt-20">
       <form action="">
         <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-lg border">
-
           <div className="flex items-center space-x-2">
-            <label htmlFor="price" className='font-semibold'>Giá:</label>
-            <select id="price" name="price" className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <label htmlFor="price" className="font-semibold">
+              Giá:
+            </label>
+            <select
+              id="price"
+              name="price"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               <option value="">100-200</option>
               <option value="">200-300</option>
               <option value="">300-400</option>
@@ -22,22 +25,28 @@ const ListRoom = () => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <label htmlFor="size" className='font-semibold'>Size:</label>
-            <select id="size" name="size" className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-            </select>
+            <label htmlFor="size" className="font-semibold">
+              Size:
+            </label>
+            <select
+              id="size"
+              name="size"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            ></select>
           </div>
 
           <div className="flex items-center space-x-2">
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Tìm</button>
-            <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-300">Xóa</button>
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              Tìm
+            </button>
+            <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-300">
+              Xóa
+            </button>
           </div>
         </div>
       </form>
 
-
       <div className="container mx-auto p-4 lg:p-8 flex flex-col lg:flex-row">
-
         {/* Phần danh sách dịch vụ bên trái */}
         <div className="flex-1 w-full lg:w-1/2">
            
@@ -51,7 +60,10 @@ const ListRoom = () => {
                 {/* Hình ảnh bên trái */}
                 <div className="flex-shrink-0 mb-4 lg:mb-0 lg:mr-4">
                   <img
+                    
+
                     src={room.image1}
+
                     alt={`image-${room.id}`}
                     className="w-24 h-24 rounded-md"
                   />
@@ -60,7 +72,9 @@ const ListRoom = () => {
                 {/* Nội dung bên phải */}
                 <div className="flex-1 text-center lg:text-left">
                   {/* Tiêu đề */}
-                  <h1 className="text-xl font-bold text-gray-900">{room.description}</h1>
+                  <h1 className="text-xl font-bold text-gray-900">
+                    {room.description}
+                  </h1>
                   {/* Icon và Chữ nằm cạnh nhau, căn giữa */}
                   <div className="flex justify-center lg:justify-start items-center mt-1">
                     <p className="text-gray-600">Size: {room.size_name}</p>
@@ -92,7 +106,6 @@ const ListRoom = () => {
         </div>
       </div>
     </div>
-
   );
 };
 
