@@ -43,7 +43,7 @@ export const router = createBrowserRouter([
     element: <LayoutAdmin />, // Layout chính
     path: "/admin",
     children: [
-      { path: "", element: <Navigate to="/admin/product" /> }, // Điều hướng tới danh sách sản phẩm
+      { path: "", element: <Navigate to="/admin/product" /> }, // Điều hướng tới danh sách sản phẩmm
       { path: "product", element: <ProductList /> },  // Hiển thị ProductList ở /admin/product
       { path: "add", element: <AddProduct /> },
       { path: "edit", element: <EditProduct /> }, // Hiển thị AddProduct ở /admin/add

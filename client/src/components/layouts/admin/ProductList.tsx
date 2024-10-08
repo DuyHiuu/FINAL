@@ -9,7 +9,7 @@ const ProductList = () => {
       price: "200.000 VND",
       quantity: 50,
       status: "Còn hàng",
-      image: "https://via.placeholder.com/100", // Hình ảnh placeholder
+      image: "https://via.placeholder.com/100", // Hình ảnh placeholderr
     },
     {
       id: 2,

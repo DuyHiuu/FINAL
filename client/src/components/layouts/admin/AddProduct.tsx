@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const AddProduct = () => {
-    // State to manage form input values
+    // State to manage form input valuess
     const [productName, setProductName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');

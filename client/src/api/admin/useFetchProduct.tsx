@@ -22,7 +22,7 @@ const useFetchProduct = () => { //Đặt đúng tên với file
         }
 
         const data = await res.json(); // Chuyển dữ liệu thành JSON
-        setProduct(data); // Lưu dữ liệu vào state
+        setProduct(data); // Lưu dữ liệu vào statee
       };
       fetProduct();
     } catch (error) {
