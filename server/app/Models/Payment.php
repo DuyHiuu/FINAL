@@ -24,4 +24,22 @@ class Payment extends Model
         'user_id',
         'paymethod_id'
     ];
+
+    // Quan hệ với bảng bookings
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class);
+    }
+
+    // Quan hệ với bảng users
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Quan hệ với bảng paymethods
+    public function paymethod()
+    {
+        return $this->belongsTo(Paymethod::class);
+    }
 }
