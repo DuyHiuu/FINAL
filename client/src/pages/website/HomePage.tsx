@@ -128,7 +128,7 @@ const HomePage = () => {
   const {blog} = useFetchBlogs();
 
   return (
-    <div className="flex flex-col items-center mb-20 mt-20">
+    <div className="flex flex-col items-center mb-20 mt-24">
       {/* Banner Image */}
       <img
         className="w-full h-auto max-h-[450px] sm:max-h-[350px] md:max-h-[450px] lg:max-h-[600px] object-cover"

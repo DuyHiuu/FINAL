@@ -55,8 +55,8 @@ const LayoutAdmin = () => {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <img
-                    className="h-20 w-auto"
-                    src="/images/logo.webp"
+                    className="h-10 w-auto"
+                    src="/images/logo.png"
                     alt="Logo"
                   />
                 </div>

@@ -27,8 +27,8 @@ const History1 = () => {
 
 
   return (
-    <div className="mt-20">
-      <strong className="text-4xl font-semibold">Lịch sử mua hàng</strong>
+    <div className="mt-32">
+      <strong className="ms-10 text-4xl font-semibold">Lịch sử mua hàng</strong>
       <div className="container mx-auto p-4 lg:p-8 flex flex-col lg:flex-row">
         {/* Phần bên trái */}
         <div className="flex-1 w-full lg:w-1/2">

@@ -54,7 +54,7 @@ const Detail = () => {
   }, []);
   
   return (
-    <div className="container mx-auto p-4 lg:p-8 mt-10">
+    <div className="container mx-auto p-4 lg:p-8 mt-24">
       {/* Phần hình ảnh */}
       <div className="flex flex-col lg:flex-row mb-8">
         {/* Hình ảnh lớn bên trái */}
@@ -164,9 +164,12 @@ const Detail = () => {
             </div>
           </div>
 
+          <center>
           <button className="mt-2 text-white px-10 py-2 rounded-full bg-[#064749]">
             <a href="/pay1">Đặt phòng</a>
           </button>
+          </center>
+
         </div>
       </div>
     </div>
