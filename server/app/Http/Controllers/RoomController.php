@@ -90,6 +90,7 @@ class RoomController extends Controller
 
     public function store(Request $request)
     {
+
         // Validate the incoming request
         $validator = Validator::make(
             $request->all(),[
@@ -184,7 +185,7 @@ class RoomController extends Controller
     {
         $room = Room::find($id);
         if(!$room){
-            response()->json(['message'=>'Phong da ton tai'],400);
+            response()->json(['message'=>'Phong khong ton tai'],400);
         }
         $room->update($request->except('img_thumbnail'));
 
