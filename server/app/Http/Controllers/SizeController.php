@@ -100,6 +100,7 @@ class SizeController extends Controller
      */
     public function destroy($id)
     {
+        // Delete
         $size = Size::find($id);
 
         if (!$size) {
