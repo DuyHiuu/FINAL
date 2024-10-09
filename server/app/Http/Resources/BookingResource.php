@@ -18,6 +18,7 @@ class BookingResource extends JsonResource
             "start_date"=>$this->start_date,
             "end_date"=>$this->end_date,
             "totalamount"=>$this->totalamount,
+            "quantity_service"=>$this->quantity_service,
             "room_id"=>$this->room_id,
             "service_id"=>[
                 "service_id"=>$this->service_id,
