@@ -11,7 +11,7 @@ class Room extends Model
     use HasFactory,SoftDeletes;
     protected $table = 'rooms';
     protected $fillable = [
-        'img_thumnail',
+        'img_thumbnail',
       'price',
         'description',
       'statusroom',
