@@ -25,7 +25,7 @@ class VoucherController extends Controller
      */
     public function create()
     {
-        //
+        //phamtien
     }
 
     /**
