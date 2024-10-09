@@ -7,6 +7,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymethodController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\VoucherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -49,3 +50,24 @@ Route::prefix('blogs')->group(function () {
 Route::resource('paymethods', PaymethodController::class);
 Route::resource('payments', PaymentController::class);
 Route::resource('bookings', BookingController::class);
+
+Route::prefix('services')->group(function () {
+    Route::get('/', [ServiceController::class, 'index']);
+    Route::post('/', [ServiceController::class, 'store']);
+    Route::get('/{id}', [ServiceController::class, 'show']);
+    Route::put('/{id}', [ServiceController::class, 'update']);
+    Route::delete('/{id}', [ServiceController::class, 'destroy']);
+
+});
+
+Route::prefix('vouchers')->group(function () {
+    Route::get('/', [VoucherController::class, 'index']);
+    Route::post('/', [VoucherController::class, 'store']);
+    Route::get('/{id}', [VoucherController::class, 'show']);
+    Route::put('/{id}', [VoucherController::class, 'update']);
+    Route::delete('/{id}', [VoucherController::class, 'destroy']);
+
+
+
+});
+
