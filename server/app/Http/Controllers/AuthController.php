@@ -39,11 +39,19 @@ class AuthController extends Controller
            $request->all(),[
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email',
+
                 'phone' => [
                     'required',
                     'regex:/^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/',
                     'unique:users,phone'
-                    ]
+                    ],
+            'password'=> [
+                'required',
+                'confirmed',
+                'min:8',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/'
+            ]
+
             ],[
                 'name.required' => "Tên không được để trống",
                 'email.required' => "Email không được để trống",
@@ -63,9 +71,17 @@ class AuthController extends Controller
         else{
             $data = $request->all();
             $data['password'] = bcrypt($data['password']);
+            $data['role_id'] = '1';
             $data['address']= $request->address ?? null;
             $user = User::create($data);
             return response(new UserResource($user),201);
         }
+    }
+    public function logout(Request $request)
+    {
+        $user=$request->user();
+        //huy token
+        $user->currentAccessToken()->delete();
+        return response(['mesage'=>"Đăng xuất thành công"],200);
     }
 }

@@ -2,7 +2,7 @@ import React from "react";
 
 const Lienhe = () => {
   return (
-    <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between max-w-7xl mx-auto my-10 p-6 bg-white shadow-lg rounded-lg">
+    <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between max-w-7xl mx-auto my-10 p-6 bg-white shadow-lg rounded-lg mt-24">
       {/* Phần liên hệ bên trái */}
       <div className="w-full lg:w-1/2 p-6 flex flex-col space-y-4">
         <h2 className="text-3xl font-bold mb-4">Liên hệ với chúng tôi</h2>

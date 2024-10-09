@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 const API_URL = "http://localhost:8000/api";
 
-const useFetchDichvu = () => {
-  const [dichvu, setDichvu] = useState<any>();
+const useFetchServices = () => {
+  const [service, setService] = useState<any>();
   useEffect(() => {
     try {
-      const fetDichvu = async () => {
-        const res = await fetch(`${API_URL}/dichvu`, {
+      const fetservice = async () => {
+        const res = await fetch(`${API_URL}/services`, {
           method: "get",
           headers: {
             "Content-Type": "application/json",
@@ -17,14 +17,14 @@ const useFetchDichvu = () => {
         }
 
         const data = await res.json(); // Phân tích phản hồi thành JSON
-        setDichvu(data); // Lưu dữ liệu vào state
+        setService(data); // Lưu dữ liệu vào state
       };
-      fetDichvu();
+      fetservice();
     } catch (error) {
       console.log(error);
     }
   }, []);
-  return { dichvu };
+  return { service };
 };
 
-export default useFetchDichvu;
+export default useFetchServices;

@@ -32,7 +32,7 @@ const Pay2 = () => {
     };
 
     return (
-        <div className="flex flex-col lg:flex-row pb-20">
+        <div className="flex flex-col lg:flex-row pb-20 mt-24">
             {/* Phần thông tin khách hàng */}
             <div className="lg:w-2/3 p-4">
                 <div className="text-left">
@@ -98,12 +98,15 @@ const Pay2 = () => {
                     </div>
                 </div>
 
+                <center>
                 <button 
                     onClick={open}
                     className="mt-20 text-white px-10 py-2 rounded-full bg-[#064749]"
                 >
                     Xác nhận
                 </button>
+                </center>
+
 
                 {/* Pop-up xác nhận thông tin */}
                 {openPopUp && (

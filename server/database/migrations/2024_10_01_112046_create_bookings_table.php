@@ -16,9 +16,10 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('totalamount');
+            $table->integer('quantity_service');
             $table->unsignedBigInteger('room_id');
-            $table->unsignedBigInteger('service_id');
-            $table->unsignedBigInteger('voucher_id');
+            $table->unsignedBigInteger('service_id')->nullable();
+            $table->unsignedBigInteger('voucher_id')->nullable();
             $table->timestamps();
             $table->foreign('room_id')->references('id')->on('rooms');
             $table->foreign('service_id')->references('id')->on('services');
