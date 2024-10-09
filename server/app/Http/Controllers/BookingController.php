@@ -25,7 +25,7 @@ class BookingController extends Controller
             'status' => true,
             'message' => 'Lấy danh sách thành công',
             'data' => $booking
-        ]);    
+        ]);
     }
 
     /**
@@ -42,6 +42,7 @@ class BookingController extends Controller
     public function store(StoreBookingRequest $request)
     {
         //
+        
     }
 
     /**

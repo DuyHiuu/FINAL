@@ -110,7 +110,7 @@ class SizeController extends Controller
             ], 404);
         }
 
-        $size->delete();
+        $size->forceDelete();
 
         return response()->json([
             'status' => true,

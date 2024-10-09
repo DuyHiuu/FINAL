@@ -20,6 +20,7 @@ import AddProduct from "./components/layouts/admin/room/AddRoom";
 import EditProduct from "./components/layouts/admin/room/EditRoom";
 import SizeList from "./components/layouts/admin/size/SizeList";
 import AddSize from "./components/layouts/admin/size/AddSize";
+import EditSize from "./components/layouts/admin/size/EditSize";
 
 export const router = createBrowserRouter([
   {
@@ -48,10 +49,10 @@ export const router = createBrowserRouter([
       { path: "", element: <Navigate to="/admin/rooms" /> }, // Điều hướng tới danh sách sản phẩmm
       { path: "rooms", element: <RoomList /> },  // Hiển thị RoomList ở /admin/product
       { path: "add", element: <AddProduct /> },
-      { path: "rooms/:id", element: <EditProduct /> }, // Hiển thị AddProduct ở /admin/add
-      // { path: "rooms/update/:id", element: <EditProduct /> }, // Hiển thị AddProduct ở /admin/add
-      { path: "sizes", element: <SizeList /> }, // Hiển thị AddProduct ở /admin/add
-      { path: "addsizes", element: <AddSize /> }, // Hiển thị AddProduct ở /admin/add
+      { path: "edit", element: <EditProduct /> }, // Hiển thị AddProduct ở /admin/add
+      { path: "sizes", element: <SizeList /> }, 
+      { path: "addsizes", element: <AddSize /> }, 
+      { path: "sizes/:id", element: <EditSize /> }, 
 
 
     ],

@@ -32,7 +32,8 @@ Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
     Route::post('/', [RoomController::class, 'store']);
     Route::get('/{id}', [RoomController::class, 'show']);
-    Route::put('/update/{id}', [RoomController::class, 'update']);
+    Route::put('/{id}', [RoomController::class, 'update']);
+    Route::delete('/{id}', [RoomController::class, 'destroy']);
 
 });
 Route::prefix('sizes')->group(function () {
@@ -51,8 +52,10 @@ Route::prefix('services')->group(function () {
 });
 Route::prefix('blogs')->group(function () {
     Route::get('/', [BlogController::class, 'index']);
-
+    Route::post('/', [BlogController::class, 'store']);
     Route::get('/{id}', [BlogController::class, 'show']);
+    Route::put('/{id}', [BlogController::class, 'update']);
+    Route::delete('/{id}', [BlogController::class, 'destroy']);
 
 });
 
