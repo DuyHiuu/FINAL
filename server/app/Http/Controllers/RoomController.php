@@ -190,8 +190,8 @@ class RoomController extends Controller
         }
         $room->update($request->except('img_thumbnail'));
 
-        if($request->$request->file('img_thumbnail')){
-            $image = $request->file('img_thumnail');
+        if($request->hasFile('img_thumbnail')){
+            $image = $request->file('img_thumbnail');
             $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
             $filePath = $image->storeAs('images', $uniqueFileName, 'public');
             $fullPath = asset('storage/' . $filePath);

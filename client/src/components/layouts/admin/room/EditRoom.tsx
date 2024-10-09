@@ -3,15 +3,14 @@ import useFetchSize from '../../../../api/useFetchSize';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const EditRoom = () => {
+
     const showUrl = "http://localhost:8000/api/rooms";
-    const updateUrl = "http://localhost:8000/api/rooms/update";
     const { id } = useParams();
-    const [room, setRoom] = useState<any>(null); 
-    const [size_id, setSize_id] = useState(''); 
-    const [price, setPrice] = useState(''); 
-    const [description, setDescription] = useState(''); 
-    const [statusroom, setStatusRoom] = useState(''); 
-    const [img_thumbnail, setImg_thumbnail] = useState<File | null>(null); 
+    const [size_id, setSize_id] = useState('');
+    const [price, setPrice] = useState('');
+    const [description, setDescription] = useState('');
+    const [statusroom, setStatusRoom] = useState('');
+    const [img_thumbnail, setImg_thumbnail] = useState<File | null>(null);
 
     const navigate = useNavigate();
     const { sizes } = useFetchSize();
@@ -19,19 +18,17 @@ const EditRoom = () => {
     useEffect(() => {
         const fetchRoom = async () => {
             try {
-                const res = await fetch(`${showUrl}/${id}`, {
-                    method: "get",
-                    headers: { "Content-Type": "application/json" },
-                });
-                if (!res.ok) {
-                    throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
+                const res = await fetch(`${showUrl}/${id}`);
+                if (res.ok) {
+                    const room = await res.json();
+                    setSize_id(room.size_id);
+                    setPrice(room.price);
+                    setDescription(room.description);
+                    setStatusRoom(room.statusroom);
+                    setImg_thumbnail(room.img_thumbnail);
+                } else {
+                    console.error('Không thể lấy thông tin phòng');
                 }
-                const data = await res.json();
-                setRoom(data); 
-                setPrice(data.price); 
-                setDescription(data.description); 
-                setStatusRoom(data.statusroom);
-                setSize_id(data.size_id.toString()); 
             } catch (error) {
                 console.log(error);
             }
@@ -42,24 +39,31 @@ const EditRoom = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const formData = new FormData();
-        formData.append('price', price);
-        formData.append('size_id', size_id);
-        formData.append('description', description);
-        formData.append('statusroom', statusroom);
-        if (img_thumbnail) {
-            formData.append('img_thumbnail', img_thumbnail);
-        }
+        const updateRoom = {
+            price:  price,
+            size_id:  size_id,
+            description:  description,
+            statusroom:  statusroom,
+            img_thumbnail:  img_thumbnail,
+        };
+
+        // if(img_thumbnail) {
+        //     updateRoom.append('img_thumbnail',img_thumbnail);
+        // }
+       
+
 
         try {
-            const response = await fetch(`${updateUrl}/${id}`, {
+            const response = await fetch(`${showUrl}/${id}`, {
                 method: 'PUT',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateRoom),
             });
 
             if (response.ok) {
-                const data = await response.json();
-                console.log('Phòng đã sửa thành công:', data);
+                console.log('Phòng đã sửa thành công:');
                 navigate('/admin');
             } else {
                 console.error('Lỗi khi sửa phòng:', response.statusText);
@@ -124,7 +128,7 @@ const EditRoom = () => {
 
             <div className="mb-4">
                 <label htmlFor="img_thumbnail" className="block text-sm font-medium text-gray-700">Hình Ảnh Chính:</label>
-                {room?.img_thumbnail && <img src={room.img_thumbnail} alt="" className='h-32' />}
+                <img src={img_thumbnail} alt="" className='h-32' />
                 <input
                     type="file"
                     id="img_thumbnail"

@@ -5,7 +5,6 @@ import useFetchRooms from "../../../../api/useFetchRooms";
 const RoomList = () => {
 
   const {room} = useFetchRooms();
-  console.log(room);
   
 
   return (
@@ -53,8 +52,7 @@ const RoomList = () => {
                 <td className="px-4 py-2">
                   <div className="flex items-center space-x-2">
                     <Link
-                      to={`/admin/rooms/${room.id}`} 
-                      //  {`/admin/edit/${room.id}`}
+                      to={`/admin/rooms/edit/${room.id}`} 
                       className="bg-yellow-500 text-white px-3 py-1 rounded shadow hover:bg-yellow-600"
                     >
                       Sửa
