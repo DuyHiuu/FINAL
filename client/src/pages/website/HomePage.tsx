@@ -194,7 +194,7 @@ const HomePage = () => {
               {room.size_name}
             </h2>
             <img
-              src={room.image1}
+              src={room.img_thumbnail}
               className="w-full h-32 object-cover rounded-md"
             />
           </div>

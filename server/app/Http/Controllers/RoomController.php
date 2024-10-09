@@ -17,9 +17,10 @@ class RoomController extends Controller
     public function index()
     {
         $room = Room::join('sizes','rooms.size_id','=','sizes.id')
-            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description',
-            'rooms.size_id','sizes.quantity as quantity')
-            ->orderBy('rooms.id')
+
+            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description','sizes.quantity as quantity',
+            'rooms.size_id')
+            ->orderBy('rooms.id','desc')
             ->whereNull('rooms.deleted_at')
             ->get();
         $room->makeHidden(['size_id']);
@@ -89,6 +90,7 @@ class RoomController extends Controller
 
     public function store(Request $request)
     {
+
         // Validate the incoming request
         $validator = Validator::make(
             $request->all(),[
@@ -96,16 +98,16 @@ class RoomController extends Controller
             'description' => "required",
             'statusroom' => "required",
             'size_id' => "required",
-            'img_thumnail' => "required|image|mimes:jpeg,png,jpg,gif|max:2048",
+            'img_thumbnail' => "required|image|mimes:jpeg,png,jpg,gif|max:2048",
         ],[
                 'price.required' => "Giá không được để trống",
                 'description.required' => "Mô tả không được để trống",
                 'statusroom.required' => "Trạng thái phòng không được để trống",
                 'size_id.required' => "Kích thước không được để trống",
-                'image_thumnail.required' => "Hình ảnh không được để trống",
-                'image_thumnail.image' => "Tập tin không phải là hình ảnh",
-                'image_thumnail.mimes' => "Hình ảnh phải là một trong các định dạng: jpeg, png, jpg, gif.",
-                'image_thumnail.max' => "Hình ảnh không được vượt quá 2MB.",
+                'img_thumbnail.required' => "Hình ảnh không được để trống",
+                'img_thumbnail.image' => "Tập tin không phải là hình ảnh",
+                'img_thumbnail.mimes' => "Hình ảnh phải là một trong các định dạng: jpeg, png, jpg, gif.",
+                'img_thumbnail.max' => "Hình ảnh không được vượt quá 2MB.",
             ]
         );
 
@@ -115,7 +117,7 @@ class RoomController extends Controller
 
         try {
             // Lấy tệp tin hình ảnh từ request
-            $image = $request->file('img_thumnail');
+            $image = $request->file('img_thumbnail');
 
             // Tạo một tên tệp tin duy nhất
             $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
@@ -135,7 +137,7 @@ class RoomController extends Controller
             $size_id = $request->get('size_id');
 
             $data = [
-                'img_thumnail' => $fullPath,
+                'img_thumbnail' => $fullPath,
                 'price' => $price,
                 'description' => $description,
                 'statusroom' => $status_room,
@@ -156,7 +158,7 @@ class RoomController extends Controller
     public function show(string $id)
     {
         $room = Room::join('sizes','rooms.size_id','=','sizes.id')
-            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description')
+            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description','sizes.quantity as quantity')
             ->where('rooms.id',$id)
             ->whereNull('rooms.deleted_at')
             ->first();
@@ -183,21 +185,21 @@ class RoomController extends Controller
     {
         $room = Room::find($id);
         if(!$room){
-            response()->json(['message'=>'Phong da ton tai'],400);
+            response()->json(['message'=>'Phong khong ton tai'],400);
         }
-        $room->update($request->except('img_thumnail'));
+        $room->update($request->except('img_thumbnail'));
 
-        if($request->$request->file('img_thumnail')){
+        if($request->$request->file('img_thumbnail')){
             $image = $request->file('img_thumnail');
             $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
             $filePath = $image->storeAs('images', $uniqueFileName, 'public');
             $fullPath = asset('storage/' . $filePath);
 
-            $room->img_thumnail = $fullPath;
+            $room->img_thumbnail = $fullPath;
             $room->save();
         }
         else{
-            $room->img_thumnail = $request->img_thumnail;
+            $room->img_thumbnail = $request->img_thumbnail;
         }
 
         return response()->json(['message'=>'cap nhat thanh cong'],200);

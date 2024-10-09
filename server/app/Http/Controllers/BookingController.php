@@ -27,7 +27,7 @@ class BookingController extends Controller
             'status' => true,
             'message' => 'Lấy danh sách thành công',
             'data' => $booking
-        ]);    
+        ]);
     }
 
     /**
@@ -43,21 +43,6 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
-        // // Validate dữ liệu
-        // $validator = Validator::make($request->all(), [
-        //     'start_date' => 'required|date',
-        //     'end_date' => 'required|date|after_or_equal:start_date',
-        //     'totalamount' => 'required|integer',
-        //     'quantity_service' => 'required|integer',
-        //     'room_id' => 'required|exists:rooms,id',
-        //     'service_id' => 'nullable|exists:services,id',
-        //     'voucher_id' => 'nullable|exists:vouchers,id',
-        // ]);
-        // // Nếu có lỗi validate
-        // if ($validator->fails()) {
-        //     return response()->json(['errors' => $validator->errors()], 422);
-        // }
-
         // Tạo mới booking
         $booking = Booking::create($request->all());
         // Trả về phản hồi JSON
@@ -102,21 +87,6 @@ class BookingController extends Controller
         if (!$booking) {
             return response()->json(['message' => 'Không tìm thấy bookings'], 404);
         }
-
-        // // Validate dữ liệu
-        // $validator = Validator::make($request->all(), [
-        //     'start_date' => 'required|date',
-        //     'end_date' => 'required|date|after_or_equal:start_date',
-        //     'totalamount' => 'required|integer',
-        //     'quantity_service' => 'required|integer',
-        //     'room_id' => 'required|exists:rooms,id',
-        //     'service_id' => 'nullable|exists:services,id',
-        //     'voucher_id' => 'nullable|exists:vouchers,id',
-        // ]);
-        // // Nếu có lỗi validate
-        // if ($validator->fails()) {
-        //     return response()->json(['errors' => $validator->errors()], 422);
-        // }
 
         // Cập nhật dữ liệu booking
         $booking->update($request->all());
