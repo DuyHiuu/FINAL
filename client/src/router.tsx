@@ -15,9 +15,9 @@ import History1 from "./pages/website/History1";
 import History2 from "./pages/website/History2";
 import Blog from "./pages/website/Blog";
 import LayoutAdmin from "./components/layouts/admin/LayoutAdmin";
-import RoomList from "./components/layouts/admin/RoomList";
-import AddProduct from "./components/layouts/admin/AddProduct";
-import EditProduct from "./components/layouts/admin/EditProduct";
+import RoomList from "./components/layouts/admin/room/RoomList";
+import AddProduct from "./components/layouts/admin/room/AddRoom";
+import EditProduct from "./components/layouts/admin/room/EditRoom";
 import SizeList from "./components/layouts/admin/size/SizeList";
 import AddSize from "./components/layouts/admin/size/AddSize";
 
@@ -48,7 +48,8 @@ export const router = createBrowserRouter([
       { path: "", element: <Navigate to="/admin/rooms" /> }, // Điều hướng tới danh sách sản phẩmm
       { path: "rooms", element: <RoomList /> },  // Hiển thị RoomList ở /admin/product
       { path: "add", element: <AddProduct /> },
-      { path: "edit", element: <EditProduct /> }, // Hiển thị AddProduct ở /admin/add
+      { path: "rooms/:id", element: <EditProduct /> }, // Hiển thị AddProduct ở /admin/add
+      // { path: "rooms/update/:id", element: <EditProduct /> }, // Hiển thị AddProduct ở /admin/add
       { path: "sizes", element: <SizeList /> }, // Hiển thị AddProduct ở /admin/add
       { path: "addsizes", element: <AddSize /> }, // Hiển thị AddProduct ở /admin/add
 

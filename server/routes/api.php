@@ -32,6 +32,7 @@ Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
     Route::post('/', [RoomController::class, 'store']);
     Route::get('/{id}', [RoomController::class, 'show']);
+    Route::put('/update/{id}', [RoomController::class, 'update']);
 
 });
 Route::prefix('sizes')->group(function () {

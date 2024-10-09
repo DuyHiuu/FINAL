@@ -182,6 +182,7 @@ class RoomController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
         $room = Room::find($id);
         if(!$room){
             response()->json(['message'=>'Phong da ton tai'],400);
