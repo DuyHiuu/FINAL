@@ -1,11 +1,31 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import useFetchSize from "../../../../api/useFetchSize";
 
 const SizeList = () => {
-  const { sizes } = useFetchSize(); // Sử dụng mảng sizes
+  const { sizes } = useFetchSize(); // Sử dụng fetchSizes để làm mới danh sách sau khi xóa
 
-  console.log(sizes); // Kiểm tra dữ liệu trả về trong console
+  // Hàm xử lý khi xóa size
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa size này?");
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/sizes/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        alert("Size đã được xóa thành công");
+        window.location.reload(); // Tải lại trang sau khi xóa thành công
+      } else {
+        const errorData = await response.json(); // Lấy dữ liệu lỗi từ phản hồi
+        console.error("Xóa size thất bại:", errorData.message); // Ghi lại thông điệp lỗi
+        alert(`Xóa size thất bại: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error("Lỗi:", error);
+      alert("Đã xảy ra lỗi khi xóa size");
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -52,12 +72,15 @@ const SizeList = () => {
                   <td className="px-4 py-2">
                     <div className="flex items-center space-x-2">
                       <Link
-                        to={`/admin/edit/${size.id}`} // Sửa đường dẫn
+                        to={`/admin/sizes/${size.id}`} // Sửa đường dẫn
                         className="bg-yellow-500 text-white px-3 py-1 rounded shadow hover:bg-yellow-600"
                       >
                         Sửa
                       </Link>
-                      <button className="bg-red-500 text-white px-3 py-1 rounded shadow hover:bg-red-600">
+                      <button
+                        onClick={() => handleDelete(size.id)} // Gọi hàm xóa khi click nút
+                        className="bg-red-500 text-white px-3 py-1 rounded shadow hover:bg-red-600"
+                      >
                         Xóa
                       </button>
                     </div>
@@ -66,10 +89,7 @@ const SizeList = () => {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan={5}
-                  className="px-4 py-2 text-center text-gray-600"
-                >
+                <td colSpan={5} className="px-4 py-2 text-center text-gray-600">
                   Không có size nào
                 </td>
               </tr>
