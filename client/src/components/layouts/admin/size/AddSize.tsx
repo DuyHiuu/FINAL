@@ -1,53 +1,88 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate để chuyển hướng
 
 const AddSize = () => {
-    // State to manage form input valuess
-    const [productName, setProductName] = useState('');
-    const [description, setDescription] = useState('');
-    const [price, setPrice] = useState('');
-    const [image, setImage] = useState(null);
+    // State để quản lý các giá trị input của form
+    const [tenSize, setTenSize] = useState('');
+    const [moTa, setMoTa] = useState('');
+    const [soLuong, setSoLuong] = useState('');
+    
+    const navigate = useNavigate(); // Khởi tạo useNavigate để chuyển hướng
+
+    // Hàm xử lý khi submit form
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Tạo đối tượng size mới
+        const newSize = {
+            name: tenSize,
+            description: moTa,
+            quantity: parseInt(soLuong), // Đảm bảo số lượng là một số
+        };
+
+        try {
+            // Thay thế bằng endpoint API của bạn để thêm size
+            const response = await fetch('http://localhost:8000/api/sizes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newSize),
+            });
+
+            if (response.ok) {
+                // Nếu thành công, chuyển hướng đến trang danh sách size
+                navigate('/admin/sizes');
+            } else {
+                // Xử lý các phản hồi lỗi từ API
+                console.error('Thêm size thất bại');
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+        }
+    };
 
     return (
-        <form className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md">
+        <form 
+            onSubmit={handleSubmit} // Gắn hàm xử lý khi submit form
+            className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md"
+        >
             <h2 className="text-2xl font-bold mb-4">Thêm Size phòng</h2>
             
             <div className="mb-4">
-                <label htmlFor="productName" className="block text-sm font-medium text-gray-700">Tên Size:</label>
+                <label htmlFor="tenSize" className="block text-sm font-medium text-gray-700">Tên Size:</label>
                 <input
                     type="text"
-                    id="productName"
-                    value={productName}
-                    onChange={(e) => setProductName(e.target.value)}
+                    id="tenSize"
+                    value={tenSize}
+                    onChange={(e) => setTenSize(e.target.value)}
                     required
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
                 />
             </div>
 
-            
-
             <div className="mb-4">
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700">số lượng size:</label>
+                <label htmlFor="soLuong" className="block text-sm font-medium text-gray-700">Số lượng size:</label>
                 <input
                     type="number"
-                    id="price"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-            <div className="mb-4">
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">Mô Tả:</label>
-                <textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    id="soLuong"
+                    value={soLuong}
+                    onChange={(e) => setSoLuong(e.target.value)}
                     required
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
                 />
             </div>
 
-            
+            <div className="mb-4">
+                <label htmlFor="moTa" className="block text-sm font-medium text-gray-700">Mô Tả:</label>
+                <textarea
+                    id="moTa"
+                    value={moTa}
+                    onChange={(e) => setMoTa(e.target.value)}
+                    required
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
+                />
+            </div>
 
             <button 
                 type="submit" 
