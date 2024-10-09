@@ -100,6 +100,7 @@ class SizeController extends Controller
      */
     public function destroy($id)
     {
+        // Delete
         $size = Size::find($id);
 
         if (!$size) {
@@ -110,7 +111,7 @@ class SizeController extends Controller
             ], 404);
         }
 
-        $size->forceDelete();
+        $size->Delete();
 
         return response()->json([
             'status' => true,
