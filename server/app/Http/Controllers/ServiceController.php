@@ -8,6 +8,7 @@ use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class ServiceController extends Controller
@@ -57,6 +58,11 @@ class ServiceController extends Controller
         }
 
         try {
+            if($request->hasFile('image')){
+                $filepath = $request->file('image')->store('uploads/services', 'public');
+            }else{
+                $filepath = null;
+            }
 
             $name = $request->get('name');
             $description = $request->get('description');
@@ -64,6 +70,7 @@ class ServiceController extends Controller
 
             $data = [
                 'name' => $name,
+                'image'=>$filepath,
                 'description' => $description,
                 'price' => $price,
             ];
@@ -103,6 +110,7 @@ class ServiceController extends Controller
     public function update(Request $request, String $id)
     {
         $service = Service::find($id);
+        $param = $request->all();
         $validator = FacadesValidator::make(
             $request->all(),[
                 'name' => 'required|max:255',
@@ -123,7 +131,21 @@ class ServiceController extends Controller
             return response()->json(['status'=>'error','message'=>$validator->messages()], 400);
         }
 
-        $service->update($request->all());
+        if($request->hasFile('image')){
+            if($service->image && Storage::disk('public')->exists($service->image)){
+                Storage::disk('public')->delete($service->image);
+            }
+            $filepath = $request->file('image')->store('uploads/services', 'public');
+            
+        }else{
+    
+            $filepath = $service->image;
+        
+        }
+
+        $param['image'] = $filepath;
+
+        $service->update($param);
 
         return response()->json(['message'=>'Cập nhập thành công'],200);
     }

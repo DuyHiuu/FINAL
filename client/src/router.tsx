@@ -21,6 +21,9 @@ import EditRoom from "./components/layouts/admin/room/EditRoom";
 import SizeList from "./components/layouts/admin/size/SizeList";
 import AddSize from "./components/layouts/admin/size/AddSize";
 import EditSize from "./components/layouts/admin/size/EditSize";
+import VoucherList from "./components/layouts/admin/voucher/VoucherList";
+import AddVoucher from "./components/layouts/admin/voucher/AddVoucher";
+import EditVoucher from "./components/layouts/admin/voucher/EditVoucher";
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +56,12 @@ export const router = createBrowserRouter([
       { path: "sizes", element: <SizeList /> }, 
       { path: "addsizes", element: <AddSize /> }, 
       { path: "sizes/:id", element: <EditSize /> }, 
+      { path: "vouchers", element: <VoucherList /> }, 
+      { path: "addvouchers", element: <AddVoucher /> }, 
+      { path: "vouchers/:id", element: <EditVoucher /> }, 
+
+
+
 
 
     ],
