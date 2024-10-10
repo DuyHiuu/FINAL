@@ -133,7 +133,6 @@ class BlogController extends Controller
     public function update(Request $request, string $id)
     {
         $blog = Blog::find($id);
-//        $blogData=$blog['user_id'];
         if(!$blog){
             return response()->json(['message'=>'Blog không tồn tại'], 400);
         }

@@ -181,30 +181,63 @@ class RoomController extends Controller
     /**
      * Update the specified resource in storage.
      */
+//    public function update(Request $request, string $id)
+//    {
+//
+//        $room = Room::find($id);
+//        if(!$room){
+//            return response()->json(['message'=>'Phong khong ton tai'],400);
+//        }
+//        $room->update($request->except('img_thumbnail'));
+//
+//        if($request->hasFile('img_thumbnail')){
+//            $image = $request->file('img_thumbnail');
+//            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
+//            $filePath = $image->storeAs('images', $uniqueFileName, 'public');
+//            $fullPath = asset('storage/' . $filePath);
+//
+//            $room->img_thumbnail = $fullPath;
+//            $room->save();
+//        }
+//        else{
+//            $room->img_thumbnail = $request->img_thumbnail;
+//        }
+//
+//        return response()->json(['message'=>'cap nhat thanh cong'],200);
+//    }
     public function update(Request $request, string $id)
     {
-
+        // Tìm room với ID
         $room = Room::find($id);
-        if(!$room){
-            response()->json(['message'=>'Phong khong ton tai'],400);
+        if (!$room) {
+            return response()->json(['message' => 'Room không tồn tại'], 400);
         }
-        $room->update($request->except('img_thumbnail'));
 
-        if($request->hasFile('img_thumbnail')){
+        $room->price = $request->price ?? $room->price;
+        $room->description = $request->description ?? $room->description;
+        $room->statusroom = $request->statusroom ?? $room->statusroom;
+        $room->size_id = $request->size_id ?? $room->size_id;
+
+        // Kiểm tra và cập nhật trường image
+        if ($request->file('img_thumbnail')) {
             $image = $request->file('img_thumbnail');
             $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
             $filePath = $image->storeAs('images', $uniqueFileName, 'public');
             $fullPath = asset('storage/' . $filePath);
 
             $room->img_thumbnail = $fullPath;
-            $room->save();
-        }
-        else{
-            $room->img_thumbnail = $request->img_thumbnail;
+        } else {
+            // Nếu không có file image mới, giữ nguyên image cũ
+            $room->img_thumbnail = $request->img_thumbnail ?? $room->img_thumbnail;
         }
 
-        return response()->json(['message'=>'cap nhat thanh cong'],200);
+        // Lưu lại room đã cập nhật
+        $room->save();
+
+        return response()->json(['message' => 'Cập nhật thành công','data' => $room->toArray()], 200);
     }
+
+
 
     /**
      * Remove the specified resource from storage.
