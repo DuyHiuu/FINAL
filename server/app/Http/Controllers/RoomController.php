@@ -7,6 +7,7 @@ use App\Http\Requests\StoreRoomRequest;
 use App\Http\Requests\UpdateRoomRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 
 class RoomController extends Controller
@@ -181,30 +182,6 @@ class RoomController extends Controller
     /**
      * Update the specified resource in storage.
      */
-//    public function update(Request $request, string $id)
-//    {
-//
-//        $room = Room::find($id);
-//        if(!$room){
-//            return response()->json(['message'=>'Phong khong ton tai'],400);
-//        }
-//        $room->update($request->except('img_thumbnail'));
-//
-//        if($request->hasFile('img_thumbnail')){
-//            $image = $request->file('img_thumbnail');
-//            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
-//            $filePath = $image->storeAs('images', $uniqueFileName, 'public');
-//            $fullPath = asset('storage/' . $filePath);
-//
-//            $room->img_thumbnail = $fullPath;
-//            $room->save();
-//        }
-//        else{
-//            $room->img_thumbnail = $request->img_thumbnail;
-//        }
-//
-//        return response()->json(['message'=>'cap nhat thanh cong'],200);
-//    }
     public function update(Request $request, string $id)
     {
         // Tìm room với ID
@@ -213,6 +190,7 @@ class RoomController extends Controller
             return response()->json(['message' => 'Room không tồn tại'], 400);
         }
 
+        // Cập nhật các trường
         $room->price = $request->price ?? $room->price;
         $room->description = $request->description ?? $room->description;
         $room->statusroom = $request->statusroom ?? $room->statusroom;
@@ -225,17 +203,22 @@ class RoomController extends Controller
             $filePath = $image->storeAs('images', $uniqueFileName, 'public');
             $fullPath = asset('storage/' . $filePath);
 
+            // Cập nhật đường dẫn ảnh mới
             $room->img_thumbnail = $fullPath;
-        } else {
-            // Nếu không có file image mới, giữ nguyên image cũ
-            $room->img_thumbnail = $request->img_thumbnail ?? $room->img_thumbnail;
         }
 
         // Lưu lại room đã cập nhật
-        $room->save();
-
-        return response()->json(['message' => 'Cập nhật thành công','data' => $room->toArray()], 200);
+        if ($room->save()) {
+            return response()->json(['message' => 'Cập nhật thành công', 'data' => $room->toArray()], 200);
+        } else {
+            return response()->json(['message' => 'Cập nhật thất bại'], 500);
+        }
     }
+
+
+
+
+
 
 
 
