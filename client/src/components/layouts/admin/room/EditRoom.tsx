@@ -46,11 +46,9 @@ const EditRoom = () => {
             statusroom:  statusroom,
             img_thumbnail:  img_thumbnail,
         };
-
-        // if(img_thumbnail) {
-        //     updateRoom.append('img_thumbnail',img_thumbnail);
-        // }
        
+        console.log(updateRoom);
+        
 
 
         try {
