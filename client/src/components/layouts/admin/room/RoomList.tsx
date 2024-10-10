@@ -5,6 +5,28 @@ import useFetchRooms from "../../../../api/useFetchRooms";
 const RoomList = () => {
 
   const {room} = useFetchRooms();
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa phòng này?");
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/rooms/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        alert("Phòng đã được xóa thành công");
+        window.location.reload(); // Tải lại trang sau khi xóa thành công
+      } else {
+        const errorData = await response.json(); // Lấy dữ liệu lỗi từ phản hồi
+        console.error("Xóa phòng thất bại:", errorData.message); // Ghi lại thông điệp lỗi
+        alert(`Xóa phòng thất bại: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error("Lỗi:", error);
+      alert("Đã xảy ra lỗi khi xóa phòng");
+    }
+  };
   
 
   return (
@@ -57,9 +79,12 @@ const RoomList = () => {
                     >
                       Sửa
                     </Link>
-                    <button className="bg-red-500 text-white px-3 py-1 rounded shadow hover:bg-red-600">
-                      Xóa
-                    </button>
+                    <button
+                        onClick={() => handleDelete(room.id)} // Gọi hàm xóa khi click nút
+                        className="bg-red-500 text-white px-3 py-1 rounded shadow hover:bg-red-600"
+                      >
+                        Xóa
+                      </button>
                   </div>
                 </td>
               </tr>
