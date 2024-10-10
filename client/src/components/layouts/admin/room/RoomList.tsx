@@ -11,7 +11,7 @@ const RoomList = () => {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold text-gray-800">Danh Sách Phòng</h1>
-        <Link to="/admin/add" className="bg-blue-600 text-white px-4 py-2 rounded shadow">
+        <Link to="/admin/rooms/add" className="bg-blue-600 text-white px-4 py-2 rounded shadow">
           Thêm Phòng
         </Link>
       </div>

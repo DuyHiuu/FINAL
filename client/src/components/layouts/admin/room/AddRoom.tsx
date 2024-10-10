@@ -27,6 +27,10 @@ const AddRoom = () => {
         formData.append('statusroom', statusroom);
         formData.append('img_thumbnail', img_thumbnail);
 
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+
         try {
             const response = await fetch(storeUrl, {
                 method: 'POST',
@@ -110,7 +114,7 @@ const AddRoom = () => {
                     type="file"
                     id="img_thumbnail"
                     onChange={(e) => setImg_thumbnail(e.target.files[0])}
-                    accept="img_thumbnail/*"
+                    accept="image/*"
                     className="mt-1 block w-full text-gray-700 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
                 />
             </div>
