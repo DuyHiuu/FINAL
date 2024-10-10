@@ -54,7 +54,7 @@ const EditVoucher = () => {
 
     try {
       const response = await fetch(`http://localhost:8000/api/vouchers/${id}`, {
-        method: "PUT", // Phương thức PUT để cập nhật dữ liệu
+        method: "PUT", // Phương thức PUT để cập nhật dữ liệuu
         headers: {
           "Content-Type": "application/json",
         },
