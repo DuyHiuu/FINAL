@@ -93,7 +93,7 @@ const AddVoucher = () => {
           htmlFor="giamGia"
           className="block text-sm font-medium text-gray-700"
         >
-          Giảm giá (%):
+          Giảm giá:
         </label>
         <input
           type="number"
