@@ -27,6 +27,9 @@ import EditVoucher from "./components/layouts/admin/voucher/EditVoucher";
 import ListService from "./components/layouts/admin/service/ListService";
 import AddService from "./components/layouts/admin/service/AddService";
 import EditService from "./components/layouts/admin/service/EditService";
+import BlogList from "./components/layouts/admin/blog/BlogList";
+import AddBlog from "./components/layouts/admin/blog/AddBlog";
+import EditBlog from "./components/layouts/admin/blog/EditBlog";
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +71,9 @@ export const router = createBrowserRouter([
       { path: "services", element: <ListService /> },
       { path: "services/add", element: <AddService /> },
       { path: "services/edit/:id", element: <EditService /> },
+      { path: "blogs", element: <BlogList /> }, // Thêm đường dẫn cho Blog
+      { path: "blogs/add", element: <AddBlog /> }, // Thêm Blog
+      { path: "blogs/edit/:id", element: <EditBlog /> }, // Chỉnh sửa Blog
       
     ],
   },

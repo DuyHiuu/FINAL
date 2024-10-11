@@ -136,9 +136,6 @@ class BlogController extends Controller
         if(!$blog){
             return response()->json(['message'=>'Blog không tồn tại'], 400);
         }
-        if (!$request->filled('title') || !$request->filled('description') || !$request->filled('content') || !$request->filled('user_id')) {
-            return response()->json(['message' => 'Các trường bắt buộc không được để trống'], 400);
-        }
 
         // Cập nhật các trường title, description, content, user_id
         $blog->title = $request->title ?? $blog->title;
