@@ -47,8 +47,10 @@ Route::prefix('sizes')->group(function () {
 
 Route::prefix('services')->group(function () {
     Route::get('/', [ServiceController::class, 'index']);
-
+    Route::post('/', [ServiceController::class, 'store']);
     Route::get('/{id}', [ServiceController::class, 'show']);
+    Route::put('/{id}', [ServiceController::class, 'update']);
+    Route::delete('/{id}', [ServiceController::class, 'destroy']);
 
 });
 Route::prefix('blogs')->group(function () {
