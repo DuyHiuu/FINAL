@@ -24,6 +24,9 @@ import EditSize from "./components/layouts/admin/size/EditSize";
 import VoucherList from "./components/layouts/admin/voucher/VoucherList";
 import AddVoucher from "./components/layouts/admin/voucher/AddVoucher";
 import EditVoucher from "./components/layouts/admin/voucher/EditVoucher";
+import ListService from "./components/layouts/admin/service/ListService";
+import AddService from "./components/layouts/admin/service/AddService";
+import EditService from "./components/layouts/admin/service/EditService";
 
 export const router = createBrowserRouter([
   {
@@ -43,6 +46,9 @@ export const router = createBrowserRouter([
       { path: "/pay2", element: <Pay2 /> },
       { path: "/history1", element: <History1 /> },
       { path: "/history2", element: <History2 /> },
+      { path: "/services", element: <ListService /> },
+      { path: "/services/add", element: <AddService /> },
+      { path: "/services/edit/:id", element: <EditService /> },
     ],
   },
   {
@@ -59,11 +65,10 @@ export const router = createBrowserRouter([
       { path: "vouchers", element: <VoucherList /> }, 
       { path: "addvouchers", element: <AddVoucher /> }, 
       { path: "vouchers/:id", element: <EditVoucher /> }, 
-
-
-
-
-
+      { path: "services", element: <ListService /> },
+      { path: "services/add", element: <AddService /> },
+      { path: "services/edit/:id", element: <EditService /> },
+      
     ],
   },
   
