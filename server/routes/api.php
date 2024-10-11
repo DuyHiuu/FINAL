@@ -5,6 +5,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymethodController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\ServiceController;
@@ -85,4 +86,6 @@ Route::prefix('vouchers')->group(function () {
 
 
 });
+
+Route::resource('roles', RoleController::class);
 
