@@ -66,7 +66,12 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $user=User::find($id);
+        $data = $request->validated();
+        $data['password'] = bcrypt($data['password']);
+        $data['address']= $request->address ?? $user->address;
+        $user = User::update($data);
+        return response(new UserResource($user),201);
     }
 
     /**
