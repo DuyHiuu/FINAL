@@ -15,11 +15,7 @@ class RoleController extends Controller
     {
         $role = Role::all();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Lấy danh sách thành công',
-            'data' => $role
-        ]);
+        return response()->json( $role);
     }
 
     /**
@@ -35,16 +31,6 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        // $role = Role::create([
-        //     'role_name' => $request->role_name,
-        //     'description' => $request->description,
-        // ]);
-
-        // return response()->json([
-        //     'status' => true,
-        //     'message' => 'Tạo role mới thành công',
-        //     'data' => $role->toArray() // Trả về mảng role mới tạo
-        // ], 201);
 
         // Xác thực dữ liệu
         $validator = Validator::make($request->all(), [
@@ -74,11 +60,7 @@ class RoleController extends Controller
         $role = Role::find($id);
 
         if ($role) {
-            return response()->json([
-                'status' => true,
-                'message' => 'Lấy thông tin role thành công',
-                'data' => $role->toArray() // Trả về mảng role cụ thể
-            ]);
+            return response()->json( $role);
         } else {
             return response()->json([
                 'status' => false,

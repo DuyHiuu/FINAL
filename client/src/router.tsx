@@ -27,6 +27,9 @@ import EditVoucher from "./components/layouts/admin/voucher/EditVoucher";
 import ListService from "./components/layouts/admin/service/ListService";
 import AddService from "./components/layouts/admin/service/AddService";
 import EditService from "./components/layouts/admin/service/EditService";
+import ListRole from "./components/layouts/admin/role/ListRole";
+import AddRole from "./components/layouts/admin/role/AddRole";
+import EditRole from "./components/layouts/admin/role/EditRole";
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +71,9 @@ export const router = createBrowserRouter([
       { path: "services", element: <ListService /> },
       { path: "services/add", element: <AddService /> },
       { path: "services/edit/:id", element: <EditService /> },
+      { path: "roles", element: <ListRole /> },
+      { path: "roles/add", element: <AddRole /> },
+      { path: "roles/edit/:id", element: <EditRole /> },
       
     ],
   },
