@@ -1,27 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const EditService = () => {
+const EditRole = () => {
 
-    const showUrl = "http://localhost:8000/api/services";
+    const showUrl = "http://localhost:8000/api/roles";
     const { id } = useParams();
-    const [name, setName] = useState('');
-    const [price, setPrice] = useState('');
+    
+    const [role_name, setRole_name] = useState('');
     const [description, setDescription] = useState('');
-    const [image, setImage] = useState<File | null>(null);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchService = async () => {
+        const fetchRole = async () => {
             try {
                 const res = await fetch(`${showUrl}/${id}`);
                 if (res.ok) {
-                    const service = await res.json();
-                    setName(service.name);
-                    setPrice(service.price);
-                    setDescription(service.description);
-                    setImage(service.image);
+                    const role = await res.json();
+                    setRole_name(role.role_name);
+                    setDescription(role.description);
                 } else {
                     console.error('Không thể lấy thông tin phòng');
                 }
@@ -29,17 +26,15 @@ const EditService = () => {
                 console.log(error);
             }
         };
-        fetchService();
+        fetchRole();
     }, [id]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const updateService = {
-            price:  price,
-            name:  name,
+        const updateRole = {
+            role_name:  role_name,
             description:  description,
-            image:  image,
         };
        
 
@@ -50,14 +45,14 @@ const EditService = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(updateService),
+                body: JSON.stringify(updateRole),
             });
 
             if (response.ok) {
-                console.log('Dịch vụ đã sửa thành công:');
-                navigate('/admin/services');
+                console.log('Quyền đã sửa thành công:');
+                navigate('/admin/roles');
             } else {
-                console.error('Lỗi khi sửa dịch vụ:', response.statusText);
+                console.error('Lỗi khi sửa quyền:', response.statusText);
             }
         } catch (error) {
             console.error('Lỗi kết nối API:', error);
@@ -66,29 +61,17 @@ const EditService = () => {
 
     return (
         <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md">
-            <h2 className="text-2xl font-bold mb-4">Sửa Thông Tin Dịch Vụ</h2>
+            <h2 className="text-2xl font-bold mb-4">Sửa Thông Tin Quyền</h2>
 
             <div className="mb-4">
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">Tên:</label>
                 <input
                     type="text"
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    id="role_name"
+                    value={role_name}
+                    onChange={(e) => setRole_name(e.target.value)}
                     required
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="image" className="block text-sm font-medium text-gray-700">Hình Ảnh:</label>
-                <img src={image} alt="" className='h-32'/>
-                <input
-                    type="file"
-                    id="image"
-                    onChange={(e) => setImage(e.target.files[0])}
-                    accept="image/*"
-                    className="mt-1 block w-full text-gray-700 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
                 />
             </div>
 
@@ -98,18 +81,6 @@ const EditService = () => {
                     id="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700">Giá:</label>
-                <input
-                    type="number"
-                    id="price"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
                     required
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
                 />
@@ -125,4 +96,4 @@ const EditService = () => {
     );
 };
 
-export default EditService;
+export default EditRole;
