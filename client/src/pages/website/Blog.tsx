@@ -1,10 +1,23 @@
-// pages/website/Blog.js
-import React from "react";
+import React, { useState } from "react";
 import useFetchBlogs from "../../api/useFetchBlogs";
 
 const Blog = () => {
   const { blog } = useFetchBlogs();
-  console.log(blog);
+  
+  // State để lưu từ khóa tìm kiếm
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Hàm xử lý tìm kiếm và lọc bài viết
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value); // Cập nhật từ khóa tìm kiếm khi người dùng nhập
+  };
+
+  // Lọc các blog dựa trên từ khóa tìm kiếm
+  const filteredBlogs = blog?.filter((blog: any) =>
+    blog.title.toLowerCase().includes(searchTerm.toLowerCase()) || // Lọc theo tiêu đề
+    blog.description.toLowerCase().includes(searchTerm.toLowerCase()) // Lọc theo mô tả
+  );
+
   return (
     <div className="flex flex-col items-center mb-10 mt-24">
       {/* Banner Image */}
@@ -20,6 +33,8 @@ const Blog = () => {
           <input
             type="text"
             placeholder="Tìm kiếm..."
+            value={searchTerm}
+            onChange={handleSearch} // Gọi hàm xử lý tìm kiếm khi người dùng nhập
             className="w-full py-2 pl-10 pr-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -44,25 +59,26 @@ const Blog = () => {
 
         {/* Grid layout for blog cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6 px-4">
-          {blog?.map((blog: any) => (
+          {filteredBlogs?.map((blog: any) => (
             <div
               key={blog.id}
               className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg"
             >
-              {/* Image placeholder - can replace with actual image if available */}
+              {/* Image placeholder */}
               <div className="w-full h-[200px] bg-gray-200 rounded-md mb-24">
                 <img src={blog.image} alt="" />
               </div>
               <h1 className="text-lg font-semibold mb-2">{blog.title}</h1>
               <p className="text-sm text-center">{blog.description}</p>
-              <p className="text-sm text-center">
-                Mô tả thêm về dịch vụ này.
-              </p>{" "}
-              {/* Thêm thẻ p thứ hai */}
+              <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p> 
             </div>
           ))}
-        </div>
 
+          {/* Nếu không tìm thấy kết quả nào */}
+          {filteredBlogs?.length === 0 && (
+            <p className="text-gray-500">Không tìm thấy bài viết nào.</p>
+          )}
+        </div>
       </div>
     </div>
   );
