@@ -63,9 +63,9 @@ Route::prefix('blogs')->group(function () {
 
 });
 
-Route::resource('paymethods', PaymethodController::class);
-Route::resource('payments', PaymentController::class);
-Route::resource('bookings', BookingController::class);
+// Route::resource('paymethods', PaymethodController::class);
+// Route::resource('payments', PaymentController::class);
+// Route::resource('bookings', BookingController::class);
 
 Route::prefix('services')->group(function () {
     Route::get('/', [ServiceController::class, 'index']);
@@ -83,10 +83,13 @@ Route::prefix('vouchers')->group(function () {
     Route::put('/{id}', [VoucherController::class, 'update']);
     Route::delete('/{id}', [VoucherController::class, 'destroy']);
 
-
-
 });
 
+
+Route::prefix('bookings')->group(function () {
+    Route::get('/{id}', [BookingController::class, 'listBooking']);
+    Route::post('/', [BookingController::class, 'addBooking']);
+});
 Route::prefix('roles')->group(function () {
     Route::get('/', [RoleController::class, 'index']);
     Route::post('/', [RoleController::class, 'store']);
@@ -94,4 +97,5 @@ Route::prefix('roles')->group(function () {
     Route::put('/{id}', [RoleController::class, 'update']);
     Route::delete('/{id}', [RoleController::class, 'destroy']);
 });
+
 

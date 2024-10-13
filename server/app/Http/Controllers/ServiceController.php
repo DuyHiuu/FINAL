@@ -60,8 +60,9 @@ class ServiceController extends Controller
         try {
             if($request->hasFile('image')){
                 $filepath = $request->file('image')->store('uploads/services', 'public');
+                $fileUrl = Storage::url($filepath);
             }else{
-                $filepath = null;
+                $fileUrl = null;
             }
 
             $name = $request->get('name');
@@ -70,7 +71,7 @@ class ServiceController extends Controller
 
             $data = [
                 'name' => $name,
-                'image'=>$filepath,
+                'image'=>$fileUrl,
                 'description' => $description,
                 'price' => $price,
             ];
@@ -136,10 +137,14 @@ class ServiceController extends Controller
                 Storage::disk('public')->delete($service->image);
             }
             $filepath = $request->file('image')->store('uploads/services', 'public');
+
+            $fileUrl = Storage::url($filepath);
             
         }else{
     
             $filepath = $service->image;
+
+            $fileUrl = Storage::url($filepath);
         
         }
 
@@ -147,8 +152,11 @@ class ServiceController extends Controller
 
         $service->update($param);
 
-        return response()->json(['message'=>'Cập nhập thành công'],200);
-    }
+        return response()->json([
+            'message'=>'Cập nhập thành công',
+            'image_url' => $fileUrl
+        ],200);
+ }
 
     /**
      * Remove the specified resource from storage.
@@ -157,8 +165,11 @@ class ServiceController extends Controller
     {
         $service=Service::find($id);
         $service->delete();
+        if($service->image && Storage::disk('public')->exists($service->image)){
+            Storage::disk('public')->delete($service->image);
+        }
         return response()->json([
-            "message" => "Xóa thành công"
+            "message" => "Xóa thành công",
         ]);
     }
 }
