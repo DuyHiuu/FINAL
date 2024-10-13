@@ -24,6 +24,15 @@ import EditSize from "./components/layouts/admin/size/EditSize";
 import VoucherList from "./components/layouts/admin/voucher/VoucherList";
 import AddVoucher from "./components/layouts/admin/voucher/AddVoucher";
 import EditVoucher from "./components/layouts/admin/voucher/EditVoucher";
+import ListService from "./components/layouts/admin/service/ListService";
+import AddService from "./components/layouts/admin/service/AddService";
+import EditService from "./components/layouts/admin/service/EditService";
+import ListRole from "./components/layouts/admin/role/ListRole";
+import AddRole from "./components/layouts/admin/role/AddRole";
+import EditRole from "./components/layouts/admin/role/EditRole";
+import BlogList from "./components/layouts/admin/blog/BlogList";
+import AddBlog from "./components/layouts/admin/blog/AddBlog";
+import EditBlog from "./components/layouts/admin/blog/EditBlog";
 
 export const router = createBrowserRouter([
   {
@@ -43,6 +52,9 @@ export const router = createBrowserRouter([
       { path: "/pay2", element: <Pay2 /> },
       { path: "/history1", element: <History1 /> },
       { path: "/history2", element: <History2 /> },
+      { path: "/services", element: <ListService /> },
+      { path: "/services/add", element: <AddService /> },
+      { path: "/services/edit/:id", element: <EditService /> },
     ],
   },
   {
@@ -59,11 +71,16 @@ export const router = createBrowserRouter([
       { path: "vouchers", element: <VoucherList /> }, 
       { path: "addvouchers", element: <AddVoucher /> }, 
       { path: "vouchers/:id", element: <EditVoucher /> }, 
-
-
-
-
-
+      { path: "services", element: <ListService /> },
+      { path: "services/add", element: <AddService /> },
+      { path: "services/edit/:id", element: <EditService /> },
+      { path: "roles", element: <ListRole /> },
+      { path: "roles/add", element: <AddRole /> },
+      { path: "roles/edit/:id", element: <EditRole /> },
+      { path: "blogs", element: <BlogList /> },
+      { path: "blogs/add", element: <AddBlog /> },
+      { path: "blogs/edit/:id", element: <EditBlog /> },
+      
     ],
   },
   

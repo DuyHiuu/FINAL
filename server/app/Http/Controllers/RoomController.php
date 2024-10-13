@@ -7,7 +7,8 @@ use App\Http\Requests\StoreRoomRequest;
 use App\Http\Requests\UpdateRoomRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class RoomController extends Controller
 {
@@ -16,6 +17,8 @@ class RoomController extends Controller
      */
     public function index()
     {
+
+
         $room = Room::join('sizes','rooms.size_id','=','sizes.id')
 
             ->select('rooms.*','sizes.name as size_name','sizes.description as size_description','sizes.quantity as quantity',
@@ -120,15 +123,15 @@ class RoomController extends Controller
             $image = $request->file('img_thumbnail');
 
             // Tạo một tên tệp tin duy nhất
-            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
+//            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
 
             // Lưu tệp tin vào thư mục storage
-            $filePath = $image->storeAs('images', $uniqueFileName, 'public'); // Lưu vào thư mục 'images' trong 'storage/app/public'
+//            $filePath = $image->storeAs('images', $uniqueFileName, 'public'); // Lưu vào thư mục 'images' trong 'storage/app/public'
 
-            // Upload lên Cloudinary
-//            $response = cloudinary()->upload(public_path('storage/' . $filePath))->getSecurePath();
+//             Upload lên Cloudinary
+            $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
 
-            $fullPath = asset('storage/' . $filePath);
+//            $fullPath = asset('storage/' . $filePath);
 
 
             $price = $request->get('price');
@@ -137,7 +140,7 @@ class RoomController extends Controller
             $size_id = $request->get('size_id');
 
             $data = [
-                'img_thumbnail' => $fullPath,
+                'img_thumbnail' => $response,
                 'price' => $price,
                 'description' => $description,
                 'statusroom' => $status_room,
@@ -183,28 +186,41 @@ class RoomController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
+        // Tìm room với ID
         $room = Room::find($id);
-        if(!$room){
-            response()->json(['message'=>'Phong khong ton tai'],400);
+        if (!$room) {
+            return response()->json(['message' => 'Room không tồn tại'], 400);
         }
-        $room->update($request->except('img_thumbnail'));
 
-        if($request->hasFile('img_thumbnail')){
+        // Cập nhật các trường
+        $room->price = $request->price ?? $room->price;
+        $room->description = $request->description ?? $room->description;
+        $room->statusroom = $request->statusroom ?? $room->statusroom;
+        $room->size_id = $request->size_id ?? $room->size_id;
+
+        // Kiểm tra và cập nhật trường image
+        if ($request->file('img_thumbnail')) {
             $image = $request->file('img_thumbnail');
-            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
-            $filePath = $image->storeAs('images', $uniqueFileName, 'public');
-            $fullPath = asset('storage/' . $filePath);
+            $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
 
-            $room->img_thumbnail = $fullPath;
-            $room->save();
-        }
-        else{
-            $room->img_thumbnail = $request->img_thumbnail;
+            // Cập nhật đường dẫn ảnh mới
+            $room->img_thumbnail = $response;
         }
 
-        return response()->json(['message'=>'cap nhat thanh cong'],200);
+        // Lưu lại room đã cập nhật
+        if ($room->save()) {
+            return response()->json(['message' => 'Cập nhật thành công', 'data' => $room->toArray()], 200);
+        } else {
+            return response()->json(['message' => 'Cập nhật thất bại'], 500);
+        }
     }
+
+
+
+
+
+
+
 
     /**
      * Remove the specified resource from storage.

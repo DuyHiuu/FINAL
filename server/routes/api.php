@@ -5,6 +5,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymethodController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\ServiceController;
@@ -47,8 +48,10 @@ Route::prefix('sizes')->group(function () {
 
 Route::prefix('services')->group(function () {
     Route::get('/', [ServiceController::class, 'index']);
-
+    Route::post('/', [ServiceController::class, 'store']);
     Route::get('/{id}', [ServiceController::class, 'show']);
+    Route::put('/{id}', [ServiceController::class, 'update']);
+    Route::delete('/{id}', [ServiceController::class, 'destroy']);
 
 });
 Route::prefix('blogs')->group(function () {
@@ -82,7 +85,17 @@ Route::prefix('vouchers')->group(function () {
 
 });
 
+
 Route::prefix('bookings')->group(function () {
     Route::get('/{id}', [BookingController::class, 'listBooking']);
     Route::post('/', [BookingController::class, 'addBooking']);
 });
+Route::prefix('roles')->group(function () {
+    Route::get('/', [RoleController::class, 'index']);
+    Route::post('/', [RoleController::class, 'store']);
+    Route::get('/{id}', [RoleController::class, 'show']);
+    Route::put('/{id}', [RoleController::class, 'update']);
+    Route::delete('/{id}', [RoleController::class, 'destroy']);
+});
+
+
