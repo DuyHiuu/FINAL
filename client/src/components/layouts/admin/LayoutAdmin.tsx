@@ -25,6 +25,7 @@ const navigation = [
   { name: "Danh sách size", href: "/admin/sizes", current: false }, // Cập nhật href ở đây
   { name: "Danh sách voucher", href: "/admin/vouchers", current: false }, // Cập nhật href ở đây
   { name: "Danh sách dịch vụ", href: "/admin/services", current: false }, // Cập nhật href ở đây
+  { name: "Danh sách bài viết", href: "/admin/blogs", current: false }, // Cập nhật href ở đây
   { name: "Danh sách quyền", href: "/admin/roles", current: false }, // Cập nhật href ở đây
 
 
