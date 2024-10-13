@@ -20,11 +20,13 @@ const Header = () => {
   //   }
   // }, []);
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("name");
-    setIsLoggedIn(false);
-    setUserName("");
-    navigate("/");
+    if (window.confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("name");
+      setIsLoggedIn(false);
+      setUserName("");
+      navigate("/");
+    }
   };
 
   const handleMenuToggle = () => {
@@ -113,21 +115,31 @@ const Header = () => {
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           {isLoggedIn ? (
             <div className="flex space-x-2">
-              
               <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-full flex items-center space-x-2 shadow-md text-xs sm:text-sm lg:text-base">
-               
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM5.832 17.999C5.44 17.7 5 17.192 5 16.5c0-.828.448-1.5 1.003-1.888C7.146 13.855 9.432 13 12 13c2.568 0 4.854.855 5.997 1.612.555.388 1.003 1.06 1.003 1.888 0 .692-.439 1.2-.832 1.499H5.832z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM5.832 17.999C5.44 17.7 5 17.192 5 16.5c0-.828.448-1.5 1.003-1.888C7.146 13.855 9.432 13 12 13c2.568 0 4.854.855 5.997 1.612.555.388 1.003 1.06 1.003 1.888 0 .692-.439 1.2-.832 1.499H5.832z"
+                  />
                 </svg>
                 <span>{userName}</span>
               </button>
-              
-              <button onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 text-white font-medium py-1 px-3 rounded-full shadow-md text-xs sm:text-sm lg:text-base">
+
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 text-white font-medium py-1 px-3 rounded-full shadow-md text-xs sm:text-sm lg:text-base"
+              >
                 Đăng xuất
               </button>
             </div>
-
           ) : (
             <>
               <Link
@@ -200,7 +212,7 @@ const Header = () => {
           </div>
         )}
       </nav>
-    </header >
+    </header>
   );
 };
 
