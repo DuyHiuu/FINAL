@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymethodController;
 use App\Http\Controllers\RoleController;
@@ -29,7 +30,9 @@ use Illuminate\Support\Facades\Route;
 //});
 Route::match(['GET','POST'],'/login',[AuthController::class,'login']);
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/logout',[AuthController::class,'logout']);
+Route::post('/logout',[AuthController::class,'logout'])->name('logout')->middleware('auth:sanctum');
+Route::get('/room_home',[HomeController::class,'room_home'])->name('room_home');
+Route::get('/blog_home',[HomeController::class,'blog_home'])->name('blog_home');
 Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
     Route::post('/', [RoomController::class, 'store']);

@@ -6,6 +6,7 @@ use App\Http\Resources\BlogResource;
 use App\Models\Blog;
 use App\Http\Requests\StoreBlogRequest;
 use App\Http\Requests\UpdateBlogRequest;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -67,15 +68,15 @@ class BlogController extends Controller
             $image = $request->file('image');
 
             // Tạo một tên tệp tin duy nhất
-            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
+//            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
 
             // Lưu tệp tin vào thư mục storage
-            $filePath = $image->storeAs('images', $uniqueFileName, 'public'); // Lưu vào thư mục 'images' trong 'storage/app/public'
+//            $filePath = $image->storeAs('images', $uniqueFileName, 'public'); // Lưu vào thư mục 'images' trong 'storage/app/public'
 
             // Upload lên Cloudinary
-//            $response = cloudinary()->upload(public_path('storage/' . $filePath))->getSecurePath();
+            $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
 
-            $fullPath = asset('storage/' . $filePath);
+//            $fullPath = asset('storage/' . $filePath);
 
 
             $title = $request->get('title');
@@ -84,7 +85,7 @@ class BlogController extends Controller
             $user_id = $request->get('user_id');
 
             $data = [
-                'image' => $fullPath,
+                'image' => $response,
                 'title' => $title,
                 'description' => $description,
                 'content' => $content,
