@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import useFetchServices from "../../api/useFetchServices";
 
 const Detail = () => {
 
   const { service } = useFetchServices();
+
+  const navigate = useNavigate();
 
 
   const smallImageSrcs = [
@@ -30,10 +32,10 @@ const Detail = () => {
   const { id } = useParams();
 
   const [room, setRoom] = useState<any>();
-  //hàm để get dữ liệu
+
   useEffect(() => {
     try {
-      // fetroom để get dữ liệu
+      
       const fetroom = async () => {
         const res = await fetch(`${API_URL}/rooms/${id}`, {
           method: "get",
@@ -45,8 +47,8 @@ const Detail = () => {
           throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
         }
 
-        const data = await res.json(); // Chuyển dữ liệu thành JSON
-        setRoom(data); // Lưu dữ liệu vào state
+        const data = await res.json(); 
+        setRoom(data); 
       };
       fetroom();
     } catch (error) {
@@ -74,17 +76,17 @@ const Detail = () => {
 
   const changeQuantity = (serviceId: number, quantity: number) => {
     setQuantities(prevState => {
-      if (!prevState) return [quantity]; // Nếu chưa có giá trị, trả về mảng chứa 1 phần tử
+      if (!prevState) return [quantity]; 
       const updatedQuantities = [...prevState];
-      const index = updatedQuantities.findIndex((q, i) => i === serviceId - 1); // index phải là dịch vụ id trừ 1
+      const index = updatedQuantities.findIndex((q, i) => i === serviceId - 1); 
 
       if (index !== -1) {
-        updatedQuantities[index] = quantity; // Cập nhật số lượng của dịch vụ tương ứng
+        updatedQuantities[index] = quantity; 
       } else {
-        updatedQuantities.push(quantity); // Thêm mới nếu không có
+        updatedQuantities.push(quantity);
       }
 
-      return updatedQuantities; // Trả về mảng đã cập nhật
+      return updatedQuantities; 
     });
   };
 
@@ -92,20 +94,15 @@ const Detail = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const safeServiceIds = service_ids?.length ? service_ids : null;
-    const safeQuantities = quantities ? Object.values(quantities) : null; // Chuyển object thành mảng
+    const safeServiceIds = service_ids?.length ? service_ids : [];  
+    const safeQuantities = quantities ? Object.values(quantities) : null;
 
-    // Tạo form data để gửi cả text và file ảnh
     const formData = new FormData();
-    formData.append('service_ids', JSON.stringify(safeServiceIds));
+    formData.append('service_ids', JSON.stringify(safeServiceIds));  
     formData.append('room_id', room_id);
-    formData.append('quantities', JSON.stringify(safeQuantities)); // Sử dụng mảng thay vì object
+    formData.append('quantities', JSON.stringify(safeQuantities));
     formData.append('start_date', start_date);
     formData.append('end_date', end_date);
-
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
 
     try {
       const response = await fetch(addBookingUrl, {
@@ -116,13 +113,16 @@ const Detail = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Thành công:', data);
+        const booking_id = data.booking_id;
+        navigate(`/pay1/${booking_id}`);
       } else {
         console.error('Lỗi:', response.statusText);
       }
     } catch (error) {
       console.error('Lỗi kết nối API:', error);
     }
-  };
+};
+
 
 
 
@@ -189,10 +189,10 @@ const Detail = () => {
                     <input
                       name="service_ids"
                       value={service.id}
-                      onChange={() => changeService(service.id)}  // Gọi hàm xử lý thay đổi
+                      onChange={() => changeService(service.id)}  
                       type="checkbox"
                       className="mr-2 appearance-none checked:bg-[#064749] border rounded-full w-4 h-4 cursor-pointer"
-                      checked={service_ids?.includes(service.id)}  // Kiểm tra xem dịch vụ có được chọn không
+                      checked={service_ids?.includes(service.id)}  
                     />
                     <span className="me-3">{service?.name}</span>
 
@@ -200,8 +200,8 @@ const Detail = () => {
                       x
                       <input
                         className="border ms-3"
-                        value={quantities?.[service.id - 1] ?? ''}  // Đảm bảo mảng có chỉ số đúng
-                        onChange={(e) => changeQuantity(service.id, parseInt(e.target.value) || 0)}  // Cập nhật số lượng
+                        value={quantities?.[service.id - 1] ?? ''}  
+                        onChange={(e) => changeQuantity(service.id, parseInt(e.target.value) || 0)}  
                         placeholder="Nhập số lượng dịch vụ"
                         type="number"
                         name={`quantities_${service.id}`}

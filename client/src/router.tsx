@@ -48,7 +48,7 @@ export const router = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       { path: "/paymentconfirmation", element: <PaymentConfirmation /> },
-      { path: "/pay1", element: <Pay1 /> },
+      { path: "/pay1/:id", element: <Pay1 /> },
       { path: "/pay2", element: <Pay2 /> },
       { path: "/history1", element: <History1 /> },
       { path: "/history2", element: <History2 /> },
