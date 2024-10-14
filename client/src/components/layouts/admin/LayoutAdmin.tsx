@@ -20,7 +20,7 @@ const user = {
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 const navigation = [
-  { name: "PestSpa", href: "/admin", current: true },
+  { name: "PestSpa", href: "/", current: true },
   { name: "Danh sách phòng", href: "/admin/rooms", current: false }, // Cập nhật href ở đây
   { name: "Danh sách size", href: "/admin/sizes", current: false }, // Cập nhật href ở đây
   { name: "Danh sách voucher", href: "/admin/vouchers", current: false }, // Cập nhật href ở đây

@@ -6,6 +6,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault(); // Ngăn chặn hành vi reload của form
     setError(""); // Reset lại lỗi trước mỗi lần submit
@@ -29,9 +30,9 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        // Chỉ phân tích khi không phải 204
         localStorage.setItem("token", data.accessToken); // Lưu token vào localStorage
         localStorage.setItem("name", data.user.name); // Lưu tên người dùng vào localStorage
+        localStorage.setItem("role_id", data.user.role.role_id); // Lưu role_id vào localStorage
         window.location.href = "/";
       } else {
         const data = await response.json();
