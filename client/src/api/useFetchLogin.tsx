@@ -5,6 +5,7 @@ const API_URL = "http://localhost:8000/api";
 // Định nghĩa kiểu dữ liệu cho LoginResponse
 interface LoginResponse {
   token: string; // Thay đổi theo cấu trúc phản hồi của bạn
+  role_id: number; // Thêm trường role_id
   message?: string; // Có thể có hoặc không
 }
 
@@ -33,6 +34,12 @@ const useFetchLogin = (email: string, password: string) => {
         }
 
         const data: LoginResponse = await res.json(); // Phân tích phản hồi thành JSON
+        
+        // Lưu trữ token và role_id vào localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role_id", data.role_id.toString()); // Lưu role_id dưới dạng chuỗi
+        localStorage.setItem("name", email); // Lưu tên người dùng (hoặc tên khác nếu có)
+
         setLoginData(data); // Lưu dữ liệu vào state
       } catch (error) {
         setError((error as Error).message); // Lưu thông báo lỗi vào state

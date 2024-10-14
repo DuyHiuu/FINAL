@@ -5,32 +5,41 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
+  const [roleId, setRoleId] = useState(null); // Trạng thái để lưu trữ role_id
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
   useEffect(() => {
     const nameFromStorage = localStorage.getItem("name");
+    const roleIdFromStorage = localStorage.getItem("role_id"); // Lấy role_id từ localStorage
     if (token) {
       setIsLoggedIn(true);
       setUserName(nameFromStorage || "");
+      setRoleId(roleIdFromStorage); // Thiết lập trạng thái role_id
     }
   }, []);
-  // useEffect(() => {
-  //   if (token) {
-  //     window.location.href = "/";
-  //   }
-  // }, []);
+
   const handleLogout = () => {
     if (window.confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
       localStorage.removeItem("token");
       localStorage.removeItem("name");
+      localStorage.removeItem("role_id");
       setIsLoggedIn(false);
       setUserName("");
+      setRoleId(null);
       navigate("/");
     }
   };
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  // Hàm xử lý khi nhấp vào tên người dùng
+  const handleUserNameClick = () => {
+    if (roleId === '2') {
+      navigate('/admin'); // Chuyển hướng đến trang quản trị
+    }
   };
 
   return (
@@ -114,23 +123,23 @@ const Header = () => {
         {/* Hiển thị điều kiện cho đăng nhập/đăng ký hoặc tên người dùng/đăng xuất */}
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           {isLoggedIn ? (
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 items-center">
               <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-full flex items-center space-x-2 shadow-md text-xs sm:text-sm lg:text-base">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="2"
+                  strokeWidth="2"
                   stroke="currentColor"
                   className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM5.832 17.999C5.44 17.7 5 17.192 5 16.5c0-.828.448-1.5 1.003-1.888C7.146 13.855 9.432 13 12 13c2.568 0 4.854.855 5.997 1.612.555.388 1.003 1.06 1.003 1.888 0 .692-.439 1.2-.832 1.499H5.832z"
                   />
                 </svg>
-                <span>{userName}</span>
+                <span onClick={handleUserNameClick} className="cursor-pointer">{userName}</span>
               </button>
 
               <button
