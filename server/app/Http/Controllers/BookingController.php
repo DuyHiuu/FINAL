@@ -64,7 +64,10 @@ class BookingController extends Controller
             'subTotal_service' => $subTotal_service,
             'subTotal_room' => $subTotal_room,
             'subTotal_voucher' => $subTotal_voucher,
-            'total_amount' => $totalamount
+            'total_amount' => $totalamount,
+            'room_id'=> $booking->room_id,
+            'start_date' => $booking->start_date,
+            'end_date' => $booking->end_date
         ]);
 
 
@@ -126,6 +129,7 @@ class BookingController extends Controller
         return response()->json([
             'message' => 'Thêm đơn đặt thàng công!',
             'booking' => $booking,
+            'booking_id' => $booking->id,
             'services' => $serviceData ?? [] // Trả về mảng rỗng nếu không có dịch vụ
         ]);
 
@@ -136,19 +140,23 @@ class BookingController extends Controller
      */
     public function show(string $id)
     {
-        $booking = Booking::join('services', 'bookings.service_id', '=', 'services.id')
-            ->join('rooms', 'bookings.room_id', '=', 'rooms.id')
-            ->join('vouchers', 'bookings.voucher_id', '=', 'vouchers.id')
-            ->select('bookings.*', 'services.name as service_name', 'vouchers.name as voucher_name')
-            ->where('bookings.id', $id)
-            ->whereNull('bookings.deleted_at')
+        $booking = Booking::with(['room', 'voucher', 'services'])
+            ->where('id', $id)
+            ->whereNull('deleted_at')
             ->first();
+    
         if ($booking) {
-            return response()->json($booking);
+            return response()->json([
+                'booking' => $booking,
+                'room' => $booking->room, // Thông tin phòng
+                'services' => $booking->services, // Danh sách dịch vụ
+                'voucher' => $booking->voucher, // Thông tin voucher
+            ]);
         } else {
             return response()->json(['message' => 'Không tồn tại'], 404);
         }
     }
+    
 
     /**
      * Show the form for editing the specified resource.
