@@ -147,11 +147,12 @@ class BlogController extends Controller
         // Kiểm tra và cập nhật trường image
         if($request->file('image')){
             $image = $request->file('image');
-            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
-            $filePath = $image->storeAs('images', $uniqueFileName, 'public');
-            $fullPath = asset('storage/' . $filePath);
+//            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
+//            $filePath = $image->storeAs('images', $uniqueFileName, 'public');
+//            $fullPath = asset('storage/' . $filePath);
+            $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
 
-            $blog->image = $fullPath;
+            $blog->image = $response;
         } else {
             // Nếu không có file image mới, giữ nguyên image cũ
             $blog->image = $request->image ?? $blog->image;
