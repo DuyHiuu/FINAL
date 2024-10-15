@@ -10,6 +10,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\StatisticalController;
 use App\Http\Controllers\VoucherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -94,6 +95,10 @@ Route::prefix('bookings')->group(function () {
     Route::post('/', [BookingController::class, 'addBooking']);
 });
 
+Route::prefix('admin')->group(function () {
+    //thống kê
+    Route::post('/total_revenue', [StatisticalController::class, "total_revenue"])->name('total_revenue');
+});
 
 Route::prefix('roles')->group(function () {
     Route::get('/', [RoleController::class, 'index']);
