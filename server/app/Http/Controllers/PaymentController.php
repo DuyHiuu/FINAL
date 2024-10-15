@@ -30,7 +30,7 @@ class PaymentController extends Controller
             'status' => $trangThai,
             'type_cho_xac_nhan' => $type_cho_xac_nhan,
         ]);
-        
+
         // $payment = Payment::join('users', 'payments.user_id', '=', 'users.id')
         //     ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
         //     ->join('paymethods', 'payments.paymethod_id', '=', 'paymethods.id')
@@ -50,26 +50,26 @@ class PaymentController extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-    { 
+    {
         $payments = Payment::with('booking.services')->get();
 
         $subTotal_service = 0;
         $subTotal_room = 0;
         $subTotal_voucher = 0;
-        
+
         foreach ($payments as $payment) {
             $booking = $payment->booking; // Lấy booking từ mỗi payment
-        
+
             if (!empty($booking)) {
                 $startDate = Carbon::parse($booking->start_date);
                 $endDate = Carbon::parse($booking->end_date);
-        
+
                 // Tính khoảng cách ngày
                 $days = max(1, $startDate->diffInDays($endDate));
                 if ($booking->room) {
                     $subTotal_room += $booking->room->price * $days;
                 }
-    
+
                 // Tính tổng tiền cho các dịch vụ trong booking
                 if ($booking->services->isNotEmpty()) {
                     foreach ($booking->services as $service) {
@@ -86,15 +86,15 @@ class PaymentController extends Controller
         $payment_method = $payment->paymethod;
 
         $totalAmount = ($subTotal_service + $subTotal_room) - $subTotal_voucher;
-        
+
         return response()->json([
             'subTotal_service' => $subTotal_service,
             'subTotal_room' => $subTotal_room,
             'subTotal_voucher' => $subTotal_voucher,
             'totalAmount' => $totalAmount,
-            'payment_method' =>   $payment_method 
+            'payment_method' =>   $payment_method
         ]);
-        
+
     }
 
     /**
@@ -136,14 +136,14 @@ class PaymentController extends Controller
             'user_phone.max' => 'Số điện không vượt quá 255 kí tự',
             ]
         );
-       
+
         if ($validator->fails()) {
             return response()->json(['status'=>'error','message'=>$validator->messages()], 400);
         }
 
         if($request->isMethod('POST')){
             DB::beginTransaction();
-    
+
             try{
                 $params = $request->all();
                  // Lấy booking dựa trên booking_id từ request
@@ -152,17 +152,17 @@ class PaymentController extends Controller
                 $subTotal_service = 0;
                 $subTotal_room = 0;
                 $subTotal_voucher = 0;
-    
+
                 if (!empty($booking)) {
                     $startDate = Carbon::parse($booking->start_date);
                     $endDate = Carbon::parse($booking->end_date);
-            
+
                     // Tính khoảng cách ngày
                     $days = max(1, $startDate->diffInDays($endDate));
-                   
+
                     $subTotal_room += $booking->room->price * $days;
-                    
-        
+
+
                     // Tính tổng tiền cho các dịch vụ trong booking
                     if ($booking->services->isNotEmpty()) {
                         foreach ($booking->services as $service) {
@@ -186,19 +186,19 @@ class PaymentController extends Controller
 
                 // Lưu ID của payment
                 $payment_id = $payment->id;
-    
+
                 DB::commit();
                 return response()->json([
                     'status' => 'Đơn hàng đã thanh toán thành công',
                     'payment_id' => $payment_id,
                     'total_amount' => $total_amount
                 ], 201);
-    
+
             } catch (\Exception $e){
                 DB::rollBack();
-    
+
                 return response()->json(['status' => 'Xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại!', 'message' => $e->getMessage()], 500);
-    
+
             }
           }
     }

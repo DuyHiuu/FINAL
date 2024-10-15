@@ -139,13 +139,13 @@ class ServiceController extends Controller
             $filepath = $request->file('image')->store('uploads/services', 'public');
 
             $fileUrl = Storage::url($filepath);
-            
+
         }else{
-    
+
             $filepath = $service->image;
 
             $fileUrl = Storage::url($filepath);
-        
+
         }
 
         $param['image'] = $filepath;
