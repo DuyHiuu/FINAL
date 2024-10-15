@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const Pay1 = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
+
 
     const showBooking = "http://localhost:8000/api/bookings";
     const showRoom = "http://localhost:8000/api/rooms";
@@ -60,6 +63,10 @@ const Pay1 = () => {
       }, [booking?.room_id]);
 
       console.log(booking?.room_id);
+
+      const toPay = () => {
+        navigate(`/pay2/${id}`);
+      };;
       
       
       
@@ -86,7 +93,7 @@ const Pay1 = () => {
                 </div>
 
                 <button className="mt-20 text-white px-10 py-2 rounded-full bg-[#064749]">
-                    <a href="/pay2" className="block">Thanh toán</a>
+                    <button onClick={toPay} className='block'>Thanh Toán</button>
                 </button>
             </div>
 
