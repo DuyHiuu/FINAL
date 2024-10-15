@@ -1,7 +1,7 @@
 import React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import LayoutWebsite from "./components/layouts/website/LayoutWebsite";
-import LayoutAdmin from "./components/layouts/admin/LayoutAdmin"; // Đảm bảo rằng đã import LayoutAdmin
+import LayoutAdmin from "./components/layouts/admin/LayoutAdmin";
 import HomePage from "./pages/website/HomePage";
 import AboutPage from "./pages/website/AboutPage";
 import ListRoom from "./pages/website/ListRoom";
@@ -34,15 +34,15 @@ import EditRole from "./components/layouts/admin/role/EditRole";
 import BlogList from "./components/layouts/admin/blog/BlogList";
 import AddBlog from "./components/layouts/admin/blog/AddBlog";
 import EditBlog from "./components/layouts/admin/blog/EditBlog";
+import Loi404 from "./pages/website/Loi404"; // Import trang lỗi 404
 
-// Kiểm tra người dùng đã đăng nhập và có vai trò admin
-const isAuthenticated = !!localStorage.getItem("token");
-const user = JSON.parse(localStorage.getItem("user"));
-const isAdmin = user?.role_id === 2; // Kiểm tra nếu role_id = 2
+const isAuthenticated = !!localStorage.getItem("token"); // Kiểm tra người dùng có đăng nhập
+const isAdmin = localStorage.getItem("role_id"); // Xác định nếu người dùng có quyền admin
+console.log(isAdmin);
 
 export const router = createBrowserRouter([
   {
-    element: <LayoutWebsite />, // Layout cho các route không phải admin
+    element: <LayoutWebsite />,
     children: [
       { path: "", element: <Navigate to={"/home"} /> },
       { path: "/home", element: <HomePage /> },
@@ -55,9 +55,13 @@ export const router = createBrowserRouter([
       { path: "/register", element: <Register /> },
       { path: "/paymentconfirmation", element: <PaymentConfirmation /> },
       { path: "/pay1/:id", element: <Pay1 /> },
+
+      { path: "/pay2", element: <Pay2 /> },
+
       { path: "/pay2/:id", element: <Pay2 /> },
 
       // Áp dụng PrivateRoute cho trang lịch sử mua hàng
+
       {
         path: "/history1",
         element: (
@@ -77,15 +81,15 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Routes Admin
+  // Routes Admin chỉ cho phép người dùng có role_id = 2 (admin)
   {
     element: (
-      <PrivateRoute isAdmin={isAdmin}> {/* Kiểm tra quyền admin */}
-        <LayoutAdmin /> {/* Sử dụng LayoutAdmin cho tất cả các route admin */}
+      <PrivateRoute>
+        <LayoutAdmin />
       </PrivateRoute>
     ),
     children: [
-      { path: "/admin", element: <Navigate to="/admin/rooms" /> }, // Điều hướng đến danh sách phòng
+      { path: "/admin", element: <Navigate to="/admin/rooms" /> },
       { path: "/admin/rooms", element: <RoomList /> },
       { path: "/admin/rooms/add", element: <AddRoom /> },
       { path: "/admin/rooms/edit/:id", element: <EditRoom /> },
@@ -106,4 +110,10 @@ export const router = createBrowserRouter([
       { path: "/admin/blogs/edit/:id", element: <EditBlog /> },
     ],
   },
+
+  // Đường dẫn cho trang 404
+  { path: "/404", element: <Loi404 /> },
+
+  // Bắt tất cả các đường dẫn không tồn tại và điều hướng đến trang 404
+  { path: "*", element: <Navigate to="/404" /> },
 ]);
