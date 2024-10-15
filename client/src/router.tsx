@@ -55,7 +55,7 @@ export const router = createBrowserRouter([
       { path: "/register", element: <Register /> },
       { path: "/paymentconfirmation", element: <PaymentConfirmation /> },
       { path: "/pay1/:id", element: <Pay1 /> },
-      { path: "/pay2", element: <Pay2 /> },
+      { path: "/pay2/:id", element: <Pay2 /> },
 
       // Áp dụng PrivateRoute cho trang lịch sử mua hàng
       {
