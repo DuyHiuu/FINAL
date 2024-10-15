@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const Register = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState(""); // State để lưu trữ thông báo thành công
+  const [successMessage, setSuccessMessage] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -12,7 +12,7 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     address: "",
-    role_id: 1, // Giá trị mặc định hoặc có thể thay đổi dựa vào người dùng
+    role_id: 1,
   });
 
   const handleChange = (e) => {
@@ -20,14 +20,28 @@ const Register = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // Hàm kiểm tra mật khẩu
+  const validatePassword = (password) => {
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordPattern.test(password);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccessMessage(""); // Xóa thông báo thành công khi form submit
+    setSuccessMessage("");
 
     // Kiểm tra mật khẩu và mật khẩu xác nhận
     if (formData.password !== formData.confirmPassword) {
       setError("Mật khẩu và mật khẩu xác nhận không khớp");
+      return;
+    }
+
+    // Kiểm tra định dạng mật khẩu
+    if (!validatePassword(formData.password)) {
+      setError(
+        "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt."
+      );
       return;
     }
 
@@ -50,9 +64,9 @@ const Register = () => {
         const data = await response.json();
         console.log(data);
 
-        setSuccessMessage("Đăng ký thành công!"); // Đặt thông báo thành công
+        setSuccessMessage("Đăng ký thành công!");
         setTimeout(() => {
-          navigate("/login"); // Điều hướng sau 2 giây
+          navigate("/login");
         }, 2000);
       } else {
         const result = await response.json();
@@ -75,10 +89,9 @@ const Register = () => {
         {error && <p className="text-red-500 text-center">{error}</p>}
         {successMessage && (
           <p className="text-green-500 text-center">{successMessage}</p>
-        )}{" "}
-        {/* Hiển thị thông báo thành công */}
+        )}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Trường nhập Tên */}
+          {/* Các trường nhập liệu */}
           <div>
             <label
               htmlFor="name"
@@ -98,7 +111,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Trường nhập Email */}
           <div>
             <label
               htmlFor="email"
@@ -118,7 +130,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Trường nhập Số điện thoại */}
           <div>
             <label
               htmlFor="phone"
@@ -138,7 +149,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Trường nhập Mật khẩu */}
           <div>
             <label
               htmlFor="password"
@@ -158,7 +168,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Trường nhập Xác nhận Mật khẩu */}
           <div>
             <label
               htmlFor="confirmPassword"
@@ -178,7 +187,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Trường nhập Địa chỉ */}
           <div>
             <label
               htmlFor="address"
@@ -197,7 +205,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Nút Đăng ký */}
           <div>
             <button
               type="submit"
