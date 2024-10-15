@@ -3,11 +3,9 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import useFetchServices from "../../api/useFetchServices";
 
 const Detail = () => {
-
   const { service } = useFetchServices();
 
   const navigate = useNavigate();
-
 
   const smallImageSrcs = [
     "/images/anh9.webp", // Đường dẫn ảnh nhỏ 1
@@ -35,7 +33,6 @@ const Detail = () => {
 
   useEffect(() => {
     try {
-      
       const fetroom = async () => {
         const res = await fetch(`${API_URL}/rooms/${id}`, {
           method: "get",
@@ -47,8 +44,8 @@ const Detail = () => {
           throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
         }
 
-        const data = await res.json(); 
-        setRoom(data); 
+        const data = await res.json();
+        setRoom(data);
       };
       fetroom();
     } catch (error) {
@@ -61,55 +58,65 @@ const Detail = () => {
   const [room_id, setRoom_id] = useState(id);
   const [service_ids, setService_ids] = useState<number[] | null>(null);
   const [quantities, setQuantities] = useState<number[] | null>(null);
-  const [start_date, setStart_date] = useState('');
-  const [end_date, setEnd_date] = useState('');
+  const [start_date, setStart_date] = useState("");
+  const [end_date, setEnd_date] = useState("");
 
   // Hàm xử lý khi chọn/deselect dịch vụ
   const changeService = (serviceId: number) => {
-    setService_ids(prevState => {
+    setService_ids((prevState) => {
       if (!prevState) return [serviceId];
       return prevState.includes(serviceId)
-        ? prevState.filter(id => id !== serviceId)
+        ? prevState.filter((id) => id !== serviceId)
         : [...prevState, serviceId];
     });
   };
 
   const changeQuantity = (serviceId: number, quantity: number) => {
-    setQuantities(prevState => {
-      if (!prevState) return [quantity]; 
+    setQuantities((prevState) => {
+      if (!prevState) return [quantity];
       const updatedQuantities = [...prevState];
-      const index = updatedQuantities.findIndex((q, i) => i === serviceId - 1); 
+      const index = updatedQuantities.findIndex((q, i) => i === serviceId - 1);
 
       if (index !== -1) {
-        updatedQuantities[index] = quantity; 
+        updatedQuantities[index] = quantity;
       } else {
         updatedQuantities.push(quantity);
       }
 
-      return updatedQuantities; 
+      return updatedQuantities;
     });
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const safeServiceIds = service_ids?.length ? service_ids : [];  
+  
+    // Kiểm tra token đăng nhập
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // Nếu chưa đăng nhập, điều hướng người dùng đến trang đăng nhập
+      navigate("/login");
+      return;
+    }
+  
+    const safeServiceIds = service_ids?.length ? service_ids : [];
     const safeQuantities = quantities ? Object.values(quantities) : null;
-
+  
     const formData = new FormData();
-    formData.append('service_ids', JSON.stringify(safeServiceIds));  
+    formData.append('service_ids', JSON.stringify(safeServiceIds));
     formData.append('room_id', room_id);
     formData.append('quantities', JSON.stringify(safeQuantities));
     formData.append('start_date', start_date);
     formData.append('end_date', end_date);
-
+  
     try {
       const response = await fetch(addBookingUrl, {
         method: 'POST',
         body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`, // Đính kèm token vào header
+        },
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         console.log('Thành công:', data);
@@ -121,10 +128,8 @@ const Detail = () => {
     } catch (error) {
       console.error('Lỗi kết nối API:', error);
     }
-};
-
-
-
+  };
+  
 
   return (
     <div className="container mx-auto p-4 lg:p-8 mt-24">
@@ -169,8 +174,12 @@ const Detail = () => {
       </div>
 
       <form action="" onSubmit={handleSubmit}>
-
-        <input type="hidden" name="room_id" defaultValue={room_id} onChange={(e) => setRoom_id(e.target.value)} />
+        <input
+          type="hidden"
+          name="room_id"
+          defaultValue={room_id}
+          onChange={(e) => setRoom_id(e.target.value)}
+        />
         {/* Phần thông tin */}
         <div className="flex flex-col lg:flex-row">
           {/* Phần thông tin phòng */}
@@ -181,7 +190,9 @@ const Detail = () => {
                 <p className="flex items-center">{room?.statusroom}</p>
               </div>
             </div>
-            <h3 className="text-left text-2xl font-semibold mt-10">Dịch vụ kèm thêm</h3>
+            <h3 className="text-left text-2xl font-semibold mt-10">
+              Dịch vụ kèm thêm
+            </h3>
             <div className="mt-2">
               {service?.map((service: any) => (
                 <label className="flex items-center mb-2" key={service.id}>
@@ -189,10 +200,10 @@ const Detail = () => {
                     <input
                       name="service_ids"
                       value={service.id}
-                      onChange={() => changeService(service.id)}  
+                      onChange={() => changeService(service.id)}
                       type="checkbox"
                       className="mr-2 appearance-none checked:bg-[#064749] border rounded-full w-4 h-4 cursor-pointer"
-                      checked={service_ids?.includes(service.id)}  
+                      checked={service_ids?.includes(service.id)}
                     />
                     <span className="me-3">{service?.name}</span>
 
@@ -200,8 +211,13 @@ const Detail = () => {
                       x
                       <input
                         className="border ms-3"
-                        value={quantities?.[service.id - 1] ?? ''}  
-                        onChange={(e) => changeQuantity(service.id, parseInt(e.target.value) || 0)}  
+                        value={quantities?.[service.id - 1] ?? ""}
+                        onChange={(e) =>
+                          changeQuantity(
+                            service.id,
+                            parseInt(e.target.value) || 0
+                          )
+                        }
                         placeholder="Nhập số lượng dịch vụ"
                         type="number"
                         name={`quantities_${service.id}`}
@@ -211,15 +227,10 @@ const Detail = () => {
                   </div>
                 </label>
               ))}
-
-
-
             </div>
 
             <h3 className="text-left text-2xl font-semibold mt-10">Mô tả</h3>
-            <p className="text-left mt-1">
-              {room?.description}
-            </p>
+            <p className="text-left mt-1">{room?.description}</p>
           </div>
 
           {/* Phần thông tin đặt phòngg */}
@@ -230,22 +241,44 @@ const Detail = () => {
             <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 mb-4">
               <label className="text-left block w-full lg:w-1/2">
                 <strong>Ngày vào</strong>
-                <input type="date" name="start_date" value={start_date} className="border p-1 w-full mt-1"
-                  onChange={(e) => setStart_date(e.target.value)} />
+                <input
+                  type="date"
+                  name="start_date"
+                  value={start_date}
+                  className="border p-1 w-full mt-1"
+                  onChange={(e) => setStart_date(e.target.value)}
+                />
               </label>
               <label className="text-left block w-full lg:w-1/2">
                 <strong>Ngày ra</strong>
-                <input type="date" name="end_date" value={end_date} className="border p-1 w-full mt-1"
-                  onChange={(e) => setEnd_date(e.target.value)} />
+                <input
+                  type="date"
+                  name="end_date"
+                  value={end_date}
+                  className="border p-1 w-full mt-1"
+                  onChange={(e) => setEnd_date(e.target.value)}
+                />
               </label>
             </div>
 
             <center>
-              <button type="submit" className="mt-2 text-white px-10 py-2 rounded-full bg-[#064749]">
+              <button
+                type="submit"
+                className={`mt-2 text-white px-10 py-2 rounded-full bg-[#064749] ${
+                  !localStorage.getItem("token")
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
+                disabled={!localStorage.getItem("token")} // Vô hiệu hóa nút nếu chưa đăng nhập
+              >
                 Đặt phòng
               </button>
+              {!localStorage.getItem("token") && (
+                <p className="text-red-500 mt-2">
+                  Vui lòng đăng nhập để đặt phòng.
+                </p>
+              )}
             </center>
-
           </div>
         </div>
       </form>
