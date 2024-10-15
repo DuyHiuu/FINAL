@@ -72,24 +72,18 @@ const Detail = () => {
   };
 
   const changeQuantity = (serviceId: number, quantity: number) => {
-    setQuantities((prevState) => {
-      if (!prevState) return [quantity];
-      const updatedQuantities = [...prevState];
-      const index = updatedQuantities.findIndex((q, i) => i === serviceId - 1);
-
-      if (index !== -1) {
-        updatedQuantities[index] = quantity;
-      } else {
-        updatedQuantities.push(quantity);
-      }
-
-      return updatedQuantities;
+    setQuantities(prevState => {
+      return {
+        ...prevState,
+        [serviceId]: quantity
+      };
     });
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Kiểm tra token đăng nhập
     const token = localStorage.getItem("token");
     if (!token) {
@@ -97,17 +91,18 @@ const Detail = () => {
       navigate("/login");
       return;
     }
-  
+
     const safeServiceIds = service_ids?.length ? service_ids : [];
-    const safeQuantities = quantities ? Object.values(quantities) : null;
-  
+    const safeQuantities = service_ids?.map(id => quantities?.[id] || 0); 
+
+
     const formData = new FormData();
     formData.append('service_ids', JSON.stringify(safeServiceIds));
     formData.append('room_id', room_id);
     formData.append('quantities', JSON.stringify(safeQuantities));
     formData.append('start_date', start_date);
     formData.append('end_date', end_date);
-  
+
     try {
       const response = await fetch(addBookingUrl, {
         method: 'POST',
@@ -116,7 +111,7 @@ const Detail = () => {
           Authorization: `Bearer ${token}`, // Đính kèm token vào header
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log('Thành công:', data);
@@ -129,7 +124,7 @@ const Detail = () => {
       console.error('Lỗi kết nối API:', error);
     }
   };
-  
+
 
   return (
     <div className="container mx-auto p-4 lg:p-8 mt-24">
@@ -211,18 +206,14 @@ const Detail = () => {
                       x
                       <input
                         className="border ms-3"
-                        value={quantities?.[service.id - 1] ?? ""}
-                        onChange={(e) =>
-                          changeQuantity(
-                            service.id,
-                            parseInt(e.target.value) || 0
-                          )
-                        }
+                        value={quantities?.[service.id] ?? ''}  // Thay vì [service.id - 1]
+                        onChange={(e) => changeQuantity(service.id, parseInt(e.target.value) || 0)}
                         placeholder="Nhập số lượng dịch vụ"
                         type="number"
                         name={`quantities_${service.id}`}
                         id={`quantities_${service.id}`}
                       />
+
 
                     </span>
                   </div>
@@ -265,11 +256,10 @@ const Detail = () => {
             <center>
               <button
                 type="submit"
-                className={`mt-2 text-white px-10 py-2 rounded-full bg-[#064749] ${
-                  !localStorage.getItem("token")
+                className={`mt-2 text-white px-10 py-2 rounded-full bg-[#064749] ${!localStorage.getItem("token")
                     ? "opacity-50 cursor-not-allowed"
                     : ""
-                }`}
+                  }`}
                 disabled={!localStorage.getItem("token")} // Vô hiệu hóa nút nếu chưa đăng nhập
               >
                 Đặt phòng
