@@ -15,7 +15,8 @@ import Pay2 from "./pages/website/Pay2";
 import History1 from "./pages/website/History1";
 import History2 from "./pages/website/History2";
 import Blog from "./pages/website/Blog";
-import PrivateRoute from "./api/PrivateRoute";
+import AdminPrivateRoute from "./api/AdminPrivateRoute";
+import UserPrivateRoute from "./api/UserPrivateRoute"; // Import UserPrivateRoute
 import RoomList from "./components/layouts/admin/room/RoomList";
 import AddRoom from "./components/layouts/admin/room/AddRoom";
 import EditRoom from "./components/layouts/admin/room/EditRoom";
@@ -35,10 +36,6 @@ import BlogList from "./components/layouts/admin/blog/BlogList";
 import AddBlog from "./components/layouts/admin/blog/AddBlog";
 import EditBlog from "./components/layouts/admin/blog/EditBlog";
 import Loi404 from "./pages/website/Loi404"; // Import trang lỗi 404
-
-const isAuthenticated = !!localStorage.getItem("token"); // Kiểm tra người dùng có đăng nhập
-const isAdmin = localStorage.getItem("role_id"); // Xác định nếu người dùng có quyền admin
-console.log(isAdmin);
 
 export const router = createBrowserRouter([
   {
@@ -60,22 +57,21 @@ export const router = createBrowserRouter([
 
       { path: "/pay2/:id", element: <Pay2 /> },
 
-      // Áp dụng PrivateRoute cho trang lịch sử mua hàng
-
+      // Áp dụng UserPrivateRoute cho trang lịch sử mua hàng
       {
         path: "/history1",
         element: (
-          <PrivateRoute>
+          <UserPrivateRoute>
             <History1 />
-          </PrivateRoute>
+          </UserPrivateRoute>
         ),
       },
       {
         path: "/history2",
         element: (
-          <PrivateRoute>
+          <UserPrivateRoute>
             <History2 />
-          </PrivateRoute>
+          </UserPrivateRoute>
         ),
       },
     ],
@@ -84,9 +80,9 @@ export const router = createBrowserRouter([
   // Routes Admin chỉ cho phép người dùng có role_id = 2 (admin)
   {
     element: (
-      <PrivateRoute>
+      <AdminPrivateRoute>
         <LayoutAdmin />
-      </PrivateRoute>
+      </AdminPrivateRoute>
     ),
     children: [
       { path: "/admin", element: <Navigate to="/admin/rooms" /> },
