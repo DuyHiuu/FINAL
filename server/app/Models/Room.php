@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Room extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $table = 'rooms';
     protected $fillable = ['price', 'description', 'statusroom', 'size_id', 'img_thumbnail'];
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

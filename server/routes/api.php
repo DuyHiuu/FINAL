@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymethodController;
@@ -114,6 +115,14 @@ Route::prefix('payments')->group(function () {
     Route::get('/{id}', [PaymentController::class, 'show']);
     Route::put('/{id}', [PaymentController::class, 'update']);
     Route::delete('/{id}', [PaymentController::class, 'destroy']);
+});
+
+Route::prefix('comments')->group(function () {
+    Route::get('/', [CommentController::class, 'index']);
+    Route::post('/', [CommentController::class, 'store']);
+    Route::get('/{id}', [CommentController::class, 'show']);
+    Route::put('/{id}', [CommentController::class, 'update']);
+    Route::delete('/{id}', [CommentController::class, 'destroy']);
 });
 
 
