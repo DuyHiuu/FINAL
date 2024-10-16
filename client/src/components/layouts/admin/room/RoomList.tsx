@@ -15,16 +15,16 @@ const RoomList = () => {
         method: "DELETE",
       });
       if (response.ok) {
-        alert("Phòng đã được xóa thành công");
+        alert("Người dùng đã được xóa thành công");
         window.location.reload(); // Tải lại trang sau khi xóa thành công
       } else {
         const errorData = await response.json(); // Lấy dữ liệu lỗi từ phản hồi
-        console.error("Xóa phòng thất bại:", errorData.message); // Ghi lại thông điệp lỗi
-        alert(`Xóa phòng thất bại: ${errorData.message}`);
+        console.error("Xóa người dùng thất bại:", errorData.message); // Ghi lại thông điệp lỗi
+        alert(`Xóa người dùng thất bại: ${errorData.message}`);
       }
     } catch (error) {
       console.error("Lỗi:", error);
-      alert("Đã xảy ra lỗi khi xóa phòng");
+      alert("Đã xảy ra lỗi khi xóa người dùng");
     }
   };
   
