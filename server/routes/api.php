@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymethodController;
 use App\Http\Controllers\RoleController;
@@ -10,6 +12,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\StatisticalController;
 use App\Http\Controllers\VoucherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,7 +33,9 @@ use Illuminate\Support\Facades\Route;
 //});
 Route::match(['GET','POST'],'/login',[AuthController::class,'login']);
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/logout',[AuthController::class,'logout']);
+Route::post('/logout',[AuthController::class,'logout'])->name('logout')->middleware('auth:sanctum');
+Route::get('/room_home',[HomeController::class,'room_home'])->name('room_home');
+Route::get('/blog_home',[HomeController::class,'blog_home'])->name('blog_home');
 Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
     Route::post('/', [RoomController::class, 'store']);
@@ -64,9 +69,9 @@ Route::prefix('blogs')->group(function () {
 
 });
 
-Route::resource('paymethods', PaymethodController::class);
-Route::resource('payments', PaymentController::class);
-Route::resource('bookings', BookingController::class);
+// Route::resource('paymethods', PaymethodController::class);
+// Route::resource('payments', PaymentController::class);
+// Route::resource('bookings', BookingController::class);
 
 Route::prefix('services')->group(function () {
     Route::get('/', [ServiceController::class, 'index']);
@@ -84,8 +89,17 @@ Route::prefix('vouchers')->group(function () {
     Route::put('/{id}', [VoucherController::class, 'update']);
     Route::delete('/{id}', [VoucherController::class, 'destroy']);
 
+});
 
 
+Route::prefix('bookings')->group(function () {
+    Route::get('/{id}', [BookingController::class, 'listBooking']);
+    Route::post('/', [BookingController::class, 'addBooking']);
+});
+
+Route::prefix('admin')->group(function () {
+    //thống kê
+    Route::post('/total_revenue', [StatisticalController::class, "total_revenue"])->name('total_revenue');
 });
 
 Route::prefix('roles')->group(function () {
@@ -95,4 +109,21 @@ Route::prefix('roles')->group(function () {
     Route::put('/{id}', [RoleController::class, 'update']);
     Route::delete('/{id}', [RoleController::class, 'destroy']);
 });
+
+Route::prefix('payments')->group(function () {
+    Route::get('/', [PaymentController::class, 'index']);
+    Route::post('/', [PaymentController::class, 'store']);
+    Route::get('/{id}', [PaymentController::class, 'show']);
+    Route::put('/{id}', [PaymentController::class, 'update']);
+    Route::delete('/{id}', [PaymentController::class, 'destroy']);
+});
+
+Route::prefix('comments')->group(function () {
+    Route::get('/', [CommentController::class, 'index']);
+    Route::post('/', [CommentController::class, 'store']);
+    Route::get('/{id}', [CommentController::class, 'show']);
+    Route::put('/{id}', [CommentController::class, 'update']);
+    Route::delete('/{id}', [CommentController::class, 'destroy']);
+});
+
 

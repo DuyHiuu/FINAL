@@ -14,7 +14,6 @@ class Booking extends Model
     protected $fillable = [
         'start_date',
         'end_date',
-        'totalamount',
         'quantity_service',
         'room_id',
         'service_id',
@@ -28,14 +27,16 @@ class Booking extends Model
     }
 
     // Quan hệ với bảng Services
-    public function service()
-    {
-        return $this->belongsTo(Service::class);
-    }
+    public function services()
+{
+    return $this->belongsToMany(Service::class, 'booking_services')
+                 ->withPivot('quantity');
+}
 
-    // Quan hệ với bảng Vouchers
-    // public function voucher()
-    // {
-    //     return $this->belongsTo(Voucher::class);
-    // }
+
+public function voucher()
+{
+    return $this->belongsTo(Voucher::class);
+}
+
 }
