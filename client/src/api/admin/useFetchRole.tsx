@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
+
 const API_URL = "http://localhost:8000/api";
 
+const useFetchRole = () => {
+  const [roles, setRoles] = useState<any[]>([]); // Khởi tạo với mảng rỗng
+  const [loading, setLoading] = useState<boolean>(true); // Trạng thái loading
+  const [error, setError] = useState<string | null>(null); // Trạng thái lỗi
 
-const useFetchRole = () => { 
-
-  const [role, setRole] = useState<any>();
- 
   useEffect(() => {
-    try {
-      
-      const fetRole = async () => {
+    const fetchRoles = async () => {
+      try {
         const res = await fetch(`${API_URL}/roles`, {
-          method: "get",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
@@ -20,15 +20,19 @@ const useFetchRole = () => {
           throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
         }
 
-        const data = await res.json(); 
-        setRole(data); 
-      };
-      fetRole();
-    } catch (error) {
-      console.log(error);
-    }
+        const data = await res.json();
+        setRoles(data);
+      } catch (error: any) {
+        setError(error.message); // Lưu lại thông báo lỗi
+      } finally {
+        setLoading(false); // Cập nhật trạng thái loading
+      }
+    };
+
+    fetchRoles();
   }, []);
-  return { role };
+
+  return { roles, loading, error }; // Trả về roles, loading và error
 };
 
 export default useFetchRole;

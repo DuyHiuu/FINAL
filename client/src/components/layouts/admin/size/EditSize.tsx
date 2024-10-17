@@ -1,49 +1,53 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // Thêm useParams để lấy ID size từ URL
+import { useParams, useNavigate } from 'react-router-dom';
 
 const EditSize = () => {
-    const { id } = useParams(); // Lấy ID từ URL
-    const navigate = useNavigate(); // Khởi tạo useNavigate để chuyển hướng
+    const { id } = useParams();
+    const navigate = useNavigate();
 
-    // State để quản lý các giá trị input của form
     const [tenSize, setTenSize] = useState('');
     const [moTa, setMoTa] = useState('');
     const [soLuong, setSoLuong] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
-    // Hàm để lấy thông tin size hiện tại khi trang được tải
     useEffect(() => {
         const fetchSize = async () => {
+            setLoading(true);
             try {
-                const response = await fetch(`http://localhost:8000/api/sizes/${id}`); // Lấy thông tin size theo ID
+                const response = await fetch(`http://localhost:8000/api/sizes/${id}`);
                 if (response.ok) {
                     const size = await response.json();
                     setTenSize(size.data.name);
                     setMoTa(size.data.description);
                     setSoLuong(size.data.quantity);
                 } else {
-                    console.error('Không thể lấy thông tin size');
+                    setErrorMessage('Không thể lấy thông tin size');
                 }
             } catch (error) {
-                console.error('Lỗi:', error);
+                setErrorMessage('Lỗi kết nối API');
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchSize();
     }, [id]);
 
-    // Hàm xử lý khi submit form
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setSuccessMessage('');
+        setErrorMessage('');
 
-        // Tạo đối tượng size mới
         const updatedSize = {
             name: tenSize,
             description: moTa,
-            quantity: parseInt(soLuong), // Đảm bảo số lượng là một số
+            quantity: parseInt(soLuong),
         };
 
         try {
-            // Thay thế bằng endpoint API của bạn để cập nhật size
             const response = await fetch(`http://localhost:8000/api/sizes/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -53,66 +57,85 @@ const EditSize = () => {
             });
 
             if (response.ok) {
-                // Nếu thành công, chuyển hướng đến trang danh sách size
-                navigate('/admin/sizes');
+                setSuccessMessage('Cập nhật size thành công!');
+                setTimeout(() => {
+                    navigate('/admin/sizes');
+                }, 2000);
             } else {
-                // Xử lý các phản hồi lỗi từ API
-                console.error('Cập nhật size thất bại');
+                const errorData = await response.json();
+                setErrorMessage(`Cập nhật size thất bại: ${errorData.message}`);
             }
         } catch (error) {
-            console.error('Lỗi:', error);
+            setErrorMessage('Lỗi kết nối API');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <form 
-            onSubmit={handleSubmit} // Gắn hàm xử lý khi submit form
-            className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md"
-        >
-            <h2 className="text-2xl font-bold mb-4">Sửa Size phòng</h2>
-            
-            <div className="mb-4">
-                <label htmlFor="tenSize" className="block text-sm font-medium text-gray-700">Tên Size:</label>
-                <input
-                    type="text"
-                    id="tenSize"
-                    value={tenSize}
-                    onChange={(e) => setTenSize(e.target.value)}
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="soLuong" className="block text-sm font-medium text-gray-700">Số lượng size:</label>
-                <input
-                    type="number"
-                    id="soLuong"
-                    value={soLuong}
-                    onChange={(e) => setSoLuong(e.target.value)}
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="moTa" className="block text-sm font-medium text-gray-700">Mô Tả:</label>
-                <textarea
-                    id="moTa"
-                    value={moTa}
-                    onChange={(e) => setMoTa(e.target.value)}
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <button 
-                type="submit" 
-                className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200"
+        <div className="container mx-auto p-6">
+            <form
+                onSubmit={handleSubmit}
+                className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md bg-white"
             >
-                Cập nhật Size phòng
-            </button>
-        </form>
+                <h2 className="text-2xl font-bold mb-4 text-center">Sửa Size Phòng</h2>
+
+                {successMessage && (
+                    <div className="bg-green-100 text-green-700 p-4 rounded mb-4">
+                        {successMessage}
+                    </div>
+                )}
+
+                {errorMessage && (
+                    <div className="bg-red-100 text-red-700 p-4 rounded mb-4">
+                        {errorMessage}
+                    </div>
+                )}
+
+                <div className="mb-4">
+                    <label htmlFor="tenSize" className="block text-sm font-medium text-gray-700">Tên Size:</label>
+                    <input
+                        type="text"
+                        id="tenSize"
+                        value={tenSize}
+                        onChange={(e) => setTenSize(e.target.value)}
+                        required
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="soLuong" className="block text-sm font-medium text-gray-700">Số lượng Size:</label>
+                    <input
+                        type="number"
+                        id="soLuong"
+                        value={soLuong}
+                        onChange={(e) => setSoLuong(e.target.value)}
+                        required
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="moTa" className="block text-sm font-medium text-gray-700">Mô Tả:</label>
+                    <textarea
+                        id="moTa"
+                        value={moTa}
+                        onChange={(e) => setMoTa(e.target.value)}
+                        required
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
+                    />
+                </div>
+
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200"
+                >
+                    {loading ? 'Đang cập nhật...' : 'Cập nhật Size'}
+                </button>
+            </form>
+        </div>
     );
 };
 

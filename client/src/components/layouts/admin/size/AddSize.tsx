@@ -6,7 +6,9 @@ const AddSize = () => {
     const [tenSize, setTenSize] = useState('');
     const [moTa, setMoTa] = useState('');
     const [soLuong, setSoLuong] = useState('');
-    
+    const [message, setMessage] = useState(''); // Thông báo cho người dùng
+    const [isLoading, setIsLoading] = useState(false); // Trạng thái loading
+
     const navigate = useNavigate(); // Khởi tạo useNavigate để chuyển hướng
 
     // Hàm xử lý khi submit form
@@ -20,6 +22,8 @@ const AddSize = () => {
             quantity: parseInt(soLuong), // Đảm bảo số lượng là một số
         };
 
+        setIsLoading(true); // Bắt đầu loading
+
         try {
             // Thay thế bằng endpoint API của bạn để thêm size
             const response = await fetch('http://localhost:8000/api/sizes', {
@@ -30,25 +34,41 @@ const AddSize = () => {
                 body: JSON.stringify(newSize),
             });
 
+            setIsLoading(false); // Kết thúc loading
+
             if (response.ok) {
                 // Nếu thành công, chuyển hướng đến trang danh sách size
-                navigate('/admin/sizes');
+                setMessage("Thêm size thành công!");
+                setTimeout(() => {
+                    navigate('/admin/sizes');
+                }, 2000); // Chuyển hướng sau 2 giây
             } else {
                 // Xử lý các phản hồi lỗi từ API
-                console.error('Thêm size thất bại');
+                const errorData = await response.json();
+                console.error('Thêm size thất bại:', errorData);
+                setMessage(`Thêm size thất bại: ${errorData.message}`);
             }
         } catch (error) {
+            setIsLoading(false); // Kết thúc loading
             console.error('Lỗi:', error);
+            setMessage("Đã xảy ra lỗi. Vui lòng thử lại.");
         }
     };
 
     return (
-        <form 
+        <form
             onSubmit={handleSubmit} // Gắn hàm xử lý khi submit form
-            className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md"
+            className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md bg-white"
         >
-            <h2 className="text-2xl font-bold mb-4">Thêm Size phòng</h2>
-            
+            <h2 className="text-2xl font-bold mb-4 text-center">Thêm Size Phòng</h2>
+
+            {/* Thông báo */}
+            {message && (
+                <div className={`mb-4 p-2 rounded ${message.includes('thất bại') ? 'bg-red-200 text-red-700' : 'bg-green-200 text-green-700'}`}>
+                    {message}
+                </div>
+            )}
+
             <div className="mb-4">
                 <label htmlFor="tenSize" className="block text-sm font-medium text-gray-700">Tên Size:</label>
                 <input
@@ -62,7 +82,7 @@ const AddSize = () => {
             </div>
 
             <div className="mb-4">
-                <label htmlFor="soLuong" className="block text-sm font-medium text-gray-700">Số lượng size:</label>
+                <label htmlFor="soLuong" className="block text-sm font-medium text-gray-700">Số lượng Size:</label>
                 <input
                     type="number"
                     id="soLuong"
@@ -84,11 +104,12 @@ const AddSize = () => {
                 />
             </div>
 
-            <button 
-                type="submit" 
-                className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200"
+            <button
+                type="submit"
+                disabled={isLoading} // Vô hiệu hóa nút khi đang loading
+                className={`w-full ${isLoading ? 'bg-gray-400' : 'bg-blue-600'} text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200`}
             >
-                Thêm Size phòng
+                {isLoading ? 'Đang thêm...' : 'Thêm Size Phòng'}
             </button>
         </form>
     );
