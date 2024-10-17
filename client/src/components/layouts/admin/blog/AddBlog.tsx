@@ -5,9 +5,11 @@ const AddBlog = () => {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState<File | null>(null);
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
+  const [message, setMessage] = useState(""); // Thông báo cho người dùng
+  const [isLoading, setIsLoading] = useState(false); // Trạng thái loading
 
   const storeUrl = "http://localhost:8000/api/blogs";
 
@@ -18,8 +20,10 @@ const AddBlog = () => {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("content", content);
-    formData.append("image", image);
+    if (image) formData.append("image", image); // Thêm ảnh nếu có
     formData.append("user_id", "1");
+
+    setIsLoading(true); // Bắt đầu loading
 
     try {
       const response = await fetch(storeUrl, {
@@ -27,26 +31,38 @@ const AddBlog = () => {
         body: formData,
       });
 
+      setIsLoading(false); // Kết thúc loading
+
       if (response.ok) {
         const data = await response.json();
         console.log("Bài viết đã thêm thành công:", data);
-        alert("Bài viết đã được thêm thành công");
-        navigate("/admin/blogs"); 
+        setMessage("Bài viết đã được thêm thành công!");
+        setTimeout(() => {
+          navigate("/admin/blogs");
+        }, 2000); // Chuyển hướng sau 2 giây
       } else {
         const errorData = await response.json();
         console.error("Lỗi khi thêm bài viết:", errorData.message);
-        alert(`Thêm bài viết thất bại: ${errorData.message}`);
+        setMessage(`Thêm bài viết thất bại: ${errorData.message}`);
       }
     } catch (error) {
+      setIsLoading(false); // Kết thúc loading
       console.error("Lỗi kết nối API:", error);
-      alert("Đã xảy ra lỗi khi thêm bài viết");
+      setMessage("Đã xảy ra lỗi khi thêm bài viết.");
     }
   };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Thêm Bài Viết</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-4 text-center">Thêm Bài Viết</h1>
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
+        {/* Thông báo */}
+        {message && (
+          <div className={`mb-4 p-2 rounded ${message.includes("thất bại") ? "bg-red-200 text-red-700" : "bg-green-200 text-green-700"}`}>
+            {message}
+          </div>
+        )}
+
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
             Tiêu đề
@@ -68,7 +84,7 @@ const AddBlog = () => {
           <input
             type="file"
             id="image"
-            onChange={(e) => setImage(e.target.files[0])}
+            onChange={(e) => setImage(e.target.files?.[0] || null)}
             accept="image/*"
             required
             className="w-full text-gray-700 border rounded focus:outline-none focus:ring focus:ring-blue-500"
@@ -103,9 +119,10 @@ const AddBlog = () => {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
+            disabled={isLoading} // Vô hiệu hóa nút khi đang loading
+            className={`bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition duration-200 ${isLoading ? 'bg-gray-400' : ''}`}
           >
-            Thêm Bài Viết
+            {isLoading ? "Đang thêm..." : "Thêm Bài Viết"}
           </button>
         </div>
       </form>

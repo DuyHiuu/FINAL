@@ -40,17 +40,17 @@ const EditRoom = () => {
         e.preventDefault();
 
         const updateRoom = {
-            price:  price,
-            size_id:  size_id,
-            description:  description,
-            statusroom:  statusroom,
-            img_thumbnail:  img_thumbnail,
+            price: price,
+            size_id: size_id,
+            description: description,
+            statusroom: statusroom,
+            img_thumbnail: img_thumbnail,
         };
 
         // if(img_thumbnail) {
         //     updateRoom.append('img_thumbnail',img_thumbnail);
         // }
-       
+
 
 
         try {

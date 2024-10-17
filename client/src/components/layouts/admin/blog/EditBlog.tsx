@@ -101,16 +101,16 @@ const EditBlog = () => {
         />
       </div>
       <div className="mb-4">
-                <label htmlFor="image" className="block text-sm font-medium text-gray-700">Hình Ảnh:</label>
-                <img src={image} alt="" className='h-32' />
-                <input
-                    type="file"
-                    id="image"
-                    onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
-                    accept="image/*"
-                    className="mt-1 block w-full text-gray-700 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
+        <label htmlFor="image" className="block text-sm font-medium text-gray-700">Hình Ảnh:</label>
+        <img src={image} alt="" className='h-32' />
+        <input
+          type="file"
+          id="image"
+          onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+          accept="image/*"
+          className="mt-1 block w-full text-gray-700 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
+        />
+      </div>
 
       <button
         type="submit"

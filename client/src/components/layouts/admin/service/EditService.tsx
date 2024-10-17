@@ -36,12 +36,12 @@ const EditService = () => {
         e.preventDefault();
 
         const updateService = {
-            price:  price,
-            name:  name,
-            description:  description,
-            image:  image,
+            price: price,
+            name: name,
+            description: description,
+            image: image,
         };
-       
+
 
 
         try {
@@ -82,7 +82,7 @@ const EditService = () => {
 
             <div className="mb-4">
                 <label htmlFor="image" className="block text-sm font-medium text-gray-700">Hình Ảnh:</label>
-                <img src={image} alt="" className='h-32'/>
+                <img src={image} alt="" className='h-32' />
                 <input
                     type="file"
                     id="image"
