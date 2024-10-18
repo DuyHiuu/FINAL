@@ -181,6 +181,9 @@ class PaymentController extends Controller
                 // Thêm tổng tiền vào params trước khi tạo payment
                 $params['total_amount'] = $total_amount;
 
+                // Mặc định status_id = 2 khi thêm 
+                $params['status_id'] = $params['status_id'] ?? 1;
+
                 // Tạo một bản ghi payment mới với tổng tiền
                 $payment = Payment::query()->create($params);
 
@@ -208,18 +211,16 @@ class PaymentController extends Controller
      */
     public function show(string $id)
     {
-        $payment = Payment::join('users', 'payments.user_id', '=', 'users.id')
-            ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
-            ->join('paymethods', 'payments.paymethod_id', '=', 'paymethods.id')
-            ->select('payments.*', 'users.name as user_name')
-            ->where('payments.id', $id)
-            ->whereNull('payments.deleted_at')
-            ->first();
-        if ($payment) {
-            return response()->json($payment);
-        } else {
-            return response()->json(['message' => 'Không tồn tại'], 404);
-        }
+       $payment = Payment::findOrFail($id);
+
+       $status = $payment->status;
+
+       return response()->json([
+        'payment' => $payment,
+        'status_payment' => $status,
+       
+    ], 200);
+
     }
 
     /**
@@ -238,25 +239,48 @@ class PaymentController extends Controller
         // Tìm Payment theo id
         $payment = Payment::findOrFail($id);
 
-        // Validate dữ liệu
-        $validatedData = $request->validate([
-            'pet_name' => 'string|max:255',
-            'pet_type' => 'string|max:255',
-            'pet_description' => 'string',
-            'pet_health' => 'string',
-            'user_name' => 'string|max:255',
-            'user_address' => 'string|max:255',
-            'user_email' => 'email|max:255',
-            'user_phone' => 'string|max:15',
-            'booking_id' => 'exists:bookings,id',
-            'user_id' => 'exists:users,id',
-            'paymethod_id' => 'exists:paymethods,id',
+        // Validate dữ liệuDB::beginTransaction();
+
+        $validator = Validator::make($request->all(), [
+            'status_id' => 'required|integer|exists:status_payments,id', // Giả sử status lưu trong bảng 'statuses'
         ]);
+    
+        // Nếu xác thực thất bại, trả về lỗi
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
-        // Cập nhật Payment với dữ liệu mới
-        $payment->update($validatedData);
+        DB::beginTransaction();
 
-        return response()->json(['message' => 'Thanh toán đã được cập nhật thành công.', 'payment' => $payment]);
+        try {
+            if ($request->status_id === 1) {
+                $payment->update(['status_id' => 3]);
+            } else {
+                $payment->update(['status_id' => $request->status_id]);
+            }
+    
+            DB::commit();
+
+            $status = $payment->status;
+
+            return response()->json([
+                'message' => 'Cập nhật trạng thái thành công!',
+                'payment' => $payment,
+                'status_payment' => $status
+            ], 200);
+ 
+         } catch (\Exception $e) {
+             DB::rollBack();
+
+             return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi trong quá trình cập nhật trạng thái. Vui lòng thử lại!',
+                'error' => $e->getMessage()
+            ], 500);
+         }
+ 
+     
+       
     }
 
     /**
@@ -264,12 +288,12 @@ class PaymentController extends Controller
      */
     public function destroy(string $id)
     {
-        // Tìm Payment theo id
-        $payment = Payment::findOrFail($id);
+        // // Tìm Payment theo id
+        // $payment = Payment::findOrFail($id);
 
-        // Xóa mềm (soft delete)
-        $payment->delete();
+        // // Xóa mềm (soft delete)
+        // $payment->delete();
 
-        return response()->json(['message' => 'Thanh toán đã xóa thành công.']);
+        // return response()->json(['message' => 'Thanh toán đã xóa thành công.']);
     }
 }

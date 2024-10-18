@@ -63,4 +63,9 @@ class Payment extends Model
     {
         return $this->belongsTo(Paymethod::class);
     }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
 }
