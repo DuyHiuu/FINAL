@@ -9,8 +9,6 @@ import {
   MenuItems,
 } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import ProductList from "../../../pages/admin/products/Product";
-import AddProduct from "../../../pages/admin/products/Add";
 import { Outlet } from "react-router-dom";
 
 const user = {
@@ -26,8 +24,10 @@ const navigation = [
   { name: "Danh sách voucher", href: "/admin/vouchers", current: false }, // Cập nhật href ở đây
   { name: "Danh sách dịch vụ", href: "/admin/services", current: false }, // Cập nhật href ở đây
   { name: "Danh sách bài viết", href: "/admin/blogs", current: false }, // Cập nhật href ở đây
-  { name: "Danh sách quyền", href: "/admin/roles", current: false }, // Cập nhật href ở đây
+  // { name: "Danh sách quyền", href: "/admin/roles", current: false }, // Cập nhật href ở đây
   { name: "Danh sách người dùng", href: "/admin/users", current: false }, // Cập nhật href ở đây
+  { name: "Biểu đồ", href: "/admin/chart", current: false }, // Cập nhật href ở đây
+
 
 
   // { name: "Khách hàng", href: "#", current: false },
