@@ -17,7 +17,7 @@ const useFetchRooms = (priceFilter: string, sizeFilter: string) => {
         // Xây dựng URL với các tham số tìm kiếm nếu có
         let url = `${API_URL}/rooms`;
         const params = new URLSearchParams();
-        
+
         if (priceFilter) {
           params.append("price", priceFilter);
         }

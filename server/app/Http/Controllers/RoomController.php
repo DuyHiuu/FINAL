@@ -19,11 +19,16 @@ class RoomController extends Controller
     {
 
 
-        $room = Room::join('sizes','rooms.size_id','=','sizes.id')
+        $room = Room::join('sizes', 'rooms.size_id', '=', 'sizes.id')
 
-            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description','sizes.quantity as quantity',
-            'rooms.size_id')
-            ->orderBy('rooms.id','desc')
+            ->select(
+                'rooms.*',
+                'sizes.name as size_name',
+                'sizes.description as size_description',
+                'sizes.quantity as quantity',
+                'rooms.size_id'
+            )
+            ->orderBy('rooms.id', 'desc')
             ->whereNull('rooms.deleted_at')
             ->get();
         $room->makeHidden(['size_id']);
@@ -41,68 +46,70 @@ class RoomController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-//    public function store(Request $request)
-//    {
-//        //
-//        $validator = Validator::make(
-//            $request->all(),[
-//                'price'=>"required",
-//
-//            ],[
-//                'price.required'=>"giá không được để trống",
-//
-//            ]
-//        );
-//        if($validator->fails()){
-//            return response()->json(['status'=>'error','message'=>$validator->messages()],400);
-//        }
-//        try{
-//            $fileData =$request->input('image')['fileList'][0]['thumbUrl'];
-//            $elements = explode(',', $fileData);
-//
-//            $elementsAfter = array_slice($elements,1);
-//
-//            $decodedData = base64_decode($elementsAfter[0]);
-//
-//            $uniqueFileName = uniqid('file_');
-//
-//            $filePath = storage_path('app/'.$uniqueFileName);
-//
-//            file_put_contents($filePath,$decodedData);
-//
-//            $response = cloudinary()->upload($filePath)->getSecurePath();
-//
-//            $price =$request->get('price');
-//            $description=$request->get('description');
-//            $status_room=$request->get('statusroom');
-//            $size_id=$request->get('size_id');
-//            $data = [
-//                'image_thumnail'=>$response,
-//                'price'=>$price,
-//                'description'=>$description,
-//                'statusroom'=>$status_room,
-//                'size_id'=>$size_id,
-//            ];
-//
-//            Room::create($data);
-//            return response()->json(['status'=>'success','message'=>'Sản phẩm đã được thêm thành công','data'=>$data],200);
-//        } catch (\Exception $e){
-//            return response()->json(['status'=>'error','message'=>$e->getMessage()],500);
-//        }
-//    }
+    //    public function store(Request $request)
+    //    {
+    //        //
+    //        $validator = Validator::make(
+    //            $request->all(),[
+    //                'price'=>"required",
+    //
+    //            ],[
+    //                'price.required'=>"giá không được để trống",
+    //
+    //            ]
+    //        );
+    //        if($validator->fails()){
+    //            return response()->json(['status'=>'error','message'=>$validator->messages()],400);
+    //        }
+    //        try{
+    //            $fileData =$request->input('image')['fileList'][0]['thumbUrl'];
+    //            $elements = explode(',', $fileData);
+    //
+    //            $elementsAfter = array_slice($elements,1);
+    //
+    //            $decodedData = base64_decode($elementsAfter[0]);
+    //
+    //            $uniqueFileName = uniqid('file_');
+    //
+    //            $filePath = storage_path('app/'.$uniqueFileName);
+    //
+    //            file_put_contents($filePath,$decodedData);
+    //
+    //            $response = cloudinary()->upload($filePath)->getSecurePath();
+    //
+    //            $price =$request->get('price');
+    //            $description=$request->get('description');
+    //            $status_room=$request->get('statusroom');
+    //            $size_id=$request->get('size_id');
+    //            $data = [
+    //                'image_thumnail'=>$response,
+    //                'price'=>$price,
+    //                'description'=>$description,
+    //                'statusroom'=>$status_room,
+    //                'size_id'=>$size_id,
+    //            ];
+    //
+    //            Room::create($data);
+    //            return response()->json(['status'=>'success','message'=>'Sản phẩm đã được thêm thành công','data'=>$data],200);
+    //        } catch (\Exception $e){
+    //            return response()->json(['status'=>'error','message'=>$e->getMessage()],500);
+    //        }
+    //    }
 
     public function store(Request $request)
     {
 
         // Validate the incoming request
         $validator = Validator::make(
-            $request->all(),[
-            'price' => "required",
-            'description' => "required",
-            'statusroom' => "required",
-            'size_id' => "required",
-            'img_thumbnail' => "required|image|mimes:jpeg,png,jpg,gif|max:2048",
-        ],[
+            $request->all(),
+            [
+                'price' => "required",
+                'description' => "required",
+                'statusroom' => "required",
+                'size_id' => "required",
+                'img_thumbnail' => "required|image|mimes:jpeg,png,jpg,gif|max:2048",
+            ],
+            [
                 'price.required' => "Giá không được để trống",
                 'description.required' => "Mô tả không được để trống",
                 'statusroom.required' => "Trạng thái phòng không được để trống",
@@ -115,7 +122,7 @@ class RoomController extends Controller
         );
 
         if ($validator->fails()) {
-            return response()->json(['status'=>'error','message'=>$validator->messages()], 400);
+            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
         }
 
         try {
@@ -123,15 +130,15 @@ class RoomController extends Controller
             $image = $request->file('img_thumbnail');
 
             // Tạo một tên tệp tin duy nhất
-//            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
+            //            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
 
             // Lưu tệp tin vào thư mục storage
-//            $filePath = $image->storeAs('images', $uniqueFileName, 'public'); // Lưu vào thư mục 'images' trong 'storage/app/public'
+            //            $filePath = $image->storeAs('images', $uniqueFileName, 'public'); // Lưu vào thư mục 'images' trong 'storage/app/public'
 
-//             Upload lên Cloudinary
+            //             Upload lên Cloudinary
             $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
 
-//            $fullPath = asset('storage/' . $filePath);
+            //            $fullPath = asset('storage/' . $filePath);
 
 
             $price = $request->get('price');
@@ -149,9 +156,9 @@ class RoomController extends Controller
 
             Room::create($data);
 
-            return response()->json(['status'=>'success','message'=>'Sản phẩm đã được thêm thành công','data'=>$data], 200);
+            return response()->json(['status' => 'success', 'message' => 'Sản phẩm đã được thêm thành công', 'data' => $data], 200);
         } catch (\Exception $e) {
-            return response()->json(['status'=>'error','message'=>$e->getMessage()], 500);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -160,9 +167,9 @@ class RoomController extends Controller
      */
     public function show(string $id)
     {
-        $room = Room::join('sizes','rooms.size_id','=','sizes.id')
-            ->select('rooms.*','sizes.name as size_name','sizes.description as size_description','sizes.quantity as quantity')
-            ->where('rooms.id',$id)
+        $room = Room::join('sizes', 'rooms.size_id', '=', 'sizes.id')
+            ->select('rooms.*', 'sizes.name as size_name', 'sizes.description as size_description', 'sizes.quantity as quantity')
+            ->where('rooms.id', $id)
             ->whereNull('rooms.deleted_at')
             ->first();
 
@@ -228,7 +235,7 @@ class RoomController extends Controller
     public function destroy(string $id)
     {
         //
-        $room=Room::find($id);
+        $room = Room::find($id);
         $room->delete();
         return response()->json([
             "message" => "delete successfully"

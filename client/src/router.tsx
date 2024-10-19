@@ -38,6 +38,9 @@ import EditBlog from "./components/layouts/admin/blog/EditBlog";
 import UserList from "./components/layouts/admin/user/UserList";
 import AddUser from "./components/layouts/admin/user/AddUser";
 import EditUser from "./components/layouts/admin/user/EditUser";
+import CommentList from "./components/layouts/admin/comment/CommentList";
+import AddComment from "./components/layouts/admin/comment/AddComment";
+import EditComment from "./components/layouts/admin/comment/EditComment";
 import Loi404 from "./pages/website/Loi404"; // Import trang lỗi 404
 import Chart from "./components/layouts/admin/chart/chart";
 
@@ -111,7 +114,13 @@ export const router = createBrowserRouter([
       { path: "/admin/users", element: <UserList /> },
       { path: "/admin/users/add", element: <AddUser /> },
       { path: "/admin/users/edit/:id", element: <EditUser /> },
+
+      { path: "/admin/comments", element: <CommentList /> },
+      { path: "/admin/comments/add", element: <AddComment /> },
+      { path: "/admin/comments/edit/:id", element: <EditComment /> },
+
       { path: "/admin/chart", element: < Chart/> },
+
 
     ],
   },

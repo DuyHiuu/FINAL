@@ -26,7 +26,11 @@ const navigation = [
   { name: "Danh sách bài viết", href: "/admin/blogs", current: false }, // Cập nhật href ở đây
   // { name: "Danh sách quyền", href: "/admin/roles", current: false }, // Cập nhật href ở đây
   { name: "Danh sách người dùng", href: "/admin/users", current: false }, // Cập nhật href ở đây
+
+  { name: "Danh sách bình luận", href: "/admin/comments", current: false }, // Cập nhật href ở đây
+
   { name: "Biểu đồ", href: "/admin/chart", current: false }, // Cập nhật href ở đây
+
 
 
 
@@ -219,7 +223,7 @@ const LayoutAdmin = () => {
             {/* Your content */}
             {/* <ProductList></ProductList>
             <AddProduct></AddProduct> */}
-            <Outlet/>
+            <Outlet />
           </div>
         </main>
       </div>
