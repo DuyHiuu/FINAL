@@ -17,10 +17,10 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $blog = Blog::join('users','blogs.user_id','=','users.id')
-        ->select('blogs.*','users.name')
-        ->whereNull('blogs.deleted_at')
-         ->get();
+        $blog = Blog::join('users', 'blogs.user_id', '=', 'users.id')
+            ->select('blogs.*', 'users.name')
+            ->whereNull('blogs.deleted_at')
+            ->get();
         $blog->makeHidden('user_id');
 
         return response()->json($blog);
@@ -41,13 +41,15 @@ class BlogController extends Controller
     {
         // Validate the incoming request
         $validator = Validator::make(
-            $request->all(),[
-            'title' => "required",
-            'description' => "required",
-            'content' => "required",
-            'user_id' => "required",
-            'image' => "required|image|mimes:jpeg,png,jpg,gif|max:2048",
-        ],[
+            $request->all(),
+            [
+                'title' => "required",
+                'description' => "required",
+                'content' => "required",
+                'user_id' => "required",
+                'image' => "required|image|mimes:jpeg,png,jpg,gif|max:2048",
+            ],
+            [
                 'title.required' => "title không được để trống",
                 'description.required' => "Mô tả không được để trống",
                 'content.required' => "content không được để trống",
@@ -60,7 +62,7 @@ class BlogController extends Controller
         );
 
         if ($validator->fails()) {
-            return response()->json(['status'=>'error','message'=>$validator->messages()], 400);
+            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
         }
 
         try {
@@ -68,15 +70,15 @@ class BlogController extends Controller
             $image = $request->file('image');
 
             // Tạo một tên tệp tin duy nhất
-//            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
+            //            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
 
             // Lưu tệp tin vào thư mục storage
-//            $filePath = $image->storeAs('images', $uniqueFileName, 'public'); // Lưu vào thư mục 'images' trong 'storage/app/public'
+            //            $filePath = $image->storeAs('images', $uniqueFileName, 'public'); // Lưu vào thư mục 'images' trong 'storage/app/public'
 
             // Upload lên Cloudinary
             $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
 
-//            $fullPath = asset('storage/' . $filePath);
+            //            $fullPath = asset('storage/' . $filePath);
 
 
             $title = $request->get('title');
@@ -94,9 +96,9 @@ class BlogController extends Controller
 
             Blog::create($data);
 
-            return response()->json(['status'=>'success','message'=>'Blog đã được thêm thành công','data'=>$data], 200);
+            return response()->json(['status' => 'success', 'message' => 'Blog đã được thêm thành công', 'data' => $data], 200);
         } catch (\Exception $e) {
-            return response()->json(['status'=>'error','message'=>$e->getMessage()], 500);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -106,11 +108,11 @@ class BlogController extends Controller
     public function show(string $id)
     {
         //
-        $blog = Blog::join('users','blogs.user_id','=','users.id')
-            ->select('blogs.*','users.name')
-            ->where('blogs.id',$id)
+        $blog = Blog::join('users', 'blogs.user_id', '=', 'users.id')
+            ->select('blogs.*', 'users.name')
+            ->where('blogs.id', $id)
             ->whereNull('blogs.deleted_at')
-            ->first()    ;
+            ->first();
 
 
         if ($blog) {
@@ -134,8 +136,8 @@ class BlogController extends Controller
     public function update(Request $request, string $id)
     {
         $blog = Blog::find($id);
-        if(!$blog){
-            return response()->json(['message'=>'Blog không tồn tại'], 400);
+        if (!$blog) {
+            return response()->json(['message' => 'Blog không tồn tại'], 400);
         }
 
         // Cập nhật các trường title, description, content, user_id
@@ -145,11 +147,11 @@ class BlogController extends Controller
         $blog->user_id = $request->user_id ?? $blog->user_id;
 
         // Kiểm tra và cập nhật trường image
-        if($request->file('image')){
+        if ($request->file('image')) {
             $image = $request->file('image');
-//            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
-//            $filePath = $image->storeAs('images', $uniqueFileName, 'public');
-//            $fullPath = asset('storage/' . $filePath);
+            //            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
+            //            $filePath = $image->storeAs('images', $uniqueFileName, 'public');
+            //            $fullPath = asset('storage/' . $filePath);
             $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
 
             $blog->image = $response;
@@ -162,7 +164,7 @@ class BlogController extends Controller
         $blog->save();
 
 
-        return response()->json(['message'=>'Cập nhật thành công'], 200);
+        return response()->json(['message' => 'Cập nhật thành công'], 200);
     }
 
 
@@ -172,7 +174,7 @@ class BlogController extends Controller
     public function destroy(string $id)
     {
         //
-        $blog=Blog::find($id);
+        $blog = Blog::find($id);
         $blog->delete();
         return response()->json([
             "message" => "delete successfully"

@@ -31,9 +31,10 @@ const Login = () => {
         const data = await response.json();
         console.log(data);
         localStorage.setItem("token", data.accessToken); // Lưu token vào localStorage
+        localStorage.setItem("user_id", data.user.id); // Lưu user_id vào localStorage
         localStorage.setItem("name", data.user.name); // Lưu tên người dùng vào localStorage
         localStorage.setItem("role_id", data.user.role.role_id); // Lưu role_id vào localStorage
-        window.location.href = "/";
+        window.location.href = "/"; // Chuyển hướng đến trang chính
       } else {
         const data = await response.json();
         // Nếu có lỗi, hiển thị thông báo lỗi
@@ -44,6 +45,7 @@ const Login = () => {
       setError("Đã xảy ra lỗi trong quá trình kết nối. Vui lòng thử lại.");
     }
   };
+
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 mt-10">

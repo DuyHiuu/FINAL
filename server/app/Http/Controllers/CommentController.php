@@ -19,14 +19,16 @@ class CommentController extends Controller
      */
     public function index()
     {
-        $comment = Comment::all();
+        // Lấy tất cả comment và kèm theo thông tin của user
+        $comments = Comment::with('user', 'room')->get();
 
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách thành công',
-            'data' => $comment
+            'data' => $comments
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -44,6 +46,7 @@ class CommentController extends Controller
         // Xác thực dữ liệu
         $validator = Validator::make($request->all(), [
             'content' => 'required|string|max:1000',
+            'room_id' => 'required|integer|exists:rooms,id', // Đảm bảo room_id được cung cấp và tồn tại
         ]);
 
         // Nếu xác thực thất bại, trả về lỗi
@@ -58,6 +61,14 @@ class CommentController extends Controller
                 $params = $request->all();
                 $user = User::find($params['user_id']);
 
+                // Kiểm tra người dùng có tồn tại không
+                if (!$user) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Người dùng không hợp lệ.'
+                    ], 404);
+                }
+
                 // Tạo mới một comment
                 $comment = new Comment();
                 $comment->content = $params['content'];
@@ -68,6 +79,11 @@ class CommentController extends Controller
                     $room = Room::find($params['room_id']);
                     if ($room) {
                         $comment->room_id = $room->id;
+                    } else {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Phòng không tồn tại.'
+                        ], 404);
                     }
                 }
 
@@ -91,6 +107,7 @@ class CommentController extends Controller
             }
         }
     }
+
 
     /**
      * Display the specified resource.
