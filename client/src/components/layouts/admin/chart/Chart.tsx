@@ -4,18 +4,18 @@ import useFetchChart from '../../../../api/useFetchChart';
 
 const Chart: React.FC = () => {
   const chartRef = useRef<HTMLDivElement>(null);
-  const { chartData, error } = useFetchChart('month', undefined, undefined, 2023, 10); // Fetch dữ liệu cho tháng 10, 2023
+  const { chartData, error } = useFetchChart('month', undefined, undefined, 2023, 10); // Lấy dữ liệu cho tháng 10, 2023
 
   const [seriesData, setSeriesData] = useState<number[]>([35.1, 23.5, 2.4, 5.4]); // Giá trị mặc định khi không có dữ liệu
 
   // Lấy dữ liệu từ API và cập nhật dữ liệu series cho biểu đồ
   useEffect(() => {
     if (chartData) {
-      console.log('Chart Data:', chartData); // In ra dữ liệu để kiểm tra
+      console.log('Dữ liệu biểu đồ:', chartData); // In ra dữ liệu để kiểm tra
 
       // Nếu API trả về message là không có dữ liệu, giữ nguyên seriesData mặc định
       if (chartData.message) {
-        console.warn(chartData.message); // Log ra cảnh báo
+        console.warn(chartData.message); // Log cảnh báo
         // Không làm gì ở đây, seriesData giữ giá trị mặc định
       } else {
         const { total_money_room, total_money_service } = chartData;
@@ -27,7 +27,7 @@ const Chart: React.FC = () => {
     }
   }, [chartData]);
 
-  // Tạo các options cho biểu đồ
+  // Tạo các tùy chọn cho biểu đồ
   const getChartOptions = () => {
     return {
       series: seriesData,
@@ -54,7 +54,7 @@ const Chart: React.FC = () => {
               total: {
                 showAlways: true,
                 show: true,
-                label: "Unique visitors",
+                label: "Khách truy cập độc nhất",
                 fontFamily: "Inter, sans-serif",
                 formatter: function (w) {
                   const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
@@ -79,7 +79,7 @@ const Chart: React.FC = () => {
           top: -2,
         },
       },
-      labels: ["Direct", "Sponsor", "Affiliate", "Email marketing"],
+      labels: ["Trực tiếp", "Tài trợ", "Đối tác", "Email marketing"],
       dataLabels: {
         enabled: false,
       },
@@ -103,45 +103,20 @@ const Chart: React.FC = () => {
         axisTicks: {
           show: false,
         },
-        axisBorder: {
-          show: false,
-        },
       },
     };
   };
 
-  // Render biểu đồ khi dữ liệu đã sẵn sàng
   useEffect(() => {
-    if (chartRef.current) {
-      const chart = new ApexCharts(chartRef.current, getChartOptions());
-      
-      chart.render().catch((err) => {
-        console.error('Chart Render Error:', err); // Bắt lỗi render nếu có
-      });
-
-      return () => {
-        chart.destroy(); // Hủy biểu đồ khi component bị hủy
-      };
-    }
+    const chart = new ApexCharts(chartRef.current, getChartOptions());
+    chart.render();
+    return () => {
+      chart.destroy();
+    };
   }, [seriesData]);
 
-  // Xử lý trường hợp lỗi khi gọi API
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
-
-  // Xử lý trạng thái loading khi chưa có dữ liệu từ API
-  if (!chartData) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <div>
-      {chartData.message && (
-        <p>{chartData.message}</p> // Hiển thị thông báo không có dữ liệu (nếu có)
-      )}
-      <div id="donut-chart" ref={chartRef} /> {/* Vùng hiển thị biểu đồ */}
-    </div>
+    <div id="pie-chart" ref={chartRef}></div>
   );
 };
 
