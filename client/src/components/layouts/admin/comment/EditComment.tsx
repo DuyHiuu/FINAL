@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
 interface EditCommentProps {
-    comment: {
+    comment?: {
         id: number;
         content: string;
     };
-    onEditComment: (id: number, content: string) => void;
-    onCancel: () => void;
+    onEditComment?: (id: number, content: string) => void;
+    onCancel?: () => void;
 }
 
 const EditComment: React.FC<EditCommentProps> = ({ comment, onEditComment, onCancel }) => {

@@ -31,6 +31,7 @@ const Login = () => {
         const data = await response.json();
         console.log(data);
         localStorage.setItem("token", data.accessToken); // Lưu token vào localStorage
+        localStorage.setItem("email", data.user.email); // Lưu token vào localStorage
         localStorage.setItem("user_id", data.user.id); // Lưu user_id vào localStorage
         localStorage.setItem("name", data.user.name); // Lưu tên người dùng vào localStorage
         localStorage.setItem("role_id", data.user.role.role_id); // Lưu role_id vào localStorage

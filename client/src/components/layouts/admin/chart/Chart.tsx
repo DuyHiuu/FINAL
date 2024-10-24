@@ -27,82 +27,61 @@ const Chart: React.FC = () => {
     }
   }, [chartData]);
 
-  // Tạo các tùy chọn cho biểu đồ
+  // Tạo các tùy chọn cho biểu đồ cột
   const getChartOptions = () => {
     return {
-      series: seriesData,
+      series: [
+        {
+          name: "Doanh thu",
+          data: seriesData,
+        },
+      ],
       colors: ["#1C64F2", "#16BDCA", "#FDBA8C", "#E74694"],
       chart: {
-        height: 320,
+        type: "bar", // Loại biểu đồ cột
+        height: 350,
         width: "100%",
-        type: "donut",
-      },
-      stroke: {
-        colors: ["transparent"],
-        lineCap: "",
       },
       plotOptions: {
-        pie: {
-          donut: {
-            labels: {
-              show: true,
-              name: {
-                show: true,
-                fontFamily: "Inter, sans-serif",
-                offsetY: 20,
-              },
-              total: {
-                showAlways: true,
-                show: true,
-                label: "Khách truy cập độc nhất",
-                fontFamily: "Inter, sans-serif",
-                formatter: function (w) {
-                  const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                  return '$' + sum + 'k';
-                },
-              },
-              value: {
-                show: true,
-                fontFamily: "Inter, sans-serif",
-                offsetY: -20,
-                formatter: function (value) {
-                  return value + "k";
-                },
-              },
-            },
-            size: "80%",
+        bar: {
+          horizontal: false, // Thiết lập cột dọc
+          columnWidth: "50%", // Độ rộng của cột
+        },
+      },
+      dataLabels: {
+        enabled: false, // Tắt nhãn trên các cột
+      },
+      stroke: {
+        show: true,
+        width: 2,
+        colors: ["transparent"],
+      },
+      xaxis: {
+        categories: ["Phòng", "Dịch vụ"], // Nhãn x tương ứng với dữ liệu
+      },
+      yaxis: {
+        title: {
+          text: "Doanh thu (nghìn $)", // Đơn vị đo trên trục y
+        },
+        labels: {
+          formatter: function (value) {
+            return value + "k"; // Hiển thị đơn vị là "k"
           },
         },
       },
-      grid: {
-        padding: {
-          top: -2,
-        },
+      fill: {
+        opacity: 1, // Độ trong suốt của cột
       },
-      labels: ["Trực tiếp", "Tài trợ", "Đối tác", "Email marketing"],
-      dataLabels: {
-        enabled: false,
+      tooltip: {
+        y: {
+          formatter: function (value) {
+            return "$" + value + "k"; // Hiển thị tooltip với đơn vị là "$k"
+          },
+        },
       },
       legend: {
         position: "bottom",
         fontFamily: "Inter, sans-serif",
-      },
-      yaxis: {
-        labels: {
-          formatter: function (value) {
-            return value + "k";
-          },
-        },
-      },
-      xaxis: {
-        labels: {
-          formatter: function (value) {
-            return value + "k";
-          },
-        },
-        axisTicks: {
-          show: false,
-        },
       },
     };
   };
@@ -115,9 +94,7 @@ const Chart: React.FC = () => {
     };
   }, [seriesData]);
 
-  return (
-    <div id="pie-chart" ref={chartRef}></div>
-  );
+  return <div id="bar-chart" ref={chartRef}></div>;
 };
 
 export default Chart;

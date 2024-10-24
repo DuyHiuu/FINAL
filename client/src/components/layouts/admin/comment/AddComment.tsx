@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface AddCommentProps {
-    roomId: number; // ID của phòng để thêm bình luận
-    onAddComment: (content: string) => void; // Hàm callback để xử lý thêm bình luận
+    roomId?: number; // ID của phòng để thêm bình luận
+    onAddComment?: (content: string) => void; // Hàm callback để xử lý thêm bình luận
 }
 
 const AddComment: React.FC<AddCommentProps> = ({ roomId, onAddComment }) => {

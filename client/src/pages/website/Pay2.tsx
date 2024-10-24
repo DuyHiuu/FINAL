@@ -6,8 +6,6 @@ const Pay2 = () => {
 
     const { id } = useParams();
     const navigate = useNavigate();
-
-
     const showBooking = "http://localhost:8000/api/bookings";
     const showRoom = "http://localhost:8000/api/rooms";
 

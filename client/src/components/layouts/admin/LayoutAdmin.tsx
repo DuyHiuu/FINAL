@@ -3,9 +3,10 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { BellIcon } from "@heroicons/react/24/outline";
 import { Outlet } from "react-router-dom";
 
+// Lấy thông tin từ localStorage
 const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
+  name: localStorage.getItem("name") || "Unknown User", // Lấy tên người dùng từ localStorage
+  email: localStorage.getItem("email") || "unknown@example.com", // Lấy email từ localStorage (đảm bảo bạn lưu email trước đó)
   imageUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 
@@ -22,8 +23,6 @@ const navigation = [
 ];
 
 const userNavigation = [
-  { name: "Thông tin của bạn", href: "#" },
-  { name: "Cài đặt", href: "#" },
   { name: "Đăng xuất", href: "#" },
 ];
 
@@ -76,7 +75,7 @@ const LayoutAdmin = () => {
         {/* Top navigation bar */}
         <header className="bg-white shadow">
           <div className="flex justify-between items-center px-4 py-6">
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Admin {user.name}</h1>
             <div className="flex items-center space-x-4">
               <button className="bg-gray-800 p-1 text-gray-400 hover:text-white rounded-full">
                 <BellIcon className="h-6 w-6" aria-hidden="true" />
