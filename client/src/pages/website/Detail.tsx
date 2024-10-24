@@ -315,7 +315,7 @@ const Detail = () => {
           {comments.length > 0 ? (
             comments.map((comment) => (
               <div key={comment.id} className="border p-4 rounded mb-4">
-                <p className="text-gray-700">{comment.content}</p>
+                <p className="text-gray-700 break-words">{comment.content}</p>
                 <p className="text-sm text-gray-500">
                   {`- Bởi ${comment.user?.name || "Người dùng"} vào ${new Date(comment.created_at).toLocaleString()}`}
                 </p>
