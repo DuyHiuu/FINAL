@@ -1,42 +1,24 @@
 import React from "react";
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-} from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { BellIcon } from "@heroicons/react/24/outline";
 import { Outlet } from "react-router-dom";
 
 const user = {
   name: "Tom Cook",
   email: "tom@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  imageUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
+
 const navigation = [
   { name: "PestSpa", href: "/", current: true },
-  { name: "Danh sách phòng", href: "/admin/rooms", current: false }, // Cập nhật href ở đây
-  { name: "Danh sách size", href: "/admin/sizes", current: false }, // Cập nhật href ở đây
-  { name: "Danh sách voucher", href: "/admin/vouchers", current: false }, // Cập nhật href ở đây
-  { name: "Danh sách dịch vụ", href: "/admin/services", current: false }, // Cập nhật href ở đây
-  { name: "Danh sách bài viết", href: "/admin/blogs", current: false }, // Cập nhật href ở đây
-  // { name: "Danh sách quyền", href: "/admin/roles", current: false }, // Cập nhật href ở đây
-  { name: "Danh sách người dùng", href: "/admin/users", current: false }, // Cập nhật href ở đây
-
-  { name: "Danh sách bình luận", href: "/admin/comments", current: false }, // Cập nhật href ở đây
-
-  { name: "Biểu đồ", href: "/admin/chart", current: false }, // Cập nhật href ở đây
-
-
-
-
-  // { name: "Khách hàng", href: "#", current: false },
-  // { name: "Bình luận", href: "#", current: false },
-  // { name: "Thống kê", href: "#", current: false },
+  { name: "Danh sách phòng", href: "/admin/rooms", current: false },
+  { name: "Danh sách size", href: "/admin/sizes", current: false },
+  { name: "Danh sách voucher", href: "/admin/vouchers", current: false },
+  { name: "Danh sách dịch vụ", href: "/admin/services", current: false },
+  { name: "Danh sách bài viết", href: "/admin/blogs", current: false },
+  { name: "Danh sách người dùng", href: "/admin/users", current: false },
+  { name: "Danh sách bình luận", href: "/admin/comments", current: false },
+  { name: "Biểu đồ", href: "/admin/chart", current: false },
 ];
 
 const userNavigation = [
@@ -51,183 +33,81 @@ function classNames(...classes) {
 
 const LayoutAdmin = () => {
   return (
-    <>
-      {/*
-            This example requires updating your template:
-    
-            ```
-            <html class="h-full bg-gray-100">
-            <body class="h-full">
-            ```
-          */}
-      <div className="min-h-full">
-        <Disclosure as="nav" className="bg-white-800">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex h-16 items-center justify-between">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-10 w-auto"
-                    src="/images/logo.png"
-                    alt="Logo"
-                  />
-                </div>
-                <div className="hidden md:block">
-                  <div className="ml-10 flex items-baseline space-x-4">
-                    {navigation.map((item) => (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        aria-current={item.current ? "page" : undefined}
-                        className={classNames(
-                          item.current
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                          "rounded-md px-3 py-2 text-sm font-medium"
-                        )}
-                      >
+    <div className="min-h-screen flex">
+      {/* Sidebar */}
+      <aside className="w-64 bg-gray-800 flex flex-col justify-between">
+        <div className="flex flex-col h-full">
+          {/* Logo */}
+          <div className="flex items-center justify-center py-6">
+            <img className="h-12 w-auto" src="/images/logo.png" alt="Logo" />
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 flex flex-col space-y-4 px-2 py-4">
+            {navigation.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className={classNames(
+                  item.current
+                    ? "bg-gray-900 text-white"
+                    : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                  "group flex px-2 py-2 text-sm font-medium rounded-md"
+                )}
+              >
+                {item.name}
+              </a>
+            ))}
+          </nav>
+        </div>
+
+        {/* User info */}
+        <div className="bg-gray-900 p-4 flex items-center space-x-3">
+          <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt={user.name} />
+          <div className="text-white">
+            <p className="text-sm font-medium">{user.name}</p>
+            <p className="text-xs text-gray-400">{user.email}</p>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col">
+        {/* Top navigation bar */}
+        <header className="bg-white shadow">
+          <div className="flex justify-between items-center px-4 py-6">
+            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <div className="flex items-center space-x-4">
+              <button className="bg-gray-800 p-1 text-gray-400 hover:text-white rounded-full">
+                <BellIcon className="h-6 w-6" aria-hidden="true" />
+              </button>
+
+              {/* User Profile Dropdown */}
+              <Menu as="div" className="relative">
+                <MenuButton className="flex items-center text-sm rounded-full bg-gray-800 focus:outline-none">
+                  <img className="h-8 w-8 rounded-full" src={user.imageUrl} alt="" />
+                </MenuButton>
+                <MenuItems className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg py-1 ring-1 ring-black ring-opacity-5">
+                  {userNavigation.map((item) => (
+                    <MenuItem key={item.name}>
+                      <a href={item.href} className="block px-4 py-2 text-sm text-gray-700">
                         {item.name}
                       </a>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="hidden md:block">
-                <div className="ml-4 flex items-center md:ml-6">
-                  <button
-                    type="button"
-                    className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                  >
-                    <span className="absolute -inset-1.5" />
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon aria-hidden="true" className="h-6 w-6" />
-                  </button>
-
-                  {/* Profile dropdownn */}
-                  <Menu as="div" className="relative ml-3">
-                    <div>
-                      <MenuButton className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                        <span className="absolute -inset-1.5" />
-                        <span className="sr-only">Open user menu</span>
-                        <img
-                          alt=""
-                          src={user.imageUrl}
-                          className="h-8 w-8 rounded-full"
-                        />
-                      </MenuButton>
-                    </div>
-                    <MenuItems
-                      transition
-                      className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                    >
-                      {userNavigation.map((item) => (
-                        <MenuItem key={item.name}>
-                          <a
-                            href={item.href}
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
-                          >
-                            {item.name}
-                          </a>
-                        </MenuItem>
-                      ))}
-                    </MenuItems>
-                  </Menu>
-                </div>
-              </div>
-              <div className="-mr-2 flex md:hidden">
-                {/* Mobile menu button */}
-                <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                  <span className="absolute -inset-0.5" />
-                  <span className="sr-only">Open main menu</span>
-                  <Bars3Icon
-                    aria-hidden="true"
-                    className="block h-6 w-6 group-data-[open]:hidden"
-                  />
-                  <XMarkIcon
-                    aria-hidden="true"
-                    className="hidden h-6 w-6 group-data-[open]:block"
-                  />
-                </DisclosureButton>
-              </div>
+                    </MenuItem>
+                  ))}
+                </MenuItems>
+              </Menu>
             </div>
-          </div>
-
-          <DisclosurePanel className="md:hidden">
-            <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
-              {navigation.map((item) => (
-                <DisclosureButton
-                  key={item.name}
-                  as="a"
-                  href={item.href}
-                  aria-current={item.current ? "page" : undefined}
-                  className={classNames(
-                    item.current
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                    "block rounded-md px-3 py-2 text-base font-medium"
-                  )}
-                >
-                  {item.name}
-                </DisclosureButton>
-              ))}
-            </div>
-            <div className="border-t border-gray-700 pb-3 pt-4">
-              <div className="flex items-center px-5">
-                <div className="flex-shrink-0">
-                  <img
-                    alt=""
-                    src={user.imageUrl}
-                    className="h-10 w-10 rounded-full"
-                  />
-                </div>
-                <div className="ml-3">
-                  <div className="text-base font-medium leading-none text-white">
-                    {user.name}
-                  </div>
-                  <div className="text-sm font-medium leading-none text-gray-400">
-                    {user.email}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                >
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon aria-hidden="true" className="h-6 w-6" />
-                </button>
-              </div>
-              <div className="mt-3 space-y-1 px-2">
-                {userNavigation.map((item) => (
-                  <DisclosureButton
-                    key={item.name}
-                    as="a"
-                    href={item.href}
-                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                  >
-                    {item.name}
-                  </DisclosureButton>
-                ))}
-              </div>
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-
-        <header className="bg-white shadow">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900"></h1>
           </div>
         </header>
-        <main>
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            {/* Your content */}
-            {/* <ProductList></ProductList>
-            <AddProduct></AddProduct> */}
+
+        <main className="flex-1 bg-gray-100 overflow-auto">
+          <div className="py-6 px-4 sm:px-6 lg:px-8">
             <Outlet />
           </div>
         </main>
       </div>
-    </>
+    </div>
   );
 };
 
