@@ -45,6 +45,10 @@ const Header = () => {
     navigate("/admin");
   };
 
+  const handleGoToHistory = () => {
+    navigate("/history1"); // Điều hướng đến trang lịch sử đơn hàng
+  };
+
   // Hàm điều hướng đến thông tin tài khoản
   const handleGoToAccountInfo = () => {
     navigate("/account-info"); // Đường dẫn đến trang thông tin tài khoản
@@ -90,23 +94,41 @@ const Header = () => {
 
         {/* Menu cho màn hình lớn */}
         <div className="hidden lg:flex lg:gap-x-12">
-          <Link to="/" className="text-sm font-semibold leading-6 text-gray-900">
+          <Link
+            to="/"
+            className="text-sm font-semibold leading-6 text-gray-900"
+          >
             Trang chủ
           </Link>
-          <Link to="/about" className="text-sm font-semibold leading-6 text-gray-900">
+          <Link
+            to="/about"
+            className="text-sm font-semibold leading-6 text-gray-900"
+          >
             Giới Thiệu
           </Link>
-          <Link to="/danhsach" className="text-sm font-semibold leading-6 text-gray-900">
+          <Link
+            to="/danhsach"
+            className="text-sm font-semibold leading-6 text-gray-900"
+          >
             Danh sách phòng
           </Link>
-          <Link to="/lienhe" className="text-sm font-semibold leading-6 text-gray-900">
+          <Link
+            to="/lienhe"
+            className="text-sm font-semibold leading-6 text-gray-900"
+          >
             Liên hệ
           </Link>
-          <Link to="/blog" className="text-sm font-semibold leading-6 text-gray-900">
+          <Link
+            to="/blog"
+            className="text-sm font-semibold leading-6 text-gray-900"
+          >
             Blog
           </Link>
-          <Link to="/history1" className="text-sm font-semibold leading-6 text-gray-900">
-            Lịch sử mua hàng
+          <Link
+            to="/#"
+            className="text-sm font-semibold leading-6 text-gray-900"
+          >
+            Giỏ hàng
           </Link>
         </div>
 
@@ -145,6 +167,15 @@ const Header = () => {
                   >
                     Thông tin tài khoản
                   </button>
+
+                  {/* Lịch sử đơn hàng */}
+                  <button
+                    onClick={handleGoToHistory}
+                    className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Lịch sử đơn hàng
+                  </button>
+
                   {/* Trang quản trị */}
                   {roleId === "2" && (
                     <button
@@ -165,10 +196,16 @@ const Header = () => {
             </div>
           ) : (
             <>
-              <Link to="/register" className="text-sm font-semibold leading-6 text-gray-900">
+              <Link
+                to="/register"
+                className="text-sm font-semibold leading-6 text-gray-900"
+              >
                 Đăng ký
               </Link>
-              <Link to="/login" className="ml-6 text-sm font-semibold leading-6 text-gray-900">
+              <Link
+                to="/login"
+                className="ml-6 text-sm font-semibold leading-6 text-gray-900"
+              >
                 Đăng nhập
               </Link>
             </>
@@ -178,22 +215,40 @@ const Header = () => {
         {/* Menu cho màn hình nhỏ */}
         {isMenuOpen && (
           <div className="lg:hidden absolute top-full left-0 right-0 bg-gray-200 shadow-lg p-6 z-40">
-            <Link to="/" className="block text-sm font-semibold leading-6 text-gray-900 mb-4">
+            <Link
+              to="/"
+              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
+            >
               Trang chủ
             </Link>
-            <Link to="/about" className="block text-sm font-semibold leading-6 text-gray-900 mb-4">
+            <Link
+              to="/about"
+              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
+            >
               Giới Thiệu
             </Link>
-            <Link to="/danhsach" className="block text-sm font-semibold leading-6 text-gray-900 mb-4">
+            <Link
+              to="/danhsach"
+              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
+            >
               Danh sách phòng
             </Link>
-            <Link to="/lienhe" className="block text-sm font-semibold leading-6 text-gray-900 mb-4">
+            <Link
+              to="/lienhe"
+              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
+            >
               Liên hệ
             </Link>
-            <Link to="/blog" className="block text-sm font-semibold leading-6 text-gray-900 mb-4">
+            <Link
+              to="/blog"
+              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
+            >
               Blog
             </Link>
-            <Link to="/history1" className="block text-sm font-semibold leading-6 text-gray-900 mb-4">
+            <Link
+              to="/history1"
+              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
+            >
               Lịch sử mua hàng
             </Link>
             {isLoggedIn && (
@@ -203,6 +258,12 @@ const Header = () => {
                   className="block w-full text-left text-sm font-semibold leading-6 text-gray-900 mb-4"
                 >
                   Thông tin tài khoản
+                </button>
+                <button
+                  onClick={handleGoToHistory}
+                  className="block w-full text-left text-sm font-semibold leading-6 text-gray-900 mb-4"
+                >
+                  Lịch sử đơn hàng
                 </button>
                 <button
                   onClick={handleLogout}
