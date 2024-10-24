@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import useFetchComments from "../../../../api/useFetchComments";
+import { FaSearch } from "react-icons/fa";
 
 const CommentList = () => {
     const { comments, loading, error } = useFetchComments();
@@ -8,29 +9,24 @@ const CommentList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const commentsPerPage = 6;
 
-    // Phân trang
     const indexOfLastComment = currentPage * commentsPerPage;
     const indexOfFirstComment = indexOfLastComment - commentsPerPage;
     const currentComments = comments.slice(indexOfFirstComment, indexOfLastComment);
 
-    // Số lượng trang
     const totalPages = Math.ceil(comments.length / commentsPerPage);
 
-    // Chuyển trang
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
 
-    // Hàm tìm kiếm và lọc
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    const handleFilterChange = (e) => {
-        setFilterBy(e.target.value);
+    const handleFilterChange = (filter) => {
+        setFilterBy(filter);
     };
 
-    // Hàm xử lý logic lọc bình luận
     const filterComment = (comment) => {
         let fieldValue = comment[filterBy];
 
@@ -87,19 +83,42 @@ const CommentList = () => {
             </div>
 
             {/* Thanh tìm kiếm và lọc */}
-            <div className="mb-6">
-                <input
-                    type="text"
-                    className="border p-2 mr-4"
-                    placeholder="Tìm kiếm bình luận..."
-                    value={searchTerm}
-                    onChange={handleSearch}
-                />
-                <select value={filterBy} onChange={handleFilterChange} className="border p-2">
-                    <option value="content">Nội dung</option>
-                    <option value="user">Người dùng</option>
-                    <option value="created_at">Ngày tạo</option>
-                </select>
+            <div className="mb-6 flex flex-wrap items-center gap-4">
+                <div className="relative flex-1">
+                    <input
+                        type="text"
+                        className="border p-2 w-full rounded-lg pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Tìm kiếm bình luận..."
+                        value={searchTerm}
+                        onChange={handleSearch}
+                    />
+                    <FaSearch className="absolute top-3 left-3 text-gray-500" />
+                </div>
+
+                {/* Nút lọc */}
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => handleFilterChange("content")}
+                        className={`px-4 py-2 rounded-lg transition ${filterBy === "content" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
+                            } hover:bg-blue-400 focus:ring-2 focus:ring-blue-500`}
+                    >
+                        Nội dung
+                    </button>
+                    <button
+                        onClick={() => handleFilterChange("user")}
+                        className={`px-4 py-2 rounded-lg transition ${filterBy === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
+                            } hover:bg-blue-400 focus:ring-2 focus:ring-blue-500`}
+                    >
+                        Người dùng
+                    </button>
+                    <button
+                        onClick={() => handleFilterChange("created_at")}
+                        className={`px-4 py-2 rounded-lg transition ${filterBy === "created_at" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
+                            } hover:bg-blue-400 focus:ring-2 focus:ring-blue-500`}
+                    >
+                        Ngày tạo
+                    </button>
+                </div>
             </div>
 
             {/* Danh sách bình luận dưới dạng bảng */}
@@ -142,6 +161,7 @@ const CommentList = () => {
                     </tbody>
                 </table>
             </div>
+
             {/* Phân trang */}
             <div className="flex justify-center mt-6">
                 {[...Array(totalPages).keys()].map((number) => (

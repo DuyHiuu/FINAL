@@ -1,9 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import useFetchSize from "../../../../api/useFetchSize";
 
 const SizeList = () => {
-  const { sizes, loading } = useFetchSize(); // Sử dụng loading để hiển thị trạng thái đang tải
+  const { sizes, loading } = useFetchSize();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sizesPerPage] = useState(5); // Số lượng size trên mỗi trang
+
+  // Hàm xử lý tìm kiếm
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // Hàm lọc size dựa trên tên và miêu tả
+  const filteredSizes = sizes?.filter(
+    (size) =>
+      size.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      size.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Phân trang
+  const indexOfLastSize = currentPage * sizesPerPage;
+  const indexOfFirstSize = indexOfLastSize - sizesPerPage;
+  const currentSizes = filteredSizes?.slice(indexOfFirstSize, indexOfLastSize);
+
+  const totalPages = Math.ceil(filteredSizes?.length / sizesPerPage);
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa size này?");
@@ -17,8 +39,8 @@ const SizeList = () => {
         alert("Size đã được xóa thành công");
         window.location.reload(); // Tải lại trang sau khi xóa thành công
       } else {
-        const errorData = await response.json(); // Lấy dữ liệu lỗi từ phản hồi
-        console.error("Xóa size thất bại:", errorData.message); // Ghi lại thông điệp lỗi
+        const errorData = await response.json();
+        console.error("Xóa size thất bại:", errorData.message);
         alert(`Xóa size thất bại: ${errorData.message}`);
       }
     } catch (error) {
@@ -26,6 +48,9 @@ const SizeList = () => {
       alert("Đã xảy ra lỗi khi xóa size");
     }
   };
+
+  // Hàm chuyển trang
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="container mx-auto p-6">
@@ -37,6 +62,17 @@ const SizeList = () => {
         >
           Thêm Size
         </Link>
+      </div>
+
+      {/* Thanh tìm kiếm */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Tìm kiếm theo tên hoặc miêu tả"
+          value={searchTerm}
+          onChange={handleSearch}
+          className="px-4 py-2 border border-gray-300 rounded-lg w-full"
+        />
       </div>
 
       {loading ? (
@@ -57,10 +93,10 @@ const SizeList = () => {
             </thead>
 
             <tbody className="text-gray-700">
-              {Array.isArray(sizes) && sizes.length > 0 ? (
-                sizes.map((size, index) => (
+              {Array.isArray(currentSizes) && currentSizes.length > 0 ? (
+                currentSizes.map((size, index) => (
                   <tr key={size.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 border-b">{index + 1}</td>
+                    <td className="px-4 py-3 border-b">{indexOfFirstSize + index + 1}</td>
                     <td className="px-4 py-3 border-b">{size.name}</td>
                     <td className="px-4 py-3 border-b">{size.quantity}</td>
                     <td className="px-4 py-3 border-b">{size.description}</td>
@@ -93,6 +129,20 @@ const SizeList = () => {
           </table>
         </div>
       )}
+
+      {/* Phân trang */}
+      <div className="flex justify-center mt-4">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => paginate(index + 1)}
+            className={`px-3 py-1 mx-1 rounded-lg ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+              }`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

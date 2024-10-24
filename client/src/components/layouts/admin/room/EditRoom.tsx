@@ -3,7 +3,6 @@ import useFetchSize from '../../../../api/useFetchSize';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const EditRoom = () => {
-
     const showUrl = "http://localhost:8000/api/rooms";
     const { id } = useParams();
     const [size_id, setSize_id] = useState('');
@@ -22,10 +21,10 @@ const EditRoom = () => {
                 if (res.ok) {
                     const room = await res.json();
                     setSize_id(room.size_id);
-                    setPrice(room.price);
+                    setPrice(room.price); // Đảm bảo giá được thiết lập đúng
                     setDescription(room.description);
                     setStatusRoom(room.statusroom);
-                    setImg_thumbnail(room.img_thumbnail);
+                    setImg_thumbnail(room.img_thumbnail); // Nếu img_thumbnail là URL, có thể cần điều chỉnh
                 } else {
                     console.error('Không thể lấy thông tin phòng');
                 }
@@ -46,12 +45,6 @@ const EditRoom = () => {
             statusroom: statusroom,
             img_thumbnail: img_thumbnail,
         };
-
-        // if(img_thumbnail) {
-        //     updateRoom.append('img_thumbnail',img_thumbnail);
-        // }
-
-
 
         try {
             const response = await fetch(`${showUrl}/${id}`, {
@@ -78,13 +71,14 @@ const EditRoom = () => {
             <h2 className="text-2xl font-bold mb-4">Sửa Thông Tin Phòng</h2>
 
             <div className="mb-4">
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700">Giá:</label>
+                <label htmlFor="price" className="block text-sm font-medium text-gray-700">Giá (VND):</label>
                 <input
                     type="number"
                     id="price"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
+                    placeholder="Nhập giá phòng"
                 />
             </div>
 
@@ -128,12 +122,12 @@ const EditRoom = () => {
 
             <div className="mb-4">
                 <label htmlFor="img_thumbnail" className="block text-sm font-medium text-gray-700">Hình Ảnh Chính:</label>
-                <img src={img_thumbnail} alt="" className='h-32' />
+                {img_thumbnail && <img src={img_thumbnail} alt="" className='h-32 mb-2' />} {/* Hiển thị hình ảnh */}
                 <input
                     type="file"
                     id="img_thumbnail"
                     onChange={(e) => setImg_thumbnail(e.target.files ? e.target.files[0] : null)}
-                    accept="img_thumbnail/*"
+                    accept="image/*"
                     className="mt-1 block w-full text-gray-700 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
                 />
             </div>

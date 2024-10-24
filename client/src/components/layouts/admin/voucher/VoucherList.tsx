@@ -1,8 +1,31 @@
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import useFetchVoucher from "../../../../api/useFetchVoucher";
 
 const VoucherList = () => {
   const { vouchers, setVouchers, loading } = useFetchVoucher();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [vouchersPerPage] = useState(5); // Số lượng voucher trên mỗi trang
+
+  // Hàm xử lý tìm kiếm
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // Hàm lọc voucher dựa trên tên và mã code
+  const filteredVouchers = vouchers?.filter(
+    (voucher) =>
+      voucher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      voucher.code.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Phân trang
+  const indexOfLastVoucher = currentPage * vouchersPerPage;
+  const indexOfFirstVoucher = indexOfLastVoucher - vouchersPerPage;
+  const currentVouchers = filteredVouchers?.slice(indexOfFirstVoucher, indexOfLastVoucher);
+
+  const totalPages = Math.ceil(filteredVouchers?.length / vouchersPerPage);
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa voucher này?");
@@ -14,8 +37,6 @@ const VoucherList = () => {
       });
       if (response.ok) {
         alert("Voucher đã được xóa thành công");
-
-        // Cập nhật lại state tại client thay vì tải lại trang
         setVouchers((prevVouchers) => prevVouchers.filter((voucher) => voucher.id !== id));
       } else {
         const errorData = await response.json();
@@ -28,6 +49,9 @@ const VoucherList = () => {
     }
   };
 
+  // Hàm chuyển trang
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
@@ -38,6 +62,17 @@ const VoucherList = () => {
         >
           Thêm Voucher
         </Link>
+      </div>
+
+      {/* Thanh tìm kiếm */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Tìm kiếm theo tên hoặc mã voucher"
+          value={searchTerm}
+          onChange={handleSearch}
+          className="px-4 py-2 border border-gray-300 rounded-lg w-full"
+        />
       </div>
 
       {loading ? (
@@ -60,13 +95,13 @@ const VoucherList = () => {
               </tr>
             </thead>
             <tbody className="text-gray-700">
-              {vouchers?.length > 0 ? (
-                vouchers.map((voucher, index) => (
+              {currentVouchers?.length > 0 ? (
+                currentVouchers.map((voucher, index) => (
                   <tr key={voucher.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 border-b">{index + 1}</td>
+                    <td className="px-4 py-3 border-b">{indexOfFirstVoucher + index + 1}</td>
                     <td className="px-4 py-3 border-b">{voucher.name}</td>
                     <td className="px-4 py-3 border-b">{voucher.code}</td>
-                    <td className="px-4 py-3 border-b">{voucher.discount}</td>
+                    <td className="px-4 py-3 border-b">{voucher.discount.toLocaleString("vi-VN")} VND</td>
                     <td className="px-4 py-3 border-b">{voucher.quantity}</td>
                     <td className="px-4 py-3 border-b">{voucher.start_date}</td>
                     <td className="px-4 py-3 border-b">{voucher.end_date}</td>
@@ -99,6 +134,20 @@ const VoucherList = () => {
           </table>
         </div>
       )}
+
+      {/* Phân trang */}
+      <div className="flex justify-center mt-4">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => paginate(index + 1)}
+            className={`px-3 py-1 mx-1 rounded-lg ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+              }`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

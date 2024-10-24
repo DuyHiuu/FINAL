@@ -107,7 +107,7 @@ const AddVoucher = () => {
 
       <div className="mb-4 relative">
         <label htmlFor="giamGia" className="block text-sm font-medium text-gray-700">
-          Giảm giá:
+          Giảm giá (VND):
         </label>
         <div className="flex items-center">
           <input
