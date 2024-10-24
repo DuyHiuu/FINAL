@@ -135,7 +135,7 @@ const EditVoucher = () => {
 
         <div className="mb-4">
           <label htmlFor="giamGia" className="block text-sm font-medium text-gray-700">
-            Giảm giá (%):
+            Giảm giá (VND):
           </label>
           <input
             type="number"

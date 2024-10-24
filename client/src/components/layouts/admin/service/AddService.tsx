@@ -100,7 +100,7 @@ const AddService = () => {
                 </div>
 
                 <div className="mb-4">
-                    <label htmlFor="price" className="block text-sm font-medium text-gray-700">Giá:</label>
+                    <label htmlFor="price" className="block text-sm font-medium text-gray-700">Giá (VND):</label>
                     <input
                         type="number"
                         id="price"

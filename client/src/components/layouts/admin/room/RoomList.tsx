@@ -51,7 +51,7 @@ const RoomList = () => {
               <th className="px-4 py-3 text-left text-sm font-semibold">STT</th>
               <th className="px-4 py-3 text-left text-sm font-semibold">Hình Ảnh</th>
               <th className="px-4 py-3 text-left text-sm font-semibold">Size Phòng</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Giá</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold">Giá (VND)</th>
               <th className="px-4 py-3 text-left text-sm font-semibold">Số Lượng</th>
               <th className="px-4 py-3 text-left text-sm font-semibold">Trạng Thái</th>
               <th className="px-4 py-3 text-left text-sm font-semibold">Hành Động</th>
@@ -66,7 +66,7 @@ const RoomList = () => {
                     <img src={room.img_thumbnail} alt={room.size_name} className="w-20 h-20 object-cover rounded" />
                   </td>
                   <td className="px-4 py-2">{room.size_name}</td>
-                  <td className="px-4 py-2">{room.price}</td>
+                  <td className="px-4 py-2">{room.price.toLocaleString("vi-VN")} VND</td>
                   <td className="px-4 py-2">{room.quantity}</td>
                   <td className="px-4 py-2">
                     <span

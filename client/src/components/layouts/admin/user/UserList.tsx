@@ -1,11 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import useFetchUsers from '../../../../api/useFetchUsers';
 
 const UserList = () => {
     const { users, loading } = useFetchUsers();
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const usersPerPage = 10; // Số lượng người dùng trên mỗi trang
 
-    const handleDelete = async (id: number) => {
+    // Hàm xử lý tìm kiếm
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1); // Reset về trang đầu khi tìm kiếm
+    };
+
+    // Lọc người dùng dựa trên tên, email hoặc số điện thoại
+    const filteredUsers = users?.filter(user =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.phone.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Phân trang
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = filteredUsers?.slice(indexOfFirstUser, indexOfLastUser);
+    const totalPages = Math.ceil(filteredUsers?.length / usersPerPage);
+
+    const handleDelete = async (id) => {
         const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa Người dùng này?");
         if (!confirmDelete) return;
 
@@ -27,10 +49,24 @@ const UserList = () => {
         }
     };
 
+    // Hàm chuyển trang
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     return (
         <div className="container mx-auto p-6">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-gray-800">Danh Sách Người Dùng</h1>
+            </div>
+
+            {/* Thanh tìm kiếm */}
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="Tìm kiếm theo tên, email hoặc số điện thoại"
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    className="px-4 py-2 border border-gray-300 rounded-lg w-full"
+                />
             </div>
 
             {loading ? (
@@ -51,8 +87,8 @@ const UserList = () => {
                             </tr>
                         </thead>
                         <tbody className="text-gray-700">
-                            {Array.isArray(users) && users.length > 0 ? (
-                                users.map((user) => (
+                            {Array.isArray(currentUsers) && currentUsers.length > 0 ? (
+                                currentUsers.map((user) => (
                                     <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-4 py-3 border-b">{user.name}</td>
                                         <td className="px-4 py-3 border-b">{user.email}</td>
@@ -86,6 +122,19 @@ const UserList = () => {
                     </table>
                 </div>
             )}
+
+            {/* Phân trang */}
+            <div className="flex justify-center mt-4">
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => paginate(index + 1)}
+                        className={`px-3 py-1 mx-1 rounded-lg ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 };
