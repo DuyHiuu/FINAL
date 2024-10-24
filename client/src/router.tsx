@@ -43,6 +43,8 @@ import AddComment from "./components/layouts/admin/comment/AddComment";
 import EditComment from "./components/layouts/admin/comment/EditComment";
 import Loi404 from "./pages/website/Loi404"; // Import trang lỗi 404
 import Chart from "./components/layouts/admin/chart/chart";
+import AccoutProfile from "./pages/website/Accout/AccoutProfile";
+import UserInfo from "./pages/website/Accout/UserInfo";
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +65,10 @@ export const router = createBrowserRouter([
       { path: "/pay2", element: <Pay2 /> },
 
       { path: "/pay2/:id", element: <Pay2 /> },
+      { path: "/account", element: <AccoutProfile /> },
+      { path: "/infor", element: <UserInfo /> },
+
+
 
       // Áp dụng UserPrivateRoute cho trang lịch sử mua hàng
       {

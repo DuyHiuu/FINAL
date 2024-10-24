@@ -51,7 +51,7 @@ const Header = () => {
 
   // Hàm điều hướng đến thông tin tài khoản
   const handleGoToAccountInfo = () => {
-    navigate("/account-info"); // Đường dẫn đến trang thông tin tài khoản
+    navigate("/account"); // Đường dẫn đến trang thông tin tài khoản
   };
 
   return (
