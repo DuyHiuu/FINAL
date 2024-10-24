@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymethodController;
@@ -91,8 +92,14 @@ Route::prefix('vouchers')->group(function () {
 
 
 Route::prefix('bookings')->group(function () {
-    Route::get('/{id}', [BookingController::class, 'listBooking']);
+    Route::get('/', [BookingController::class, 'listBooking']);
     Route::post('/', [BookingController::class, 'addBooking']);
+});
+
+Route::prefix('contacts')->group(function () {
+    Route::get('/', [ContactController::class, 'index']);
+    Route::get('/{id}', [ContactController::class, 'show']);
+    Route::post('/', [ContactController::class, 'store']);
 });
 
 Route::prefix('admin')->group(function () {
