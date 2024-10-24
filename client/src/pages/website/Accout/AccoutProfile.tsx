@@ -1,16 +1,16 @@
 import { LockClosedIcon, ShoppingCartIcon, TagIcon, UserIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import UserInfo from "./UserInfo"; // Import component UserInfo
+import UserInfo from "./UserInfo";
+import EditUserInfo from "./EditUserInfo"; // Import form chỉnh sửa thông tin người dùng
 
 const AccountProfile = () => {
     const [currentUser, setCurrentUser] = useState<any | null>(null);
     const [activeTab, setActiveTab] = useState("greeting"); // Tab mặc định là "Xin chào"
-    
+    const [isEditing, setIsEditing] = useState(false); // State để điều khiển hiển thị form EditUserInfo
     const token = localStorage.getItem("token");
     const [userName, setUserName] = useState("");
 
-    // Khai báo navigate
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -40,18 +40,40 @@ const AccountProfile = () => {
         fetchUserData();
     }, [token]);
 
+    const handleEdit = () => {
+        setIsEditing(true); // Kích hoạt form chỉnh sửa khi nhấn "Sửa"
+    };
+
+    const handleSave = () => {
+        setIsEditing(false); // Sau khi lưu, trở lại chế độ xem thông tin
+    };
+
     const renderContent = () => {
+        if (isEditing) {
+            return (
+                <div className="flex justify-center items-center min-h-[400px]">
+                    <EditUserInfo onSave={handleSave} />
+                </div>
+            ); // Hiển thị form chỉnh sửa, căn giữa
+        }
+    
         switch (activeTab) {
             case "greeting":
                 return <h3 className="text-lg">Xin chào, {userName}!</h3>;
             case "infor":
-                return currentUser ? <UserInfo user={currentUser} /> : <p className="text-gray-700"><UserInfo></UserInfo></p>;
+                return currentUser ? (
+                    <UserInfo onEdit={handleEdit} />
+                ) : (
+                    <p className="text-gray-700"><UserInfo onEdit={handleEdit} /></p>
+                );
             case "password":
                 return (
                     <div>
                         <h4 className="text-lg">Quản lý mật khẩu</h4>
                         <p className="text-gray-700">Chức năng này cho phép bạn thay đổi mật khẩu của mình.</p>
-                        <Link to="/profile/change-password" className="text-rose-500 hover:underline">Thay đổi mật khẩu</Link>
+                        <Link to="/profile/change-password" className="text-rose-500 hover:underline">
+                            Thay đổi mật khẩu
+                        </Link>
                     </div>
                 );
             case "orders":
@@ -72,6 +94,7 @@ const AccountProfile = () => {
                 return null;
         }
     };
+    
 
     return (
         <div style={{ marginTop: "160px" }} className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">

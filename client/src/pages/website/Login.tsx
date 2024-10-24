@@ -38,7 +38,7 @@ const Login = () => {
         localStorage.setItem("phone", data.user.phone); // Lưu role_id vào localStorage
         localStorage.setItem("role_name", data.user.role.role_name); // Lưu role_id vào localStorage
 
-        // window.location.href = "/"; // Chuyển hướng đến trang chính
+        window.location.href = "/"; // Chuyển hướng đến trang chính
       } else {
         const data = await response.json();
         // Nếu có lỗi, hiển thị thông báo lỗi

@@ -45,6 +45,7 @@ import Loi404 from "./pages/website/Loi404"; // Import trang lỗi 404
 import Chart from "./components/layouts/admin/chart/chart";
 import AccoutProfile from "./pages/website/Accout/AccoutProfile";
 import UserInfo from "./pages/website/Accout/UserInfo";
+import EditUserInfo from "./pages/website/Accout/EditUserInfo";
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +68,8 @@ export const router = createBrowserRouter([
       { path: "/pay2/:id", element: <Pay2 /> },
       { path: "/account", element: <AccoutProfile /> },
       { path: "/infor", element: <UserInfo /> },
+      { path: "/editinfor", element: <EditUserInfo /> },
+
 
 
 
