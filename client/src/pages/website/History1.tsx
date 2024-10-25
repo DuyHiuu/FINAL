@@ -1,22 +1,9 @@
 import React, { useState } from "react";
+import useFetchPayments from "../../api/useFetchPayments";
 
 const History1 = () => {
-  const rows = [
-    {
-      imageSrc: "/images/anh8.webp", // Đường dẫn ảnh mẫu
-      title: "P.100",
-      icon: (
-        <img
-          src="/images/icon1.jpg" // Đường dẫn icon chó mèo
-          alt="dog-cat-icon"
-          className="h-8 w-8"
-        />
-      ),
-      date: "03-10-2024 -> 13-10-2024",
-      price: "1.121.000",
-    },
-    // Thêm các dòng khác ở đây theo mẫu
-  ];
+
+  const { payment } = useFetchPayments();
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -33,16 +20,16 @@ const History1 = () => {
         {/* Phần bên trái */}
         <div className="flex-1 w-full lg:w-1/2">
           <a href="/history2">
-            {rows.map((row, index) => (
+            {payment.map((item) => (
               <div
-                key={index}
+                key={item.id}
                 className="flex flex-col lg:flex-row items-center mb-6 p-4 bg-white shadow rounded-lg"
               >
                 {/* Hình ảnh bên trái */}
                 <div className="flex-shrink-0 mb-4 lg:mb-0 lg:mr-4">
                   <img
-                    src={row.imageSrc}
-                    alt={`image-${index}`}
+                    src={item.img_thumbnail}
+                    alt={`image-${item.id}`}
                     className="w-24 h-24 rounded-md"
                   />
                 </div>
@@ -50,20 +37,20 @@ const History1 = () => {
                 {/* Nội dung bên phải */}
                 <div className="flex-1 text-center lg:text-left">
                   {/* Tiêu đề */}
-                  <h1 className="text-xl font-bold text-gray-900">{row.title}</h1>
+                  <h1 className="text-xl font-bold text-gray-900">{item.title}</h1>
                   {/* Icon và Chữ nằm cạnh nhau, căn giữa */}
                   <div className="flex justify-center lg:justify-start items-center mt-1">
-                    <span className="mr-2">{row.icon}</span>
+                    <span className="mr-2">{item.icon}</span>
                     <p className="text-gray-600">1 thú cưng</p>
                   </div>
                   {/* Mô tả và thông tin bổ sung */}
-                  <p className="text-gray-600 mt-2">Ngày: {row.date}</p>
+                  <p className="text-gray-600 mt-2">Ngày: {item.date}</p>
                   <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-[#064749]">
                     <p className="text-white text-sm"><a href="/history2">
                       Xem chi tiết
                     </a></p>
                   </div>
-                  <span className="ml-2 text-gray-500">Giá: {row.price} đ</span>
+                  <span className="ml-2 text-gray-500">Giá: {item.price} đ</span>
                 </div>
               </div>
             ))}

@@ -92,7 +92,7 @@ Route::prefix('vouchers')->group(function () {
 
 
 Route::prefix('bookings')->group(function () {
-    Route::get('/', [BookingController::class, 'listBooking']);
+    Route::get('/{id}', [BookingController::class, 'listBooking']);
     Route::post('/', [BookingController::class, 'addBooking']);
 });
 

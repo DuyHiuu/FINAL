@@ -61,24 +61,30 @@ const Pay2 = () => {
 
     }, [booking?.room_id]);
 
+
     const [booking_id, setBooking_id] = useState(id);
     const [pet_name, setPet_name] = useState("");
-    const [pet_type, setPet_type] = useState("");
+    const [pet_type, setPet_type] = useState("Chó");
     const [pet_description, setPet_description] = useState("");
-    const [pet_health, setPet_health] = useState("");
-    const token = localStorage.getItem("token");
+    const [pet_health, setPet_health] = useState("Khỏe mạnh");
     const [user_id, setUser_id] = useState("");
-    const [paymethod_id, setPaymethod_id] = useState("");
-    const [total_amount, setTotal_amount] = useState(booking?.total_amount);
-    const [status_id, setStatus_id] = useState("");
+    const [paymethod_id, setPaymethod_id] = useState(1);
+    const [total_amount, setTotal_amount] = useState(0);
+
+    useEffect(() => {
+        if (booking?.total_amount) {
+            setTotal_amount(booking.total_amount);
+        }
+    }, [booking]);
+
+    const [status_id, setStatus_id] = useState(1);
     const { paymethod } = useFetchPayMethod();
 
     useEffect(() => {
         const user_idFromStorage = localStorage.getItem("user_id");
-        if (token) {
-            setUser_id(user_idFromStorage || "");
-        }
-    }, [token]);
+        setUser_id(user_idFromStorage || "");
+    }, []);
+
 
     const showUserUrl = "http://localhost:8000/api/users";
     const [user_name, setUser_name] = useState("");
@@ -87,27 +93,28 @@ const Pay2 = () => {
     const [user_phone, setUser_phone] = useState("");
 
     useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await fetch(`${showUserUrl}/${user_id}`);
-                if (res.ok) {
-                    const user = await res.json();
-                    setUser_name(user.name);
-                    setUser_email(user.email);
-                    setUser_phone(user.phone);
-                    setUser_address(user.address);
-                } else if (res.status === 404) {
-                    alert('Không tìm thấy người dùng');
-                    navigate('/admin/users');
-                } else {
-                    alert('Không thể lấy thông tin người dùng');
+        if (user_id) {
+            const fetchUser = async () => {
+                try {
+                    const res = await fetch(`${showUserUrl}/${user_id}`);
+                    if (res.ok) {
+                        const user = await res.json();
+                        setUser_name(user.name || "N/A");
+                        setUser_email(user.email || "N/A");
+                        setUser_phone(user.phone || "N/A");
+                        setUser_address(user.address || "N/A");
+                    } else {
+                        console.log("Lỗi khi lấy thông tin người dùng");
+                    }
+                } catch (error) {
+                    console.log("Lỗi kết nối:", error);
                 }
-            } catch (error) {
-                console.log('Lỗi kết nối:', error);
-            }
-        };
-        fetchUser();
+            };
+            fetchUser();
+        }
     }, [user_id]);
+
+
 
     const addPay = "http://localhost:8000/api/payments";
 
@@ -145,15 +152,12 @@ const Pay2 = () => {
             total_amount,
             status_id,
         });
-        
+
 
         try {
             const response = await fetch(`${addPay}`, {
                 method: "POST",
                 body: formData,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
             });
 
             if (response.ok) {
@@ -167,6 +171,7 @@ const Pay2 = () => {
     };
 
 
+
     return (
 
         <div className="flex flex-col lg:flex-row pb-20 mt-24">
@@ -177,21 +182,20 @@ const Pay2 = () => {
                     type="hidden"
                     name="booking_id"
                     value={booking_id}
-                    onChange={(e) => setBooking_id(e.target.value)}
+
                 />
 
                 <input
                     type="hidden"
                     name="total_amount"
-                    value={booking?.total_amount}
-                    onChange={(e) => setTotal_amount(e.target.value)}
+                    value={total_amount}
+
                 />
 
                 <input
                     type="hidden"
                     name="status_id"
-                    value={1}
-                    onChange={(e) => setStatus_id(e.target.value)}
+                    value={status_id}
                 />
 
                 <div className="text-left">
@@ -238,9 +242,9 @@ const Pay2 = () => {
 
                                     <label className="block">
                                         <span className="text-gray-700 text-lg">Loại thú cưng</span>
-                                        <select value={pet_type} onChange={(e) => setPet_type(e.target.value)}
+                                        <select onChange={(e) => setPet_type(e.target.value)}
                                             className="block w-full mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2">
-                                            <option value={"Chó"}>Chó</option>
+                                            <option selected value={"Chó"}>Chó</option>
                                             <option value={"Mèo"}>Mèo</option>
                                         </select>
                                     </label>
@@ -255,7 +259,7 @@ const Pay2 = () => {
                                         <span className="text-gray-700 text-lg">Tình trạng sức khỏe</span>
                                         <select value={pet_health} onChange={(e) => setPet_health(e.target.value)}
                                             className="block w-full mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2 mb-5">
-                                            <option value={"Khỏe mạnh"}>Khỏe mạnh</option>
+                                            <option selected value={"Khỏe mạnh"}>Khỏe mạnh</option>
                                             <option value={"Có vấn đề về sức khỏe"}>Có vấn đề về sức khỏe</option>
                                         </select>
                                         {/* <textarea className="mt-1 block w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2" rows='3' placeholder='Mô tả chi tiết tình trạng của bé gặp phải (Nếu có)'></textarea> */}
