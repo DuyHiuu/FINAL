@@ -7,7 +7,7 @@ const useFetchPayments = () => {
   useEffect(() => {
     const fetchpaymethod = async () => {
       try {
-        const res = await fetch(`${API_URL}/paymethods`, {
+        const res = await fetch(`${API_URL}/payments`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
