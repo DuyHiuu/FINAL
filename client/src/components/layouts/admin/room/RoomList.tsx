@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import useFetchRooms from "../../../../api/useFetchRooms";
 
 const RoomList = () => {
   const { room, loading, error } = useFetchRooms(); // Giả định useFetchRooms cũng có trạng thái loading và error
+  const [sizeFilter, setSizeFilter] = useState(""); // Trạng thái cho bộ lọc kích thước
 
   // Nếu đang tải, hiển thị thông báo
   if (loading) return <div className="text-center mt-5">Đang tải...</div>;
@@ -11,6 +12,12 @@ const RoomList = () => {
   // Nếu có lỗi, hiển thị thông báo lỗi
   if (error) return <div className="text-center text-red-600 mt-5">{error}</div>;
 
+  // Hàm xử lý thay đổi bộ lọc kích thước
+  const handleSizeChange = (e) => {
+    setSizeFilter(e.target.value);
+  };
+
+  // Hàm xóa phòng
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa phòng này?");
     if (!confirmDelete) return;
@@ -33,6 +40,11 @@ const RoomList = () => {
     }
   };
 
+  // Lọc danh sách phòng dựa trên kích thước
+  const filteredRooms = sizeFilter
+    ? room.filter((r) => r.size_name.toLowerCase().includes(sizeFilter.toLowerCase()))
+    : room;
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
@@ -44,6 +56,18 @@ const RoomList = () => {
           Thêm Phòng
         </Link>
       </div>
+
+      {/* Thanh tìm kiếm */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Tìm theo kích thước phòng..."
+          value={sizeFilter}
+          onChange={handleSizeChange}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64" // Thay đổi width ở đây
+        />
+      </div>
+
       <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
         <table className="min-w-full bg-white border border-gray-200">
           <thead className="bg-gray-200 text-gray-600">
@@ -58,8 +82,8 @@ const RoomList = () => {
             </tr>
           </thead>
           <tbody>
-            {room?.length > 0 ? (
-              room.map((room) => (
+            {filteredRooms.length > 0 ? (
+              filteredRooms.map((room) => (
                 <tr key={room.id} className="border-b hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-2">{room.id}</td>
                   <td className="px-4 py-2">
