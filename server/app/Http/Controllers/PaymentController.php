@@ -19,31 +19,20 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::get();
-
-        $trangThai = Payment::TRANG_THAI;
-
-        $type_cho_xac_nhan = Payment::CHO_XAC_NHAN;
-
+      
+        $payment = Payment::join('users', 'payments.user_id', '=', 'users.id')
+            ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
+            ->join('paymethods', 'payments.paymethod_id', '=', 'paymethods.id')
+            ->join('status_payments', 'payments.status_id', '=', 'status_payments.id')
+            ->join('booking_services', 'bookings.id', '=', 'booking_services.booking_id') 
+            ->select('payments.*', 'users.name as user_name', 'status_payments.status_name as status_name', 'bookings.*', 'booking_services.*')
+            ->orderBy('payments.id', 'desc')
+            ->whereNull('payments.deleted_at')
+            ->get();
+        $payment->makeHidden(['user_id', 'booking_id', 'paymethod_id']);
         return response()->json([
-            'payment' => $payments,
-            'status' => $trangThai,
-            'type_cho_xac_nhan' => $type_cho_xac_nhan,
+            'payment' => $payment
         ]);
-
-        // $payment = Payment::join('users', 'payments.user_id', '=', 'users.id')
-        //     ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
-        //     ->join('paymethods', 'payments.paymethod_id', '=', 'paymethods.id')
-        //     ->select('payments.*', 'users.name as user_name')
-        //     ->orderBy('payments.id', 'desc')
-        //     ->whereNull('payments.deleted_at')
-        //     ->get();
-        // $payment->makeHidden(['user_id', 'booking_id', 'paymethod_id']);
-        // return response()->json([
-        //     'status' => true,
-        //     'message' => 'Lấy danh sách thành công',
-        //     'data' => $payment
-        // ]);
     }
 
     /**
