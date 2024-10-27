@@ -17,22 +17,24 @@ class PaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(String $user_id)
     {
       
-        $payment = Payment::join('users', 'payments.user_id', '=', 'users.id')
-            ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
-            ->join('paymethods', 'payments.paymethod_id', '=', 'paymethods.id')
-            ->join('status_payments', 'payments.status_id', '=', 'status_payments.id')
-            ->join('booking_services', 'bookings.id', '=', 'booking_services.booking_id') 
-            ->select('payments.*', 'users.name as user_name', 'status_payments.status_name as status_name', 'bookings.*', 'booking_services.*')
-            ->orderBy('payments.id', 'desc')
-            ->whereNull('payments.deleted_at')
-            ->get();
-        $payment->makeHidden(['user_id', 'booking_id', 'paymethod_id']);
-        return response()->json([
-            'payment' => $payment
-        ]);
+        $payments = Payment::with(['status', 'booking', 'user'])
+                ->where('user_id', $user_id) // Lọc theo user_id
+                ->whereNull('deleted_at')    // Lấy các bản ghi chưa bị xóa (nếu dùng soft delete)
+                ->orderBy('id', 'desc')
+                ->get();
+
+        foreach($payments as $item){
+            $user = $item->user_id;
+        }
+
+
+                return response()->json([
+                    'payment' => $payments,
+                    'user' => $user
+                ]);
     }
 
     /**
@@ -200,15 +202,22 @@ class PaymentController extends Controller
      */
     public function show(string $id)
     {
-       $payment = Payment::findOrFail($id);
+        $payment = Payment::findOrFail($id);
 
-       $status = $payment->status;
+        $booking = $payment->booking;
 
-       return response()->json([
-        'payment' => $payment,
-        'status_payment' => $status,
-       
-    ], 200);
+        $room = $booking->room;
+
+        $services = $booking->services;
+
+        return response()->json([
+            'payment' => [
+                'payment' => $payment,  
+                'room' => $room,  
+                'service' => $services
+            ]
+        ]);
+
 
     }
 
