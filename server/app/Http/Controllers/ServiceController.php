@@ -38,30 +38,32 @@ class ServiceController extends Controller
     {
         // Validate the incoming request
         $validator = FacadesValidator::make(
-            $request->all(),[
+            $request->all(),
+            [
                 'name' => 'required|max:255',
                 'description' => 'required|max:255',
                 'price' => 'required|numeric|min:0',
-        ],[
-            'name.required' => 'Tên dịch vụ không được để trống',
-            'name.max' => 'Tên dịch vụ không được vượt 255 kí tự',
-            'description.required' => 'Mô tả không được để trống',
-            'description.max' => 'Mô tả không vượt quá 255 kí tự',
-            'price.required' => 'Giá dịch vụ không được để trống',
-            'price.numeric' => 'Giá dịch vụ phải là số',
-            'price.min' => 'Giá dịch vụ phải lớn hơn 0 hoặc bằng 0',
+            ],
+            [
+                'name.required' => 'Tên dịch vụ không được để trống',
+                'name.max' => 'Tên dịch vụ không được vượt 255 kí tự',
+                'description.required' => 'Mô tả không được để trống',
+                'description.max' => 'Mô tả không vượt quá 255 kí tự',
+                'price.required' => 'Giá dịch vụ không được để trống',
+                'price.numeric' => 'Giá dịch vụ phải là số',
+                'price.min' => 'Giá dịch vụ phải lớn hơn 0 hoặc bằng 0',
             ]
         );
 
         if ($validator->fails()) {
-            return response()->json(['status'=>'error','message'=>$validator->messages()], 400);
+            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
         }
 
         try {
-            if($request->hasFile('image')){
+            if ($request->hasFile('image')) {
                 $filepath = $request->file('image')->store('uploads/services', 'public');
                 $fileUrl = Storage::url($filepath);
-            }else{
+            } else {
                 $fileUrl = null;
             }
 
@@ -71,18 +73,18 @@ class ServiceController extends Controller
 
             $data = [
                 'name' => $name,
-                'image'=>$fileUrl,
+                'image' => $fileUrl,
                 'description' => $description,
                 'price' => $price,
             ];
 
             Service::create($data);
 
-            return response()->json(['status'=>'success','message'=>'Dịch vụ đã được thêm thành công','data'=>$data], 200);
+            return response()->json(['status' => 'success', 'message' => 'Dịch vụ đã được thêm thành công', 'data' => $data], 200);
         } catch (\Exception $e) {
-            return response()->json(['status'=>'error','message'=>$e->getMessage()], 500);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
     }
-}
 
     /**
      * Display the specified resource.
@@ -113,39 +115,39 @@ class ServiceController extends Controller
         $service = Service::find($id);
         $param = $request->all();
         $validator = FacadesValidator::make(
-            $request->all(),[
+            $request->all(),
+            [
                 'name' => 'required|max:255',
                 'description' => 'required|max:255',
                 'price' => 'required|numeric|min:0',
-        ],[
-            'name.required' => 'Tên dịch vụ không được để trống',
-            'name.max' => 'Tên dịch vụ không được vượt 255 kí tự',
-            'description.required' => 'Mô tả không được để trống',
-            'description.max' => 'Mô tả không vượt quá 255 kí tự',
-            'price.required' => 'Giá dịch vụ không được để trống',
-            'price.numeric' => 'Giá dịch vụ phải là số',
-            'price.min' => 'Giá dịch vụ phải lớn hơn 0 hoặc bằng 0',
+            ],
+            [
+                'name.required' => 'Tên dịch vụ không được để trống',
+                'name.max' => 'Tên dịch vụ không được vượt 255 kí tự',
+                'description.required' => 'Mô tả không được để trống',
+                'description.max' => 'Mô tả không vượt quá 255 kí tự',
+                'price.required' => 'Giá dịch vụ không được để trống',
+                'price.numeric' => 'Giá dịch vụ phải là số',
+                'price.min' => 'Giá dịch vụ phải lớn hơn 0 hoặc bằng 0',
             ]
         );
 
         if ($validator->fails()) {
-            return response()->json(['status'=>'error','message'=>$validator->messages()], 400);
+            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
         }
 
-        if($request->hasFile('image')){
-            if($service->image && Storage::disk('public')->exists($service->image)){
+        if ($request->hasFile('image')) {
+            if ($service->image && Storage::disk('public')->exists($service->image)) {
                 Storage::disk('public')->delete($service->image);
             }
             $filepath = $request->file('image')->store('uploads/services', 'public');
 
             $fileUrl = Storage::url($filepath);
-
-        }else{
+        } else {
 
             $filepath = $service->image;
 
             $fileUrl = Storage::url($filepath);
-
         }
 
         $param['image'] = $filepath;
@@ -153,19 +155,19 @@ class ServiceController extends Controller
         $service->update($param);
 
         return response()->json([
-            'message'=>'Cập nhập thành công',
+            'message' => 'Cập nhập thành công',
             'image_url' => $fileUrl
-        ],200);
- }
+        ], 200);
+    }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(String $id)
     {
-        $service=Service::find($id);
+        $service = Service::find($id);
         $service->delete();
-        if($service->image && Storage::disk('public')->exists($service->image)){
+        if ($service->image && Storage::disk('public')->exists($service->image)) {
             Storage::disk('public')->delete($service->image);
         }
         return response()->json([
