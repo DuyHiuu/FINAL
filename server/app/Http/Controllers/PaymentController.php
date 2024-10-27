@@ -17,25 +17,26 @@ class PaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(String $user_id)
+    public function index(String $id)
     {
-      
         $payments = Payment::with(['status', 'booking', 'user'])
-                ->where('user_id', $user_id) // Lọc theo user_id
-                ->whereNull('deleted_at')    // Lấy các bản ghi chưa bị xóa (nếu dùng soft delete)
-                ->orderBy('id', 'desc')
-                ->get();
+            ->where('user_id', $id)
+            ->whereNull('deleted_at')
+            ->orderBy('id', 'desc')
+            ->get();
 
-        foreach($payments as $item){
-            $user = $item->user_id;
-        }
+        // Lấy user_id từ bản ghi đầu tiên nếu tồn tại
+        $user = $payments->isNotEmpty() ? $payments->first()->user_id : null;
 
-
-                return response()->json([
-                    'payment' => $payments,
-                    'user' => $user
-                ]);
+        return response()->json([
+            'status' => true,            // Thêm trường status cho kiểm tra frontend
+            'data' => [
+                'payment' => $payments,  // Thêm dữ liệu chính vào `data` để khớp với frontend
+                'user' => $user
+            ]
+        ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -72,8 +73,8 @@ class PaymentController extends Controller
                 if ($booking->voucher) {
                     $subTotal_voucher += $booking->voucher->discount;
                 }
+            }
         }
-    }
         $payment_method = $payment->paymethod;
 
         $totalAmount = ($subTotal_service + $subTotal_room) - $subTotal_voucher;
@@ -85,7 +86,6 @@ class PaymentController extends Controller
             'totalAmount' => $totalAmount,
             'payment_method' =>   $payment_method
         ]);
-
     }
 
     /**
@@ -94,7 +94,8 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make(
-            $request->all(),[
+            $request->all(),
+            [
                 'pet_name' => 'required|string|max:255',
                 'pet_type' => 'required|string|max:255',
                 'pet_description' => 'required|string',
@@ -106,38 +107,39 @@ class PaymentController extends Controller
                 'booking_id' => 'required|exists:bookings,id',
                 'user_id' => 'required|exists:users,id',
                 'paymethod_id' => 'required|exists:paymethods,id',
-        ],[
-            'pet_name.required' => 'Tên thú cưng không được để trống',
-            'pet_name.string' => 'Tên thú cưng phải là chuỗi',
-            'pet_name.max' => 'Tên thú cưng không được vượt quá 255 kis tự',
-            'pet_type.required' => 'Tên Loài thú cưng không được để trống',
-            'pet_type.max' => 'Tên loài không được vượt quá 255 kí tự',
-            'pet_description.required' => 'Mô tả không được để trống',
-            'pet_description.string' => 'Mô tả phải là chuỗi kí tự',
-            'pet_health.required' => 'Sức khẻo thú cưng không được để trống',
-            'user_name.required' => 'Tên nguời đặt không được để trống',
-            'user_name.max' => 'Tên không được vượt quá 255 kí tự',
-            'user_address.required' => 'Địa chỉ không được để trống',
-            'user_address.max' => 'Địa chỉ không được vượt quá 255 kí tự',
-            'user_email.required' => 'Email không được để trống',
-            'user_email.email' => 'Email không đúng định dạng',
-            'user_email.max' => 'Email không được vượt quá 255 kí tự',
-            'user_phone.required' => 'Số điện thoại không được để trống',
-            'user_phone.string' => 'Số điện thoại phải là chuỗi',
-            'user_phone.max' => 'Số điện không vượt quá 255 kí tự',
+            ],
+            [
+                'pet_name.required' => 'Tên thú cưng không được để trống',
+                'pet_name.string' => 'Tên thú cưng phải là chuỗi',
+                'pet_name.max' => 'Tên thú cưng không được vượt quá 255 kis tự',
+                'pet_type.required' => 'Tên Loài thú cưng không được để trống',
+                'pet_type.max' => 'Tên loài không được vượt quá 255 kí tự',
+                'pet_description.required' => 'Mô tả không được để trống',
+                'pet_description.string' => 'Mô tả phải là chuỗi kí tự',
+                'pet_health.required' => 'Sức khẻo thú cưng không được để trống',
+                'user_name.required' => 'Tên nguời đặt không được để trống',
+                'user_name.max' => 'Tên không được vượt quá 255 kí tự',
+                'user_address.required' => 'Địa chỉ không được để trống',
+                'user_address.max' => 'Địa chỉ không được vượt quá 255 kí tự',
+                'user_email.required' => 'Email không được để trống',
+                'user_email.email' => 'Email không đúng định dạng',
+                'user_email.max' => 'Email không được vượt quá 255 kí tự',
+                'user_phone.required' => 'Số điện thoại không được để trống',
+                'user_phone.string' => 'Số điện thoại phải là chuỗi',
+                'user_phone.max' => 'Số điện không vượt quá 255 kí tự',
             ]
         );
 
         if ($validator->fails()) {
-            return response()->json(['status'=>'error','message'=>$validator->messages()], 400);
+            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
         }
 
-        if($request->isMethod('POST')){
+        if ($request->isMethod('POST')) {
             DB::beginTransaction();
 
-            try{
+            try {
                 $params = $request->all();
-                 // Lấy booking dựa trên booking_id từ request
+                // Lấy booking dựa trên booking_id từ request
                 $booking = Booking::find($params['booking_id']);
 
                 $subTotal_service = 0;
@@ -165,7 +167,7 @@ class PaymentController extends Controller
                     if ($booking->voucher) {
                         $subTotal_voucher += $booking->voucher->discount;
                     }
-            }
+                }
 
                 $total_amount = ($subTotal_room + $subTotal_service) - $subTotal_voucher;
 
@@ -187,14 +189,12 @@ class PaymentController extends Controller
                     'payment_id' => $payment_id,
                     'total_amount' => $total_amount
                 ], 201);
-
-            } catch (\Exception $e){
+            } catch (\Exception $e) {
                 DB::rollBack();
 
                 return response()->json(['status' => 'Xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại!', 'message' => $e->getMessage()], 500);
-
             }
-          }
+        }
     }
 
     /**
@@ -212,13 +212,11 @@ class PaymentController extends Controller
 
         return response()->json([
             'payment' => [
-                'payment' => $payment,  
-                'room' => $room,  
+                'payment' => $payment,
+                'room' => $room,
                 'service' => $services
             ]
         ]);
-
-
     }
 
     /**
@@ -242,7 +240,7 @@ class PaymentController extends Controller
         $validator = Validator::make($request->all(), [
             'status_id' => 'required|integer|exists:status_payments,id', // Giả sử status lưu trong bảng 'statuses'
         ]);
-    
+
         // Nếu xác thực thất bại, trả về lỗi
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -256,7 +254,7 @@ class PaymentController extends Controller
             } else {
                 $payment->update(['status_id' => $request->status_id]);
             }
-    
+
             DB::commit();
 
             $status = $payment->status;
@@ -266,19 +264,15 @@ class PaymentController extends Controller
                 'payment' => $payment,
                 'status_payment' => $status
             ], 200);
- 
-         } catch (\Exception $e) {
-             DB::rollBack();
+        } catch (\Exception $e) {
+            DB::rollBack();
 
-             return response()->json([
+            return response()->json([
                 'status' => 'error',
                 'message' => 'Đã xảy ra lỗi trong quá trình cập nhật trạng thái. Vui lòng thử lại!',
                 'error' => $e->getMessage()
             ], 500);
-         }
- 
-     
-       
+        }
     }
 
     /**

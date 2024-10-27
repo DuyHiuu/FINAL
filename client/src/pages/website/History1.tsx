@@ -2,16 +2,12 @@ import React, { useState } from "react";
 import useFetchPayments from "../../api/useFetchPayments";
 
 const History1 = () => {
-
   const { payment } = useFetchPayments();
-
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
-
   };
-
 
   return (
     <div className="mt-32">
@@ -20,45 +16,43 @@ const History1 = () => {
         {/* Phần bên trái */}
         <div className="flex-1 w-full lg:w-1/2">
           <a href="/history2">
-            {payment.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col lg:flex-row items-center mb-6 p-4 bg-white shadow rounded-lg"
-              >
-                {/* Hình ảnh bên trái */}
-                <div className="flex-shrink-0 mb-4 lg:mb-0 lg:mr-4">
-                  <img
-                    src={item.img_thumbnail}
-                    alt={`image-${item.id}`}
-                    className="w-24 h-24 rounded-md"
-                  />
-                </div>
+            {Array.isArray(payment) && payment.length > 0 ? (
+              payment.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex flex-col lg:flex-row items-center mb-6 p-4 bg-white shadow rounded-lg"
+                >
+                  {/* Hình ảnh bên trái */}
+                  <div className="flex-shrink-0 mb-4 lg:mb-0 lg:mr-4">
+                    <img
+                      src={item.img_thumbnail}
+                      alt={`image-${item.id}`}
+                      className="w-24 h-24 rounded-md"
+                    />
+                  </div>
 
-                {/* Nội dung bên phải */}
-                <div className="flex-1 text-center lg:text-left">
-                  {/* Tiêu đề */}
-                  <h1 className="text-xl font-bold text-gray-900">{item.title}</h1>
-                  {/* Icon và Chữ nằm cạnh nhau, căn giữa */}
-                  <div className="flex justify-center lg:justify-start items-center mt-1">
-                    <span className="mr-2">{item.icon}</span>
-                    <p className="text-gray-600">1 thú cưng</p>
+                  {/* Nội dung bên phải */}
+                  <div className="flex-1 text-center lg:text-left">
+                    <h1 className="text-xl font-bold text-gray-900">ID hóa đơn: {item.id}</h1>
+                    <div className="flex justify-center lg:justify-start items-center mt-1">
+                      <p className="text-gray-600">Tổng giá : {item.total_amount}</p>
+                    </div>
+                    <p className="text-gray-600 mt-2">Ngày vào: {item.start_date}</p>
+                    <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-[#064749]">
+                      <p className="text-white text-sm"><a href="/history2">Xem chi tiết</a></p>
+                    </div>
+                    <span className="ml-2 text-gray-500">Giá: {item.price} đ</span>
                   </div>
-                  {/* Mô tả và thông tin bổ sung */}
-                  <p className="text-gray-600 mt-2">Ngày: {item.date}</p>
-                  <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-[#064749]">
-                    <p className="text-white text-sm"><a href="/history2">
-                      Xem chi tiết
-                    </a></p>
-                  </div>
-                  <span className="ml-2 text-gray-500">Giá: {item.price} đ</span>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-gray-500">Không có lịch sử mua hàng.</p>
+            )}
           </a>
         </div>
 
-        {/* Phần bên phảii */}
-        <div className="lg:w-1/3 p-4  border rounded-lg shadow-lg ml-0 lg:ml-4 bg-white">
+        {/* Phần bên phải */}
+        <div className="lg:w-1/3 p-4 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-white h-full">
           <div className="flex items-center">
             <div className="mr-4 sm:mr-20">
               <p className="text-left font-bold mt-2">Tổng số phòng đã đặt:</p>
@@ -69,8 +63,7 @@ const History1 = () => {
           </div>
 
           {/* Chi phí chia dọc hai bên */}
-          <div className="flex justify-between mt-4">
-          </div>
+          <div className="flex justify-between mt-4"></div>
           <div className="flex justify-center">
             <div className="relative w-full max-w-md">
               <input
@@ -93,16 +86,12 @@ const History1 = () => {
               </button>
             </div>
           </div>
-          <button
-
-            className="mt-5 text-white px-10 py-2 rounded-full bg-[#2563eb]"
-          >
+          <button className="mt-5 text-white px-10 py-2 rounded-full bg-[#2563eb]">
             <a href="">Tìm kiếm</a>
           </button>
         </div>
       </div>
     </div>
-
   );
 };
 
