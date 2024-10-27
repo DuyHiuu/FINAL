@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
-const API_URL = "http://localhost:8000/api";
+const API_URL = "http://localhost:8000/api/payments/list";
 
 const useFetchPayments = () => {
-  const [paymethod, setPaymethod] = useState<any[]>([]); 
+  const [payment, setPayment] = useState<any[]>([]);
+  const [user_id, setUser_id] = useState("");
 
   useEffect(() => {
-    const fetchpaymethod = async () => {
+    const user_idFromStorage = localStorage.getItem("user_id");
+    setUser_id(user_idFromStorage || "");
+  }, []);
+
+  useEffect(() => {
+    const fetchPayment = async () => {
+      if (!user_id) return;
+
       try {
-        const res = await fetch(`${API_URL}/payments`, {
+        const res = await fetch(`${API_URL}/${user_id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -18,22 +26,24 @@ const useFetchPayments = () => {
           throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
         }
 
-        const responseData = await res.json(); 
+        const responseData = await res.json();
+        console.log("Dữ liệu từ API:", responseData); // Kiểm tra dữ liệu từ API
 
-        if (responseData && responseData.status && responseData.data) {
-          setPaymethod(responseData.data); 
+        if (responseData && responseData.status && responseData.data && Array.isArray(responseData.data.payment)) {
+          setPayment(responseData.data.payment);
         } else {
           throw new Error("Dữ liệu không hợp lệ");
         }
       } catch (error) {
-        console.error("Lỗi khi fetch size:", error);
+        console.error("Lỗi khi fetch dữ liệu:", error);
       }
     };
 
-    fetchpaymethod();
-  }, []);
+    fetchPayment();
+  }, [user_id]);
 
-  return { paymethod };
+
+  return { payment };
 };
 
 export default useFetchPayments;
