@@ -19,7 +19,7 @@ class PaymentController extends Controller
      */
     public function index(String $id)
     {
-        $payments = Payment::with(['status', 'booking', 'user'])
+        $payments = Payment::with(['status', 'booking.room', 'user'])
             ->where('user_id', $id)
             ->whereNull('deleted_at')
             ->orderBy('id', 'desc')
@@ -28,11 +28,23 @@ class PaymentController extends Controller
         // Lấy user_id từ bản ghi đầu tiên nếu tồn tại
         $user = $payments->isNotEmpty() ? $payments->first()->user_id : null;
 
+        $bookings = [];
+        $rooms = [];
+
+        foreach ($payments as $payment) {
+            if ($payment->booking) {
+                $bookings [] = $payment->booking;
+                $rooms[] = $payment->booking->room;
+            }
+        }
+
         return response()->json([
             'status' => true,            // Thêm trường status cho kiểm tra frontend
             'data' => [
                 'payment' => $payments,  // Thêm dữ liệu chính vào `data` để khớp với frontend
-                'user' => $user
+                'user' => $user,
+                'booking' => $bookings,
+                'room' => $rooms,
             ]
         ]);
     }
