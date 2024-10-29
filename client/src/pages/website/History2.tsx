@@ -1,19 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const History2 = () => {
-    const row = [
-        {
-            icon: (
-                <img
-                    src="/images/icon1.jpg" // Đường dẫn icon chó mèo
-                    alt="dog-cat-icon"
-                    className="h-8 w-8"
-                />
-            ),
-        },
-    ];
 
-    const image = "/images/anh8.webp"; // Đường dẫn ảnh lớn
+    const showUrl = "http://localhost:8000/api/payments";
+
+    const [data, setData] = useState(null);
+
+    const { id } = useParams();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch(`${showUrl}/${id}`, {
+                    method: "get",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (!res.ok) {
+                    throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
+                }
+
+                const data = await res.json();
+                setData(data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [id]);
+
+    if (!data) {
+        return <p>Đang tải dữ liệu...</p>;
+    }
+
+    const paymentData = data.payment;
+    const roomData = paymentData.room;
+    const servicesData = paymentData.service;
 
 
     return (
@@ -26,37 +50,51 @@ const History2 = () => {
                         <div className="max-w-xl py-12 divide-y md:max-w-4xl">
                             <div className="max-w-md">
                                 <div className="grid grid-cols-1 gap-6">
-                                    {/* Các trường thông tin khách hàng */}
-                                    {['Tên', 'Địa chỉ', 'Email', 'Số điện thoại', 'Tên thú cưng'].map((label, index) => (
-                                        <label key={index} className="block">
-                                            <span className="text-gray-700 text-lg">{label}</span>
-                                            <input
-                                                type={label === 'Email' ? 'email' : 'text'}
-                                                className="mt-1 block w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2"
-                                                value={label === 'Tên' ? 'Nguyễn Văn Nam' : label === 'Địa chỉ' ? 'Trịnh Văn Bô, Nam Từ Liêm, Hà Nội' : label === 'Email' ? 'nguyenvannam@gmail.com' : label === 'Số điện thoại' ? '0966456789' : 'Cali'}
-                                            />
-                                        </label>
-                                    ))}
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Tên khách hàng</span>
+                                        <input type='text' value={paymentData?.payment.user_name} className="block w-full mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2" />
+                                    </label>
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Email</span>
+                                        <input type='text' value={paymentData?.payment.user_email} className="block w-full mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2" />
+                                    </label>
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Số điện thoại</span>
+                                        <input type='text' value={paymentData?.payment.user_phone} className="block w-full mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2" />
+                                    </label>
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Địa chỉ</span>
+                                        <input type='text' value={paymentData?.payment.user_address} className="block w-full mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2" />
+                                    </label>
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Tên thú cưng</span>
+                                        <input type='text' value={paymentData?.payment.pet_name} className="block w-full mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2" />
+                                    </label>
+
                                     <label className="block">
                                         <span className="text-gray-700 text-lg">Loại thú cưng</span>
                                         <select className="block w-full mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2">
-                                            <option>Chó</option>
-                                            <option>Mèo</option>
+                                            <option value={paymentData?.payment.pet_type}>{paymentData.payment.pet_type}</option>
                                         </select>
                                     </label>
+
                                     <label className="block">
                                         <span className="text-gray-700 text-lg">Mô tả chi tiết thú cưng (Màu, giống,...)</span>
                                         <textarea className="mt-1 block w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2" rows='3'>
-                                        Màu nâu, giống chó Alaska, 40kg 
+                                            {paymentData.payment.pet_description}
                                         </textarea>
                                     </label>
+
                                     <label className="block">
                                         <span className="text-gray-700 text-lg">Tình trạng sức khỏe</span>
                                         <select className="block w-full mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2 mb-5">
-                                            <option>Khỏe mạnh</option>
-                                            <option>Có vấn đề về sức khỏe</option>
+                                            <option value={paymentData?.payment.pet_health}>{paymentData.payment.pet_health}</option>
                                         </select>
-                                        {/* <textarea className="mt-1 block w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2" rows='3' placeholder='Mô tả chi tiết tình trạng của bé gặp phải (Nếu có)'></textarea> */}
                                     </label>
                                 </div>
                             </div>
@@ -73,8 +111,7 @@ const History2 = () => {
                                 <div className="grid grid-cols-1 gap-6">
                                     <label className="block">
                                         <select className="block w-full mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2">
-                                            <option>Thanh toán trực tiếp</option>
-                                            <option>Chuyển khoản ngân hàng</option>
+                                            <option value={paymentData?.payment.name}>{paymentData.payment.name}</option>
                                         </select>
                                     </label>
                                 </div>
@@ -84,12 +121,12 @@ const History2 = () => {
                 </div>
 
                 <center>
-                <button 
-                
-                    className="mt-20 text-white px-10 py-2 rounded-full bg-[#064749]"
-                >
-                    <a href="/history1">Quay lại</a>
-                </button>
+                    <button
+
+                        className="mt-20 text-white px-10 py-2 rounded-full bg-[#064749]"
+                    >
+                        <a href="/history1">Quay lại</a>
+                    </button>
                 </center>
 
             </div>
@@ -97,21 +134,20 @@ const History2 = () => {
             {/* Phần thông tin đặt phòng */}
             <div className="lg:w-1/3 p-4 mt-20 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-2/3">
                 <img
-                    src={image}
+                    src={roomData?.img_thumbnail}
                     alt="Large"
                     className="w-full h-60 object-cover rounded-lg shadow mb-10"
                 />
                 <strong className="text-4xl font-semibold">P.100</strong>
                 <div className="flex items-center mt-3 mb-3">
                     <span className="flex items-center justify-center mr-2">
-                        {row[0].icon}
+                        {roomData?.price}
                     </span>
-                    <p className="flex items-center">1 thú cưng</p>
                 </div>
-                <p>Vị trí 01 | Tầng 1 | Phòng bé</p>
+                <p>{roomData?.description}</p>
 
                 {/* Ngày vào và Ngày ra nằm ngang */}
-                <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 mb-10 mt-10">
+                <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 mb-10 mt-5">
                     <label className="text-left block w-full lg:w-1/2">
                         <strong>Ngày vào</strong>
                         <input type="date" className="border p-1 w-full mt-1" />
@@ -123,26 +159,46 @@ const History2 = () => {
                 </div>
 
                 <h3 className="text-left text-2xl font-semibold mt-10">Dịch vụ kèm thêm</h3>
-          <div className="mt-2">
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                className="mr-2 appearance-none bg-[#064749] border rounded-full w-4 h-4 cursor-pointer"
-              />
-              <span>Tắm</span>
-            </label>
-          </div>
+                <div className="mt-2">
+                    {Array.isArray(servicesData) && servicesData.length > 0 ? (
+                        servicesData?.map((item) => (
+                            <div
+                                key={item?.id}
+                            >
+                                <label className="flex items-center mb-2">
+                                    <input
+                                        type="checkbox"
+                                        className="mr-2 appearance-none bg-[#064749] border rounded-full w-4 h-4 cursor-pointer"
+                                    />
+                                    <span>{item.name}</span>
+                                </label>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-500">Không sử dụng dịch vụ.</p>
+                    )}
+                </div>
 
-                {/* Chi phí chia dọc hai bên */}
+                <div className="flex justify-between mt-4">
+                    <div>
+                        <p className="text-left font-bold mt-2">Trạng thái:</p>
+                    </div>
+                    <div className="text-right">
+                        <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-yellow-300">
+                            <p className="text-yellow-800 text-sm">{paymentData.payment.status?.status_name}</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="flex justify-between mt-4">
                     <div>
                         <p className="text-left font-bold mt-2">Tổng:</p>
                     </div>
                     <div className="text-right">
-                        <p className="font-bold mt-2">1.121.000</p>
+                        <p className="font-bold mt-2">{paymentData.payment.total_amount.toLocaleString("vi-VN")} VND</p>
                     </div>
                 </div>
-            
+
             </div>
         </div>
     );

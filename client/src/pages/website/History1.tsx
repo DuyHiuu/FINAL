@@ -5,6 +5,8 @@ const History1 = () => {
   const { payment } = useFetchPayments();
   const [searchTerm, setSearchTerm] = useState("");
 
+  const totalRoomsBooked = Array.isArray(payment) ? payment.length : 0;
+
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -15,40 +17,41 @@ const History1 = () => {
       <div className="container mx-auto p-4 lg:p-8 flex flex-col lg:flex-row">
         {/* Phần bên trái */}
         <div className="flex-1 w-full lg:w-1/2">
-          <a href="/history2">
-            {Array.isArray(payment) && payment.length > 0 ? (
-              payment.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex flex-col lg:flex-row items-center mb-6 p-4 bg-white shadow rounded-lg"
-                >
-                  {/* Hình ảnh bên trái */}
-                  <div className="flex-shrink-0 mb-4 lg:mb-0 lg:mr-4">
-                    <img
-                      src={item.img_thumbnail}
-                      alt={`image-${item.id}`}
-                      className="w-24 h-24 rounded-md"
-                    />
-                  </div>
-
-                  {/* Nội dung bên phải */}
-                  <div className="flex-1 text-center lg:text-left">
-                    <h1 className="text-xl font-bold text-gray-900">ID hóa đơn: {item.id}</h1>
-                    <div className="flex justify-center lg:justify-start items-center mt-1">
-                      <p className="text-gray-600">Tổng giá : {item.total_amount}</p>
-                    </div>
-                    <p className="text-gray-600 mt-2">Ngày vào: {item.start_date}</p>
-                    <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-[#064749]">
-                      <p className="text-white text-sm"><a href="/history2">Xem chi tiết</a></p>
-                    </div>
-                    <span className="ml-2 text-gray-500">Giá: {item.price} đ</span>
-                  </div>
+          {Array.isArray(payment) && payment.length > 0 ? (
+            payment?.map((item) => (
+              <div
+                key={item?.id}
+                className="flex flex-col lg:flex-row items-center mb-6 p-4 bg-white shadow rounded-lg"
+              >
+                {/* Hình ảnh bên trái */}
+                <div className="flex-shrink-0 mb-4 lg:mb-0 lg:mr-4">
+                  <img
+                    src={item.booking?.room?.img_thumbnail}
+                    alt={`image-${item?.id}`}
+                    className="w-24 h-24 rounded-md"
+                  />
                 </div>
-              ))
-            ) : (
-              <p className="text-gray-500">Không có lịch sử mua hàng.</p>
-            )}
-          </a>
+
+                {/* Nội dung bên phải */}
+                <div className="flex-1 text-center lg:text-left">
+                  <h1 className="text-xl font-bold text-gray-900">ID hóa đơn: {item?.id}</h1>
+                  <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-yellow-300">
+                    <p className="text-yellow-800 text-sm">{item.status?.status_name}</p>
+                  </div>
+                  <p className="text-gray-600 mt-2">
+                    Ngày : {`${item.booking?.start_date.split("-").reverse().join("-")}`} &#8594; {`${item.booking?.end_date.split("-").reverse().join("-")}`}
+                  </p>
+
+                  <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-[#064749]">
+                    <p className="text-white text-sm"><a href={`/history2/${item.id}`}>Xem chi tiết</a></p>
+                  </div>
+                  <span className="ml-2 text-gray-500">Tổng tiền: {item.total_amount.toLocaleString("vi-VN")} VNĐ</span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">Không có lịch sử mua hàng.</p>
+          )}
         </div>
 
         {/* Phần bên phải */}
@@ -58,7 +61,7 @@ const History1 = () => {
               <p className="text-left font-bold mt-2">Tổng số phòng đã đặt:</p>
             </div>
             <div className="text-right ml-4 sm:ml-20">
-              <p className="font-bold mt-2">1</p>
+              <p className="font-bold mt-2">{totalRoomsBooked}</p>
             </div>
           </div>
 
