@@ -6,7 +6,7 @@ const Chart: React.FC = () => {
   const chartRef = useRef<HTMLDivElement>(null);
   const { chartData, error } = useFetchChart('month', undefined, undefined, 2023, 10); // Lấy dữ liệu cho tháng 10, 2023
 
-  const [seriesData, setSeriesData] = useState<number[]>([35.1, 23.5, 2.4, 5.4]); // Giá trị mặc định khi không có dữ liệu
+  const [seriesData, setSeriesData] = useState<number[]>([100.1, 23.5, 2.4, 5.4]); // Giá trị mặc định khi không có dữ liệu
 
   // Lấy dữ liệu từ API và cập nhật dữ liệu series cho biểu đồ
   useEffect(() => {
@@ -22,6 +22,8 @@ const Chart: React.FC = () => {
         setSeriesData([
           total_money_room ?? 0, // Nếu không có dữ liệu, gán giá trị 0
           total_money_service ?? 0,
+          0, // Giả định cột cho Năm
+          total_money_room + total_money_service ?? 0, // Tính tổng
         ]);
       }
     }
@@ -57,7 +59,7 @@ const Chart: React.FC = () => {
         colors: ["transparent"],
       },
       xaxis: {
-        categories: ["Phòng", "Dịch vụ"], // Nhãn x tương ứng với dữ liệu
+        categories: ["Ngày", "Tháng", "Năm", "Tổng"], // Nhãn x tương ứng với dữ liệu
       },
       yaxis: {
         title: {

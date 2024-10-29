@@ -18,7 +18,7 @@ const useFetchChart = (timeline: string, start?: string, end?: string, year?: nu
           ...(month && { month: month.toString() }),
         }).toString();
 
-        const response = await fetch(`${API_URL}/chart/total-revenue?${queryParams}`);
+        const response = await fetch(`${API_URL}/chart`);
 
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);

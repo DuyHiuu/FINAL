@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchServices from "../../api/useFetchServices";
 import useFetchBlogs from "../../api/useFetchBlogs";
+import useFetchComments from "../../api/useFetchComments";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -101,7 +102,7 @@ const HomePage = () => {
     },
   ];
 
-  const {room} = useFetchRooms();
+  
 
   const khuonItems = [
     {
@@ -123,9 +124,37 @@ const HomePage = () => {
     },
   ];
 
-  const {service} = useFetchServices();
 
-  const {blog} = useFetchBlogs();
+  const { room } = useFetchRooms();
+  const { service } = useFetchServices();
+  const { blog } = useFetchBlogs();
+  
+  const ReviewsSection = () => {
+    const { comments, loading, error } = useFetchComments();
+
+    return (
+      <div className="flex flex-col items-center">
+        <h1 className="text-3xl font-bold mt-10">Đánh giá</h1>
+        <p className="text-lg text-center mt-2">Một số đánh giá tiêu biểu</p>
+        <div className="flex flex-wrap justify-center mt-6">
+          {loading && <p>Đang tải...</p>}
+          {error && <p>Error: {error}</p>}
+          {comments.slice(0, 3).map((comment, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg m-2"
+        style={{ width: '350px', height: '120px' }} 
+            >
+              <h1 className="text-lg font-semibold">{comment.content}</h1>
+              <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+  
+  
 
   return (
     <div className="flex flex-col items-center mb-20 mt-24">
@@ -185,7 +214,7 @@ const HomePage = () => {
         Một số hình ảnh PetHose
       </h1>
       <div className="flex flex-wrap justify-center mt-10">
-        {room?.map((room:any) => (
+        {room?.map((room: any) => (
           <div
             key={room.id}
             className="flex flex-col items-center m-2 p-4 border rounded-lg shadow-lg bg-white w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
@@ -196,14 +225,16 @@ const HomePage = () => {
             <img
               src={room.img_thumbnail}
               className="w-full h-32 object-cover rounded-md"
+              alt={room.size_name}
             />
           </div>
         ))}
       </div>
 
       <button
-      onClick={handleClickDanhsachphong} 
-      className="mt-10 bg-[#33CCFF] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300">
+        onClick={handleClickDanhsachphong}
+        className="mt-10 bg-[#33CCFF] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300"
+      >
         Danh sách phòng
       </button>
 
@@ -211,7 +242,7 @@ const HomePage = () => {
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold mt-10">Các dịch vụ chăm sóc</h1>
         <div className="flex flex-wrap justify-center mt-6">
-          {service?.map((service:any) => (
+          {service?.map((service: any) => (
             <div
               key={service.id}
               className="flex flex-col items-center bg-[#E2F1E8] p-4 rounded-lg shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 m-2" // Responsive width
@@ -226,30 +257,33 @@ const HomePage = () => {
           ))}
         </div>
       </div>
-
-      {/* Reviews Section */}
-      <div className="flex flex-col items-center">
-        <h1 className="text-3xl font-bold mt-10">Đánh giá</h1>
-        <p className="text-lg text-center mt-2">Một số đánh giá tiêu biểu</p>
-        <div className="flex flex-wrap justify-center mt-6">
-          {khuonItems.map((khuon, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 m-2"
-            >
-              <h1 className="text-lg font-semibold">{khuon.title}</h1>
-              <p className="text-sm text-center">{khuon.description}</p>
-              <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p>
-            </div>
-          ))}
-        </div>
+      <h1 className="text-3xl font-bold mt-40 text-center">Top 3 Phòng</h1>
+      <div className="flex flex-wrap justify-center mt-10">
+        {/* Lấy top 3 phòng */}
+        {room?.slice(0, 3).map((room: any) => (
+          <div
+            key={room.id}
+            className="flex flex-col items-center m-2 p-4 border rounded-lg shadow-lg bg-white w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
+          >
+            <h2 className="mt-2 text-lg font-semibold text-center">
+              {room.size_name}
+            </h2>
+            <img
+              src={room.img_thumbnail}
+              className="w-full h-48 object-cover rounded-md" // Thay đổi chiều cao ở đây
+              alt={room.size_name}
+            />
+          </div>
+        ))}
       </div>
+
+      <ReviewsSection/>
 
       {/* Blog Sectii */}
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold mt-10">Blog</h1>
         <div className="flex flex-wrap justify-center mt-6">
-          {blog?.map((blog:any) => (
+          {blog?.map((blog: any) => (
             <div
               key={blog.id}
               className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 m-2"
@@ -265,10 +299,11 @@ const HomePage = () => {
           ))}
         </div>
         <button
-      onClick={handleClickDocthem} 
-      className="mt-10 bg-[#33CCFF] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300">
-        Đọc thêm
-      </button>
+          onClick={handleClickDocthem}
+          className="mt-10 bg-[#33CCFF] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300"
+        >
+          Đọc thêm
+        </button>
       </div>
     </div>
   );

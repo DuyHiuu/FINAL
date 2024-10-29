@@ -17,7 +17,8 @@ class PaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(String $id)
+    
+     public function index(String $id)
     {
         $payments = Payment::with(['status', 'booking.room', 'user'])
             ->where('user_id', $id)
@@ -286,6 +287,29 @@ class PaymentController extends Controller
             ], 500);
         }
     }
+    public function fetchChartData(Request $request)
+{
+    try {
+        // Xử lý các tham số và lấy dữ liệu
+        $type = $request->input('type');
+        $year = $request->input('year');
+        $month = $request->input('month');
+        $start = $request->input('start');
+        $end = $request->input('end');
+
+        // Giả sử bạn có phương thức để lấy dữ liệu doanh thu
+        $chartData = $this->getRevenueData($type, $year, $month, $start, $end);
+
+        if (!$chartData) {
+            return response()->json(['status' => false, 'message' => 'Không có dữ liệu cho yêu cầu này.'], 404);
+        }
+
+        return response()->json(['status' => true, 'data' => $chartData]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => false, 'message' => 'Có lỗi xảy ra trong quá trình xử lý.'], 500);
+    }
+}
+
 
     /**
      * Remove the specified resource from storage.
