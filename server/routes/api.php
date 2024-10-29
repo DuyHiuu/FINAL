@@ -69,8 +69,9 @@ Route::prefix('blogs')->group(function () {
     Route::delete('/{id}', [BlogController::class, 'destroy']);
 });
 Route::prefix('chart')->group(function () {
-    Route::get('/total-revenue', [StatisticalController::class, 'total_revenue']);
+    Route::get('/', [StatisticalController::class, 'total_revenue']);
 });
+
 
 // Route::resource('paymethods', PaymethodController::class);
 // Route::resource('payments', PaymentController::class);
