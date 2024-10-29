@@ -161,6 +161,12 @@ const Detail = () => {
     }
   };
 
+  const today = new Date();
+  const minDate = today.toISOString().split("T")[0];
+  const maxDate = new Date(today.setMonth(today.getMonth() + 2))
+    .toISOString()
+    .split("T")[0];
+
   return (
     <div className="container mx-auto p-4 lg:p-8 mt-24">
       <div className="flex flex-col lg:flex-row mb-8">
@@ -227,7 +233,7 @@ const Detail = () => {
                   <span>
                     x
                     <input
-                      className="border ms-3"
+                      className="border rounded-md w-20 px-2 py-1 ml-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
                       value={quantities[service.id] || ""}
                       onChange={(e) =>
                         changeQuantity(service.id, parseInt(e.target.value) || 0)
@@ -248,14 +254,19 @@ const Detail = () => {
 
           <div className="lg:w-1/3 p-4 mt-10 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-full">
             <h2 className="text-2xl font-semibold mb-5">{room?.price}/Ngày</h2>
-            <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 mb-4">
+            <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 mb-4">
               <label className="text-left block w-full lg:w-1/2">
                 <strong>Ngày vào</strong>
                 <input
+                  required
                   type="date"
                   name="start_date"
                   value={start_date}
-                  className="border p-1 w-full mt-1"
+                  min={minDate}
+                  max={maxDate}
+                  className="border border-gray-300 rounded-md bg-gray-50 p-2 px-4 w-full mt-1
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                     hover:border-blue-400 focus:shadow-lg transition duration-200"
                   onChange={(e) => setStart_date(e.target.value)}
                 />
               </label>
@@ -263,9 +274,14 @@ const Detail = () => {
                 <strong>Ngày ra</strong>
                 <input
                   type="date"
+                  required
                   name="end_date"
                   value={end_date}
-                  className="border p-1 w-full mt-1"
+                  min={minDate}
+                  max={maxDate}
+                  className="border border-gray-300 rounded-md bg-gray-50 p-2 px-4 w-full mt-1
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                     hover:border-blue-400 focus:shadow-lg transition duration-200"
                   onChange={(e) => setEnd_date(e.target.value)}
                 />
               </label>
