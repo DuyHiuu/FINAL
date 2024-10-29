@@ -42,7 +42,7 @@ import CommentList from "./components/layouts/admin/comment/CommentList";
 import AddComment from "./components/layouts/admin/comment/AddComment";
 import EditComment from "./components/layouts/admin/comment/EditComment";
 import Loi404 from "./pages/website/Loi404"; // Import trang lỗi 404
-import Chart from "./components/layouts/admin/chart/chart";
+import Chart from "./components/layouts/admin/chart/Chart";
 import AccoutProfile from "./pages/website/Accout/AccoutProfile";
 import UserInfo from "./pages/website/Accout/UserInfo";
 import EditUserInfo from "./pages/website/Accout/EditUserInfo";
@@ -69,9 +69,6 @@ export const router = createBrowserRouter([
       { path: "/account", element: <AccoutProfile /> },
       { path: "/infor", element: <UserInfo /> },
       { path: "/editinfor", element: <EditUserInfo /> },
-
-
-
 
       // Áp dụng UserPrivateRoute cho trang lịch sử mua hàng
       {
@@ -128,9 +125,7 @@ export const router = createBrowserRouter([
       { path: "/admin/comments/add", element: <AddComment /> },
       { path: "/admin/comments/edit/:id", element: <EditComment /> },
 
-      { path: "/admin/chart", element: < Chart /> },
-
-
+      { path: "/admin/chart", element: <Chart /> },
     ],
   },
 
