@@ -83,7 +83,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/history2",
+        path: "/history2/:id",
         element: (
           <UserPrivateRoute>
             <History2 />
@@ -128,7 +128,7 @@ export const router = createBrowserRouter([
       { path: "/admin/comments/add", element: <AddComment /> },
       { path: "/admin/comments/edit/:id", element: <EditComment /> },
 
-      { path: "/admin/chart", element: < Chart/> },
+      { path: "/admin/chart", element: < Chart /> },
 
 
     ],
