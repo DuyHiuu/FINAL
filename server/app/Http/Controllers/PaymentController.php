@@ -217,9 +217,15 @@ class PaymentController extends Controller
     {
         $payment = Payment::findOrFail($id);
 
+        $paymentMethod = $payment->paymethod ? $payment->paymethod->name : null;
+
+        $status = $payment->status ? $payment->status->status_name : null;
+
         $booking = $payment->booking;
 
         $room = $booking->room;
+
+        $size = $room && $room->size ? $room->size->name : null;
 
         $services = $booking->services;
 
@@ -227,7 +233,11 @@ class PaymentController extends Controller
             'payment' => [
                 'payment' => $payment,
                 'room' => $room,
-                'service' => $services
+                'service' => $services,
+                'booking' => $booking,
+                'paymentMethod' => $paymentMethod,
+                'status' => $status,
+                'size' => $size
             ]
         ]);
     }
