@@ -15,4 +15,8 @@ class Size extends Model
         'description',
         'quantity'
     ];
+
+    public function rooms() {
+        return $this->hasMany(Size::class, 'size_id');
+    }
 }

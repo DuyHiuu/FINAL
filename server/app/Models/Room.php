@@ -16,4 +16,10 @@ class Room extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function size() {
+        return $this->belongsTo(Size::class, 'size_id');
+    }
+
 }
+
