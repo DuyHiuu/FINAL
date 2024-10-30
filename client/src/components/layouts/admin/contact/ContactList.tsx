@@ -27,7 +27,7 @@ const ContactList = () => {
   const totalPages = Math.ceil(filteredContacts?.length / contactsPerPage);
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this contact?");
+    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa địa chỉ liên hệ này không?");
     if (!confirmDelete) return;
 
     try {
@@ -35,16 +35,16 @@ const ContactList = () => {
         method: "DELETE",
       });
       if (response.ok) {
-        alert("Contact successfully deleted");
+        alert("Đã xóa liên hệ thành công");
         window.location.reload();
       } else {
         const errorData = await response.json();
-        console.error("Delete failed:", errorData.message);
-        alert(`Delete failed: ${errorData.message}`);
+        console.error("Xóa không thành công:", errorData.message);
+        alert(`Xóa không thành công: ${errorData.message}`);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred while deleting the contact");
+      alert("Đã xảy ra lỗi khi xóa liên hệ");
     }
   };
 
@@ -65,7 +65,7 @@ const ContactList = () => {
       <div className="mb-4">
         <input
           type="text"
-          placeholder="Search by name, email, phone number, or message"
+          placeholder="Tìm kiếm theo name, email, phone hoặc message"
           value={searchTerm}
           onChange={handleSearch}
           className="px-4 py-2 border border-gray-300 rounded-lg w-full"
@@ -83,7 +83,7 @@ const ContactList = () => {
           <table className="min-w-full bg-white">
             <thead className="bg-gray-200 text-gray-600">
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold">No.</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">STT</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">Name</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">Email</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">Phone Number</th>
