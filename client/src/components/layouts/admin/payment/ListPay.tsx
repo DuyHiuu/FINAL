@@ -52,7 +52,7 @@ const RoomList = () => {
                                     <td className="px-4 py-2">
                                         <div className="flex items-center space-x-3">
                                             <Link
-                                                to={`/admin/orders/edit/${item.id}`}
+                                                to={`/admin/payments/detail/${item.id}`}
                                                 className="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition duration-200"
                                             >
                                                 Chi tiết

@@ -87,6 +87,20 @@ const Detail = () => {
       return;
     }
 
+    const missingQuantities = service_ids.filter((id) => !quantities[id] || quantities[id] <= 0);
+    if (missingQuantities.length > 0) {
+      setMessage("Vui lòng nhập số lượng cho tất cả các dịch vụ đã chọn.");
+      return;
+    }
+
+    const uncheckedQuantities = Object.keys(quantities).filter((id) => {
+      return quantities[parseInt(id)] > 0 && !service_ids.includes(parseInt(id));
+    });
+    if (uncheckedQuantities.length > 0) {
+      setMessage("Vui lòng chọn dịch vụ cho số lượng đã nhập.");
+      return;
+    }
+
     const safeServiceIds = service_ids.length ? service_ids : [];
     const safeQuantities = service_ids.map((id) => quantities[id] || 0);
 
