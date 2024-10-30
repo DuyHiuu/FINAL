@@ -6,6 +6,7 @@ use App\Models\Payment;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
 use App\Models\Booking;
+use App\Models\Status;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -52,7 +53,38 @@ class PaymentController extends Controller
          ]);
      }
      
-
+     public function payAd()
+     {
+         $payments = Payment::with(['status', 'booking.room.size', 'user'])
+             ->whereNull('deleted_at')
+             ->orderBy('id', 'desc')
+             ->get();
+     
+         $user = $payments->isNotEmpty() ? $payments->first()->user_id : null;
+     
+         $bookings = [];
+         $rooms = [];
+     
+         foreach ($payments as $payment) {
+             if ($payment->booking) {
+                 $bookings[] = $payment->booking;
+                 $rooms[] = [
+                     'room' => $payment->booking->room,
+                     'size_name' => $payment->booking->room->size->name ?? null,
+                 ];
+             }
+         }
+     
+         return response()->json([
+             'status' => true,
+             'data' => [
+                 'payment' => $payments,
+                 'user' => $user,
+                 'booking' => $bookings,
+                 'room' => $rooms,
+             ]
+         ]);
+     }
 
     /**
      * Show the form for creating a new resource.
@@ -220,6 +252,8 @@ class PaymentController extends Controller
     {
         $payment = Payment::findOrFail($id);
 
+        $status_pay = Status::get();
+
         $paymentMethod = $payment->paymethod ? $payment->paymethod->name : null;
 
         $status = $payment->status ? $payment->status->status_name : null;
@@ -240,7 +274,8 @@ class PaymentController extends Controller
                 'booking' => $booking,
                 'paymentMethod' => $paymentMethod,
                 'status' => $status,
-                'size' => $size
+                'size' => $size,
+                'status_pay' => $status_pay
             ]
         ]);
     }

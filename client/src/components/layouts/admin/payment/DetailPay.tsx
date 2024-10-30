@@ -1,137 +1,245 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import useFetchRooms from "../../../../api/useFetchRooms";
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const RoomList = () => {
-    const { room, loading, error } = useFetchRooms(); // Giả định useFetchRooms cũng có trạng thái loading và error
-    const [sizeFilter, setSizeFilter] = useState(""); // Trạng thái cho bộ lọc kích thước
+const DetailPay = () => {
 
-    // Nếu đang tải, hiển thị thông báo
-    if (loading) return <div className="text-center mt-5">Đang tải...</div>;
+    const showUrl = "http://localhost:8000/api/payments";
 
-    // Nếu có lỗi, hiển thị thông báo lỗi
-    if (error) return <div className="text-center text-red-600 mt-5">{error}</div>;
+    const [data, setData] = useState(null);
 
-    // Hàm xử lý thay đổi bộ lọc kích thước
-    const handleSizeChange = (e) => {
-        setSizeFilter(e.target.value);
+    const { id } = useParams();
+
+    const updateUrl = "http://localhost:8000/api/payments";
+    const [selectedStatus, setSelectedStatus] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch(`${showUrl}/${id}`, {
+                    method: "get",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (!res.ok) {
+                    throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
+                }
+
+                const data = await res.json();
+                setData(data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [id]);
+
+    const handleStatusChange = (event) => {
+        setSelectedStatus(event.target.value);
     };
 
-    // Hàm xóa phòng
-    const handleDelete = async (id) => {
-        const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa phòng này?");
-        if (!confirmDelete) return;
-
+    const handleSubmit = async (event) => {
+        event.preventDefault();
         try {
-            const response = await fetch(`http://localhost:8000/api/rooms/${id}`, {
-                method: "DELETE",
+            const res = await fetch(`${updateUrl}/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ status_id: selectedStatus }),
             });
-            if (response.ok) {
-                alert("Phòng đã được xóa thành công");
-                window.location.reload(); // Tải lại trang sau khi xóa thành công
-            } else {
-                const errorData = await response.json(); // Lấy dữ liệu lỗi từ phản hồi
-                console.error("Xóa Phòng thất bại:", errorData.message); // Ghi lại thông điệp lỗi
-                alert(`Xóa Phòng thất bại: ${errorData.message}`);
+            if (!res.ok) {
+                throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
             }
+            navigate('/admin/payments');
         } catch (error) {
-            console.error("Lỗi:", error);
-            alert("Đã xảy ra lỗi khi xóa Phòng");
+            console.log(error);
         }
     };
 
-    // Lọc danh sách phòng dựa trên kích thước
-    const filteredRooms = sizeFilter
-        ? room.filter((r) => r.size_name.toLowerCase().includes(sizeFilter.toLowerCase()))
-        : room;
+    if (!data) {
+        return <p>Đang tải dữ liệu...</p>;
+    }
+
+    const paymentData = data.payment;
+    const roomData = paymentData.room;
+    const servicesData = paymentData.service;
+    const bookingData = paymentData.booking;
+    const payMethodData = paymentData.paymentMethod;
+    const sizeData = paymentData.size;
+    const status_pay = paymentData.status_pay;
+    const filteredStatus = status_pay.filter((item) => item.id >= paymentData.payment.status_id && item.id !== 4);
+
+
 
     return (
-        <div className="container mx-auto p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-800">Danh Sách Phòng</h1>
-                <Link
-                    to="/admin/rooms/add"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300"
-                >
-                    Thêm Phòng
-                </Link>
+        <div className="flex flex-col lg:flex-row">
+            {/* Phần thông tin đặt hàng */}
+            <div className="lg:w-1/2 p-4">
+                <div className="text-left">
+                    <strong className="text-5xl">Chi tiết đơn hàng</strong>
+                    <div className="antialiased text-gray-900">
+                        <div className="max-w-xl py-12 divide-y md:max-w-4xl">
+                            <div className="max-w-md">
+                                <div className="grid grid-cols-1 gap-6">
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Tên khách hàng</span>
+                                        <input readOnly type="text" value={paymentData?.payment?.user_name} className="block w-full mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300" />
+                                    </label>
+
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Email</span>
+                                        <input readOnly type='text' value={paymentData?.payment?.user_email} className="block w-full mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300" />
+                                    </label>
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Số điện thoại</span>
+                                        <input readOnly type='text' value={paymentData?.payment?.user_phone} className="block w-full mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300" />
+                                    </label>
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Địa chỉ</span>
+                                        <input readOnly type='text' value={paymentData?.payment?.user_address} className="block w-full mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300" />
+                                    </label>
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Tên thú cưng</span>
+                                        <input readOnly type='text' value={paymentData?.payment?.pet_name} className="block w-full mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300" />
+                                    </label>
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Loại thú cưng</span>
+                                        <select className="block w-full mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300">
+                                            <option value={paymentData?.payment?.pet_type}>{paymentData.payment?.pet_type}</option>
+                                        </select>
+                                    </label>
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Mô tả chi tiết thú cưng (Màu, giống,...)</span>
+                                        <textarea readOnly className="mt-1 block w-full rounded-md border-2 border-black-300 bg-gray-100 p-2" rows='3'>
+                                            {paymentData.payment?.pet_description}
+                                        </textarea>
+                                    </label>
+
+                                    <label className="block">
+                                        <span className="text-gray-700 text-lg">Tình trạng sức khỏe</span>
+                                        <input readOnly type='text' value={paymentData?.payment?.pet_health} className="block w-full mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300" />
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="text-left mt-10">
+                    <label className="block">
+                        <span className="text-gray-700 text-lg">Phương thức thanh toán</span>
+                        <input readOnly value={payMethodData} className="block w-full mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300" />
+                    </label>
+                </div>
+
+                <center>
+                    <button
+
+                        className="mt-20 text-white px-10 py-2 rounded-full bg-[#064749]"
+                    >
+                        <a href="/admin/payments">Quay lại</a>
+                    </button>
+                </center>
+
             </div>
 
-            {/* Thanh tìm kiếm */}
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Tìm theo kích thước phòng..."
-                    value={sizeFilter}
-                    onChange={handleSizeChange}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64" // Thay đổi width ở đây
+            <div className="lg:w-1/2 p-4 mt-20 border-2 rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-2/3">
+                <img
+                    src={roomData?.img_thumbnail}
+                    alt="Large"
+                    className="w-full h-60 object-cover rounded-lg shadow mb-10"
                 />
-            </div>
+                <strong className="text-4xl font-semibold">{sizeData}</strong>
+                <div className="flex items-center mt-3 mb-3">
+                    <span className="flex items-center justify-center mr-2">
+                        Giá/ngày : {roomData?.price}
+                    </span>
+                </div>
+                <p>{roomData?.description}</p>
 
-            <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
-                <table className="min-w-full bg-white border border-gray-200">
-                    <thead className="bg-gray-200 text-gray-600">
-                        <tr>
-                            <th className="px-4 py-3 text-left text-sm font-semibold">STT</th>
-                            <th className="px-4 py-3 text-left text-sm font-semibold">Hình Ảnh</th>
-                            <th className="px-4 py-3 text-left text-sm font-semibold">Size Phòng</th>
-                            <th className="px-4 py-3 text-left text-sm font-semibold">Giá (VND)</th>
-                            <th className="px-4 py-3 text-left text-sm font-semibold">Số Lượng</th>
-                            <th className="px-4 py-3 text-left text-sm font-semibold">Trạng Thái</th>
-                            <th className="px-4 py-3 text-left text-sm font-semibold">Hành Động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredRooms.length > 0 ? (
-                            filteredRooms.map((room) => (
-                                <tr key={room.id} className="border-b hover:bg-gray-50 transition-colors">
-                                    <td className="px-4 py-2">{room.id}</td>
-                                    <td className="px-4 py-2">
-                                        <img src={room.img_thumbnail} alt={room.size_name} className="w-20 h-20 object-cover rounded" />
-                                    </td>
-                                    <td className="px-4 py-2">{room.size_name}</td>
-                                    <td className="px-4 py-2">{room.price.toLocaleString("vi-VN")} VND</td>
-                                    <td className="px-4 py-2">{room.quantity}</td>
-                                    <td className="px-4 py-2">
-                                        <span
-                                            className={`px-2 py-1 rounded text-sm ${room.statusroom === "Còn phòng"
-                                                ? "bg-green-100 text-green-800"
-                                                : "bg-red-100 text-red-800"
-                                                }`}
-                                        >
-                                            {room.statusroom}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-2">
-                                        <div className="flex items-center space-x-3">
-                                            <Link
-                                                to={`/admin/rooms/edit/${room.id}`}
-                                                className="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition duration-200"
-                                            >
-                                                Sửa
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDelete(room.id)}
-                                                className="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition duration-200"
-                                            >
-                                                Xóa
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan={7} className="text-center py-4 text-gray-600">
-                                    Không có phòng nào
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                {/* Ngày vào và Ngày ra nằm ngang */}
+                <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 mb-10 mt-5">
+                    <label className="text-left block w-full lg:w-1/2">
+                        <strong>Ngày vào</strong>
+                        <input readOnly type="date" value={bookingData?.start_date} className="border-2 p-1 w-full mt-1" />
+                    </label>
+                    <label className="text-left block w-full lg:w-1/2">
+                        <strong>Ngày ra</strong>
+                        <input readOnly type="date" value={bookingData?.end_date} className="border-2 p-1 w-full mt-1" />
+                    </label>
+                </div>
+
+                <h3 className="text-left text-2xl font-semibold mt-10">Dịch vụ kèm thêm</h3>
+                <div className="mt-2">
+                    {Array.isArray(servicesData) && servicesData.length > 0 ? (
+                        servicesData?.map((item) => (
+                            <div
+                                key={item?.id}
+                            >
+                                <label className="flex items-center mb-2">
+                                    <input readOnly
+                                        type="checkbox"
+                                        className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
+                                    />
+                                    <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ) x {item.pivot?.quantity}</span>
+                                </label>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-500">Không sử dụng dịch vụ.</p>
+                    )}
+                </div>
+
+                <div className="flex justify-between mt-4">
+                    <div>
+                        <p className="text-left font-bold mt-2">Trạng thái:</p>
+                    </div>
+                    <div className="text-right">
+                        <form onSubmit={handleSubmit} className="flex items-center">
+                            <select
+                                name="status_id"
+                                id="status_id"
+                                value={selectedStatus}
+                                onChange={handleStatusChange}
+                                className="block appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+                            >
+                                {filteredStatus?.map((item: any) => (
+                                        <option key={item.id} value={item.id}>
+                                            {item.status_name}
+                                        </option>
+                                    ))}
+                            </select>
+                            <button
+                                type="submit"
+                                className="ml-2 bg-[#064749] hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Cập nhật
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div className="flex justify-between mt-4">
+                    <div>
+                        <p className="text-left font-bold mt-2">Tổng:</p>
+                    </div>
+                    <div className="text-right">
+                        <p className="font-bold mt-2">{paymentData.payment?.total_amount.toLocaleString("vi-VN")} VNĐ</p>
+                    </div>
+                </div>
+
             </div>
         </div>
     );
-};
+}
 
-export default RoomList;
+export default DetailPay;
