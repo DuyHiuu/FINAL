@@ -19,6 +19,7 @@ const navigation = [
   { name: "Danh sách bài viết", href: "/admin/blogs", current: false },
   { name: "Danh sách người dùng", href: "/admin/users", current: false },
   { name: "Danh sách bình luận", href: "/admin/comments", current: false },
+  { name: "Danh sách liên hệ", href: "/admin/contacts", current: false },
   { name: "Biểu đồ", href: "/admin/chart", current: false },
 ];
 

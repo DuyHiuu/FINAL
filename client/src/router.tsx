@@ -46,6 +46,7 @@ import Chart from "./components/layouts/admin/chart/chart";
 import AccoutProfile from "./pages/website/Accout/AccoutProfile";
 import UserInfo from "./pages/website/Accout/UserInfo";
 import EditUserInfo from "./pages/website/Accout/EditUserInfo";
+import ContactList from "./components/layouts/admin/contact/ContactList";
 
 export const router = createBrowserRouter([
   {
@@ -129,6 +130,8 @@ export const router = createBrowserRouter([
       { path: "/admin/comments/edit/:id", element: <EditComment /> },
 
       { path: "/admin/chart", element: < Chart /> },
+
+      { path: "/admin/contacts", element: <ContactList /> },
 
 
     ],

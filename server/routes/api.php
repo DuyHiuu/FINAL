@@ -10,6 +10,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymethodController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\RoomImageController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
@@ -144,4 +145,12 @@ Route::prefix('users')->group(function () {
 
 Route::prefix('paymethods')->group(function () {
     Route::get('/', [PaymethodController::class, 'index']);
+});
+
+Route::prefix('roomImages')->group(function () {
+    Route::get('/', [RoomImageController::class, 'index']);
+    Route::post('/', [RoomImageController::class, 'store']);
+    Route::get('/{id}', [RoomImageController::class, 'show']);
+    Route::put('/{id}', [RoomImageController::class, 'update']);
+    Route::delete('/{id}', [RoomImageController::class, 'destroy']);
 });
