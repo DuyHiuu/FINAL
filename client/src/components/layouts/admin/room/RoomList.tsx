@@ -7,7 +7,9 @@ const RoomList = () => {
   const [sizeFilter, setSizeFilter] = useState(""); // Trạng thái cho bộ lọc kích thước
 
   // Nếu đang tải, hiển thị thông báo
-  if (loading) return <div className="text-center mt-5">Đang tải...</div>;
+  if (loading) return <div className="flex items-center justify-center min-h-screen">
+  <div className="w-16 h-16 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
+</div>;
 
   // Nếu có lỗi, hiển thị thông báo lỗi
   if (error) return <div className="text-center text-red-600 mt-5">{error}</div>;

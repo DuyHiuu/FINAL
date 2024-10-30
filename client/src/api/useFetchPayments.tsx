@@ -4,6 +4,7 @@ const API_URL = "http://localhost:8000/api/payments/list";
 const useFetchPayments = () => {
   const [payment, setPayment] = useState<any[]>([]);
   const [user_id, setUser_id] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const user_idFromStorage = localStorage.getItem("user_id");
@@ -13,6 +14,8 @@ const useFetchPayments = () => {
   useEffect(() => {
     const fetchPayment = async () => {
       if (!user_id) return;
+
+      setLoading(true);
 
       try {
         const res = await fetch(`${API_URL}/${user_id}`, {
@@ -36,6 +39,8 @@ const useFetchPayments = () => {
         }
       } catch (error) {
         console.error("Lỗi khi fetch dữ liệu:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -43,7 +48,7 @@ const useFetchPayments = () => {
   }, [user_id]);
 
 
-  return { payment };
+  return { payment, loading };
 };
 
 export default useFetchPayments;
