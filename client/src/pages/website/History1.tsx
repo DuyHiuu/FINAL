@@ -3,6 +3,7 @@ import useFetchPayments from "../../api/useFetchPayments";
 
 const History1 = () => {
   const { payment } = useFetchPayments();
+
   const [searchTerm, setSearchTerm] = useState("");
 
   const totalRoomsBooked = Array.isArray(payment) ? payment.length : 0;

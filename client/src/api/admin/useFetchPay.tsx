@@ -1,24 +1,16 @@
 import React, { useEffect, useState } from "react";
-const API_URL = "http://localhost:8000/api/payments/list";
+const API_URL = "http://localhost:8000/api/payments";
 
-const useFetchPayments = () => {
+const useFetchPay = () => {
   const [payment, setPayment] = useState<any[]>([]);
-  const [user_id, setUser_id] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const user_idFromStorage = localStorage.getItem("user_id");
-    setUser_id(user_idFromStorage || "");
-  }, []);
-
-  useEffect(() => {
-    const fetchPayment = async () => {
-      if (!user_id) return;
-
+    const fetchPay = async () => {
       setLoading(true);
 
       try {
-        const res = await fetch(`${API_URL}/${user_id}`, {
+        const res = await fetch(`${API_URL}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -44,11 +36,11 @@ const useFetchPayments = () => {
       }
     };
 
-    fetchPayment();
-  }, [user_id]);
+    fetchPay();
+  }, []);
 
 
   return { payment, loading };
 };
 
-export default useFetchPayments;
+export default useFetchPay;
