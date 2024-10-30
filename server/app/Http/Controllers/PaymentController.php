@@ -19,36 +19,39 @@ class PaymentController extends Controller
      */
     
      public function index(String $id)
-    {
-        $payments = Payment::with(['status', 'booking.room', 'user'])
-            ->where('user_id', $id)
-            ->whereNull('deleted_at')
-            ->orderBy('id', 'desc')
-            ->get();
-
-        // Lấy user_id từ bản ghi đầu tiên nếu tồn tại
-        $user = $payments->isNotEmpty() ? $payments->first()->user_id : null;
-
-        $bookings = [];
-        $rooms = [];
-
-        foreach ($payments as $payment) {
-            if ($payment->booking) {
-                $bookings [] = $payment->booking;
-                $rooms[] = $payment->booking->room;
-            }
-        }
-
-        return response()->json([
-            'status' => true,            // Thêm trường status cho kiểm tra frontend
-            'data' => [
-                'payment' => $payments,  // Thêm dữ liệu chính vào `data` để khớp với frontend
-                'user' => $user,
-                'booking' => $bookings,
-                'room' => $rooms,
-            ]
-        ]);
-    }
+     {
+         $payments = Payment::with(['status', 'booking.room.size', 'user'])
+             ->where('user_id', $id)
+             ->whereNull('deleted_at')
+             ->orderBy('id', 'desc')
+             ->get();
+     
+         $user = $payments->isNotEmpty() ? $payments->first()->user_id : null;
+     
+         $bookings = [];
+         $rooms = [];
+     
+         foreach ($payments as $payment) {
+             if ($payment->booking) {
+                 $bookings[] = $payment->booking;
+                 $rooms[] = [
+                     'room' => $payment->booking->room,
+                     'size_name' => $payment->booking->room->size->name ?? null,
+                 ];
+             }
+         }
+     
+         return response()->json([
+             'status' => true,
+             'data' => [
+                 'payment' => $payments,
+                 'user' => $user,
+                 'booking' => $bookings,
+                 'room' => $rooms,
+             ]
+         ]);
+     }
+     
 
 
     /**

@@ -41,6 +41,8 @@ import EditUser from "./components/layouts/admin/user/EditUser";
 import CommentList from "./components/layouts/admin/comment/CommentList";
 import AddComment from "./components/layouts/admin/comment/AddComment";
 import EditComment from "./components/layouts/admin/comment/EditComment";
+import ListPay from "./components/layouts/admin/payment/ListPay";
+import DetailPay from "./components/layouts/admin/payment/DetailPay";
 import Loi404 from "./pages/website/Loi404"; // Import trang lỗi 404
 import Chart from "./components/layouts/admin/chart/Chart";
 import AccoutProfile from "./pages/website/Accout/AccoutProfile";
@@ -124,6 +126,9 @@ export const router = createBrowserRouter([
       { path: "/admin/comments", element: <CommentList /> },
       { path: "/admin/comments/add", element: <AddComment /> },
       { path: "/admin/comments/edit/:id", element: <EditComment /> },
+
+      { path: "/admin/payments", element: <ListPay /> },
+      { path: "/admin/payments/detail/:id", element: <DetailPay /> },
 
       { path: "/admin/chart", element: <Chart /> },
     ],
