@@ -1,21 +1,22 @@
 // pages/website/HomePage.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchServices from "../../api/useFetchServices";
 import useFetchBlogs from "../../api/useFetchBlogs";
 import useFetchComments from "../../api/useFetchComments";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/autoplay";  // Thêm dòng này để import tính năng autoplay
+import SwiperCore, { Autoplay, Pagination } from "swiper";
+
+
+
 
 const HomePage = () => {
-
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
     window.scrollTo(0, 0);
   }, []);
 
@@ -109,7 +110,7 @@ const HomePage = () => {
     },
   ];
 
-
+  
 
   const khuonItems = [
     {
@@ -135,7 +136,7 @@ const HomePage = () => {
   const { room } = useFetchRooms();
   const { service } = useFetchServices();
   const { blog } = useFetchBlogs();
-
+  
   const ReviewsSection = () => {
     const { comments, loading, error } = useFetchComments();
 
@@ -150,7 +151,7 @@ const HomePage = () => {
             <div
               key={index}
               className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg m-2"
-              style={{ width: '350px', height: '120px' }}
+        style={{ width: '350px', height: '120px' }} 
             >
               <h1 className="text-lg font-semibold">{comment.content}</h1>
               <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p>
@@ -160,6 +161,13 @@ const HomePage = () => {
       </div>
     );
   };
+  
+  const bannerImages = [
+    "/images/img.webp",
+    "/images/anh5.webp",
+    "/images/anh4.webp",
+  ];
+  
 
   return (
     <div className="flex flex-col items-center mb-20 mt-24">
@@ -297,7 +305,7 @@ const HomePage = () => {
         ))}
       </div>
 
-      <ReviewsSection />
+      <ReviewsSection/>
 
       {/* Blog Sectii */}
       <div className="flex flex-col items-center">
