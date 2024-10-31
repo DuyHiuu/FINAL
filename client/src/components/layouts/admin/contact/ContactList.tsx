@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import useFetchContacts from "../../../../api/useFetchContacts";
+import { FaSearch } from "react-icons/fa";
 
 const ContactList = () => {
   const { contacts, loading, error } = useFetchContacts();
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterBy, setFilterBy] = useState("name");
   const [currentPage, setCurrentPage] = useState(1);
   const [contactsPerPage] = useState(5);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleFilterChange = (filter) =>{
+    setFilterBy(filter);
   };
 
   const filteredContacts = contacts?.filter(
@@ -53,25 +59,48 @@ const ContactList = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Contact List</h1>
-        <Link
+        <h1 className="text-3xl font-bold text-gray-800">Danh sách liên hệ</h1>
+        {/* <Link
           to="/admin/contacts/add"
           className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300"
         >
           Add Contact
-        </Link>
+        </Link> */}
       </div>
 
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Tìm kiếm theo name, email, phone hoặc message"
-          value={searchTerm}
-          onChange={handleSearch}
-          className="px-4 py-2 border border-gray-300 rounded-lg w-full"
-        />
-      </div>
+      {/* Thanh tìm kiếm và lọc */}
+      <div className="mb-6 flex flex-wrap items-center gap-4">
+        <div className="relative flex-1">
+          <input
+            type="text"
+            className="border p-2 w-full rounded-lg pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Tìm kiếm theo name, email, phone hoặc message"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+          <FaSearch className="absolute top-3 left-3 text-gray-500" />
+        </div>
 
+        {/* Nút lọc */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleFilterChange("content")}
+            className={`px-4 py-2 rounded-lg transition ${filterBy === "name" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} hover:bg-blue-400 focus:ring-2 focus:ring-blue-500`}>
+            Họ tên
+          </button>
+          <button
+            onClick={() => handleFilterChange("user")}
+            className={`px-4 py-2 rounded-lg transition ${filterBy === "email" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} hover:bg-blue-400 focus:ring-2 focus:ring-blue-500`}>
+            Email
+          </button>
+          <button
+            onClick={() => handleFilterChange("created_at")}
+            className={`px-4 py-2 rounded-lg transition ${filterBy === "phone" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} hover:bg-blue-400 focus:ring-2 focus:ring-blue-500`}>
+            Số điện thoại
+          </button>
+        </div>
+    </div>
+      
       {loading ? (
         <div className="flex justify-center items-center">
           <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
@@ -80,14 +109,15 @@ const ContactList = () => {
         <div className="text-red-600 text-center">{error}</div> // Hiển thị thông báo lỗi
       ) : (
         <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
+          {/* Danh sách bình luận dưới dạng bảng */}
           <table className="min-w-full bg-white">
             <thead className="bg-gray-200 text-gray-600">
               <tr>
                 <th className="px-4 py-3 text-left text-sm font-semibold">STT</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Name</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">Họ tên</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">Email</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Phone Number</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Message</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">Số điện thoại</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">Tin nhắn</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">Actions</th>
               </tr>
             </thead>
@@ -122,7 +152,7 @@ const ContactList = () => {
               ) : (
                 <tr>
                   <td colSpan={6} className="text-center py-4">
-                    No contacts found
+                    Không tìm thấy liên hệ nào!
                   </td>
                 </tr>
               )}
