@@ -1,6 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
+import { PulseLoader } from "react-spinners"; // Import PulseLoader từ react-spinners
 
 const Lienhe = () => {
+  const [loading, setLoading] = useState(false); // Thêm state loading
+
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Ngăn chặn hành vi mặc định của form
+    setLoading(true); // Bắt đầu loading
+
+    // Giả lập gửi dữ liệu
+    setTimeout(() => {
+      // Thực hiện gửi dữ liệu tại đây
+      alert("Tin nhắn đã được gửi!");
+      setLoading(false); // Kết thúc loading
+    }, 2000); // Giả lập thời gian gửi 2 giây
+  };
+
   return (
     <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between max-w-7xl mx-auto my-10 p-6 bg-white shadow-lg rounded-lg mt-24">
       {/* Phần liên hệ bên trái */}
@@ -12,7 +27,7 @@ const Lienhe = () => {
         </p>
 
         {/* Form liên hệ */}
-        <form className="flex flex-col space-y-4 mt-4">
+        <form className="flex flex-col space-y-4 mt-4" onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="Tên của bạn"
@@ -37,13 +52,21 @@ const Lienhe = () => {
           <button
             type="submit"
             className="bg-[#064749] text-white py-3 px-6 rounded-lg hover:bg-[#043d3c] transition duration-200"
+            disabled={loading} // Vô hiệu hóa nút khi đang loading
           >
-            Gửi tin nhắn
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <PulseLoader color="#ffffff" size={10} margin={2} /> {/* Hiển thị spinner */}
+                <span className="ml-2">Đang gửi...</span> {/* Text loading */}
+              </div>
+            ) : (
+              "Gửi tin nhắn"
+            )}
           </button>
         </form>
       </div>
 
-      {/* Phần hình ảnh bên phảii */}
+      {/* Phần hình ảnh bên phải */}
       <div className="w-full lg:w-1/2 p-6 mt-6 lg:mt-0">
         <img
           src="/images/img.webp"
