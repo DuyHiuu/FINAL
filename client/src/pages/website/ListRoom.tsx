@@ -80,7 +80,10 @@ const ListRoom = () => {
 
       {/* Room List */}
       <div className="container mx-auto p-4 lg:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loadingRooms && <p>Đang tải dữ liệu...</p>}
+        {loadingRooms &&
+          <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>}
         {errorRooms && <p>Đã xảy ra lỗi: {errorRooms}</p>}
         {!loadingRooms &&
           currentRooms

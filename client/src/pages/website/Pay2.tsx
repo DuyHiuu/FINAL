@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useFetchPayMethod from '../../api/useFetchPayMethod';
+import { PulseLoader } from "react-spinners";
 
 const Pay2 = () => {
 
@@ -170,7 +171,23 @@ const Pay2 = () => {
         }
     };
 
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
+      window.scrollTo(0, 0);
+    }, []);
+
+    if (loading) {
+        return (
+          <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
+            <PulseLoader color="#33CCFF" size={15} margin={2} />
+          </div>
+        );
+      }
 
     return (
 
@@ -235,7 +252,7 @@ const Pay2 = () => {
 
                                     <label className="block">
                                         <span className="text-gray-700 text-lg">Tên thú cưng</span>
-                                        <input type='text' value={pet_name} onChange={(e) => setPet_name(e.target.value)}
+                                        <input type='text' value={pet_name} onChange={(e) => setPet_name(e.target.value)} required
                                             className="block w-full mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2">
                                         </input>
                                     </label>
@@ -250,7 +267,7 @@ const Pay2 = () => {
                                     </label>
                                     <label className="block">
                                         <span className="text-gray-700 text-lg">Mô tả chi tiết thú cưng (Màu, giống,...)</span>
-                                        <textarea value={pet_description} onChange={(e) => setPet_description(e.target.value)}
+                                        <textarea value={pet_description} onChange={(e) => setPet_description(e.target.value)} required
                                             className="mt-1 block w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 p-2" rows='3'>
                                             Màu nâu, giống chó Alaska, 40kg
                                         </textarea>

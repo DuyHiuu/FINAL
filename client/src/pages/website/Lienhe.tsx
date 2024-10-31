@@ -1,19 +1,4 @@
-import React, { useState } from "react";
 
-const Lienhe = () => {
-  const [loading, setLoading] = useState(false); // Loading state
-
-  // Simulate form submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent default form submission behavior
-    setLoading(true); // Start loading when form is submitted
-
-    // Simulate a network request with setTimeout
-    setTimeout(() => {
-      setLoading(false); // Stop loading after request completes
-      alert("Tin nhắn của bạn đã được gửi thành công!"); // Confirmation message
-    }, 2000); // 2-second delay to mimic an async operation
-  };
 
   return (
     <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between max-w-7xl mx-auto my-10 p-6 bg-white shadow-lg rounded-lg mt-24">

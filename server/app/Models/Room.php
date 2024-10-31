@@ -17,9 +17,13 @@ class Room extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function size() {
+    public function size()
+    {
         return $this->belongsTo(Size::class, 'size_id');
     }
 
+    public function roomImages()
+    {
+        return $this->hasMany(Room_Image::class);
+    }
 }
-
