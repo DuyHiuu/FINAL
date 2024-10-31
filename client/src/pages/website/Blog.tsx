@@ -3,8 +3,9 @@ import useFetchBlogs from "../../api/useFetchBlogs";
 import { PulseLoader } from "react-spinners";
 
 const Blog = () => {
-  const { blog, loading } = useFetchBlogs();
+  const { blog } = useFetchBlogs(); // Xóa loading từ hook
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -14,8 +15,6 @@ const Blog = () => {
     blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     blog.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -69,34 +68,24 @@ const Blog = () => {
       <div className="flex flex-col items-center mt-10">
         <h1 className="text-3xl font-bold">Blog</h1>
 
-        {/* Display loading spinner */}
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-blue-500" role="status">
-              <span className="sr-only">Loading...</span>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6 px-4">
-            {filteredBlogs?.map((blog: any) => (
-              <div
-                key={blog.id}
-                className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg"
-              >
-                <div className="w-full h-[200px] bg-gray-200 rounded-md mb-24">
-                  <img src={blog.image} alt="" />
-                </div>
-                <h1 className="text-lg font-semibold mb-2">{blog.title}</h1>
-                <p className="text-sm text-center">{blog.description}</p>
-                <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6 px-4">
+          {filteredBlogs?.map((blog: any) => (
+            <div
+              key={blog.id}
+              className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg"
+            >
+              <div className="w-full h-[200px] bg-gray-200 rounded-md mb-24">
+                <img src={blog.image} alt="" />
               </div>
-            ))}
-
-            {filteredBlogs?.length === 0 && (
-              <p className="text-gray-500">Không tìm thấy bài viết nào.</p>
-            )}
-          </div>
-        )}
+              <h1 className="text-lg font-semibold mb-2">{blog.title}</h1>
+              <p className="text-sm text-center">{blog.description}</p>
+              <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p>
+            </div>
+          ))}
+          {filteredBlogs?.length === 0 && (
+            <p className="text-gray-500">Không tìm thấy bài viết nào.</p>
+          )}
+        </div>
       </div>
     </div>
   );
