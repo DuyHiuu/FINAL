@@ -171,7 +171,7 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col items-center mb-20 mt-24">
-      {/* Banner Image */}
+      {/* Banner Imageee */}
       <Swiper
         spaceBetween={30}
         centeredSlides={true}
