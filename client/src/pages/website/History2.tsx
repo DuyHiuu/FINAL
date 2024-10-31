@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { PulseLoader } from "react-spinners";
 
 const History2 = () => {
 
@@ -32,7 +33,11 @@ const History2 = () => {
     }, [id]);
 
     if (!data) {
-        return <p>Đang tải dữ liệu...</p>;
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
+                <PulseLoader color="#33CCFF" size={15} margin={2} />
+            </div>
+        );
     }
 
     const paymentData = data.payment;
@@ -41,9 +46,6 @@ const History2 = () => {
     const bookingData = paymentData.booking;
     const payMethodData = paymentData.paymentMethod;
     const sizeData = paymentData.size;
-
-    console.log(servicesData);
-
 
     return (
         <div className="flex flex-col lg:flex-row pb-20 mt-24">

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useFetchPayments from "../../api/useFetchPayments";
 
 const History1 = () => {
-  const { payment } = useFetchPayments();
+  const { payment, loading } = useFetchPayments();
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -11,6 +11,10 @@ const History1 = () => {
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
+
+  if (loading) return <div className="flex items-center justify-center min-h-screen">
+    <div className="w-16 h-16 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
+  </div>;
 
   return (
     <div className="mt-32">

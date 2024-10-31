@@ -48,6 +48,7 @@ import Chart from "./components/layouts/admin/chart/Chart";
 import AccoutProfile from "./pages/website/Accout/AccoutProfile";
 import UserInfo from "./pages/website/Accout/UserInfo";
 import EditUserInfo from "./pages/website/Accout/EditUserInfo";
+import ContactList from "./components/layouts/admin/contact/ContactList";
 
 export const router = createBrowserRouter([
   {
@@ -64,9 +65,7 @@ export const router = createBrowserRouter([
       { path: "/register", element: <Register /> },
       { path: "/paymentconfirmation", element: <PaymentConfirmation /> },
       { path: "/pay1/:id", element: <Pay1 /> },
-
       { path: "/pay2", element: <Pay2 /> },
-
       { path: "/pay2/:id", element: <Pay2 /> },
       { path: "/account", element: <AccoutProfile /> },
       { path: "/infor", element: <UserInfo /> },
@@ -122,14 +121,13 @@ export const router = createBrowserRouter([
       { path: "/admin/users", element: <UserList /> },
       { path: "/admin/users/add", element: <AddUser /> },
       { path: "/admin/users/edit/:id", element: <EditUser /> },
-
       { path: "/admin/comments", element: <CommentList /> },
       { path: "/admin/comments/add", element: <AddComment /> },
       { path: "/admin/comments/edit/:id", element: <EditComment /> },
-
+      { path: "/admin/chart", element: < Chart /> },
+      { path: "/admin/contacts", element: <ContactList /> },
       { path: "/admin/payments", element: <ListPay /> },
       { path: "/admin/payments/detail/:id", element: <DetailPay /> },
-
       { path: "/admin/chart", element: <Chart /> },
     ],
   },
