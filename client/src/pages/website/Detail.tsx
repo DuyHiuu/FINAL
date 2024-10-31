@@ -1,12 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useFetchServices from "../../api/useFetchServices";
+import { PulseLoader } from "react-spinners";
 
 const Detail = () => {
   const { service } = useFetchServices();
   const navigate = useNavigate();
   const API_URL = "http://localhost:8000/api";
   const { id } = useParams();
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    window.scrollTo(0, 0);
+  }, []);
 
   const smallImageSrcs = [
     "/images/anh9.webp",
@@ -180,6 +191,14 @@ const Detail = () => {
   const maxDate = new Date(today.setMonth(today.getMonth() + 2))
     .toISOString()
     .split("T")[0];
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
+        <PulseLoader color="#33CCFF" size={15} margin={2} />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4 lg:p-8 mt-24">

@@ -1,14 +1,22 @@
 // pages/website/HomePage.js
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchServices from "../../api/useFetchServices";
 import useFetchBlogs from "../../api/useFetchBlogs";
 import useFetchComments from "../../api/useFetchComments";
+import { PulseLoader } from "react-spinners";
 
 const HomePage = () => {
+
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
     window.scrollTo(0, 0);
   }, []);
 
@@ -102,7 +110,7 @@ const HomePage = () => {
     },
   ];
 
-  
+
 
   const khuonItems = [
     {
@@ -128,7 +136,7 @@ const HomePage = () => {
   const { room } = useFetchRooms();
   const { service } = useFetchServices();
   const { blog } = useFetchBlogs();
-  
+
   const ReviewsSection = () => {
     const { comments, loading, error } = useFetchComments();
 
@@ -143,7 +151,7 @@ const HomePage = () => {
             <div
               key={index}
               className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg m-2"
-        style={{ width: '350px', height: '120px' }} 
+              style={{ width: '350px', height: '120px' }}
             >
               <h1 className="text-lg font-semibold">{comment.content}</h1>
               <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p>
@@ -153,8 +161,14 @@ const HomePage = () => {
       </div>
     );
   };
-  
-  
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
+        <PulseLoader color="#33CCFF" size={15} margin={2} />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center mb-20 mt-24">
@@ -277,7 +291,7 @@ const HomePage = () => {
         ))}
       </div>
 
-      <ReviewsSection/>
+      <ReviewsSection />
 
       {/* Blog Sectii */}
       <div className="flex flex-col items-center">
