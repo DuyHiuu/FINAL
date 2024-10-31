@@ -1,28 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { PulseLoader } from "react-spinners";
 
-const Lienhe = () => {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    window.scrollTo(0, 0);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
-        <PulseLoader color="#33CCFF" size={15} margin={2} />
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between max-w-7xl mx-auto my-10 p-6 bg-white shadow-lg rounded-lg mt-24">
-      {/* Phần liên hệ bên trái */}
+      {/* Left Contact Section */}
       <div className="w-full lg:w-1/2 p-6 flex flex-col space-y-4">
         <h2 className="text-3xl font-bold mb-4">Liên hệ với chúng tôi</h2>
         <p className="text-lg">
@@ -30,17 +10,19 @@ const Lienhe = () => {
           thông tin dưới đây:
         </p>
 
-        {/* Form liên hệ */}
-        <form className="flex flex-col space-y-4 mt-4">
+        {/* Contact Form */}
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-4 mt-4">
           <input
             type="text"
             placeholder="Tên của bạn"
             className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
           />
           <input
             type="email"
             placeholder="Email của bạn"
             className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
           />
           <input
             type="number"
@@ -48,21 +30,25 @@ const Lienhe = () => {
             className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             min="0"
           />
-
           <textarea
             placeholder="Tin nhắn của bạn"
             className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
           ></textarea>
+
           <button
             type="submit"
-            className="bg-[#064749] text-white py-3 px-6 rounded-lg hover:bg-[#043d3c] transition duration-200"
+            disabled={loading} // Disable button when loading
+            className={`bg-[#064749] text-white py-3 px-6 rounded-lg transition duration-200 ${
+              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#043d3c]"
+            }`}
           >
-            Gửi tin nhắn
+            {loading ? "Đang gửi..." : "Gửi tin nhắn"}
           </button>
         </form>
       </div>
 
-      {/* Phần hình ảnh bên phảii */}
+      {/* Right Image Section */}
       <div className="w-full lg:w-1/2 p-6 mt-6 lg:mt-0">
         <img
           src="/images/img.webp"

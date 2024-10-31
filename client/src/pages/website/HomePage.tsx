@@ -5,7 +5,6 @@ import useFetchRooms from "../../api/useFetchRooms";
 import useFetchServices from "../../api/useFetchServices";
 import useFetchBlogs from "../../api/useFetchBlogs";
 import useFetchComments from "../../api/useFetchComments";
-import { PulseLoader } from "react-spinners";
 
 const HomePage = () => {
 
@@ -162,22 +161,29 @@ const HomePage = () => {
     );
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
-        <PulseLoader color="#33CCFF" size={15} margin={2} />
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col items-center mb-20 mt-24">
       {/* Banner Image */}
-      <img
-        className="w-full h-auto max-h-[450px] sm:max-h-[350px] md:max-h-[450px] lg:max-h-[600px] object-cover"
-        src="/images/img.webp"
-        alt="PetSpa"
-      />
+      <Swiper
+        spaceBetween={30}
+        centeredSlides={true}
+        autoplay={{
+          delay: 3000, // Chuyển ảnh sau 3 giây
+          disableOnInteraction: false, // Tiếp tục tự động chuyển ảnh sau khi người dùng tương tác
+        }}
+        pagination={{ clickable: true }}
+        className="w-full max-h-[600px]"
+      >
+        {bannerImages.map((imageUrl, index) => (
+          <SwiperSlide key={index}>
+            <img
+              className="w-full h-auto object-cover max-h-[600px]"
+              src={imageUrl}
+              alt={`Slide ${index + 1}`}
+            />
+          </SwiperSlide>
+        ))}
+      </Swiper>
       <div className="flex justify-center mt-10">
         <div className="relative w-full max-w-md">
           <input
