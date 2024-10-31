@@ -1,5 +1,6 @@
 // pages/website/AboutPage.js
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { PulseLoader } from "react-spinners";
 
 const AboutPage = () => {
   const cards = [
@@ -212,8 +213,27 @@ const AboutPage = () => {
       imageUrl: "/images/anh2.webp",
     },
   ];
-  const handelclick = () => {};
-  const handleSubmit = () => {};
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handelclick = () => { };
+  const handleSubmit = () => { };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
+        <PulseLoader color="#33CCFF" size={15} margin={2} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center mt-24">
       {/* Banner Image */}
