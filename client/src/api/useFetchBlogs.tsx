@@ -1,16 +1,16 @@
+// useFetchBlogs.ts
 import React, { useEffect, useState } from "react";
+
 const API_URL = "http://localhost:8000/api";
 
+const useFetchBlogs = () => {
+  const [blog, setBlog] = useState<any>([]);
+  const [loading, setLoading] = useState(true); // Loading state
 
-const useFetchBlogs = () => { //Đặt đúng tên với file
-  //blog là biến ở trang index
-  // setBlog để get dữ liệu
-  const [blog, setBlog] = useState<any>();
-  //hàm để get dữ liệu
   useEffect(() => {
-    try {
-      // fetBlog để get dữ liệu
-      const fetBlog = async () => {
+    const fetBlog = async () => {
+      try {
+        setLoading(true); // Start loading
         const res = await fetch(`${API_URL}/blogs`, {
           method: "get",
           headers: {
@@ -21,15 +21,19 @@ const useFetchBlogs = () => { //Đặt đúng tên với file
           throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
         }
 
-        const data = await res.json(); // Chuyển dữ liệu thành JSON
-        setBlog(data); // Lưu dữ liệu vào state
-      };
-      fetBlog();
-    } catch (error) {
-      console.log(error);
-    }
+        const data = await res.json();
+        setBlog(data);
+      } catch (error) {
+        console.error("Fetch error:", error);
+      } finally {
+        setLoading(false); // Stop loading after fetch completes
+      }
+    };
+
+    fetBlog();
   }, []);
-  return { blog };
+
+  return { blog, loading }; // Return loading state
 };
 
 export default useFetchBlogs;
