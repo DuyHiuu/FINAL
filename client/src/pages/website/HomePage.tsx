@@ -1,4 +1,3 @@
-// pages/website/HomePage.js
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useFetchRooms from "../../api/useFetchRooms";
@@ -8,8 +7,8 @@ import useFetchComments from "../../api/useFetchComments";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/autoplay";  // Thêm dòng này để import tính năng autoplay
-import SwiperCore, { Autoplay, Pagination } from "swiper";
+import "swiper/css/autoplay"; 
+import { Autoplay, Pagination } from "swiper/modules"; // Import từ modules
 
 
 
@@ -167,7 +166,6 @@ const HomePage = () => {
     "/images/anh5.webp",
     "/images/anh4.webp",
   ];
-  
 
   return (
     <div className="flex flex-col items-center mb-20 mt-24">
@@ -180,6 +178,7 @@ const HomePage = () => {
           disableOnInteraction: false, // Tiếp tục tự động chuyển ảnh sau khi người dùng tương tác
         }}
         pagination={{ clickable: true }}
+        modules={[Autoplay, Pagination]} // Kích hoạt Autoplay và Pagination
         className="w-full max-h-[600px]"
       >
         {bannerImages.map((imageUrl, index) => (
