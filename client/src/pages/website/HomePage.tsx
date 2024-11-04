@@ -163,8 +163,8 @@ const HomePage = () => {
   
   const bannerImages = [
     "/images/img.webp",
-    "/images/anh5.webp",
-    "/images/anh4.webp",
+    "/images/banner2.jpg",
+    "/images/banner5.jpg",
   ];
 
   return (
