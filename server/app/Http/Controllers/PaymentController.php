@@ -187,7 +187,7 @@ class PaymentController extends Controller
                 // Thêm tổng tiền vào params trước khi tạo payment
                 $params['total_amount'] = $total_amount;
 
-                // Mặc định status_id = 2 khi thêm 
+                // Mặc định status_id = 1 khi thêm 
                 $params['status_id'] = $params['status_id'] ?? 1;
 
                 // Tạo một bản ghi payment mới với tổng tiền
@@ -195,6 +195,21 @@ class PaymentController extends Controller
 
                 // Lưu ID của payment
                 $payment_id = $payment->id;
+
+                $room = $booking->room;
+
+                $size = $room->size;
+
+                if($room && $size &&  $size->quantity > 0){
+                    $size->decrement('quantity', 1);
+
+                    // nếu số lượng bằng 0 thì thay đổi trạng thái hết phòng
+                    if($size->quantity === 0){
+                        $room->update(['statusroom' => 'Hết phòng']);
+                    }
+                } else {
+                    return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
+                }
 
                 DB::commit();
                 return response()->json([
