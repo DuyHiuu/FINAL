@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Modal, message } from "antd";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,15 +22,25 @@ const Header = () => {
   }, [token]);
 
   const handleLogout = () => {
-    if (window.confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("name");
-      localStorage.removeItem("role_id");
-      setIsLoggedIn(false);
-      setUserName("");
-      setRoleId(null);
-      navigate("/login");
-    }
+    Modal.confirm({
+      title: "Xác nhận đăng xuất",
+      content: "Bạn có chắc chắn muốn đăng xuất không?",
+      okText: "Đăng xuất",
+      cancelText: "Hủy",
+      onOk: () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("name");
+        localStorage.removeItem("role_id");
+
+        setIsLoggedIn(false);
+        setUserName("");
+        setRoleId(null);
+
+        message.success("Đăng xuất thành công!");
+
+        navigate("/login");
+      },
+    });
   };
 
   const handleMenuToggle = () => {
