@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchServices from "../../api/useFetchServices";
@@ -9,6 +9,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/autoplay"; 
 import { Autoplay, Pagination } from "swiper/modules"; // Import từ modules
+import { PulseLoader } from "react-spinners";
 
 
 
@@ -166,6 +167,24 @@ const HomePage = () => {
     "/images/banner2.jpg",
     "/images/banner5.jpg",
   ];
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    window.scrollTo(0, 0);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
+        <PulseLoader color="#33CCFF" size={15} margin={2} />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center mb-20 mt-24">
