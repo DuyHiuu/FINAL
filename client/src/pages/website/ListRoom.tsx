@@ -1,34 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchSize from "../../api/useFetchSize";
+import { Select, Button, Spin, Pagination } from "antd";
+import { Link } from "react-router-dom";
+
+const { Option } = Select;
 
 const ListRoom = () => {
-  const [sizeFilter, setSizeFilter] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [sizeFilter, setSizeFilter] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 6;
 
+  // Lấy dữ liệu phòng và kích thước từ API
   const { room, loading: loadingRooms, error: errorRooms } = useFetchRooms("", sizeFilter);
   const { sizes, loading: loadingSizes, error: errorSizes } = useFetchSize();
 
-  const handleSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSizeFilter(e.target.value);
-    setCurrentPage(1);
+  // Hàm thay đổi filter size
+  const handleSizeChange = (value: string) => {
+    setSizeFilter(value);
+    setCurrentPage(1); // Reset trang khi thay đổi filter
   };
 
+  // Tính toán các chỉ số cho phân trang
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentRooms = room?.slice(indexOfFirstItem, indexOfLastItem);
 
-  const handleNextPage = () => {
-    if (indexOfLastItem < room.length) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+  // Hàm xử lý chuyển trang
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -40,57 +40,54 @@ const ListRoom = () => {
         alt="PetSpa"
       />
 
-      {/* Filter Form - Closer to Banner */}
-      <form className="mt-4 mb-6 w-full max-w-2xl mx-auto">
+      {/* Filter Form */}
+      <div className="mt-4 mb-6 w-full max-w-2xl mx-auto">
         <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-lg border">
           <div className="flex items-center space-x-2">
             <label htmlFor="size" className="font-semibold">
               Size:
             </label>
-            <select
+            <Select
               id="size"
-              name="size"
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={sizeFilter}
               onChange={handleSizeChange}
+              style={{ width: 200 }}
+              placeholder="Chọn size"
+              loading={loadingSizes}
+              disabled={loadingSizes || errorSizes}
             >
-              <option value="">Chọn size</option>
-              {loadingSizes && <option>Đang tải...</option>}
-              {errorSizes && <option>Lỗi khi tải size</option>}
-              {!loadingSizes && !errorSizes &&
-                sizes.map((size) => (
-                  <option key={size.id} value={size.name}>
-                    {size.name}
-                  </option>
-                ))
-              }
-            </select>
+              <Option value="">Chọn size</Option>
+              {sizes?.map((size) => (
+                <Option key={size.id} value={size.name}>
+                  {size.name}
+                </Option>
+              ))}
+            </Select>
           </div>
-          <div className="flex items-center space-x-2">
-            <button
-              type="button"
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-300"
-              onClick={() => setSizeFilter("")}
-            >
-              Quay lại
-            </button>
-          </div>
+          <Button
+            onClick={() => setSizeFilter("")}
+            type="default"
+            style={{ backgroundColor: "#FF4D4F", color: "#fff" }}
+          >
+            Quay lại
+          </Button>
         </div>
-      </form>
+      </div>
 
       {/* Room List */}
       <div className="container mx-auto p-4 lg:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loadingRooms &&
+        {loadingRooms && (
           <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
-            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          </div>}
+            <Spin size="large" />
+          </div>
+        )}
         {errorRooms && <p>Đã xảy ra lỗi: {errorRooms}</p>}
         {!loadingRooms &&
           currentRooms
             ?.filter((r: any) => sizeFilter === "" || r.size_name === sizeFilter)
             .map((room: any) => (
               <div key={room.id} className="flex flex-col items-center mb-6 p-4 bg-white shadow rounded-lg">
-                <a href={`detail/${room.id}`} className="text-center">
+                <Link to={`/detail/${room.id}`} className="text-center"> {/* Chỉnh sửa Link ở đây */}
                   <div className="flex-shrink-0 mb-4 mx-auto">
                     <img
                       src={room.img_thumbnail}
@@ -107,29 +104,26 @@ const ListRoom = () => {
                     <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-[#064749]">
                       <p className="text-white text-sm">{room.statusroom}</p>
                     </div>
-                    <span className="ml-2 text-gray-500">Giá:{room.price.toLocaleString("vi-VN")} VNĐ</span>
+                    <span className="ml-2 text-gray-500">
+                      Giá: {room.price.toLocaleString("vi-VN")} VNĐ
+                    </span>
                   </div>
-                </a>
+                </Link>
               </div>
             ))}
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex justify-center mt-4 space-x-4">
-        <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 bg-gray-200 rounded-lg ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-300"}`}
-        >
-          Quay lại
-        </button>
-        <button
-          onClick={handleNextPage}
-          disabled={indexOfLastItem >= room.length}
-          className={`px-4 py-2 bg-gray-200 rounded-lg ${indexOfLastItem >= room.length ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-300"}`}
-        >
-          Tiếp
-        </button>
+      <div className="flex justify-center mt-4">
+        <Pagination
+          current={currentPage}
+          pageSize={itemsPerPage}
+          total={room?.length || 0}
+          onChange={handlePageChange}
+          showSizeChanger={false}
+          showQuickJumper
+          className="pagination"
+        />
       </div>
     </div>
   );
