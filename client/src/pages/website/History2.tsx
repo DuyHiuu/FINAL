@@ -14,7 +14,7 @@ import {
   Select,
   Divider,
 } from "antd";
-import { DollarOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import moment from "moment";
 
 const { Title, Text } = Typography;
@@ -64,7 +64,7 @@ const History2 = () => {
   return (
     <div className="flex flex-col lg:flex-row pb-20 mt-24">
       {/* Left side - Order Information */}
-      <div className="lg:w-1/2 p-4">
+      <div className="lg:w-2/3 p-4">
         <Title level={2}>Thông tin đặt hàng</Title>
         <Card>
           <Row gutter={16}>
@@ -157,13 +157,13 @@ const History2 = () => {
       </div>
 
       {/* Right side - Room Information and Services */}
-      <div className="lg:w-1/2 p-4 mt-20 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-full">
+      <div className="lg:w-1/3 p-4 mt-20 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-full">
         <Card>
-          {/* Image Section with increased height */}
+          {/* Image Section with adjusted height */}
           <img
             src={roomData?.img_thumbnail}
             alt="Room Image"
-            className="w-full h-[700px] object-cover rounded-lg shadow mb-10" // Fixed height 400px
+            className="w-full h-[500px] object-cover rounded-lg shadow mb-10" // Reduced height to 500px
           />
 
           <Title level={3}>{sizeData}</Title>

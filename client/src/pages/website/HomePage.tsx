@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Card, Button, Row, Col, Input, Spin } from "antd";
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchServices from "../../api/useFetchServices";
 import useFetchBlogs from "../../api/useFetchBlogs";
@@ -7,12 +8,8 @@ import useFetchComments from "../../api/useFetchComments";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/autoplay";
-import { Autoplay, Pagination } from "swiper/modules"; // Import từ modules
-import { PulseLoader } from "react-spinners";
-
-
-
+import "swiper/css/autoplay"; 
+import { Autoplay, Pagination } from "swiper/modules";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -21,10 +18,11 @@ const HomePage = () => {
   }, []);
 
   const handleClickDanhsachphong = () => {
-    navigate("/danhsach"); // Điều hướng đến trang /danhsach
+    navigate("/danhsach");
   };
+
   const handleClickDocthem = () => {
-    navigate("/blog"); // Điều hướng đến trang /blog
+    navigate("/blog");
   };
 
   const cards = [
@@ -110,13 +108,10 @@ const HomePage = () => {
     },
   ];
 
-
-
   const khuonItems = [
     {
       title: "Tắm",
-      description:
-        "Sử dụng các sản phầm 100% được kiểm định về an toàn cho các bế",
+      description: "Sử dụng các sản phẩm 100% được kiểm định về an toàn cho các bé",
       imageUrl: "/images/anh1.webp",
     },
     {
@@ -126,12 +121,10 @@ const HomePage = () => {
     },
     {
       title: "Tiêm vắc xin",
-      description:
-        "Mô tả chĐược các bác sĩ thú y tư vấn và trực tiếp tiêm cho các béo khuôn 3",
+      description: "Mô tả chĐược các bác sĩ thú y tư vấn và trực tiếp tiêm cho các béo khuôn 3",
       imageUrl: "/images/anh3.webp",
     },
   ];
-
 
   const { room } = useFetchRooms();
   const { service } = useFetchServices();
@@ -145,17 +138,18 @@ const HomePage = () => {
         <h1 className="text-3xl font-bold mt-10">Đánh giá</h1>
         <p className="text-lg text-center mt-2">Một số đánh giá tiêu biểu</p>
         <div className="flex flex-wrap justify-center mt-6">
-          {loading && <p>Đang tải...</p>}
+          {loading && <Spin />}
           {error && <p>Error: {error}</p>}
           {comments.slice(0, 3).map((comment, index) => (
-            <div
+            <Card
               key={index}
-              className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg m-2"
-              style={{ width: '350px', height: '120px' }}
+              title={comment.content}
+              bordered={false}
+              style={{ width: 350, marginBottom: 16 }}
+              className="bg-[#F2F0F2] text-center"
             >
-              <h1 className="text-lg font-semibold">{comment.content}</h1>
-              <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p>
-            </div>
+              <p className="text-sm">Mô tả thêm về dịch vụ này.</p>
+            </Card>
           ))}
         </div>
       </div>
@@ -168,24 +162,6 @@ const HomePage = () => {
     "/images/banner5.jpg",
   ];
 
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    window.scrollTo(0, 0);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
-        <PulseLoader color="#33CCFF" size={15} margin={2} />
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col items-center mb-20 mt-24">
       {/* Banner Image */}
@@ -193,43 +169,43 @@ const HomePage = () => {
         spaceBetween={30}
         centeredSlides={true}
         autoplay={{
-          delay: 3000, // Chuyển ảnh sau 3 giây
-          disableOnInteraction: false, // Tiếp tục tự động chuyển ảnh sau khi người dùng tương tác
+          delay: 3000,
+          disableOnInteraction: false,
         }}
         pagination={{ clickable: true }}
-        modules={[Autoplay, Pagination]} // Kích hoạt Autoplay và Pagination
-        className="w-full h-[550px]"
+        modules={[Autoplay, Pagination]}
+        className="w-full max-h-[600px]"
       >
         {bannerImages.map((imageUrl, index) => (
           <SwiperSlide key={index}>
             <img
-              className="w-full object-cover h-[550px]"
+              className="w-full h-auto object-cover max-h-[600px]"
               src={imageUrl}
               alt={`Slide ${index + 1}`}
             />
           </SwiperSlide>
         ))}
       </Swiper>
+
+      {/* Search Input */}
       <div className="flex justify-center mt-10">
         <div className="relative w-full max-w-md">
-          <input
-            type="text"
+          <Input
             placeholder="Tìm kiếm..."
-            className="w-full py-2 pl-10 pr-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            prefix={
+              <svg
+                className="w-5 h-5 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path d="M21 21l-4.35-4.35M18.5 10.5A7.5 7.5 0 1111 3a7.5 7.5 0 017.5 7.5z" />
+              </svg>
+            }
           />
-          <button className="absolute inset-y-0 left-0 flex items-center pl-3">
-            <svg
-              className="w-5 h-5 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <path d="M21 21l-4.35-4.35M18.5 10.5A7.5 7.5 0 1111 3a7.5 7.5 0 017.5 7.5z" />
-            </svg>
-          </button>
         </div>
       </div>
 
@@ -243,92 +219,44 @@ const HomePage = () => {
       <p>Liên hệ hotline: 0868403204</p>
 
       {/* Cards Section */}
-      <div className="flex flex-wrap justify-center mt-10">
+      <Row gutter={[16, 16]} justify="center" className="mt-10">
         {cards.map((card, index) => (
-          <div
-            key={index}
-            className="flex flex-col items-center justify-center w-full sm:w-1/3 md:w-1/4 lg:w-1/6 bg-[#E2F1E8] text-black rounded-lg shadow-lg p-4 m-2"
-          >
-            <div className="mb-2">{card.icon}</div>
-            <h1 className="text-xl font-bold">{card.title}</h1>
-            <p className="text-sm text-center">{card.description}</p>
-          </div>
+          <Col key={index} xs={24} sm={12} md={8} lg={6}>
+            <Card className="bg-[#E2F1E8]" hoverable>
+              <div className="mb-2">{card.icon}</div>
+              <h1 className="font-bold text-xl">{card.title}</h1>
+              <p>{card.description}</p>
+            </Card>
+          </Col>
         ))}
-      </div>
-
-      <h1 className="text-3xl font-bold mt-40 text-center">
-        Một số hình ảnh PetHose
-      </h1>
-      <div className="flex flex-wrap justify-center mt-10">
-        {room?.slice(0, 6).map((room: any) => (
-          <div
-            key={room.id}
-            className="flex flex-col items-center m-2 p-4 border rounded-lg shadow-lg bg-white w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
-          >
-            <img
-              src={room.img_thumbnail}
-              className="w-full h-32 object-cover rounded-md"
-              alt={room.size_name}
-            />
-          </div>
-        ))}
-      </div>
-
-      <button
-        onClick={handleClickDanhsachphong}
-        className="mt-10 bg-[#33CCFF] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300"
-      >
-        Danh sách phòng
-      </button>
+      </Row>
 
       {/* Services Section */}
-      <div className="flex flex-col items-center">
-        <h1 className="text-3xl font-bold mt-10">Các dịch vụ chăm sóc</h1>
-        <div className="flex flex-wrap justify-center mt-6">
-          {service?.slice(0, 3).map((service: any) => (
-            <div
-              key={service.id}
-              className="flex flex-col items-center bg-[#E2F1E8] p-4 rounded-lg shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 m-2" // Responsive width
+      <h2 className="text-2xl font-semibold mt-12">Dịch Vụ</h2>
+      <Row gutter={[16, 16]} justify="center" className="mt-6">
+        {khuonItems.map((item, index) => (
+          <Col key={index} xs={24} sm={12} md={8} lg={6}>
+            <Card
+              cover={<img alt={item.title} src={item.imageUrl} />}
+              hoverable
             >
-              <img
-                src="/images/anh1.webp"
-                className="w-full h-[450px] object-cover rounded-md mb-2"
-              />
-              <h1 className="text-lg font-semibold">{service.name}</h1>
-              <p className="text-sm text-center">{service.description}</p>
-            </div>
-          ))}
-        </div>
+              <Card.Meta title={item.title} description={item.description} />
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      {/* Rooms & Blogs */}
+      <div className="mt-12 w-full text-center">
+        <Button type="primary" onClick={handleClickDanhsachphong} className="mr-4">
+          Xem danh sách phòng
+        </Button>
+        <Button type="default" onClick={handleClickDocthem}>
+          Đọc thêm
+        </Button>
       </div>
 
       <ReviewsSection />
-
-      {/* Blog Sectiiiii */}
-      <div className="flex flex-col items-center">
-        <h1 className="text-3xl font-bold mt-10">Blog</h1>
-        <div className="flex flex-wrap justify-center mt-6">
-          {blog?.slice(0, 3).map((blog: any) => (
-            <div
-              key={blog.id}
-              className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 m-2"
-            >
-              <img
-                src={blog.image}
-                alt={blog.title}
-                className="w-full h-[450px] object-cover rounded-md mb-2"
-              />
-              <h1 className="text-lg font-semibold">{blog.title}</h1>
-              <p className="text-sm text-center">{blog.description}</p>
-            </div>
-          ))}
-        </div>
-        <button
-          onClick={handleClickDocthem}
-          className="mt-10 bg-[#33CCFF] text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500 transition duration-300"
-        >
-          Đọc thêm
-        </button>
-      </div>
     </div>
   );
 };
