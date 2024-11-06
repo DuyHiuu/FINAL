@@ -3,6 +3,18 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import useFetchServices from "../../api/useFetchServices";
 import { PulseLoader } from "react-spinners";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import {
+  Button,
+  Card,
+  Checkbox,
+  Col,
+  DatePicker,
+  Input,
+  Row,
+  Tooltip,
+} from "antd";
+import moment from "moment";
+import TextArea from "antd/es/input/TextArea";
 
 const Detail = () => {
   const { service } = useFetchServices();
@@ -92,14 +104,18 @@ const Detail = () => {
       return;
     }
 
-    const missingQuantities = service_ids.filter((id) => !quantities[id] || quantities[id] <= 0);
+    const missingQuantities = service_ids.filter(
+      (id) => !quantities[id] || quantities[id] <= 0
+    );
     if (missingQuantities.length > 0) {
       setMessage("Vui lòng nhập số lượng cho tất cả các dịch vụ đã chọn.");
       return;
     }
 
     const uncheckedQuantities = Object.keys(quantities).filter((id) => {
-      return quantities[parseInt(id)] > 0 && !service_ids.includes(parseInt(id));
+      return (
+        quantities[parseInt(id)] > 0 && !service_ids.includes(parseInt(id))
+      );
     });
     if (uncheckedQuantities.length > 0) {
       setMessage("Vui lòng chọn dịch vụ cho số lượng đã nhập.");
@@ -168,11 +184,15 @@ const Detail = () => {
         const newCommentData = await response.json();
         setComments((prev) => [...prev, newCommentData.comment]);
         setNewComment("");
-        alert('Thêm bình luận thành công!');
+        alert("Thêm bình luận thành công!");
       } else {
         const errorResponse = await response.json();
         console.error("Error posting comment:", errorResponse);
-        setMessage(`Thêm bình luận thất bại: ${errorResponse.message || response.statusText}`);
+        setMessage(
+          `Thêm bình luận thất bại: ${
+            errorResponse.message || response.statusText
+          }`
+        );
       }
     } catch (error) {
       console.error("Error posting comment:", error);
@@ -201,184 +221,193 @@ const Detail = () => {
 
   return (
     <div className="container mx-auto p-4 lg:p-8 mt-24">
-      <div className="flex flex-col lg:flex-row mb-8">
-        <div className="lg:w-2/3 p-2 h-96">
-          <img
-            src={room?.img_thumbnail}
-            alt="Large"
-            className="w-full h-full object-cover rounded-lg shadow"
-          />
-        </div>
-        <div className="lg:w-1/3 p-2 flex flex-col">
-          <div className="flex mb-2 h-48">
-            <img
-              src={smallImageSrcs[0]}
-              alt="Small 1"
-              className="w-1/2 h-full object-cover rounded-lg shadow mr-1"
-            />
-            <img
-              src={smallImageSrcs[1]}
-              alt="Small 2"
-              className="w-1/2 h-full object-cover rounded-lg shadow ml-1"
-            />
-          </div>
-          <div className="flex h-40">
-            <img
-              src={smallImageSrcs[2]}
-              alt="Small 3"
-              className="w-1/2 h-full object-cover rounded-lg shadow mr-1"
-            />
-            <img
-              src={smallImageSrcs[3]}
-              alt="Small 4"
-              className="w-1/2 h-full object-cover rounded-lg shadow ml-1"
-            />
-          </div>
-        </div>
-      </div>
+<Row gutter={0}>
+  {/* Phần 1: Ảnh chính chiếm 50% chiều rộng */}
+  <Col span={12}> {/* Chiếm 50% chiều rộng */}
+    <Card
+      hoverable
+      cover={
+        <img
+          alt="Room"
+          src={room?.img_thumbnail}
+          style={{
+            width: "100%",  // Chiếm toàn bộ chiều rộng của Col
+            height: "500px",  // Chiều cao của ảnh chính bằng tổng chiều cao của 4 ảnh phụ
+            objectFit: "cover",  // Đảm bảo ảnh không bị méo, đầy khung
+            borderRadius: "8px", // Cải thiện viền ảnh
+          }}
+        />
+      }
+    >
+      <strong className="text-2xl">{room?.size_name}</strong>
+      <p>{room?.statusroom}</p>
+    </Card>
+  </Col>
+
+  {/* Phần 2: Ảnh phụ chiếm 50% chiều rộng */}
+  <Col span={12}> {/* Chiếm 50% chiều rộng */}
+    <Row gutter={8} style={{ marginTop: "8px" }}>
+      {/* Ảnh đầu tiên, chiếm 1/2 chiều rộng */}
+      <Col span={12}>
+        <img
+          src="/images/anh9.webp"
+          alt="Small"
+          className="w-full object-cover rounded-md"
+          style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
+        />
+      </Col>
+      {/* Ảnh thứ hai, chiếm 1/2 chiều rộng */}
+      <Col span={12}>
+        <img
+          src="/images/anh10.webp"
+          alt="Small"
+          className="w-full object-cover rounded-md"
+          style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
+        />
+      </Col>
+    </Row>
+
+    <Row gutter={8} style={{ marginTop: "8px" }}>
+      {/* Ảnh thứ ba, chiếm 1/2 chiều rộng */}
+      <Col span={12}>
+        <img
+          src="/images/anh2.webp"
+          alt="Small"
+          className="w-full object-cover rounded-md"
+          style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
+        />
+      </Col>
+      {/* Ảnh thứ tư, chiếm 1/2 chiều rộng */}
+      <Col span={12}>
+        <img
+          src="/images/anh11.webp"
+          alt="Small"
+          className="w-full object-cover rounded-md"
+          style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
+        />
+      </Col>
+    </Row>
+  </Col>
+</Row>
+
+
 
       <form onSubmit={handleSubmit}>
-        <input
-          type="hidden"
-          name="room_id"
-          value={room_id}
-          onChange={(e) => setRoom_id(e.target.value)}
-        />
-        <div className="flex flex-col lg:flex-row">
-          <div className="lg:w-2/3 p-4">
-            <strong className="text-5xl">{room?.size_name}</strong>
-            <p className="flex items-center mt-10">{room?.statusroom}</p>
-
-            <h3 className="text-left text-2xl font-semibold mt-10">Dịch vụ kèm thêm</h3>
-            <div className="mt-2">
-              {service?.map((service: any) => (
-                <div className="mb-4" key={service.id}>
-                  <div className="flex items-center">
-                    <input
-                      name="service_ids"
-                      value={service.id}
-                      onChange={() => changeService(service.id)}
-                      type="checkbox"
-                      className="mr-2 appearance-none checked:bg-[#064749] border border-black rounded-full w-4 h-4 cursor-pointer"
-                      checked={service_ids.includes(service.id)}
-                    />
-                    <span>{service?.name}</span>
-                    <button
-                      type="button"
-                      onClick={() => toggleDescription(service.id)}
-                      className="ml-2 text-gray-600"
-                    >
-                      {openServiceId === service.id ? (
-                        <ChevronUpIcon className="w-5 h-5 text-gray-600" />
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold">Dịch vụ kèm theo</h3>
+          <div>
+            {service?.map((service: any) => (
+              <div key={service.id} className="flex items-center">
+                <Checkbox
+                  checked={service_ids.includes(service.id)}
+                  onChange={() => changeService(service.id)}
+                >
+                  {service?.name}
+                </Checkbox>
+                <Tooltip title={service?.description}>
+                  <Button
+                    type="link"
+                    icon={
+                      openServiceId === service.id ? (
+                        <ChevronUpIcon className="h-5 w-5" />
                       ) : (
-                        <ChevronDownIcon className="w-5 h-5 text-gray-600" />
-                      )}
-                    </button>
+                        <ChevronDownIcon className="h-5 w-5" />
+                      )
+                    }
+                    onClick={() => toggleDescription(service.id)}
+                  />
+                </Tooltip>
+                {openServiceId === service.id && (
+                  <div className="mt-2 text-sm text-gray-600">
+                    {service?.description}
                   </div>
-                  {openServiceId === service.id && (
-                    <p className="ml-6 mt-2 pl-4 border-l-2 border-gray-300 text-gray-600">{service.description}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <h3 className="text-left text-2xl font-semibold mt-10">Mô tả</h3>
-            <p className="text-left mt-1">{room?.description}</p>
+                )}
+                {service_ids.includes(service.id) && (
+                  <Input
+                    type="number"
+                    min={1}
+                    value={quantities[service.id] || ""}
+                    onChange={(e) => {
+                      setQuantities({
+                        ...quantities,
+                        [service.id]: parseInt(e.target.value) || 0,
+                      });
+                    }}
+                    style={{ width: "100px", marginLeft: "10px" }}
+                  />
+                )}
+              </div>
+            ))}
           </div>
 
-          <div className="lg:w-1/3 p-4 mt-10 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-full">
-            <h2 className="text-2xl font-semibold mb-5">{room?.price.toLocaleString("vi-VN")} VNĐ/Ngày</h2>
-            <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 mb-4">
-              <label className="text-left block w-full lg:w-1/2">
-                <strong>Ngày vào</strong>
-                <input
-                  required
-                  type="date"
-                  name="start_date"
-                  value={start_date}
-                  min={minDate}
-                  max={maxDate}
-                  className="border border-gray-300 rounded-md bg-gray-50 p-2 px-4 w-full mt-1
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                     hover:border-blue-400 focus:shadow-lg transition duration-200"
-                  onChange={(e) => setStart_date(e.target.value)}
+          <div className="mt-8">
+            <h3 className="text-xl font-semibold">Thời gian đặt phòng</h3>
+            <Row gutter={16}>
+              <Col span={12}>
+                <DatePicker
+                  value={start_date ? moment(start_date) : null}
+                  onChange={(date) =>
+                    setStart_date(date?.format("YYYY-MM-DD") || "")
+                  }
+                  placeholder="Ngày bắt đầu"
+                  style={{ width: "100%" }}
+                  disabledDate={(current) =>
+                    current && current < moment().endOf("day")
+                  }
                 />
-              </label>
-              <label className="text-left block w-full lg:w-1/2">
-                <strong>Ngày ra</strong>
-                <input
-                  type="date"
-                  required
-                  name="end_date"
-                  value={end_date}
-                  min={minDate}
-                  max={maxDate}
-                  className="border border-gray-300 rounded-md bg-gray-50 p-2 px-4 w-full mt-1
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                     hover:border-blue-400 focus:shadow-lg transition duration-200"
-                  onChange={(e) => setEnd_date(e.target.value)}
+              </Col>
+              <Col span={12}>
+                <DatePicker
+                  value={end_date ? moment(end_date) : null}
+                  onChange={(date) =>
+                    setEnd_date(date?.format("YYYY-MM-DD") || "")
+                  }
+                  placeholder="Ngày kết thúc"
+                  style={{ width: "100%" }}
+                  disabledDate={(current) =>
+                    current && current < moment().endOf("day")
+                  }
                 />
-              </label>
-            </div>
-
-            <center>
-              <button
-                type="submit"
-                className={`mt-2 text-white px-10 py-2 rounded-full bg-[#064749] ${!localStorage.getItem("token") ? "opacity-50 cursor-not-allowed" : ""}`}
-                disabled={!localStorage.getItem("token")}
-              >
-                Đặt phòng
-              </button>
-              {!localStorage.getItem("token") && (
-                <p className="text-red-500 mt-2">
-                  Vui lòng đăng nhập để đặt phòng.
-                </p>
-              )}
-            </center>
+              </Col>
+            </Row>
           </div>
         </div>
-      </form>
 
-      {/* Phần bình luận */}
-      <div className="mt-10">
-        <h3 className="text-left text-2xl font-semibold">Bình luận</h3>
-        {message && <p className="text-red-500">{message}</p>}
-        <form onSubmit={handleAddComment} className="mt-4">
-          <textarea
-            rows={3}
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold">Bình luận</h3>
+          <div className="space-y-4">
+            {comments.map((comment) => (
+              <div key={comment.id} className="border p-4 rounded-md shadow-sm">
+                <p>{comment.content}</p>
+                <p className="text-gray-500 text-sm">{comment.user_name}</p>
+              </div>
+            ))}
+          </div>
+          <TextArea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="border w-full p-2 rounded"
             placeholder="Thêm bình luận..."
-            required
+            rows={4}
+            style={{ marginTop: "16px" }}
           />
-          <button
-            type="submit"
-            className="mt-2 text-white px-4 py-2 rounded bg-[#064749]"
+          <Button
+            type="primary"
+            onClick={handleAddComment}
+            style={{ marginTop: "8px" }}
+            disabled={!newComment.trim()}
           >
-            Gửi
-          </button>
-        </form>
-
-        {/* Hiển thị danh sách bình luận */}
-        <div className="mt-6">
-          {comments.length > 0 ? (
-            comments.map((comment) => (
-              <div key={comment.id} className="border p-4 rounded mb-4">
-                <p className="text-gray-700 break-words">{comment.content}</p>
-                <p className="text-sm text-gray-500">
-                  {`- Bởi ${comment.user?.name || "Người dùng"} vào ${new Date(comment.created_at).toLocaleString()}`}
-                </p>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500">Chưa có bình luận nào.</p>
-          )}
+            Thêm Bình luận
+          </Button>
         </div>
-      </div>
+
+        <div className="mt-8">
+          <Button type="primary" htmlType="submit" size="large" block>
+            Xác nhận đặt phòng
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };
 
 export default Detail;
-
