@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { Table, Button, Input, message, Popconfirm } from "antd";
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons'; // Thêm icon
 import useFetchRooms from "../../../../api/useFetchRooms";
 
 const RoomList = () => {
@@ -7,12 +9,16 @@ const RoomList = () => {
   const [sizeFilter, setSizeFilter] = useState(""); // Trạng thái cho bộ lọc kích thước
 
   // Nếu đang tải, hiển thị thông báo
-  if (loading) return <div className="flex items-center justify-center min-h-screen">
-  <div className="w-16 h-16 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
-</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-16 h-16 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
+      </div>
+    );
 
   // Nếu có lỗi, hiển thị thông báo lỗi
-  if (error) return <div className="text-center text-red-600 mt-5">{error}</div>;
+  if (error)
+    return <div className="text-center text-red-600 mt-5">{error}</div>;
 
   // Hàm xử lý thay đổi bộ lọc kích thước
   const handleSizeChange = (e) => {
@@ -29,16 +35,15 @@ const RoomList = () => {
         method: "DELETE",
       });
       if (response.ok) {
-        alert("Phòng đã được xóa thành công");
+        message.success("Phòng đã được xóa thành công");
         window.location.reload(); // Tải lại trang sau khi xóa thành công
       } else {
         const errorData = await response.json(); // Lấy dữ liệu lỗi từ phản hồi
-        console.error("Xóa Phòng thất bại:", errorData.message); // Ghi lại thông điệp lỗi
-        alert(`Xóa Phòng thất bại: ${errorData.message}`);
+        message.error(`Xóa Phòng thất bại: ${errorData.message}`);
       }
     } catch (error) {
       console.error("Lỗi:", error);
-      alert("Đã xảy ra lỗi khi xóa Phòng");
+      message.error("Đã xảy ra lỗi khi xóa Phòng");
     }
   };
 
@@ -46,6 +51,73 @@ const RoomList = () => {
   const filteredRooms = sizeFilter
     ? room.filter((r) => r.size_name.toLowerCase().includes(sizeFilter.toLowerCase()))
     : room;
+
+  // Cấu hình cho bảng
+  const columns = [
+    {
+      title: "STT",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "Hình Ảnh",
+      dataIndex: "img_thumbnail",
+      key: "img_thumbnail",
+      render: (text) => (
+        <img src={text} alt="Room Thumbnail" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: "8px" }} />
+      ),
+    },
+    {
+      title: "Size Phòng",
+      dataIndex: "size_name",
+      key: "size_name",
+    },
+    {
+      title: "Giá (VND)",
+      dataIndex: "price",
+      key: "price",
+      render: (text) => `${text.toLocaleString("vi-VN")} VND`,
+    },
+    {
+      title: "Số Lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
+    {
+      title: "Trạng Thái",
+      dataIndex: "statusroom",
+      key: "statusroom",
+      render: (text) => (
+        <span
+          className={`px-2 py-1 rounded text-sm ${text === "Còn phòng" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+        >
+          {text}
+        </span>
+      ),
+    },
+    {
+      title: "Hành Động",
+      key: "action",
+      render: (text, record) => (
+        <div className="flex items-center space-x-3">
+          <Link
+            to={`/admin/rooms/edit/${record.id}`}
+            className="text-yellow-500 hover:text-yellow-600"
+          >
+            <EditOutlined style={{ fontSize: 18 }} />
+          </Link>
+          <Popconfirm
+            title="Bạn có chắc chắn muốn xóa phòng này?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Đồng ý"
+            cancelText="Hủy"
+          >
+            <Button danger type="text" icon={<DeleteOutlined style={{ fontSize: 18 }} />} />
+          </Popconfirm>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="container mx-auto p-6">
@@ -61,77 +133,23 @@ const RoomList = () => {
 
       {/* Thanh tìm kiếm */}
       <div className="mb-4">
-        <input
-          type="text"
+        <Input
           placeholder="Tìm theo kích thước phòng..."
           value={sizeFilter}
           onChange={handleSizeChange}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64" // Thay đổi width ở đây
+          className="w-64"
         />
       </div>
 
-      <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
-        <table className="min-w-full bg-white border border-gray-200">
-          <thead className="bg-gray-200 text-gray-600">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-semibold">STT</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Hình Ảnh</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Size Phòng</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Giá (VND)</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Số Lượng</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Trạng Thái</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold">Hành Động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRooms.length > 0 ? (
-              filteredRooms.map((room) => (
-                <tr key={room.id} className="border-b hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-2">{room.id}</td>
-                  <td className="px-4 py-2">
-                    <img src={room.img_thumbnail} alt={room.size_name} className="w-20 h-20 object-cover rounded" />
-                  </td>
-                  <td className="px-4 py-2">{room.size_name}</td>
-                  <td className="px-4 py-2">{room.price.toLocaleString("vi-VN")} VND</td>
-                  <td className="px-4 py-2">{room.quantity}</td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={`px-2 py-1 rounded text-sm ${room.statusroom === "Còn phòng"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                        }`}
-                    >
-                      {room.statusroom}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2">
-                    <div className="flex items-center space-x-3">
-                      <Link
-                        to={`/admin/rooms/edit/${room.id}`}
-                        className="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition duration-200"
-                      >
-                        Sửa
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(room.id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition duration-200"
-                      >
-                        Xóa
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={7} className="text-center py-4 text-gray-600">
-                  Không có phòng nào
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {/* Bảng phòng */}
+      <Table
+        columns={columns}
+        dataSource={filteredRooms}
+        rowKey="id"
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+        scroll={{ x: "max-content" }}
+      />
     </div>
   );
 };

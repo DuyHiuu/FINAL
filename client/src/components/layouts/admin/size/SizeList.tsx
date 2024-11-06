@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { Table, Input, Button, message, Pagination, Popconfirm } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons"; // Import icons
 import useFetchSize from "../../../../api/useFetchSize";
 
 const SizeList = () => {
@@ -11,6 +13,7 @@ const SizeList = () => {
   // Hàm xử lý tìm kiếm
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset về trang đầu khi tìm kiếm
   };
 
   // Hàm lọc size dựa trên tên và miêu tả
@@ -36,21 +39,78 @@ const SizeList = () => {
         method: "DELETE",
       });
       if (response.ok) {
-        alert("Size đã được xóa thành công");
-        window.location.reload(); // Tải lại trang sau khi xóa thành công
+        message.success("Size đã được xóa thành công");
+        setCurrentPage(1); // Reset lại trang khi xóa thành công
       } else {
         const errorData = await response.json();
         console.error("Xóa size thất bại:", errorData.message);
-        alert(`Xóa size thất bại: ${errorData.message}`);
+        message.error(`Xóa size thất bại: ${errorData.message}`);
       }
     } catch (error) {
       console.error("Lỗi:", error);
-      alert("Đã xảy ra lỗi khi xóa size");
+      message.error("Đã xảy ra lỗi khi xóa size");
     }
   };
 
   // Hàm chuyển trang
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Cấu hình cột bảng
+  const columns = [
+    {
+      title: "STT",
+      dataIndex: "index",
+      key: "index",
+      render: (_, __, index) => indexOfFirstSize + index + 1, // Tính số thứ tự
+    },
+    {
+      title: "Tên size",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
+    {
+      title: "Miêu tả",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_, record) => (
+        <div className="flex items-center space-x-3">
+          {/* Sửa size */}
+          <Link
+            to={`/admin/sizes/${record.id}`}
+            className="text-yellow-500 hover:text-yellow-600"
+          >
+            <EditOutlined style={{ fontSize: 20 }} />
+          </Link>
+
+          {/* Xóa size */}
+          <Popconfirm
+            title="Bạn có chắc chắn muốn xóa size này?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Đồng ý"
+            cancelText="Hủy"
+          >
+            <Button
+              danger
+              icon={<DeleteOutlined />}
+              size="small"
+              style={{ border: "none" }}
+            />
+          </Popconfirm>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="container mx-auto p-6">
@@ -66,12 +126,11 @@ const SizeList = () => {
 
       {/* Thanh tìm kiếm */}
       <div className="mb-4">
-        <input
-          type="text"
+        <Input
           placeholder="Tìm kiếm theo tên hoặc miêu tả"
           value={searchTerm}
           onChange={handleSearch}
-          className="px-4 py-2 border border-gray-300 rounded-lg w-full"
+          className="w-full"
         />
       </div>
 
@@ -81,67 +140,24 @@ const SizeList = () => {
         </div>
       ) : (
         <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
-          <table className="min-w-full bg-white">
-            <thead className="bg-gray-200 text-gray-600">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold">STT</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Tên size</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Số lượng</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Miêu tả</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Hành động</th>
-              </tr>
-            </thead>
-
-            <tbody className="text-gray-700">
-              {Array.isArray(currentSizes) && currentSizes.length > 0 ? (
-                currentSizes.map((size, index) => (
-                  <tr key={size.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 border-b">{indexOfFirstSize + index + 1}</td>
-                    <td className="px-4 py-3 border-b">{size.name}</td>
-                    <td className="px-4 py-3 border-b">{size.quantity}</td>
-                    <td className="px-4 py-3 border-b">{size.description}</td>
-                    <td className="px-4 py-3 border-b">
-                      <div className="flex items-center space-x-3">
-                        <Link
-                          to={`/admin/sizes/${size.id}`}
-                          className="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition duration-200"
-                        >
-                          Sửa
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(size.id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition duration-200"
-                        >
-                          Xóa
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="text-center py-4">
-                    Không có size nào
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <Table
+            columns={columns}
+            dataSource={currentSizes}
+            rowKey="id"
+            pagination={false} // Tắt phân trang trong Table
+          />
         </div>
       )}
 
       {/* Phân trang */}
       <div className="flex justify-center mt-4">
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index}
-            onClick={() => paginate(index + 1)}
-            className={`px-3 py-1 mx-1 rounded-lg ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
-              }`}
-          >
-            {index + 1}
-          </button>
-        ))}
+        <Pagination
+          current={currentPage}
+          pageSize={sizesPerPage}
+          total={filteredSizes?.length}
+          onChange={handlePageChange}
+          showSizeChanger={false} // Ẩn chức năng thay đổi số lượng item trên mỗi trang
+        />
       </div>
     </div>
   );
