@@ -5,7 +5,7 @@ import useFetchSize from "../../api/useFetchSize";
 const ListRoom = () => {
   const [sizeFilter, setSizeFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 6;
 
   const { room, loading: loadingRooms, error: errorRooms } = useFetchRooms("", sizeFilter);
   const { sizes, loading: loadingSizes, error: errorSizes } = useFetchSize();
@@ -95,7 +95,7 @@ const ListRoom = () => {
                     <img
                       src={room.img_thumbnail}
                       alt={`image-${room.id}`}
-                      className="w-24 h-24 rounded-md"
+                      className="w-full h-[250px] rounded-md"
                     />
                   </div>
                   <div className="flex-1">
@@ -107,7 +107,7 @@ const ListRoom = () => {
                     <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-[#064749]">
                       <p className="text-white text-sm">{room.statusroom}</p>
                     </div>
-                    <span className="ml-2 text-gray-500">Giá: {room.price}</span>
+                    <span className="ml-2 text-gray-500">Giá:{room.price.toLocaleString("vi-VN")} VNĐ</span>
                   </div>
                 </a>
               </div>
