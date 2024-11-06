@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchServices from "../../api/useFetchServices";
@@ -7,8 +7,9 @@ import useFetchComments from "../../api/useFetchComments";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/autoplay"; 
+import "swiper/css/autoplay";
 import { Autoplay, Pagination } from "swiper/modules"; // Import từ modules
+import { PulseLoader } from "react-spinners";
 
 
 
@@ -109,7 +110,7 @@ const HomePage = () => {
     },
   ];
 
-  
+
 
   const khuonItems = [
     {
@@ -135,7 +136,7 @@ const HomePage = () => {
   const { room } = useFetchRooms();
   const { service } = useFetchServices();
   const { blog } = useFetchBlogs();
-  
+
   const ReviewsSection = () => {
     const { comments, loading, error } = useFetchComments();
 
@@ -150,7 +151,7 @@ const HomePage = () => {
             <div
               key={index}
               className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg m-2"
-        style={{ width: '350px', height: '120px' }} 
+              style={{ width: '350px', height: '120px' }}
             >
               <h1 className="text-lg font-semibold">{comment.content}</h1>
               <p className="text-sm text-center">Mô tả thêm về dịch vụ này.</p>
@@ -160,12 +161,30 @@ const HomePage = () => {
       </div>
     );
   };
-  
+
   const bannerImages = [
     "/images/img.webp",
     "/images/banner2.jpg",
     "/images/banner5.jpg",
   ];
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    window.scrollTo(0, 0);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
+        <PulseLoader color="#33CCFF" size={15} margin={2} />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center mb-20 mt-24">
@@ -179,12 +198,12 @@ const HomePage = () => {
         }}
         pagination={{ clickable: true }}
         modules={[Autoplay, Pagination]} // Kích hoạt Autoplay và Pagination
-        className="w-full max-h-[600px]"
+        className="w-full h-[550px]"
       >
         {bannerImages.map((imageUrl, index) => (
           <SwiperSlide key={index}>
             <img
-              className="w-full h-auto object-cover max-h-[600px]"
+              className="w-full object-cover h-[550px]"
               src={imageUrl}
               alt={`Slide ${index + 1}`}
             />
@@ -241,14 +260,11 @@ const HomePage = () => {
         Một số hình ảnh PetHose
       </h1>
       <div className="flex flex-wrap justify-center mt-10">
-        {room?.map((room: any) => (
+        {room?.slice(0, 6).map((room: any) => (
           <div
             key={room.id}
             className="flex flex-col items-center m-2 p-4 border rounded-lg shadow-lg bg-white w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
           >
-            <h2 className="mt-2 text-lg font-semibold text-center">
-              {room.size_name}
-            </h2>
             <img
               src={room.img_thumbnail}
               className="w-full h-32 object-cover rounded-md"
@@ -269,7 +285,7 @@ const HomePage = () => {
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold mt-10">Các dịch vụ chăm sóc</h1>
         <div className="flex flex-wrap justify-center mt-6">
-          {service?.map((service: any) => (
+          {service?.slice(0, 3).map((service: any) => (
             <div
               key={service.id}
               className="flex flex-col items-center bg-[#E2F1E8] p-4 rounded-lg shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 m-2" // Responsive width
@@ -284,33 +300,14 @@ const HomePage = () => {
           ))}
         </div>
       </div>
-      <h1 className="text-3xl font-bold mt-40 text-center">Top 3 Phòng</h1>
-      <div className="flex flex-wrap justify-center mt-10">
-        {/* Lấy top 3 phòng */}
-        {room?.slice(0, 3).map((room: any) => (
-          <div
-            key={room.id}
-            className="flex flex-col items-center m-2 p-4 border rounded-lg shadow-lg bg-white w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
-          >
-            <h2 className="mt-2 text-lg font-semibold text-center">
-              {room.size_name}
-            </h2>
-            <img
-              src={room.img_thumbnail}
-              className="w-full h-48 object-cover rounded-md" // Thay đổi chiều cao ở đây
-              alt={room.size_name}
-            />
-          </div>
-        ))}
-      </div>
 
-      <ReviewsSection/>
+      <ReviewsSection />
 
       {/* Blog Sectiiiii */}
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold mt-10">Blog</h1>
         <div className="flex flex-wrap justify-center mt-6">
-          {blog?.map((blog: any) => (
+          {blog?.slice(0, 3).map((blog: any) => (
             <div
               key={blog.id}
               className="flex flex-col items-center bg-[#F2F0F2] p-4 rounded-lg shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4 m-2"

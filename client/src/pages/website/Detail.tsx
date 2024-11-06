@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useFetchServices from "../../api/useFetchServices";
 import { PulseLoader } from "react-spinners";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 
 const Detail = () => {
   const { service } = useFetchServices();
@@ -80,13 +81,6 @@ const Detail = () => {
       }
       return [...prevState, serviceId];
     });
-  };
-
-  const changeQuantity = (serviceId: number, quantity: number) => {
-    setQuantities((prevState) => ({
-      ...prevState,
-      [serviceId]: quantity,
-    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -192,6 +186,11 @@ const Detail = () => {
     .toISOString()
     .split("T")[0];
 
+  const [openServiceId, setOpenServiceId] = useState(null);
+  const toggleDescription = (id) => {
+    setOpenServiceId(openServiceId === id ? null : id);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
@@ -253,31 +252,33 @@ const Detail = () => {
             <h3 className="text-left text-2xl font-semibold mt-10">Dịch vụ kèm thêm</h3>
             <div className="mt-2">
               {service?.map((service: any) => (
-                <label className="flex items-center mb-2" key={service.id}>
-                  <input
-                    name="service_ids"
-                    value={service.id}
-                    onChange={() => changeService(service.id)}
-                    type="checkbox"
-                    className="mr-2 appearance-none checked:bg-[#064749] border rounded-full w-4 h-4 cursor-pointer"
-                    checked={service_ids.includes(service.id)}
-                  />
-                  <span className="me-3">{service?.name}</span>
-                  <span>
-                    x
+                <div className="mb-4" key={service.id}>
+                  <div className="flex items-center">
                     <input
-                      className="border rounded-md w-20 px-2 py-1 ml-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                      value={quantities[service.id] || ""}
-                      onChange={(e) =>
-                        changeQuantity(service.id, parseInt(e.target.value) || 0)
-                      }
-                      placeholder="Nhập số lượng dịch vụ"
-                      type="number"
-                      name={`quantities_${service.id}`}
-                      id={`quantities_${service.id}`}
+                      name="service_ids"
+                      value={service.id}
+                      onChange={() => changeService(service.id)}
+                      type="checkbox"
+                      className="mr-2 appearance-none checked:bg-[#064749] border border-black rounded-full w-4 h-4 cursor-pointer"
+                      checked={service_ids.includes(service.id)}
                     />
-                  </span>
-                </label>
+                    <span>{service?.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => toggleDescription(service.id)}
+                      className="ml-2 text-gray-600"
+                    >
+                      {openServiceId === service.id ? (
+                        <ChevronUpIcon className="w-5 h-5 text-gray-600" />
+                      ) : (
+                        <ChevronDownIcon className="w-5 h-5 text-gray-600" />
+                      )}
+                    </button>
+                  </div>
+                  {openServiceId === service.id && (
+                    <p className="ml-6 mt-2 pl-4 border-l-2 border-gray-300 text-gray-600">{service.description}</p>
+                  )}
+                </div>
               ))}
             </div>
 
@@ -286,7 +287,7 @@ const Detail = () => {
           </div>
 
           <div className="lg:w-1/3 p-4 mt-10 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-full">
-            <h2 className="text-2xl font-semibold mb-5">{room?.price}/Ngày</h2>
+            <h2 className="text-2xl font-semibold mb-5">{room?.price.toLocaleString("vi-VN")} VNĐ/Ngày</h2>
             <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 mb-4">
               <label className="text-left block w-full lg:w-1/2">
                 <strong>Ngày vào</strong>

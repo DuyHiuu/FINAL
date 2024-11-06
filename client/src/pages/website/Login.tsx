@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { message } from "antd";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -37,12 +38,12 @@ const Login = () => {
         localStorage.setItem("role_id", data.user.role.role_id); // Lưu role_id vào localStorage
         localStorage.setItem("phone", data.user.phone); // Lưu role_id vào localStorage
         localStorage.setItem("role_name", data.user.role.role_name); // Lưu role_id vào localStorage
-
-        window.location.href = "/"; // Chuyển hướng đến trang chính
+        message.success("Đăng nhập thành công!");
+        navigate("/"); // Chuyển hướng đến trang chính
       } else {
         const data = await response.json();
         // Nếu có lỗi, hiển thị thông báo lỗi
-        setError(data.message || "Đăng nhập không thành công!");
+        message.error("Thông tin tài khoản hoặc mật khẩu không chính xác");
       }
     } catch (error) {
       // Hiển thị lỗi nếu có vấn đề khi gọi API
