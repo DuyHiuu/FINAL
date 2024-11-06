@@ -1,20 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useFetchPayments from "../../api/useFetchPayments";
 
 const History1 = () => {
   const { payment, loading } = useFetchPayments();
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [filteredPayments, setFilteredPayments] = useState(payment || []);
 
-  const totalRoomsBooked = Array.isArray(payment) ? payment.length : 0;
+  const totalRoomsBooked = Array.isArray(filteredPayments) ? filteredPayments.length : 0;
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+  useEffect(() => {
+    setFilteredPayments(payment);  // Cập nhật filteredPayments khi dữ liệu payment thay đổi
+  }, [payment]);
+
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
   };
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen">
-    <div className="w-16 h-16 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
-  </div>;
+  const handleEndDateChange = (e) => {
+    setEndDate(e.target.value);
+  };
+
+  // Lọc các payment theo ngày bắt đầu và ngày kết thúc
+  const handleSearch = () => {
+    if (!startDate && !endDate) {
+      // Nếu không có ngày bắt đầu hoặc ngày kết thúc, trả về danh sách gốc
+      setFilteredPayments(payment);
+      return;
+    }
+
+    const filtered = payment.filter((item) => {
+      const bookingStartDate = new Date(item.booking?.start_date);
+      const bookingEndDate = new Date(item.booking?.end_date);
+
+      const isAfterStart = startDate ? bookingStartDate >= new Date(startDate) : true;
+      const isBeforeEnd = endDate ? bookingEndDate <= new Date(endDate) : true;
+
+      return isAfterStart && isBeforeEnd;
+    });
+
+    setFilteredPayments(filtered);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-16 h-16 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-32">
@@ -22,8 +57,8 @@ const History1 = () => {
       <div className="container mx-auto p-4 lg:p-8 flex flex-col lg:flex-row">
         {/* Phần bên trái */}
         <div className="flex-1 w-full lg:w-1/2">
-          {Array.isArray(payment) && payment.length > 0 ? (
-            payment?.map((item) => (
+          {Array.isArray(filteredPayments) && filteredPayments.length > 0 ? (
+            filteredPayments.map((item) => (
               <div
                 key={item?.id}
                 className="flex flex-col lg:flex-row items-center mb-6 p-4 bg-white shadow rounded-lg"
@@ -75,27 +110,26 @@ const History1 = () => {
           <div className="flex justify-center">
             <div className="relative w-full max-w-md">
               <input
-                type="text"
-                placeholder="Tìm kiếm..."
-                className="w-full py-2 pl-10 pr-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="date"
+                value={startDate}
+                onChange={handleStartDateChange}
+                className="w-full py-2 pl-10 pr-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                placeholder="Ngày bắt đầu"
               />
-              <button className="absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg
-                  className="w-5 h-5 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M21 21l-4.35-4.35M18.5 10.5A7.5 7.5 0 1111 3a7.5 7.5 0 017.5 7.5z" />
-                </svg>
-              </button>
+              <input
+                type="date"
+                value={endDate}
+                onChange={handleEndDateChange}
+                className="w-full py-2 pl-10 pr-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Ngày kết thúc"
+              />
             </div>
           </div>
-          <button className="mt-5 text-white px-10 py-2 rounded-full bg-[#2563eb]">
-            <a href="">Tìm kiếm</a>
+          <button
+            onClick={handleSearch}
+            className="mt-5 text-white px-10 py-2 rounded-full bg-[#2563eb]"
+          >
+            Tìm kiếm
           </button>
         </div>
       </div>
