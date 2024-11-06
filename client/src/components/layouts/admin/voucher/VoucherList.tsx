@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { Table, Input, Button, Popconfirm, message, Pagination } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons"; // Import icons
 import useFetchVoucher from "../../../../api/useFetchVoucher";
 
 const VoucherList = () => {
@@ -11,6 +13,7 @@ const VoucherList = () => {
   // Hàm xử lý tìm kiếm
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset về trang đầu khi tìm kiếm
   };
 
   // Hàm lọc voucher dựa trên tên và mã code
@@ -36,21 +39,91 @@ const VoucherList = () => {
         method: "DELETE",
       });
       if (response.ok) {
-        alert("Voucher đã được xóa thành công");
+        message.success("Voucher đã được xóa thành công");
         setVouchers((prevVouchers) => prevVouchers.filter((voucher) => voucher.id !== id));
       } else {
         const errorData = await response.json();
         console.error("Xóa voucher thất bại:", errorData.message);
-        alert(`Xóa voucher thất bại: ${errorData.message}`);
+        message.error(`Xóa voucher thất bại: ${errorData.message}`);
       }
     } catch (error) {
       console.error("Lỗi:", error);
-      alert("Đã xảy ra lỗi khi xóa voucher");
+      message.error("Đã xảy ra lỗi khi xóa voucher");
     }
   };
 
   // Hàm chuyển trang
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Cấu hình cột bảng
+  const columns = [
+    {
+      title: "STT",
+      dataIndex: "index",
+      key: "index",
+      render: (_, __, index) => indexOfFirstVoucher + index + 1, // Tính số thứ tự
+    },
+    {
+      title: "Tên voucher",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Code",
+      dataIndex: "code",
+      key: "code",
+    },
+    {
+      title: "Giảm giá",
+      dataIndex: "discount",
+      key: "discount",
+      render: (text) => `${text.toLocaleString("vi-VN")} VND`, // Định dạng tiền tệ
+    },
+    {
+      title: "Số Lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
+    {
+      title: "Ngày bắt đầu",
+      dataIndex: "start_date",
+      key: "start_date",
+    },
+    {
+      title: "Ngày kết thúc",
+      dataIndex: "end_date",
+      key: "end_date",
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_, record) => (
+        <div className="flex items-center space-x-3">
+          {/* Sửa voucher */}
+          <Link to={`/admin/vouchers/${record.id}`} className="text-yellow-500">
+            <EditOutlined style={{ fontSize: 20 }} />
+          </Link>
+
+          {/* Xóa voucher */}
+          <Popconfirm
+            title="Bạn có chắc chắn muốn xóa voucher này?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Đồng ý"
+            cancelText="Hủy"
+          >
+            <Button
+              danger
+              icon={<DeleteOutlined />}
+              size="small"
+              style={{ border: "none" }}
+            />
+          </Popconfirm>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="container mx-auto p-6">
@@ -66,12 +139,11 @@ const VoucherList = () => {
 
       {/* Thanh tìm kiếm */}
       <div className="mb-4">
-        <input
-          type="text"
+        <Input
           placeholder="Tìm kiếm theo tên hoặc mã voucher"
           value={searchTerm}
           onChange={handleSearch}
-          className="px-4 py-2 border border-gray-300 rounded-lg w-full"
+          className="w-full"
         />
       </div>
 
@@ -81,72 +153,24 @@ const VoucherList = () => {
         </div>
       ) : (
         <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
-          <table className="min-w-full bg-white">
-            <thead className="bg-gray-200 text-gray-600">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold">STT</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Tên voucher</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Code</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Giảm giá</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Số Lượng</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Ngày bắt đầu</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Ngày kết thúc</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Hành động</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-700">
-              {currentVouchers?.length > 0 ? (
-                currentVouchers.map((voucher, index) => (
-                  <tr key={voucher.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 border-b">{indexOfFirstVoucher + index + 1}</td>
-                    <td className="px-4 py-3 border-b">{voucher.name}</td>
-                    <td className="px-4 py-3 border-b">{voucher.code}</td>
-                    <td className="px-4 py-3 border-b">{voucher.discount.toLocaleString("vi-VN")} VND</td>
-                    <td className="px-4 py-3 border-b">{voucher.quantity}</td>
-                    <td className="px-4 py-3 border-b">{voucher.start_date}</td>
-                    <td className="px-4 py-3 border-b">{voucher.end_date}</td>
-                    <td className="px-4 py-3 border-b">
-                      <div className="flex items-center space-x-3">
-                        <Link
-                          to={`/admin/vouchers/${voucher.id}`}
-                          className="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition duration-200"
-                        >
-                          Sửa
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(voucher.id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition duration-200"
-                        >
-                          Xóa
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={8} className="text-center py-4">
-                    Không có voucher nào
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <Table
+            columns={columns}
+            dataSource={currentVouchers}
+            rowKey="id"
+            pagination={false} // Tắt phân trang trong Table
+          />
         </div>
       )}
 
       {/* Phân trang */}
       <div className="flex justify-center mt-4">
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index}
-            onClick={() => paginate(index + 1)}
-            className={`px-3 py-1 mx-1 rounded-lg ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
-              }`}
-          >
-            {index + 1}
-          </button>
-        ))}
+        <Pagination
+          current={currentPage}
+          pageSize={vouchersPerPage}
+          total={filteredVouchers?.length}
+          onChange={handlePageChange}
+          showSizeChanger={false} // Ẩn chức năng thay đổi số lượng item trên mỗi trang
+        />
       </div>
     </div>
   );

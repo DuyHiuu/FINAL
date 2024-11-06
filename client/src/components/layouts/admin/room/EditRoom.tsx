@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import useFetchSize from '../../../../api/useFetchSize';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Form, Input, Button, Select, Upload, message, InputNumber } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import useFetchSize from '../../../../api/useFetchSize';
+
+const { TextArea } = Input;
 
 const EditRoom = () => {
     const showUrl = "http://localhost:8000/api/rooms";
     const { id } = useParams();
-    const [size_id, setSize_id] = useState('');
-    const [price, setPrice] = useState('');
-    const [description, setDescription] = useState('');
-    const [statusroom, setStatusRoom] = useState('');
+    const [form] = Form.useForm();
     const [img_thumbnail, setImg_thumbnail] = useState<File | null>(null);
 
     const navigate = useNavigate();
@@ -20,29 +21,29 @@ const EditRoom = () => {
                 const res = await fetch(`${showUrl}/${id}`);
                 if (res.ok) {
                     const room = await res.json();
-                    setSize_id(room.size_id);
-                    setPrice(room.price); // Đảm bảo giá được thiết lập đúng
-                    setDescription(room.description);
-                    setStatusRoom(room.statusroom);
-                    setImg_thumbnail(room.img_thumbnail); // Nếu img_thumbnail là URL, có thể cần điều chỉnh
+                    form.setFieldsValue({
+                        price: room.price,
+                        size_id: room.size_id,
+                        description: room.description,
+                        statusroom: room.statusroom,
+                    });
+                    setImg_thumbnail(room.img_thumbnail); // Set the initial image thumbnail
                 } else {
-                    console.error('Không thể lấy thông tin phòng');
+                    message.error('Không thể lấy thông tin phòng');
                 }
             } catch (error) {
                 console.log(error);
             }
         };
         fetchRoom();
-    }, [id]);
+    }, [id, form]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const handleSubmit = async (values) => {
         const updateRoom = {
-            price: price,
-            size_id: size_id,
-            description: description,
-            statusroom: statusroom,
+            price: values.price,
+            size_id: values.size_id,
+            description: values.description,
+            statusroom: values.statusroom,
             img_thumbnail: img_thumbnail,
         };
 
@@ -56,89 +57,104 @@ const EditRoom = () => {
             });
 
             if (response.ok) {
-                console.log('Phòng đã sửa thành công:');
+                message.success('Phòng đã sửa thành công');
                 navigate('/admin');
             } else {
-                console.error('Lỗi khi sửa phòng:', response.statusText);
+                message.error('Lỗi khi sửa phòng');
             }
         } catch (error) {
-            console.error('Lỗi kết nối API:', error);
+            message.error('Lỗi kết nối API');
+        }
+    };
+
+    const handleImageChange = (info) => {
+        if (info.file.status === 'done') {
+            setImg_thumbnail(info.file.response.url); // Assuming your backend returns the image URL
+            message.success(`${info.file.name} file uploaded successfully`);
+        } else if (info.file.status === 'error') {
+            message.error(`${info.file.name} file upload failed.`);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md">
+        <Form
+            form={form}
+            onFinish={handleSubmit}
+            className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md"
+        >
             <h2 className="text-2xl font-bold mb-4">Sửa Thông Tin Phòng</h2>
 
-            <div className="mb-4">
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700">Giá (VND):</label>
-                <input
-                    type="number"
-                    id="price"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                    placeholder="Nhập giá phòng"
-                />
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="size_id" className="block text-sm font-medium text-gray-700">Size:</label>
-                <select
-                    id="size_id"
-                    value={size_id}
-                    onChange={(e) => setSize_id(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                >
-                    <option value="">Chọn kích thước</option>
-                    {sizes?.map((size) => (
-                        <option key={size.id} value={size.id}>
-                            {size.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">Mô Tả:</label>
-                <textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="statusroom" className="block text-sm font-medium text-gray-700">Trạng thái:</label>
-                <input
-                    type="text"
-                    id="statusroom"
-                    value={statusroom}
-                    onChange={(e) => setStatusRoom(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="img_thumbnail" className="block text-sm font-medium text-gray-700">Hình Ảnh Chính:</label>
-                {img_thumbnail && <img src={img_thumbnail} alt="" className='h-32 mb-2' />} {/* Hiển thị hình ảnh */}
-                <input
-                    type="file"
-                    id="img_thumbnail"
-                    onChange={(e) => setImg_thumbnail(e.target.files ? e.target.files[0] : null)}
-                    accept="image/*"
-                    className="mt-1 block w-full text-gray-700 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <button
-                type="submit"
-                className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200"
+            <Form.Item
+                label="Giá (VND)"
+                name="price"
+                rules={[{ required: true, message: 'Vui lòng nhập giá phòng!' }]}
             >
-                Sửa
-            </button>
-        </form>
+                <InputNumber
+                    style={{ width: '100%' }}
+                    placeholder="Nhập giá phòng"
+                    min={0}
+                />
+            </Form.Item>
+
+            <Form.Item
+                label="Size"
+                name="size_id"
+                rules={[{ required: true, message: 'Vui lòng chọn kích thước phòng!' }]}
+            >
+                <Select placeholder="Chọn kích thước">
+                    {sizes?.map((size) => (
+                        <Select.Option key={size.id} value={size.id}>
+                            {size.name}
+                        </Select.Option>
+                    ))}
+                </Select>
+            </Form.Item>
+
+            <Form.Item
+                label="Mô Tả"
+                name="description"
+                rules={[{ required: true, message: 'Vui lòng nhập mô tả phòng!' }]}
+            >
+                <TextArea
+                    placeholder="Nhập mô tả phòng"
+                    autoSize={{ minRows: 3, maxRows: 5 }}
+                />
+            </Form.Item>
+
+            <Form.Item
+                label="Trạng Thái"
+                name="statusroom"
+                rules={[{ required: true, message: 'Vui lòng nhập trạng thái phòng!' }]}
+            >
+                <Input
+                    placeholder="Nhập trạng thái phòng"
+                />
+            </Form.Item>
+
+            <Form.Item label="Hình Ảnh Chính">
+                {img_thumbnail && <img src={img_thumbnail} alt="Room Thumbnail" className="h-32 mb-2" />}
+                <Upload
+                    name="img_thumbnail"
+                    action="http://localhost:8000/api/upload"  // URL for uploading image
+                    showUploadList={false}
+                    onChange={handleImageChange}
+                    accept="image/*"
+                    maxCount={1}
+                >
+                    <Button icon={<UploadOutlined />}>Chọn Hình Ảnh</Button>
+                </Upload>
+            </Form.Item>
+
+            <Form.Item>
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                    style={{ width: '100%' }}
+                >
+                    Sửa
+                </Button>
+            </Form.Item>
+        </Form>
     );
 };
 

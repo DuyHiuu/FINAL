@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Table, Input, Button, message, Popconfirm, Pagination, Switch } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import useFetchUsers from '../../../../api/useFetchUsers';
 
 const UserList = () => {
@@ -36,21 +38,77 @@ const UserList = () => {
                 method: "DELETE",
             });
             if (response.ok) {
-                alert("Người dùng đã được xóa thành công");
-                window.location.reload(); // Cập nhật sau khi xóa thành công
+                message.success("Người dùng đã được xóa thành công");
+                setCurrentPage(1); // Reset lại trang khi xóa thành công
             } else {
                 const errorData = await response.json();
-                console.error("Xóa Người dùng thất bại:", errorData.message);
-                alert(`Xóa Người dùng thất bại: ${errorData.message}`);
+                message.error(`Xóa Người dùng thất bại: ${errorData.message}`);
             }
         } catch (error) {
             console.error("Lỗi:", error);
-            alert("Đã xảy ra lỗi khi xóa Người dùng");
+            message.error("Đã xảy ra lỗi khi xóa Người dùng");
         }
     };
 
     // Hàm chuyển trang
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    // Cấu hình cột bảng
+    const columns = [
+        {
+            title: 'Tên',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
+        },
+        {
+            title: 'Số Điện Thoại',
+            dataIndex: 'phone',
+            key: 'phone',
+        },
+        {
+            title: 'Địa Chỉ',
+            dataIndex: 'address',
+            key: 'address',
+        },
+        {
+            title: 'Vai Trò',
+            dataIndex: 'role_names',
+            key: 'role_names',
+        },
+        {
+            title: 'Hành Động',
+            key: 'action',
+            render: (text, record) => (
+                <div className="flex items-center space-x-3">
+                    {/* Biểu tượng sửa */}
+                    <Link
+                        to={`/admin/users/edit/${record.id}`}
+                        className="text-yellow-500 hover:text-yellow-600"
+                    >
+                        <EditOutlined />
+                    </Link>
+                    
+                    {/* Nút bật/tắt xóa */}
+                    <Switch
+                        checkedChildren={<DeleteOutlined />}
+                        unCheckedChildren="Xóa"
+                        onChange={(checked) => {
+                            if (checked) {
+                                handleDelete(record.id); // Xóa khi bật
+                            }
+                        }}
+                    />
+                </div>
+            ),
+        },
+    ];
 
     return (
         <div className="container mx-auto p-6">
@@ -60,12 +118,11 @@ const UserList = () => {
 
             {/* Thanh tìm kiếm */}
             <div className="mb-4">
-                <input
-                    type="text"
+                <Input
                     placeholder="Tìm kiếm theo tên, email hoặc số điện thoại"
                     value={searchTerm}
                     onChange={handleSearch}
-                    className="px-4 py-2 border border-gray-300 rounded-lg w-full"
+                    className="w-full"
                 />
             </div>
 
@@ -75,65 +132,24 @@ const UserList = () => {
                 </div>
             ) : (
                 <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
-                    <table className="min-w-full bg-white">
-                        <thead className="bg-gray-200 text-gray-600">
-                            <tr>
-                                <th className="px-4 py-3 text-left text-sm font-semibold">Tên</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold">Email</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold">Số Điện Thoại</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold">Địa Chỉ</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold">Vai Trò</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold">Hành Động</th>
-                            </tr>
-                        </thead>
-                        <tbody className="text-gray-700">
-                            {Array.isArray(currentUsers) && currentUsers.length > 0 ? (
-                                currentUsers.map((user) => (
-                                    <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-4 py-3 border-b">{user.name}</td>
-                                        <td className="px-4 py-3 border-b">{user.email}</td>
-                                        <td className="px-4 py-3 border-b">{user.phone}</td>
-                                        <td className="px-4 py-3 border-b">{user.address}</td>
-                                        <td className="px-4 py-3 border-b">{user.role_names}</td>
-                                        <td className="px-4 py-3 border-b">
-                                            <div className="flex items-center space-x-3">
-                                                <Link
-                                                    to={`/admin/users/edit/${user.id}`}
-                                                    className="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition duration-200"
-                                                >
-                                                    Sửa
-                                                </Link>
-                                                <button
-                                                    onClick={() => handleDelete(user.id)}
-                                                    className="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition duration-200"
-                                                >
-                                                    Xóa
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={6} className="text-center py-4">Không có người dùng nào</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                    <Table
+                        columns={columns}
+                        dataSource={currentUsers}
+                        rowKey="id"
+                        pagination={false} // Tắt phân trang trong Table
+                    />
                 </div>
             )}
 
             {/* Phân trang */}
             <div className="flex justify-center mt-4">
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                        key={index}
-                        onClick={() => paginate(index + 1)}
-                        className={`px-3 py-1 mx-1 rounded-lg ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-                    >
-                        {index + 1}
-                    </button>
-                ))}
+                <Pagination
+                    current={currentPage}
+                    pageSize={usersPerPage}
+                    total={filteredUsers?.length}
+                    onChange={handlePageChange}
+                    showSizeChanger={false} // Ẩn chức năng thay đổi số lượng item trên mỗi trang
+                />
             </div>
         </div>
     );

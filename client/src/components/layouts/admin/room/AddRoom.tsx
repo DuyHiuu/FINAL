@@ -1,31 +1,46 @@
 import React, { useState } from 'react';
 import useFetchSize from '../../../../api/useFetchSize';
 import { useNavigate } from 'react-router-dom';
+import { Form, Input, Button, Select, Upload, message } from 'antd';
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+
+const { Option } = Select;
 
 const AddRoom = () => {
     const [sizeId, setSizeId] = useState('');
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
-    const [statusRoom, setStatusRoom] = useState('');
+    const [statusRoom, setStatusRoom] = useState('Còn phòng'); // Trạng thái mặc định là "Còn phòng"
     const [imgThumbnail, setImgThumbnail] = useState(null);
-    const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
     const storeUrl = "http://localhost:8000/api/rooms";
     const { sizes } = useFetchSize();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    // Kiểm tra dung lượng tệp ảnh
+    const beforeUpload = (file) => {
+        const isImage = file.type.startsWith('image/');
+        const isLt2M = file.size / 1024 / 1024 < 5; // Cho phép ảnh lớn hơn 2MB, nhưng không quá 5MB
+
+        if (!isImage) {
+            message.error('Chỉ cho phép tải lên tệp hình ảnh!');
+        }
+        if (!isLt2M) {
+            message.error('Ảnh không được vượt quá 5MB!');
+        }
+        return isImage && isLt2M;
+    };
+
+    const handleSubmit = async (values) => {
+        setIsLoading(true); // Bắt đầu trạng thái loading
 
         const formData = new FormData();
-        formData.append('price', price);
-        formData.append('size_id', sizeId);
-        formData.append('description', description);
-        formData.append('statusroom', statusRoom);
+        formData.append('price', values.price);
+        formData.append('size_id', values.sizeId);
+        formData.append('description', values.description);
+        formData.append('statusroom', values.statusRoom);
         formData.append('img_thumbnail', imgThumbnail);
-
-        setIsLoading(true); // Bắt đầu trạng thái loading
 
         try {
             const response = await fetch(storeUrl, {
@@ -38,108 +53,125 @@ const AddRoom = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Phòng đã thêm thành công:', data);
-                setMessage("Phòng đã được thêm thành công!");
+                message.success("Phòng đã được thêm thành công!");
                 setTimeout(() => {
                     navigate('/admin'); // Chuyển hướng sau 2 giây
                 }, 2000);
             } else {
                 const errorData = await response.json();
                 console.error('Lỗi khi thêm phòng:', errorData.message);
-                setMessage(`Thêm phòng thất bại: ${errorData.message}`);
+                message.error(`Thêm phòng thất bại: ${errorData.message}`);
             }
         } catch (error) {
             setIsLoading(false); // Kết thúc trạng thái loading
             console.error('Lỗi kết nối API:', error);
-            setMessage("Đã xảy ra lỗi khi thêm phòng.");
+            message.error("Đã xảy ra lỗi khi thêm phòng.");
         }
     };
 
     return (
         <div className="container mx-auto p-4">
-            <form
-                onSubmit={handleSubmit}
+            <Form
+                onFinish={handleSubmit}
                 className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto"
             >
                 <h2 className="text-2xl font-bold mb-4 text-center">Thêm Phòng Mới</h2>
 
-                {/* Thông báo */}
-                {message && (
-                    <div className={`mb-4 p-2 rounded ${message.includes("thất bại") ? "bg-red-200 text-red-700" : "bg-green-200 text-green-700"}`}>
-                        {message}
-                    </div>
-                )}
-
-                <div className="mb-4">
-                    <label htmlFor="price" className="block text-sm font-medium text-gray-700">Giá:</label>
-                    <input
+                {/* Giá */}
+                <Form.Item
+                    label="Giá"
+                    name="price"
+                    rules={[{ required: true, message: 'Vui lòng nhập giá phòng!' }]}
+                >
+                    <Input
                         type="number"
-                        id="price"
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
-                        required
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
+                        className="w-full"
                     />
-                </div>
+                </Form.Item>
 
-                <div className="mb-4">
-                    <label htmlFor="size_id" className="block text-sm font-medium text-gray-700">Size:</label>
-                    <select
-                        id="size_id"
-                        onChange={(e) => setSizeId(e.target.value)}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                        required
+                {/* Size */}
+                <Form.Item
+                    label="Size"
+                    name="sizeId"
+                    rules={[{ required: true, message: 'Vui lòng chọn kích thước!' }]}
+                >
+                    <Select
+                        value={sizeId}
+                        onChange={(value) => setSizeId(value)}
+                        className="w-full"
                     >
-                        <option value="">Chọn kích thước</option>
+                        <Option value="">Chọn kích thước</Option>
                         {sizes?.map((size) => (
-                            <option key={size.id} value={size.id}>
+                            <Option key={size.id} value={size.id}>
                                 {size.name}
-                            </option>
+                            </Option>
                         ))}
-                    </select>
-                </div>
+                    </Select>
+                </Form.Item>
 
-                <div className="mb-4">
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">Mô Tả:</label>
-                    <textarea
-                        id="description"
+                {/* Mô tả */}
+                <Form.Item
+                    label="Mô Tả"
+                    name="description"
+                    rules={[{ required: true, message: 'Vui lòng nhập mô tả phòng!' }]}
+                >
+                    <Input.TextArea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        required
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
+                        className="w-full"
                     />
-                </div>
+                </Form.Item>
 
-                <div className="mb-4">
-                    <label htmlFor="statusroom" className="block text-sm font-medium text-gray-700">Trạng thái:</label>
-                    <input
-                        type="text"
-                        id="statusroom"
-                        value={statusRoom}
-                        onChange={(e) => setStatusRoom(e.target.value)}
-                        required
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="img_thumbnail" className="block text-sm font-medium text-gray-700">Hình Ảnh Chính:</label>
-                    <input
-                        type="file"
-                        id="img_thumbnail"
-                        onChange={(e) => setImgThumbnail(e.target.files[0])}
-                        accept="image/*"
-                        className="mt-1 block w-full text-gray-700 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                    />
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={isLoading} // Vô hiệu hóa nút khi đang loading
-                    className={`w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200 ${isLoading ? 'bg-gray-400' : ''}`}
+                {/* Trạng thái */}
+                <Form.Item
+                    label="Trạng thái"
+                    name="statusRoom"
+                    rules={[{ required: true, message: 'Vui lòng chọn trạng thái phòng!' }]}
                 >
-                    {isLoading ? "Đang thêm..." : "Thêm Phòng"}
-                </button>
-            </form>
+                    <Select
+                        value={statusRoom}
+                        onChange={(value) => setStatusRoom(value)}
+                        className="w-full"
+                    >
+                        <Option value="Còn phòng">Còn phòng</Option>
+                        <Option value="Hết phòng">Hết phòng</Option>
+                    </Select>
+                </Form.Item>
+
+                {/* Hình ảnh */}
+                <Form.Item
+                    label="Hình Ảnh Chính"
+                    name="imgThumbnail"
+                    rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh phòng!' }]}
+                >
+                    <Upload
+                        accept="image/*"
+                        showUploadList={false}
+                        beforeUpload={beforeUpload} // Kiểm tra ảnh trước khi upload
+                        customRequest={({ file, onSuccess }) => {
+                            setImgThumbnail(file);
+                            onSuccess();
+                        }}
+                    >
+                        <Button icon={<PlusOutlined />}>Tải lên hình ảnh</Button>
+                    </Upload>
+                </Form.Item>
+
+                {/* Submit Button */}
+                <Form.Item>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        block
+                        loading={isLoading}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Đang thêm...' : 'Thêm Phòng'}
+                    </Button>
+                </Form.Item>
+            </Form>
         </div>
     );
 };

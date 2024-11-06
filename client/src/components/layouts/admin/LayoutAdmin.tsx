@@ -1,12 +1,13 @@
 import React from "react";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { BellIcon } from "@heroicons/react/24/outline";
+import { Layout, Menu, Avatar, Dropdown, Badge, Space } from "antd";
+import { BellOutlined, LogoutOutlined } from "@ant-design/icons";
 import { Outlet } from "react-router-dom";
 
-// Lấy thông tin từ localStorage
+const { Header, Sider, Content } = Layout;
+
 const user = {
   name: localStorage.getItem("name") || "Unknown User", // Lấy tên người dùng từ localStorage
-  email: localStorage.getItem("email") || "unknown@example.com", // Lấy email từ localStorage (đảm bảo bạn lưu email trước đó)
+  email: localStorage.getItem("email") || "unknown@example.com", // Lấy email từ localStorage
   imageUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 
@@ -28,87 +29,71 @@ const userNavigation = [
   { name: "Đăng xuất", href: "#" },
 ];
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
 const LayoutAdmin = () => {
-  return (
-    <div className="min-h-screen flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-800 flex flex-col justify-between">
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="flex items-center justify-center py-6">
-            <img className="h-12 w-auto" src="/images/logo.png" alt="Logo" />
-          </div>
+  // Menu dropdown for user
+  const menu = (
+    <Menu>
+      {userNavigation.map((item) => (
+        <Menu.Item key={item.name}>
+          <a href={item.href} className="text-gray-700">{item.name}</a>
+        </Menu.Item>
+      ))}
+    </Menu>
+  );
 
-          {/* Navigation */}
-          <nav className="flex-1 flex flex-col space-y-4 px-2 py-4">
-            {navigation.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className={classNames(
-                  item.current
-                    ? "bg-gray-900 text-white"
-                    : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                  "group flex px-2 py-2 text-sm font-medium rounded-md"
-                )}
-              >
+  return (
+    <Layout style={{ minHeight: "100vh", backgroundColor: "#fff" }}>
+      {/* Sidebar */}
+      <Sider width={250} className="site-layout-background" style={{ backgroundColor: "#fff" }}>
+        <div className="flex items-center justify-center py-6">
+          <img className="h-12 w-auto" src="/images/logo.png" alt="Logo" />
+        </div>
+        <Menu
+          theme="light"  // Changed theme to light to match the white background
+          mode="inline"
+          defaultSelectedKeys={["1"]}
+          className="h-full"
+          style={{ backgroundColor: "#fff" }} // Make the sidebar background white
+        >
+          {navigation.map((item, index) => (
+            <Menu.Item key={index} icon={null}>
+              <a href={item.href} className={item.current ? "text-gray-900" : "text-gray-400"}>
                 {item.name}
               </a>
-            ))}
-          </nav>
-        </div>
-
-        {/* User info */}
-        <div className="bg-gray-900 p-4 flex items-center space-x-3">
-          <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt={user.name} />
-          <div className="text-white">
-            <p className="text-sm font-medium">{user.name}</p>
-            <p className="text-xs text-gray-400">{user.email}</p>
-          </div>
-        </div>
-      </aside>
+            </Menu.Item>
+          ))}
+        </Menu>
+      </Sider>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col">
-        {/* Top navigation bar */}
-        <header className="bg-white shadow">
-          <div className="flex justify-between items-center px-4 py-6">
-            <h1 className="text-3xl font-bold text-gray-900">Admin {user.name}</h1>
-            <div className="flex items-center space-x-4">
-              <button className="bg-gray-800 p-1 text-gray-400 hover:text-white rounded-full">
-                <BellIcon className="h-6 w-6" aria-hidden="true" />
-              </button>
-
-              {/* User Profile Dropdown */}
-              <Menu as="div" className="relative">
-                <MenuButton className="flex items-center text-sm rounded-full bg-gray-800 focus:outline-none">
-                  <img className="h-8 w-8 rounded-full" src={user.imageUrl} alt="" />
-                </MenuButton>
-                <MenuItems className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg py-1 ring-1 ring-black ring-opacity-5">
-                  {userNavigation.map((item) => (
-                    <MenuItem key={item.name}>
-                      <a href={item.href} className="block px-4 py-2 text-sm text-gray-700">
-                        {item.name}
-                      </a>
-                    </MenuItem>
-                  ))}
-                </MenuItems>
-              </Menu>
-            </div>
+      <Layout className="site-layout">
+        {/* Header */}
+        <Header className="site-layout-background" style={{ padding: 0, backgroundColor: "#fff" }}>
+          <div className="flex justify-between items-center px-6 py-4">
+            <h1 className="text-3xl text-gray-900 font-bold">Admin {user.name}</h1>
+            <Space size="middle">
+              <Badge count={5} showZero>
+                <BellOutlined className="text-xl text-gray-600" />
+              </Badge>
+              <Dropdown overlay={menu} trigger={['click']}>
+                <Avatar size="large" src={user.imageUrl} />
+              </Dropdown>
+            </Space>
           </div>
-        </header>
+        </Header>
 
-        <main className="flex-1 bg-gray-100 overflow-auto">
-          <div className="py-6 px-4 sm:px-6 lg:px-8">
-            <Outlet />
-          </div>
-        </main>
-      </div>
-    </div>
+        {/* Content */}
+        <Content
+          style={{
+            padding: "0 50px",
+            marginTop: 24,
+            backgroundColor: "#fff", // Changed background color to white for content
+          }}
+        >
+          <Outlet />
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 
