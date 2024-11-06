@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import { PulseLoader } from "react-spinners"; // Import PulseLoader từ react-spinners
+import { Form, Input, Button, Spin, Typography, message } from "antd";
+import { PulseLoader } from "react-spinners"; // Optionally use PulseLoader from react-spinners
+import { MailOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons';
+
+const { Title, Text } = Typography;
 
 const Lienhe = () => {
   const [loading, setLoading] = useState(false); // Thêm state loading
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Ngăn chặn hành vi mặc định của form
+  const handleSubmit = (values: any) => {
     setLoading(true); // Bắt đầu loading
 
     // Giả lập gửi dữ liệu
     setTimeout(() => {
-      // Thực hiện gửi dữ liệu tại đây
-      alert("Tin nhắn đã được gửi!");
+      message.success("Tin nhắn đã được gửi!");
       setLoading(false); // Kết thúc loading
     }, 2000); // Giả lập thời gian gửi 2 giây
   };
@@ -20,50 +22,84 @@ const Lienhe = () => {
     <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between max-w-7xl mx-auto my-10 p-6 bg-white shadow-lg rounded-lg mt-24">
       {/* Phần liên hệ bên trái */}
       <div className="w-full lg:w-1/2 p-6 flex flex-col space-y-4">
-        <h2 className="text-3xl font-bold mb-4">Liên hệ với chúng tôi</h2>
-        <p className="text-lg">
+        <Title level={2}>Liên hệ với chúng tôi</Title>
+        <Text className="text-lg">
           Chúng tôi rất mong được nghe phản hồi từ bạn. Vui lòng liên hệ qua các
           thông tin dưới đây:
-        </p>
+        </Text>
 
         {/* Form liên hệ */}
-        <form className="flex flex-col space-y-4 mt-4" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Tên của bạn"
-            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <input
-            type="email"
-            placeholder="Email của bạn"
-            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <input
-            type="number"
-            placeholder="Số điện thoại của bạn"
-            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            min="0"
-          />
-
-          <textarea
-            placeholder="Tin nhắn của bạn"
-            className="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          ></textarea>
-          <button
-            type="submit"
-            className="bg-[#064749] text-white py-3 px-6 rounded-lg hover:bg-[#043d3c] transition duration-200"
-            disabled={loading} // Vô hiệu hóa nút khi đang loading
+        <Form
+          layout="vertical"
+          onFinish={handleSubmit}
+          className="flex flex-col space-y-4 mt-4"
+        >
+          <Form.Item
+            name="name"
+            label="Tên của bạn"
+            rules={[{ required: true, message: "Vui lòng nhập tên của bạn!" }]}
           >
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <PulseLoader color="#ffffff" size={10} margin={2} /> {/* Hiển thị spinner */}
-                <span className="ml-2">Đang gửi...</span> {/* Text loading */}
-              </div>
-            ) : (
-              "Gửi tin nhắn"
-            )}
-          </button>
-        </form>
+            <Input
+              placeholder="Tên của bạn"
+              prefix={<UserOutlined />}
+              className="border border-gray-300 p-3 rounded-lg"
+            />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email của bạn"
+            rules={[{ required: true, message: "Vui lòng nhập email của bạn!" }, { type: 'email', message: "Email không hợp lệ!" }]}
+          >
+            <Input
+              placeholder="Email của bạn"
+              prefix={<MailOutlined />}
+              className="border border-gray-300 p-3 rounded-lg"
+            />
+          </Form.Item>
+          <Form.Item
+            name="phone"
+            label="Số điện thoại của bạn"
+            rules={[{ required: true, message: "Vui lòng nhập số điện thoại của bạn!" }]}
+          >
+            <Input
+              type="number"
+              placeholder="Số điện thoại của bạn"
+              prefix={<PhoneOutlined />}
+              className="border border-gray-300 p-3 rounded-lg"
+              min="0"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="message"
+            label="Tin nhắn của bạn"
+            rules={[{ required: true, message: "Vui lòng nhập tin nhắn của bạn!" }]}
+          >
+            <Input.TextArea
+              placeholder="Tin nhắn của bạn"
+              className="border border-gray-300 p-3 rounded-lg"
+              rows={4}
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="w-full"
+              loading={loading} // Hiển thị trạng thái loading khi gửi
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <Spin size="small" /> {/* Ant Design Spin for loading */}
+                  <span className="ml-2">Đang gửi...</span>
+                </div>
+              ) : (
+                "Gửi tin nhắn"
+              )}
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
 
       {/* Phần hình ảnh bên phải */}

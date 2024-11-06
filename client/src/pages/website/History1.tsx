@@ -1,25 +1,36 @@
 import React, { useState, useEffect } from "react";
 import useFetchPayments from "../../api/useFetchPayments";
+import { Button, DatePicker, Card, Typography, Spin } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import moment from "moment";
+
+const { Title, Text } = Typography;
 
 const History1 = () => {
   const { payment, loading } = useFetchPayments();
 
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState<moment.Moment | null>(null);
+  const [endDate, setEndDate] = useState<moment.Moment | null>(null);
   const [filteredPayments, setFilteredPayments] = useState(payment || []);
 
-  const totalRoomsBooked = Array.isArray(filteredPayments) ? filteredPayments.length : 0;
+  const totalRoomsBooked = Array.isArray(filteredPayments)
+    ? filteredPayments.length
+    : 0;
 
   useEffect(() => {
-    setFilteredPayments(payment);  // Cập nhật filteredPayments khi dữ liệu payment thay đổi
+    setFilteredPayments(payment); // Cập nhật filteredPayments khi dữ liệu payment thay đổi
   }, [payment]);
 
-  const handleStartDateChange = (e) => {
-    setStartDate(e.target.value);
+  const handleStartDateChange = (
+    date: moment.Moment | null,
+    dateString: string
+  ) => {
+    setStartDate(date); // Lưu giá trị date là đối tượng moment
   };
+  console.log(startDate, endDate);
 
-  const handleEndDateChange = (e) => {
-    setEndDate(e.target.value);
+  const handleEndDateChange = (date: moment.Moment | null) => {
+    setEndDate(date);
   };
 
   // Lọc các payment theo ngày bắt đầu và ngày kết thúc
@@ -34,7 +45,9 @@ const History1 = () => {
       const bookingStartDate = new Date(item.booking?.start_date);
       const bookingEndDate = new Date(item.booking?.end_date);
 
-      const isAfterStart = startDate ? bookingStartDate >= new Date(startDate) : true;
+      const isAfterStart = startDate
+        ? bookingStartDate >= new Date(startDate)
+        : true;
       const isBeforeEnd = endDate ? bookingEndDate <= new Date(endDate) : true;
 
       return isAfterStart && isBeforeEnd;
@@ -46,91 +59,96 @@ const History1 = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-16 h-16 border-4 border-blue-500 border-dotted rounded-full animate-spin"></div>
+        <Spin size="large" />
       </div>
     );
   }
 
   return (
     <div className="mt-32">
-      <strong className="ms-10 text-4xl font-semibold">Lịch sử mua hàng</strong>
+      <Title level={2} className="ms-10">
+        Lịch sử mua hàng
+      </Title>
       <div className="container mx-auto p-4 lg:p-8 flex flex-col lg:flex-row">
         {/* Phần bên trái */}
         <div className="flex-1 w-full lg:w-1/2">
           {Array.isArray(filteredPayments) && filteredPayments.length > 0 ? (
             filteredPayments.map((item) => (
-              <div
-                key={item?.id}
-                className="flex flex-col lg:flex-row items-center mb-6 p-4 bg-white shadow rounded-lg"
-              >
-                {/* Hình ảnh bên trái */}
-                <div className="flex-shrink-0 mb-4 lg:mb-0 lg:mr-4">
-                  <img
-                    src={item.booking?.room?.img_thumbnail}
-                    alt={`image-${item?.id}`}
-                    className="w-24 h-24 rounded-md"
-                  />
-                </div>
-
-                {/* Nội dung bên phải */}
-                <div className="flex-1 text-center lg:text-left">
-                  <h1 className="text-xl font-bold text-gray-900">ID hóa đơn: {item?.id}</h1>
-                  <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-yellow-300">
-                    <p className="text-yellow-800 text-sm">{item.status?.status_name}</p>
-                  </div>
-                  <p className="text-gray-600 mt-2">
-                    Ngày : {`${item.booking?.start_date.split("-").reverse().join("-")}`} &#8594; {`${item.booking?.end_date.split("-").reverse().join("-")}`}
-                  </p>
-
-                  <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-[#064749]">
-                    <p className="text-white text-sm"><a href={`/history2/${item.id}`}>Xem chi tiết</a></p>
-                  </div>
-                  <span className="ml-2 text-gray-500">Tổng tiền: {item.total_amount.toLocaleString("vi-VN")} VNĐ</span>
-                </div>
-              </div>
+              <Card
+              key={item?.id}
+              className="mb-6"
+              hoverable
+              cover={
+                <img
+                  alt={`image-${item?.id}`}
+                  src={item.booking?.room?.img_thumbnail}
+                  style={{ width: '150px', height: '200px', objectFit: 'cover' }} // Adjust the size as needed
+                />
+              }
+            >
+              <Card.Meta
+                title={`ID hóa đơn: ${item?.id}`}
+                description={
+                  <>
+                    <div className="text-yellow-500">
+                      {item.status?.status_name}
+                    </div>
+                    <Text>
+                      Ngày:{" "}
+                      {`${moment(item.booking?.start_date).format("DD-MM-YYYY")}`}{" "}
+                      &#8594;{" "}
+                      {`${moment(item.booking?.end_date).format("DD-MM-YYYY")}`}
+                    </Text>
+                    <div className="mt-2">
+                      <a href={`/history2/${item.id}`} className="text-blue-500">
+                        Xem chi tiết
+                      </a>
+                    </div>
+                    <div className="mt-2 text-gray-500">
+                      Tổng tiền: {item.total_amount.toLocaleString("vi-VN")} VNĐ
+                    </div>
+                  </>
+                }
+              />
+            </Card>
+            
             ))
           ) : (
-            <p className="text-gray-500">Không có lịch sử mua hàng.</p>
+            <Text className="text-gray-500">Không có lịch sử mua hàng.</Text>
           )}
         </div>
 
         {/* Phần bên phải */}
         <div className="lg:w-1/3 p-4 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-white h-full">
-          <div className="flex items-center">
-            <div className="mr-4 sm:mr-20">
-              <p className="text-left font-bold mt-2">Tổng số phòng đã đặt:</p>
-            </div>
-            <div className="text-right ml-4 sm:ml-20">
-              <p className="font-bold mt-2">{totalRoomsBooked}</p>
-            </div>
+          <div className="flex items-center justify-between mb-4">
+            <Text strong>Tổng số phòng đã đặt:</Text>
+            <Text>{totalRoomsBooked}</Text>
           </div>
 
-          {/* Chi phí chia dọc hai bên */}
-          <div className="flex justify-between mt-4"></div>
-          <div className="flex justify-center">
-            <div className="relative w-full max-w-md">
-              <input
-                type="date"
-                value={startDate}
-                onChange={handleStartDateChange}
-                className="w-full py-2 pl-10 pr-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-                placeholder="Ngày bắt đầu"
-              />
-              <input
-                type="date"
-                value={endDate}
-                onChange={handleEndDateChange}
-                className="w-full py-2 pl-10 pr-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Ngày kết thúc"
-              />
-            </div>
+          {/* Tìm kiếm theo ngày */}
+          <div className="mb-4">
+            <DatePicker
+              value={startDate}
+              onChange={handleStartDateChange}
+              placeholder="Ngày bắt đầu"
+              style={{ width: "100%", marginBottom: 8 }}
+            />
+            <DatePicker
+              value={endDate}
+              onChange={handleEndDateChange}
+              placeholder="Ngày kết thúc"
+              style={{ width: "100%" }}
+            />
           </div>
-          <button
+
+          <Button
+            type="primary"
             onClick={handleSearch}
-            className="mt-5 text-white px-10 py-2 rounded-full bg-[#2563eb]"
+            icon={<SearchOutlined />}
+            block
           >
             Tìm kiếm
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Modal, message } from "antd";
+import { Layout, Menu, Dropdown, Button, Avatar, Modal, message } from "antd";
+import { DownOutlined } from "@ant-design/icons";
 
-const Header = () => {
+const { Header } = Layout;
+
+const AppHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
-  const [roleId, setRoleId] = useState(null); // Trạng thái để lưu trữ role_id
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Trạng thái cho dropdown
+  const [roleId, setRoleId] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const nameFromStorage = localStorage.getItem("name");
-    const roleIdFromStorage = localStorage.getItem("role_id"); // Lấy role_id từ localStorage
+    const roleIdFromStorage = localStorage.getItem("role_id");
     if (token) {
       setIsLoggedIn(true);
       setUserName(nameFromStorage || "");
-      setRoleId(roleIdFromStorage); // Thiết lập trạng thái role_id
+      setRoleId(roleIdFromStorage);
     }
   }, [token]);
 
@@ -37,7 +40,6 @@ const Header = () => {
         setRoleId(null);
 
         message.success("Đăng xuất thành công!");
-
         navigate("/login");
       },
     });
@@ -47,248 +49,106 @@ const Header = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
   // Hàm điều hướng đến trang admin
   const handleGoToAdmin = () => {
     navigate("/admin");
   };
 
+  // Hàm điều hướng đến lịch sử đơn hàng
   const handleGoToHistory = () => {
-    navigate("/history1"); // Điều hướng đến trang lịch sử đơn hàng
+    navigate("/history1");
   };
 
   // Hàm điều hướng đến thông tin tài khoản
   const handleGoToAccountInfo = () => {
-    navigate("/account"); // Đường dẫn đến trang thông tin tài khoản
+    navigate("/account");
   };
 
+  const userMenu = (
+    <Menu>
+      <Menu.Item onClick={handleGoToAccountInfo}>Thông tin tài khoản</Menu.Item>
+      <Menu.Item onClick={handleGoToHistory}>Lịch sử đơn hàng</Menu.Item>
+      {roleId === "2" && (
+        <Menu.Item onClick={handleGoToAdmin}>Trang quản trị</Menu.Item>
+      )}
+      <Menu.Item onClick={handleLogout}>Đăng xuất</Menu.Item>
+    </Menu>
+  );
+
   return (
-    <header className="bg-white/100 mb-20 fixed top-0 left-0 right-0 z-50 shadow-lg">
-      <nav
-        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
-        aria-label="Global"
-      >
-        <div className="flex lg:flex-1">
-          <Link to="/" className="-m-1.5 p-1.5">
-            <span className="sr-only">PetSpa</span>
-            <img className="h-10 w-auto" src="/images/logo.png" alt="Logo" />
-          </Link>
-        </div>
+    <Header
+      className="bg-white shadow-lg fixed top-0 left-0 right-0 z-50"
+      style={{ height: "100px" }} // Đặt chiều cao của Header là 80px
+    >
+      <div className="container mx-auto flex items-center justify-between p-6">
+        {/* Logo */}
+        <Link to="/">
+          <img src="/images/logo.png" alt="Logo" className="h-12" /> {/* Tăng chiều cao của logo */}
+        </Link>
 
-        {/* Nút Hamburger cho màn hình nhỏ */}
-        <div className="flex lg:hidden">
-          <button
-            type="button"
-            onClick={handleMenuToggle}
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
-          >
-            <span className="sr-only">Mở menu chính</span>
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-              />
-            </svg>
-          </button>
-        </div>
+        {/* Menu for large screens */}
+        <Menu mode="horizontal" className="hidden lg:flex">
+          <Menu.Item key="home">
+            <Link to="/">Trang chủ</Link>
+          </Menu.Item>
+          <Menu.Item key="about">
+            <Link to="/about">Giới Thiệu</Link>
+          </Menu.Item>
+          <Menu.Item key="danhsach">
+            <Link to="/danhsach">Danh sách phòng</Link>
+          </Menu.Item>
+          <Menu.Item key="lienhe">
+            <Link to="/lienhe">Liên hệ</Link>
+          </Menu.Item>
+          <Menu.Item key="blog">
+            <Link to="/blog">Blog</Link>
+          </Menu.Item>
+          <Menu.Item key="cart">
+            <Link to="/#">Giỏ hàng</Link>
+          </Menu.Item>
+        </Menu>
 
-        {/* Menu cho màn hình lớn */}
-        <div className="hidden lg:flex lg:gap-x-12">
-          <Link
-            to="/"
-            className="text-sm font-semibold leading-6 text-gray-900"
-          >
-            Trang chủ
-          </Link>
-          <Link
-            to="/about"
-            className="text-sm font-semibold leading-6 text-gray-900"
-          >
-            Giới Thiệu
-          </Link>
-          <Link
-            to="/danhsach"
-            className="text-sm font-semibold leading-6 text-gray-900"
-          >
-            Danh sách phòng
-          </Link>
-          <Link
-            to="/lienhe"
-            className="text-sm font-semibold leading-6 text-gray-900"
-          >
-            Liên hệ
-          </Link>
-          <Link
-            to="/blog"
-            className="text-sm font-semibold leading-6 text-gray-900"
-          >
-            Blog
-          </Link>
-          <Link
-            to="/#"
-            className="text-sm font-semibold leading-6 text-gray-900"
-          >
-            Giỏ hàng
-          </Link>
-        </div>
-
-        {/* Hiển thị điều kiện cho đăng nhập/đăng ký hoặc tên người dùng/đăng xuất */}
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+        {/* Right section for login/logout */}
+        <div className="flex items-center space-x-4">
           {isLoggedIn ? (
-            <div className="relative">
-              <button
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-full flex items-center space-x-2 shadow-md text-xs sm:text-sm lg:text-base"
-                onClick={toggleDropdown}
+            <Dropdown
+              overlay={userMenu}
+              trigger={["click"]}
+              className="flex items-center space-x-2"
+            >
+              <Button
+                type="primary"
+                icon={<DownOutlined />}
+                className="flex items-center space-x-2"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM5.832 17.999C5.44 17.7 5 17.192 5 16.5c0-.828.448-1.5 1.003-1.888C7.146 13.855 9.432 13 12 13c2.568 0 4.854.855 5.997 1.612.555.388 1.003 1.06 1.003 1.888 0 .692-.439 1.2-.832 1.499H5.832z"
-                  />
-                </svg>
+                <Avatar>{userName[0]}</Avatar>
                 <span>{userName}</span>
-              </button>
-
-              {/* Dropdown Menu */}
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg">
-                  {/* Thông tin tài khoản */}
-                  <button
-                    onClick={handleGoToAccountInfo}
-                    className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Thông tin tài khoản
-                  </button>
-
-                  {/* Lịch sử đơn hàng */}
-                  <button
-                    onClick={handleGoToHistory}
-                    className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Lịch sử đơn hàng
-                  </button>
-
-                  {/* Trang quản trị */}
-                  {roleId === "2" && (
-                    <button
-                      onClick={handleGoToAdmin}
-                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Trang quản trị
-                    </button>
-                  )}
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Đăng xuất
-                  </button>
-                </div>
-              )}
-            </div>
+              </Button>
+            </Dropdown>
           ) : (
             <>
-              <Link
-                to="/register"
-                className="text-sm font-semibold leading-6 text-gray-900"
-              >
-                Đăng ký
+              <Link to="/register">
+                <Button type="link">Đăng ký</Button>
               </Link>
-              <Link
-                to="/login"
-                className="ml-6 text-sm font-semibold leading-6 text-gray-900"
-              >
-                Đăng nhập
+              <Link to="/login">
+                <Button type="primary">Đăng nhập</Button>
               </Link>
             </>
           )}
         </div>
 
-        {/* Menu cho màn hình nhỏ */}
-        {isMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-gray-200 shadow-lg p-6 z-40">
-            <Link
-              to="/"
-              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
-            >
-              Trang chủ
-            </Link>
-            <Link
-              to="/about"
-              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
-            >
-              Giới Thiệu
-            </Link>
-            <Link
-              to="/danhsach"
-              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
-            >
-              Danh sách phòng
-            </Link>
-            <Link
-              to="/lienhe"
-              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
-            >
-              Liên hệ
-            </Link>
-            <Link
-              to="/blog"
-              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
-            >
-              Blog
-            </Link>
-            <Link
-              to="/history1"
-              className="block text-sm font-semibold leading-6 text-gray-900 mb-4"
-            >
-              Lịch sử mua hàng
-            </Link>
-            {isLoggedIn && (
-              <div>
-                <button
-                  onClick={handleGoToAccountInfo}
-                  className="block w-full text-left text-sm font-semibold leading-6 text-gray-900 mb-4"
-                >
-                  Thông tin tài khoản
-                </button>
-                <button
-                  onClick={handleGoToHistory}
-                  className="block w-full text-left text-sm font-semibold leading-6 text-gray-900 mb-4"
-                >
-                  Lịch sử đơn hàng
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left text-sm font-semibold leading-6 text-gray-900"
-                >
-                  Đăng xuất
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </nav>
-    </header>
+        {/* Mobile Menu */}
+        <div className="lg:hidden">
+          <Button
+            icon={<DownOutlined />}
+            onClick={handleMenuToggle}
+            type="text"
+            size="large"
+          />
+        </div>
+      </div>
+    </Header>
   );
 };
 
-export default Header;
+export default AppHeader;
