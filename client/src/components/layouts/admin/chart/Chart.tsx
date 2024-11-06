@@ -297,7 +297,7 @@ const Chart = () => {
         </div>
         <div className="ml-[30px] mt-[50px]">
           <LineChart
-            width={780}
+            width={750}
             height={350}
             data={dataChart}
             margin={{

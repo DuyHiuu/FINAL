@@ -200,11 +200,12 @@ class RoomController extends Controller
         }
 
         // Cập nhật các trường
-        $room->price = $request->price ?? $room->price;
-        $room->description = $request->description ?? $room->description;
-        $room->statusroom = $request->statusroom ?? $room->statusroom;
-        $room->size_id = $request->size_id ?? $room->size_id;
+//        $room->price = $request->price ?? $room->price;
+//        $room->description = $request->description ?? $room->description;
+//        $room->statusroom = $request->statusroom ?? $room->statusroom;
+//        $room->size_id = $request->size_id ?? $room->size_id;
 
+        $room->update($request->except('img_thumbnail'));
         // Kiểm tra và cập nhật trường image
         if ($request->file('img_thumbnail')) {
             $image = $request->file('img_thumbnail');
@@ -212,6 +213,10 @@ class RoomController extends Controller
 
             // Cập nhật đường dẫn ảnh mới
             $room->img_thumbnail = $response;
+            $room->save();
+        }
+        else{
+            $room->img_thumbnail = $request->img_thumbnail;
         }
 
         // Lưu lại room đã cập nhật
