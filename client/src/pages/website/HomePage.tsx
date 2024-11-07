@@ -8,7 +8,7 @@ import useFetchComments from "../../api/useFetchComments";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/autoplay"; 
+import "swiper/css/autoplay";
 import { Autoplay, Pagination } from "swiper/modules";
 
 const HomePage = () => {
@@ -232,15 +232,14 @@ const HomePage = () => {
       </Row>
 
       {/* Services Section */}
-      <h2 className="text-2xl font-semibold mt-12">Dịch Vụ</h2>
+      <h2 className="text-2xl font-semibold mt-12">Một số hình ảnh của PetHouse</h2>
       <Row gutter={[16, 16]} justify="center" className="mt-6">
-        {khuonItems.map((item, index) => (
-          <Col key={index} xs={24} sm={12} md={8} lg={6}>
+        {room?.slice(0, 3).map((item: any) => (
+          <Col key={room.id} xs={24} sm={12} md={8} lg={6}>
             <Card
-              cover={<img alt={item.title} src={item.imageUrl} />}
+              cover={<img alt={item.size_name} src={item.img_thumbnail} className="h-[250px]" />}
               hoverable
             >
-              <Card.Meta title={item.title} description={item.description} />
             </Card>
           </Col>
         ))}
@@ -251,7 +250,26 @@ const HomePage = () => {
         <Button type="primary" onClick={handleClickDanhsachphong} className="mr-4">
           Xem danh sách phòng
         </Button>
-        <Button type="default" onClick={handleClickDocthem}>
+      </div>
+
+      {/* Services Section */}
+      <h2 className="text-2xl font-semibold mt-12">Dịch Vụ</h2>
+      <Row gutter={[16, 16]} justify="center" className="mt-6">
+        {service?.slice(0, 3).map((item: any) => (
+          <Col key={service.id} xs={24} sm={12} md={8} lg={6}>
+            <Card
+              cover={<img alt={item.name} src={item.image} />}
+              hoverable
+            >
+              <Card.Meta title={item.name} description={item.description} />
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      {/* Rooms & Blogs */}
+      <div className="mt-12 w-full text-center">
+        <Button type="primary" onClick={handleClickDocthem}>
           Đọc thêm
         </Button>
       </div>
