@@ -29,8 +29,7 @@ class Booking extends Model
     // Quan hệ với bảng Services
     public function services()
 {
-    return $this->belongsToMany(Service::class, 'booking_services')
-                 ->withPivot('quantity');
+    return $this->belongsToMany(Service::class, 'booking_services');
 }
 
 
