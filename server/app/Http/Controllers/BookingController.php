@@ -42,7 +42,7 @@ class BookingController extends Controller
         if ($booking->services && $booking->services->isNotEmpty()) {
             foreach ($booking->services as $item) {
                 // Tính tổng tiền cho từng dịch vụ và cộng dồn
-                $subTotal_service += $item->price * $item->pivot->quantity;
+                $subTotal_service += $item->price;
             }
         }
 
@@ -106,9 +106,8 @@ class BookingController extends Controller
 
 
         //Kiểm tra nếu có dịch vụ (service_ids k null)
-        if ($request->filled('service_ids') && $request->filled('quantities')) {
+        if ($request->filled('service_ids')) {
             $serviceIDs = json_decode($request->input('service_ids'), true); 
-            $quantities = json_decode($request->input('quantities'), true);
 
             $serviceData = []; // mảng lưu dữ liệu bảng booking_services
 
@@ -117,9 +116,9 @@ class BookingController extends Controller
 
                  // Thêm vào mảng servicesData với các thông tin cần thiết
                 $serviceData[$serviceID] = [
-                    'quantity' => $quantities[$index], // Số lượng của dịch vụ từ request
+                    'price' => $service->price
                 ];
-
+ 
             }
 
             $booking->services()->attach($serviceData);
