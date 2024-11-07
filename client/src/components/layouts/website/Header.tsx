@@ -103,9 +103,6 @@ const AppHeader = () => {
           <Menu.Item key="blog">
             <Link to="/blog">Blog</Link>
           </Menu.Item>
-          <Menu.Item key="cart">
-            <Link to="/#">Giỏ hàng</Link>
-          </Menu.Item>
         </Menu>
 
         {/* Right section for login/logout */}
