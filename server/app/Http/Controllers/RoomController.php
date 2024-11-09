@@ -25,7 +25,6 @@ class RoomController extends Controller
                 'rooms.*',
                 'sizes.name as size_name',
                 'sizes.description as size_description',
-                'sizes.quantity as quantity',
                 'rooms.size_id'
             )
             ->orderBy('rooms.id', 'desc')
@@ -105,6 +104,7 @@ class RoomController extends Controller
             [
                 'price' => "required",
                 'description' => "required",
+                'quantity'=>'required',
                 'statusroom' => "required",
                 'size_id' => "required",
                 'img_thumbnail' => "required|image|mimes:jpeg,png,jpg,gif|max:2048",
@@ -112,6 +112,7 @@ class RoomController extends Controller
             [
                 'price.required' => "Giá không được để trống",
                 'description.required' => "Mô tả không được để trống",
+                'quantity.required' => "Không được để trống",
                 'statusroom.required' => "Trạng thái phòng không được để trống",
                 'size_id.required' => "Kích thước không được để trống",
                 'img_thumbnail.required' => "Hình ảnh không được để trống",
@@ -143,6 +144,7 @@ class RoomController extends Controller
 
             $price = $request->get('price');
             $description = $request->get('description');
+            $quantity = $request->get('quantity');
             $status_room = $request->get('statusroom');
             $size_id = $request->get('size_id');
 
@@ -150,6 +152,7 @@ class RoomController extends Controller
                 'img_thumbnail' => $response,
                 'price' => $price,
                 'description' => $description,
+                'quantity'=>$quantity,
                 'statusroom' => $status_room,
                 'size_id' => $size_id,
             ];
@@ -168,7 +171,7 @@ class RoomController extends Controller
     public function show(string $id)
     {
         $room = Room::join('sizes', 'rooms.size_id', '=', 'sizes.id')
-            ->select('rooms.*', 'sizes.name as size_name', 'sizes.description as size_description', 'sizes.quantity as quantity')
+            ->select('rooms.*', 'sizes.name as size_name', 'sizes.description as size_description')
             ->where('rooms.id', $id)
             ->whereNull('rooms.deleted_at')
             ->first();

@@ -34,7 +34,6 @@ class SizeController extends Controller
     {
         $size = Size::create([
             'name' => $request->name,
-            'quantity' => $request->quantity,
             'description' => $request->description,
         ]);
 
@@ -84,7 +83,6 @@ class SizeController extends Controller
 
         $size->update([
             'name' => $request->name,
-            'quantity' => $request->quantity,
             'description' => $request->description,
         ]);
 
