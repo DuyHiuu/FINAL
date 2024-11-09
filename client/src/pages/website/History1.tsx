@@ -74,49 +74,48 @@ const History1 = () => {
         <div className="flex-1 w-full lg:w-1/2">
           {Array.isArray(filteredPayments) && filteredPayments.length > 0 ? (
             filteredPayments.map((item) => (
-              <Card
-              key={item?.id}
-              className="mb-6"
-              hoverable
-              cover={
-                <img
-                  alt={`image-${item?.id}`}
-                  src={item.booking?.room?.img_thumbnail}
-                  style={{ width: '150px', height: '200px', objectFit: 'cover' }} // Adjust the size as needed
-                />
-              }
-            >
-              <Card.Meta
-                title={`ID hóa đơn: ${item?.id}`}
-                description={
-                  <>
-                    <div className="text-yellow-500">
-                      {item.status?.status_name}
-                    </div>
-                    <Text>
-                      Ngày:{" "}
-                      {`${moment(item.booking?.start_date).format("DD-MM-YYYY")}`}{" "}
-                      &#8594;{" "}
-                      {`${moment(item.booking?.end_date).format("DD-MM-YYYY")}`}
-                    </Text>
-                    <div className="mt-2">
-                      <a href={`/history2/${item.id}`} className="text-blue-500">
-                        Xem chi tiết
-                      </a>
-                    </div>
-                    <div className="mt-2 text-gray-500">
-                      Tổng tiền: {item.total_amount.toLocaleString("vi-VN")} VNĐ
-                    </div>
-                  </>
-                }
-              />
-            </Card>
-            
+              <Card key={item?.id} className="mb-6" hoverable>
+                <div className="flex items-start">
+                  <img
+                    alt={`image-${item?.id}`}
+                    src={item.booking?.room?.img_thumbnail}
+                    style={{ width: '300px', height: '200px', objectFit: 'cover' }}
+                    className="me-32"
+                  />
+                  <div className="ml-4 flex-1">
+                    <Card.Meta
+                      title={`ID hóa đơn: ${item?.id}`}
+                      description={
+                        <>
+                          <div className="text-yellow-500">
+                            {item.status?.status_name}
+                          </div>
+                          <Text>
+                            Ngày:{" "}
+                            {`${moment(item.booking?.start_date).format("DD-MM-YYYY")}`}{" "}
+                            &#8594;{" "}
+                            {`${moment(item.booking?.end_date).format("DD-MM-YYYY")}`}
+                          </Text>
+                          <div className="mt-2">
+                            <a href={`/history2/${item.id}`} className="text-blue-500">
+                              Xem chi tiết
+                            </a>
+                          </div>
+                          <div className="mt-2 text-gray-500">
+                            Tổng tiền: {item.total_amount.toLocaleString("vi-VN")} VNĐ
+                          </div>
+                        </>
+                      }
+                    />
+                  </div>
+                </div>
+              </Card>
             ))
           ) : (
             <Text className="text-gray-500">Không có lịch sử mua hàng.</Text>
           )}
         </div>
+
 
         {/* Phần bên phải */}
         <div className="lg:w-1/3 p-4 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-white h-full">

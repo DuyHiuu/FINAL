@@ -13,6 +13,7 @@ class Size extends Model
     protected $fillable = [
         'name',
         'description'
+
     ];
 
     public function rooms() {

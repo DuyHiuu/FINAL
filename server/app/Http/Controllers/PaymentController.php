@@ -233,13 +233,11 @@ class PaymentController extends Controller
 
                 $room = $booking->room;
 
-                $size = $room->size;
-
-                if($room && $size &&  $size->quantity > 0){
-                    $size->decrement('quantity', 1);
+                if($room->quantity > 0){
+                    $room->decrement('quantity', 1);
 
                     // nếu số lượng bằng 0 thì thay đổi trạng thái hết phòng
-                    if($size->quantity === 0){
+                    if($room->quantity === 0){
                         $room->update(['statusroom' => 'Hết phòng']);
                     }
                 } else {

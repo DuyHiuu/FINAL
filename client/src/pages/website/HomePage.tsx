@@ -108,23 +108,6 @@ const HomePage = () => {
     },
   ];
 
-  const khuonItems = [
-    {
-      title: "Tắm",
-      description: "Sử dụng các sản phẩm 100% được kiểm định về an toàn cho các bé",
-      imageUrl: "/images/anh1.webp",
-    },
-    {
-      title: "Tỉa lông",
-      description: "Chuyên nghiệp - Gọn gàng - Đẹp mắt",
-      imageUrl: "/images/anh2.webp",
-    },
-    {
-      title: "Tiêm vắc xin",
-      description: "Mô tả chĐược các bác sĩ thú y tư vấn và trực tiếp tiêm cho các béo khuôn 3",
-      imageUrl: "/images/anh3.webp",
-    },
-  ];
 
   const { room } = useFetchRooms();
   const { service } = useFetchServices();
@@ -253,7 +236,8 @@ const HomePage = () => {
       </div>
 
       {/* Services Section */}
-      <h2 className="text-2xl font-semibold mt-12">Dịch Vụ</h2>
+      <h2 className="text-2xl font-semibold mt-12">Các dịch vụ chăm sóc</h2>
+      <p>Các dịch vụ  thực hiện bởi các nhân viên được đào tạo bài bản, có chứng chỉ hành nghề</p>
       <Row gutter={[16, 16]} justify="center" className="mt-6">
         {service?.slice(0, 3).map((item: any) => (
           <Col key={service.id} xs={24} sm={12} md={8} lg={6}>
@@ -267,6 +251,21 @@ const HomePage = () => {
         ))}
       </Row>
 
+      {/* Services Section */}
+      <h2 className="text-2xl font-semibold mt-12">Blog</h2>
+      <Row gutter={[16, 16]} justify="center" className="mt-6">
+        {blog?.slice(0, 3).map((item: any) => (
+          <Col key={service.id} xs={24} sm={12} md={8} lg={6}>
+            <Card
+              cover={<img alt={item.title} src={item.image} />}
+              hoverable
+            >
+              <Card.Meta title={item.title} description={item.description} />
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
       {/* Rooms & Blogs */}
       <div className="mt-12 w-full text-center">
         <Button type="primary" onClick={handleClickDocthem}>
@@ -275,6 +274,7 @@ const HomePage = () => {
       </div>
 
       <ReviewsSection />
+
     </div>
   );
 };

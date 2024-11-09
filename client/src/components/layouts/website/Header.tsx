@@ -119,7 +119,6 @@ const AppHeader = () => {
                 className="flex items-center space-x-2"
               >
                 <Avatar>{userName[0]}</Avatar>
-                <span>{userName}</span>
               </Button>
             </Dropdown>
           ) : (
