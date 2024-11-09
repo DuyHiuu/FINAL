@@ -42,59 +42,6 @@ class RoomController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    //    public function store(Request $request)
-    //    {
-    //        //
-    //        $validator = Validator::make(
-    //            $request->all(),[
-    //                'price'=>"required",
-    //
-    //            ],[
-    //                'price.required'=>"giá không được để trống",
-    //
-    //            ]
-    //        );
-    //        if($validator->fails()){
-    //            return response()->json(['status'=>'error','message'=>$validator->messages()],400);
-    //        }
-    //        try{
-    //            $fileData =$request->input('image')['fileList'][0]['thumbUrl'];
-    //            $elements = explode(',', $fileData);
-    //
-    //            $elementsAfter = array_slice($elements,1);
-    //
-    //            $decodedData = base64_decode($elementsAfter[0]);
-    //
-    //            $uniqueFileName = uniqid('file_');
-    //
-    //            $filePath = storage_path('app/'.$uniqueFileName);
-    //
-    //            file_put_contents($filePath,$decodedData);
-    //
-    //            $response = cloudinary()->upload($filePath)->getSecurePath();
-    //
-    //            $price =$request->get('price');
-    //            $description=$request->get('description');
-    //            $status_room=$request->get('statusroom');
-    //            $size_id=$request->get('size_id');
-    //            $data = [
-    //                'image_thumnail'=>$response,
-    //                'price'=>$price,
-    //                'description'=>$description,
-    //                'statusroom'=>$status_room,
-    //                'size_id'=>$size_id,
-    //            ];
-    //
-    //            Room::create($data);
-    //            return response()->json(['status'=>'success','message'=>'Sản phẩm đã được thêm thành công','data'=>$data],200);
-    //        } catch (\Exception $e){
-    //            return response()->json(['status'=>'error','message'=>$e->getMessage()],500);
-    //        }
-    //    }
-
     public function store(Request $request)
     {
 
@@ -104,7 +51,7 @@ class RoomController extends Controller
             [
                 'price' => "required",
                 'description' => "required",
-                'quantity'=>'required',
+                'quantity' => 'required',
                 'statusroom' => "required",
                 'size_id' => "required",
                 'img_thumbnail' => "required|image|mimes:jpeg,png,jpg,gif|max:2048",
@@ -152,7 +99,7 @@ class RoomController extends Controller
                 'img_thumbnail' => $response,
                 'price' => $price,
                 'description' => $description,
-                'quantity'=>$quantity,
+                'quantity' => $quantity,
                 'statusroom' => $status_room,
                 'size_id' => $size_id,
             ];
@@ -193,49 +140,50 @@ class RoomController extends Controller
 
     /**
      * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+     */public function update(Request $request, string $id)
     {
         // Tìm room với ID
         $room = Room::find($id);
         if (!$room) {
             return response()->json(['message' => 'Room không tồn tại'], 400);
         }
-
+    
         // Cập nhật các trường
-//        $room->price = $request->price ?? $room->price;
-//        $room->description = $request->description ?? $room->description;
-//        $room->statusroom = $request->statusroom ?? $room->statusroom;
-//        $room->size_id = $request->size_id ?? $room->size_id;
-
         $room->update($request->except('img_thumbnail'));
-        // Kiểm tra và cập nhật trường image
-        if ($request->file('img_thumbnail')) {
-            $image = $request->file('img_thumbnail');
-            $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
-
-            // Cập nhật đường dẫn ảnh mới
-            $room->img_thumbnail = $response;
+    
+        // Kiểm tra nếu có chuỗi base64 trong `img_thumbnail`
+        if ($request->img_thumbnail && !str_starts_with($request->img_thumbnail, 'http')) {
+            try {
+                // Decode base64 nếu không có tiền tố "data:image/..."
+                $base64Image = $request->img_thumbnail;
+                if (str_contains($base64Image, ',')) {
+                    $base64Image = explode(',', $base64Image)[1]; // Loại bỏ tiền tố nếu có
+                }
+                $image = base64_decode($base64Image);
+    
+                // Tạo một file tạm thời từ base64 để upload lên Cloudinary
+                $tmpFilePath = sys_get_temp_dir() . '/' . uniqid() . '.png';
+                file_put_contents($tmpFilePath, $image);
+    
+                // Upload file tạm lên Cloudinary
+                $response = Cloudinary::upload($tmpFilePath)->getSecurePath();
+    
+                // Cập nhật đường dẫn ảnh mới
+                $room->img_thumbnail = $response;
+    
+                // Lưu lại room
+                $room->save();
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Lỗi khi cập nhật ảnh', 'error' => $e->getMessage()], 500);
+            }
+        } elseif ($request->img_thumbnail) {
+            // Nếu chỉ là URL ảnh đã có sẵn, không cần upload lại
+            $room->img_thumbnail = $request->img_thumbnail;
             $room->save();
         }
-        else{
-            $room->img_thumbnail = $request->img_thumbnail;
-        }
-
-        // Lưu lại room đã cập nhật
-        if ($room->save()) {
-            return response()->json(['message' => 'Cập nhật thành công', 'data' => $room->toArray()], 200);
-        } else {
-            return response()->json(['message' => 'Cập nhật thất bại'], 500);
-        }
+    
+        return response()->json(['message' => 'Cập nhật thành công', 'data' => $room->toArray()], 200);
     }
-
-
-
-
-
-
-
 
     /**
      * Remove the specified resource from storage.

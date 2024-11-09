@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Button, Select, Upload, message, InputNumber } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Select, message, InputNumber } from 'antd';
 import useFetchSize from '../../../../api/useFetchSize';
 
 const { TextArea } = Input;
@@ -10,8 +9,7 @@ const EditRoom = () => {
     const showUrl = "http://localhost:8000/api/rooms";
     const { id } = useParams();
     const [form] = Form.useForm();
-    const [img_thumbnail, setImg_thumbnail] = useState<File | null>(null);
-
+    const [imgThumbnailBase64, setImgThumbnailBase64] = useState(null);
     const navigate = useNavigate();
     const { sizes } = useFetchSize();
 
@@ -27,7 +25,7 @@ const EditRoom = () => {
                         description: room.description,
                         statusroom: room.statusroom,
                     });
-                    setImg_thumbnail(room.img_thumbnail); // Set the initial image thumbnail
+                    setImgThumbnailBase64(room.img_thumbnail); // Set initial image URL/base64
                 } else {
                     message.error('Không thể lấy thông tin phòng');
                 }
@@ -44,7 +42,7 @@ const EditRoom = () => {
             size_id: values.size_id,
             description: values.description,
             statusroom: values.statusroom,
-            img_thumbnail: img_thumbnail,
+            img_thumbnail: imgThumbnailBase64, // Send base64 or existing URL
         };
 
         try {
@@ -67,12 +65,14 @@ const EditRoom = () => {
         }
     };
 
-    const handleImageChange = (info) => {
-        if (info.file.status === 'done') {
-            setImg_thumbnail(info.file.response.url); // Assuming your backend returns the image URL
-            message.success(`${info.file.name} file uploaded successfully`);
-        } else if (info.file.status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImgThumbnailBase64(reader.result); // Set base64 string of the image
+            };
+            reader.readAsDataURL(file);
         }
     };
 
@@ -132,17 +132,10 @@ const EditRoom = () => {
             </Form.Item>
 
             <Form.Item label="Hình Ảnh Chính">
-                {img_thumbnail && <img src={img_thumbnail} alt="Room Thumbnail" className="h-32 mb-2" />}
-                <Upload
-                    name="img_thumbnail"
-                    action="http://localhost:8000/api/upload"  // URL for uploading image
-                    showUploadList={false}
-                    onChange={handleImageChange}
-                    accept="image/*"
-                    maxCount={1}
-                >
-                    <Button icon={<UploadOutlined />}>Chọn Hình Ảnh</Button>
-                </Upload>
+                {imgThumbnailBase64 && (
+                    <img src={imgThumbnailBase64} alt="Room Thumbnail" className="h-32 mb-2" />
+                )}
+                <input type="file" accept="image/*" onChange={handleImageChange} />
             </Form.Item>
 
             <Form.Item>
