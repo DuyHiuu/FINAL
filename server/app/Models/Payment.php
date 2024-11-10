@@ -43,7 +43,9 @@ class Payment extends Model
         'booking_id',
         'user_id',
         'paymethod_id',
-        'status_id'
+        'status_id',
+        'is_processed',
+        'voucher_id',
     ];
 
     // Quan hệ với bảng bookings
@@ -67,5 +69,10 @@ class Payment extends Model
     public function status()
     {
         return $this->belongsTo(Status::class);
+    }
+
+    public function voucher()
+    {
+        return $this->belongsTo(Voucher::class);
     }
 }

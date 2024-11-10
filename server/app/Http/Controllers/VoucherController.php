@@ -42,6 +42,7 @@ class VoucherController extends Controller
                 'start_date' => 'required|date|before:end_date',
                 'end_date' => 'required|date|after:start_date',
                 'quantity' => 'required|numeric|min:0',
+                'min_total_amount' => 'required|numeric|min:0',
         ],[
             'name.required' =>'Tên không được để trống',
             'name.max' => 'Tên không được vượt quá 255 kí tự',
@@ -59,6 +60,9 @@ class VoucherController extends Controller
             'quantity.required' => 'Số lượng không được để trống',
             'quantity.numeric' => 'Số lượng phải là số',
             'quantity.min' => 'Số lượng phải lớn hơn hoặc bằng 0',
+            'min_total_amount.required' => 'Tổng tiền tối thiểu không được bỏ trống',
+            'min_total_amount.numeric' => 'Tổng tiền tối thiểu phải là số',
+            'min_total_amount.min' => 'Tổng tiền tối thiểu phải lớn hơn hoặc bằng 0',
             ]
         );
 
@@ -74,6 +78,9 @@ class VoucherController extends Controller
             $start_date = $request->get('start_date');
             $end_date = $request->get('end_date');
             $quantity = $request->get('quantity');
+            $min_total_amount = $request->get('min_total_amount');
+            $type = $request->get('type');
+           
 
             $data = [
                 'name' => $name,
@@ -82,6 +89,9 @@ class VoucherController extends Controller
                 'start_date' => $start_date,
                 'end_date' => $end_date,
                 'quantity' => $quantity,
+                'min_total_amount' => $min_total_amount,
+                'type' => $type,
+                'is_active' => 1,
             ];
 
             Voucher::create($data);
