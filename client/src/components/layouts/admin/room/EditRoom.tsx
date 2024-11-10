@@ -121,14 +121,16 @@ const EditRoom = () => {
                 />
             </Form.Item>
 
+            {/* Trạng Thái */}
             <Form.Item
                 label="Trạng Thái"
                 name="statusroom"
-                rules={[{ required: true, message: 'Vui lòng nhập trạng thái phòng!' }]}
+                rules={[{ required: true, message: 'Vui lòng chọn trạng thái phòng!' }]}
             >
-                <Input
-                    placeholder="Nhập trạng thái phòng"
-                />
+                <Select placeholder="Chọn trạng thái phòng">
+                    <Select.Option value="Còn phòng">Còn phòng</Select.Option>
+                    <Select.Option value="Hết phòng">Hết phòng</Select.Option>
+                </Select>
             </Form.Item>
 
             <Form.Item label="Hình Ảnh Chính">

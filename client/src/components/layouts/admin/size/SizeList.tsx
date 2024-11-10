@@ -70,11 +70,7 @@ const SizeList = () => {
       dataIndex: "name",
       key: "name",
     },
-    {
-      title: "Số lượng",
-      dataIndex: "quantity",
-      key: "quantity",
-    },
+
     {
       title: "Miêu tả",
       dataIndex: "description",
