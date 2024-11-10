@@ -9,6 +9,9 @@ const { Title, Text } = Typography;
 const History1 = () => {
   const { payment, loading } = useFetchPayments();
 
+  console.log(payment);
+
+
   const [startDate, setStartDate] = useState<moment.Moment | null>(null);
   const [endDate, setEndDate] = useState<moment.Moment | null>(null);
   const [filteredPayments, setFilteredPayments] = useState(payment || []);

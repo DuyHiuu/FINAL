@@ -42,7 +42,6 @@ const Detail = () => {
   const [room, setRoom] = useState<any>(null);
   const [room_id, setRoom_id] = useState(id);
   const [service_ids, setService_ids] = useState<number[]>([]);
-  const [quantities, setQuantities] = useState<Record<number, number>>({});
   const [start_date, setStart_date] = useState<string>("");
   const [end_date, setEnd_date] = useState<string>("");
   const [comments, setComments] = useState<any[]>([]);
@@ -104,31 +103,11 @@ const Detail = () => {
       return;
     }
 
-    const missingQuantities = service_ids.filter(
-      (id) => !quantities[id] || quantities[id] <= 0
-    );
-    if (missingQuantities.length > 0) {
-      setMessage("Vui lòng nhập số lượng cho tất cả các dịch vụ đã chọn.");
-      return;
-    }
-
-    const uncheckedQuantities = Object.keys(quantities).filter((id) => {
-      return (
-        quantities[parseInt(id)] > 0 && !service_ids.includes(parseInt(id))
-      );
-    });
-    if (uncheckedQuantities.length > 0) {
-      setMessage("Vui lòng chọn dịch vụ cho số lượng đã nhập.");
-      return;
-    }
-
     const safeServiceIds = service_ids.length ? service_ids : [];
-    const safeQuantities = service_ids.map((id) => quantities[id] || 0);
 
     const formData = new FormData();
     formData.append("service_ids", JSON.stringify(safeServiceIds));
     formData.append("room_id", room_id);
-    formData.append("quantities", JSON.stringify(safeQuantities));
     formData.append("start_date", start_date);
     formData.append("end_date", end_date);
 
@@ -189,8 +168,7 @@ const Detail = () => {
         const errorResponse = await response.json();
         console.error("Error posting comment:", errorResponse);
         setMessage(
-          `Thêm bình luận thất bại: ${
-            errorResponse.message || response.statusText
+          `Thêm bình luận thất bại: ${errorResponse.message || response.statusText
           }`
         );
       }
@@ -199,12 +177,6 @@ const Detail = () => {
       setMessage("Đã xảy ra lỗi khi thêm bình luận.");
     }
   };
-
-  const today = new Date();
-  const minDate = today.toISOString().split("T")[0];
-  const maxDate = new Date(today.setMonth(today.getMonth() + 2))
-    .toISOString()
-    .split("T")[0];
 
   const [openServiceId, setOpenServiceId] = useState(null);
   const toggleDescription = (id) => {
@@ -221,191 +193,193 @@ const Detail = () => {
 
   return (
     <div className="container mx-auto p-4 lg:p-8 mt-24">
-<Row gutter={0}>
-  {/* Phần 1: Ảnh chính chiếm 50% chiều rộng */}
-  <Col span={12}> {/* Chiếm 50% chiều rộng */}
-    <Card
-      hoverable
-      cover={
-        <img
-          alt="Room"
-          src={room?.img_thumbnail}
-          style={{
-            width: "100%",  // Chiếm toàn bộ chiều rộng của Col
-            height: "500px",  // Chiều cao của ảnh chính bằng tổng chiều cao của 4 ảnh phụ
-            objectFit: "cover",  // Đảm bảo ảnh không bị méo, đầy khung
-            borderRadius: "8px", // Cải thiện viền ảnh
-          }}
-        />
-      }
-    >
-      <strong className="text-2xl">{room?.size_name}</strong>
-      <p>{room?.statusroom}</p>
-    </Card>
-  </Col>
+      <Row gutter={0}>
+        <Col span={12}>
+          <Card
+            hoverable
+            cover={
+              <img
+                alt="Room"
+                src={room?.img_thumbnail}
+                style={{
+                  width: "100%",
+                  height: "500px",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                }}
+              />
+            }
+          >
+          </Card>
+        </Col>
 
-  {/* Phần 2: Ảnh phụ chiếm 50% chiều rộng */}
-  <Col span={12}> {/* Chiếm 50% chiều rộng */}
-    <Row gutter={8} style={{ marginTop: "8px" }}>
-      {/* Ảnh đầu tiên, chiếm 1/2 chiều rộng */}
-      <Col span={12}>
-        <img
-          src="/images/anh9.webp"
-          alt="Small"
-          className="w-full object-cover rounded-md"
-          style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
-        />
-      </Col>
-      {/* Ảnh thứ hai, chiếm 1/2 chiều rộng */}
-      <Col span={12}>
-        <img
-          src="/images/anh10.webp"
-          alt="Small"
-          className="w-full object-cover rounded-md"
-          style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
-        />
-      </Col>
-    </Row>
+        <Col span={12}>
+          <Row gutter={8} style={{ marginTop: "8px" }}>
+            <Col span={12}>
+              <img
+                src="/images/anh9.webp"
+                alt="Small"
+                className="w-full object-cover rounded-md"
+                style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
+              />
+            </Col>
+            <Col span={12}>
+              <img
+                src="/images/anh10.webp"
+                alt="Small"
+                className="w-full object-cover rounded-md"
+                style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
+              />
+            </Col>
+          </Row>
 
-    <Row gutter={8} style={{ marginTop: "8px" }}>
-      {/* Ảnh thứ ba, chiếm 1/2 chiều rộng */}
-      <Col span={12}>
-        <img
-          src="/images/anh2.webp"
-          alt="Small"
-          className="w-full object-cover rounded-md"
-          style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
-        />
-      </Col>
-      {/* Ảnh thứ tư, chiếm 1/2 chiều rộng */}
-      <Col span={12}>
-        <img
-          src="/images/anh11.webp"
-          alt="Small"
-          className="w-full object-cover rounded-md"
-          style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
-        />
-      </Col>
-    </Row>
-  </Col>
-</Row>
-
-
+          <Row gutter={8} style={{ marginTop: "8px" }}>
+            <Col span={12}>
+              <img
+                src="/images/anh2.webp"
+                alt="Small"
+                className="w-full object-cover rounded-md"
+                style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
+              />
+            </Col>
+            <Col span={12}>
+              <img
+                src="/images/anh11.webp"
+                alt="Small"
+                className="w-full object-cover rounded-md"
+                style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
+              />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
 
       <form onSubmit={handleSubmit}>
-        <div className="mt-8">
-          <h3 className="text-xl font-semibold">Dịch vụ kèm theo</h3>
-          <div>
-            {service?.map((service: any) => (
-              <div key={service.id} className="flex items-center">
-                <Checkbox
-                  checked={service_ids.includes(service.id)}
-                  onChange={() => changeService(service.id)}
-                >
-                  {service?.name}
-                </Checkbox>
-                <Tooltip title={service?.description}>
-                  <Button
-                    type="link"
-                    icon={
-                      openServiceId === service.id ? (
-                        <ChevronUpIcon className="h-5 w-5" />
-                      ) : (
-                        <ChevronDownIcon className="h-5 w-5" />
-                      )
-                    }
-                    onClick={() => toggleDescription(service.id)}
-                  />
-                </Tooltip>
-                {openServiceId === service.id && (
-                  <div className="mt-2 text-sm text-gray-600">
-                    {service?.description}
+        <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+          <div className="space-y-6">
+            <h1 className="text-3xl font-bold">{room?.size_name}</h1>
+            <p className="text-green-500">{room?.statusroom}</p>
+
+            <div>
+              <h3 className="text-xl font-semibold">Dịch vụ kèm theo</h3>
+              <div className="space-y-2">
+                {service?.map((service: any) => (
+                  <div key={service.id} className="py-2">
+                    <div className="flex items-center">
+                      <Checkbox
+                        checked={service_ids.includes(service.id)}
+                        onChange={() => changeService(service.id)}
+                        className="mr-2"
+                      >
+                        {service?.name} ({service?.price?.toLocaleString("vi-VN")} VNĐ)
+                      </Checkbox>
+                      <Button
+                        type="link"
+                        icon={
+                          openServiceId === service.id ? (
+                            <ChevronUpIcon className="h-5 w-5" />
+                          ) : (
+                            <ChevronDownIcon className="h-5 w-5" />
+                          )
+                        }
+                        onClick={() => toggleDescription(service.id)}
+                        className="ml-2"
+                      />
+                    </div>
+
+                    {openServiceId === service.id && (
+                      <div className="mt-2 text-sm text-blue-600 pl-6">
+                        {service?.description}
+                      </div>
+                    )}
                   </div>
-                )}
-                {service_ids.includes(service.id) && (
-                  <Input
-                    type="number"
-                    min={1}
-                    value={quantities[service.id] || ""}
-                    onChange={(e) => {
-                      setQuantities({
-                        ...quantities,
-                        [service.id]: parseInt(e.target.value) || 0,
-                      });
-                    }}
-                    style={{ width: "100px", marginLeft: "10px" }}
-                  />
-                )}
+                ))}
               </div>
-            ))}
+
+            </div>
+
+            <div>
+              <h3 className="text-xl font-semibold">Mô tả</h3>
+              <p className="text-gray-700">
+                {room?.description}
+              </p>
+            </div>
           </div>
 
-          <div className="mt-8">
-            <h3 className="text-xl font-semibold">Thời gian đặt phòng</h3>
-            <Row gutter={16}>
-              <Col span={12}>
+          {/* Phần đặt phòng */}
+          <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-[200px]">
+            <h2 className="text-xl font-semibold text-gray-800">
+              {room?.price?.toLocaleString("vi-VN")} VNĐ / ngày
+            </h2>
+
+            <div className="mt-4 flex justify-between items-center space-x-3">
+              <div className="w-1/2">
+                <label className="block text-black text-sm font-bold">Ngày check-in</label>
                 <DatePicker
                   value={start_date ? moment(start_date) : null}
-                  onChange={(date) =>
-                    setStart_date(date?.format("YYYY-MM-DD") || "")
-                  }
-                  placeholder="Ngày bắt đầu"
-                  style={{ width: "100%" }}
-                  disabledDate={(current) =>
-                    current && current < moment().endOf("day")
-                  }
+                  onChange={(date) => setStart_date(date?.format("YYYY-MM-DD") || "")}
+                  placeholder="Ngày check-in"
+                  className="w-full mt-1 text-sm"
+                  disabledDate={(current) => current && current < moment().endOf("day")}
                 />
-              </Col>
-              <Col span={12}>
+              </div>
+              <div className="w-1/2">
+                <label className="block text-black text-sm font-bold">Ngày check-out</label>
                 <DatePicker
                   value={end_date ? moment(end_date) : null}
-                  onChange={(date) =>
-                    setEnd_date(date?.format("YYYY-MM-DD") || "")
-                  }
-                  placeholder="Ngày kết thúc"
-                  style={{ width: "100%" }}
-                  disabledDate={(current) =>
-                    current && current < moment().endOf("day")
-                  }
+                  onChange={(date) => setEnd_date(date?.format("YYYY-MM-DD") || "")}
+                  placeholder="Ngày check-out"
+                  className="w-full mt-1 text-sm"
+                  disabledDate={(current) => current && current < moment().endOf("day")}
                 />
-              </Col>
-            </Row>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <h3 className="text-xl font-semibold">Bình luận</h3>
-          <div className="space-y-4">
-            {comments.map((comment) => (
-              <div key={comment.id} className="border p-4 rounded-md shadow-sm">
-                <p>{comment.content}</p>
-                <p className="text-gray-500 text-sm">{comment.user_name}</p>
               </div>
-            ))}
-          </div>
-          <TextArea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Thêm bình luận..."
-            rows={4}
-            style={{ marginTop: "16px" }}
-          />
-          <Button
-            type="primary"
-            onClick={handleAddComment}
-            style={{ marginTop: "8px" }}
-            disabled={!newComment.trim()}
-          >
-            Thêm Bình luận
-          </Button>
-        </div>
+            </div>
 
-        <div className="mt-8">
-          <Button type="primary" htmlType="submit" size="large" block>
-            Xác nhận đặt phòng
-          </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="w-full py-2 mt-4 text-sm font-medium rounded-md"
+            >
+              Đặt phòng
+            </Button>
+          </div>
+
         </div>
       </form>
+
+      <div className="mt-6 ">
+        <h3 className="text-lg font-semibold text-gray-700">Bình luận</h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-3">
+          {comments.map((comment) => (
+            <div key={comment.id} className="border p-3 rounded-lg shadow-sm bg-white">
+              <p className="text-gray-800 text-sm">{comment.content}</p>
+              <p className="text-gray-400 text-xs mt-2">
+                Bình luận bởi: <span className="text-gray-600">{comment.user?.name}</span> - ngày:{" "}
+                {new Date(comment.created_at).toLocaleDateString("vi-VN")}
+              </p>
+            </div>
+          ))}
+        </div>
+        <TextArea
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="Thêm bình luận..."
+          rows={3}
+          className="w-[350px] mt-4 p-2 text-sm rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary block"
+        />
+
+        <Button
+          type="primary"
+          onClick={handleAddComment}
+          className="w-[350px] mt-3 py-2 text-sm font-medium rounded-md block"
+          disabled={!newComment.trim()}
+        >
+          Thêm Bình luận
+        </Button>
+
+      </div>
+
+
     </div>
   );
 };

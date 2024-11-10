@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Select, Button, Card, Spin, Typography } from 'antd';
+import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker } from 'antd';
 import useFetchPayMethod from '../../api/useFetchPayMethod';
 import { PulseLoader } from 'react-spinners';
+import moment from 'moment';
 
 const { Title, Text } = Typography;
 
@@ -147,7 +148,7 @@ const Pay2 = () => {
     return (
         <div className="flex flex-col lg:flex-row pb-20 mt-24">
             {/* Customer Information */}
-            <Form className="lg:w-2/3 p-4" onSubmitCapture={handleSubmit}>
+            <Form className="lg:w-1/2 p-4" onSubmitCapture={handleSubmit}>
                 <Title level={2}>Thông tin khách hàng</Title>
 
                 <Form.Item label="Tên khách hàng">
@@ -218,13 +219,13 @@ const Pay2 = () => {
             </Form>
 
             {/* Room Information */}
-            <div className="lg:w-1/3 p-4 mt-20 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-2/3">
+            <div className="lg:w-1/2 p-4 mt-20 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-2/3">
                 <Card
                     cover={
                         <img
                             src={room?.img_thumbnail}
                             alt={room?.size_name}
-                            className="w-full h-[500px] object-cover rounded-lg shadow mb-10"
+                            className="w-full h-[300px] object-cover rounded-lg shadow mb-10"
                         />
                     }
                 >
@@ -233,18 +234,26 @@ const Pay2 = () => {
 
                     <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 mb-10 mt-10">
                         <div className="w-full lg:w-1/2">
-                            <strong>Ngày vào</strong>
-                            <p>{booking?.check_in}</p>
+                            <strong>Ngày check-in</strong>
+                            <DatePicker
+                                value={booking?.start_date ? moment(booking?.start_date) : null}
+                                disabled
+                                style={{ width: '100%' }}
+                            />
                         </div>
                         <div className="w-full lg:w-1/2">
-                            <strong>Ngày ra</strong>
-                            <p>{booking?.check_out}</p>
+                            <strong>Ngày check-out</strong>
+                            <DatePicker
+                                value={booking?.end_date ? moment(booking?.end_date) : null}
+                                disabled
+                                style={{ width: '100%' }}
+                            />
                         </div>
                     </div>
 
                     <div className="text-right">
                         <Text strong>Tổng tiền: </Text>
-                        <Text className="text-[#FF0000]">{total_amount.toLocaleString()}</Text>
+                        <Text className="text-[#FF0000]">{total_amount.toLocaleString()} VNĐ</Text>
                     </div>
                 </Card>
             </div>

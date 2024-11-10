@@ -86,94 +86,93 @@ const Pay1 = () => {
 
   return (
     <div className="flex flex-col lg:flex-row pb-20 mt-24">
-    {/* Phần thông tin thanh toán */}
-    <div className="lg:w-1/2 p-4">
-      <div className="text-left">
-        <Title level={1}>Xác nhận thanh toán</Title>
-        <Row justify="space-between" className="mt-20 w-auto">
-          <Col span={12}>
-            <Text>Giá phòng:</Text>
-            <div style={{ marginTop: '10px' }} />
-            <Text className="d-block mt-2">Phí dịch vụ:</Text>
-            <div style={{ marginTop: '10px' }} />
-            <Text className="d-block mt-2 font-bold">Tổng:</Text>
-          </Col>
-          <Col span={12} style={{ textAlign: 'right' }}>
-            <Text>{booking?.subTotal_room}</Text>
-            <div style={{ marginTop: '10px' }} />
-            <Text className="d-block mt-2 mb-10">
-              {booking?.subTotal_service === 0 ? "Không sử dụng dịch vụ" : booking?.subTotal_service}
-            </Text>
-            <div style={{ marginTop: '10px' }} />
-            <Text className="font-bold">{booking?.total_amount}</Text>
-          </Col>
-        </Row>
-      </div>
-  
-      <Button
-        type="primary"
-        size="large"
-        onClick={toPay}
-        style={{ marginTop: '20px', width: '150px' }}
-      >
-        Thanh Toán
-      </Button>
-    </div>
-  
-    {/* Phần thông tin đặt phòng */}
-    <div className="lg:w-1/2 p-4 mt-10 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2]">
-      <Card
-        cover={
-          <img
-            src={room?.img_thumbnail}
-            alt={room?.size_name}
-            className="w-full object-cover rounded-lg shadow mb-10"
-            style={{ height: '600px' }} // Đặt chiều cao cho ảnh
-          />
-        }
-      >
-        <Title level={3}>{room?.size_name}</Title>
-        <div className="flex items-center mt-3 mb-3">
-          <p>{room?.description}</p>
+      {/* Phần thông tin thanh toán */}
+      <div className="lg:w-1/2 p-4">
+        <div className="text-left">
+          <Title level={1}>Xác nhận thanh toán</Title>
+          <Row justify="space-between" className="mt-20 w-auto">
+            <Col span={12}>
+              <Text>Giá phòng:</Text>
+              <div style={{ marginTop: '10px' }} />
+              <Text className="d-block mt-2">Phí dịch vụ:</Text>
+              <div style={{ marginTop: '10px' }} />
+              <Text className="d-block mt-2 font-bold">Tổng:</Text>
+            </Col>
+            <Col span={12} style={{ textAlign: 'right' }}>
+              <Text>{booking?.subTotal_room?.toLocaleString("vi-VN")} VNĐ</Text>
+              <div style={{ marginTop: '10px' }} />
+              <Text className="d-block mt-2 mb-10">
+                {booking?.subTotal_service === 0 ? "Không sử dụng dịch vụ" : booking?.subTotal_service.toLocaleString("vi-VN")} VNĐ
+              </Text>
+              <div style={{ marginTop: '10px' }} />
+              <Text className="font-bold">{booking?.total_amount?.toLocaleString("vi-VN")} VNĐ</Text>
+            </Col>
+          </Row>
         </div>
-  
-        {/* Ngày vào và Ngày ra */}
-        <Row gutter={16} className="mb-10">
-          <Col span={12}>
-            <strong>Ngày vào</strong>
-            <DatePicker
-              value={booking?.start_date ? moment(booking?.start_date) : null}
-              disabled
-              style={{ width: '100%' }}
+
+        <Button
+          type="primary"
+          size="large"
+          onClick={toPay}
+          style={{ marginTop: '20px', width: '150px' }}
+        >
+          Thanh Toán
+        </Button>
+      </div>
+
+      {/* Phần thông tin đặt phòng */}
+      <div className="lg:w-1/2 p-4 mt-10 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2]">
+        <Card
+          cover={
+            <img
+              src={room?.img_thumbnail}
+              alt={room?.size_name}
+              className="w-full object-cover rounded-lg shadow mb-10"
+              style={{ height: '300px' }} // Đặt chiều cao cho ảnh
             />
-          </Col>
-          <Col span={12}>
-            <strong>Ngày ra</strong>
-            <DatePicker
-              value={booking?.end_date ? moment(booking?.end_date) : null}
-              disabled
-              style={{ width: '100%' }}
-            />
-          </Col>
-        </Row>
-  
-        <Text>Mọi chi phí đã được tính tổng</Text>
-  
-        {/* Chi phí */}
-        <Row justify="space-between" className="mt-4">
-          <Col span={12}>
-            <Text className="font-bold">Tổng:</Text>
-          </Col>
-          <Col span={12} style={{ textAlign: 'right' }}>
-            <Text className="font-bold">{booking?.total_amount}</Text>
-          </Col>
-        </Row>
-  
-        <Text type="danger" className="font-bold mt-5 text-xs">Phòng chỉ có thể được hủy trước ngày check-in 48 tiếng!</Text>
-      </Card>
+          }
+        >
+          <Title level={3}>{room?.size_name}</Title>
+          <div className="flex items-center mt-3 mb-3">
+            <p>{room?.description}</p>
+          </div>
+
+          {/* Ngày vào và Ngày ra */}
+          <Row gutter={16} className="mb-10">
+            <Col span={12}>
+              <strong>Ngày check-in</strong>
+              <DatePicker
+                value={booking?.start_date ? moment(booking?.start_date) : null}
+                disabled
+                style={{ width: '100%' }}
+              />
+            </Col>
+            <Col span={12}>
+              <strong>Ngày check-out</strong>
+              <DatePicker
+                value={booking?.end_date ? moment(booking?.end_date) : null}
+                disabled
+                style={{ width: '100%' }}
+              />
+            </Col>
+          </Row>
+
+          <Text>Mọi chi phí đã được tính tổng</Text>
+
+          {/* Chi phí */}
+          <Row justify="space-between" className="mt-4">
+            <Col span={12}>
+              <Text className="font-bold">Tổng:</Text>
+            </Col>
+            <Col span={12} style={{ textAlign: 'right' }}>
+              <Text className="font-bold">{booking?.total_amount?.toLocaleString("vi-VN")} VNĐ</Text>
+            </Col>
+          </Row>
+
+        </Card>
+      </div>
     </div>
-  </div>
-  
+
   );
 };
 
