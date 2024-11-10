@@ -7,6 +7,7 @@ use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
 use App\Models\Booking;
 use App\Models\Status;
+use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -192,8 +193,7 @@ class PaymentController extends Controller
 
                 $subTotal_service = 0;
                 $subTotal_room = 0;
-                $subTotal_voucher = 0;
-
+               
                 if (!empty($booking)) {
                     $startDate = Carbon::parse($booking->start_date);
                     $endDate = Carbon::parse($booking->end_date);
@@ -208,19 +208,50 @@ class PaymentController extends Controller
                     if ($booking->services->isNotEmpty()) {
                         foreach ($booking->services as $service) {
                             // Tính tổng tiền dịch vụ và nhân với số lượng từ pivot table
-                            $subTotal_service += $service->price * $service->pivot->quantity;
+                            $subTotal_service += $service->price;
                         }
                     }
-                    // Kiểm tra xem có voucher hay không và áp dụng giảm giá
-                    if ($booking->voucher) {
-                        $subTotal_voucher += $booking->voucher->discount;
+
+                    $total_amount = $subTotal_room + $subTotal_service;
+
+                    $voucherID = $request->input('voucher_id');
+
+                    $voucher = Voucher::where('id', $voucherID)
+                    ->where('is_active', true)
+                    ->first();
+            
+                    $discount = 0;
+            
+                    if(!$voucher) {
+                        return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
+                    }
+            
+                    if($voucher->end_date < now()){
+                        return response()->json(['message' => 'Voucher đã hết hạn.'], 400);
+                        
+                    }
+            
+                    if($voucher->quantity === 0){
+                        return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
+            
+                    }
+            
+                      // Kiểm tra tổng tiền đơn hàng có đủ để sử dụng voucher không
+                      if ($total_amount < $voucher->min_total_amount) {
+                        return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
+                    }
+            
+                    if($voucher->type === '%'){
+                        $discount = $total_amount * ($voucher->discount / 100);
+                    }else{
+                        $discount = $voucher->discount;
                     }
                 }
 
-                $total_amount = ($subTotal_room + $subTotal_service) - $subTotal_voucher;
+                $totalAmount = max(0, $total_amount - $discount);
 
                 // Thêm tổng tiền vào params trước khi tạo payment
-                $params['total_amount'] = $total_amount;
+                $params['total_amount'] = $totalAmount;
 
                 // Mặc định status_id = 1 khi thêm 
                 $params['status_id'] = $params['status_id'] ?? 1;
@@ -244,11 +275,20 @@ class PaymentController extends Controller
                     return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
                 }
 
+                if($voucher->quantity > 0){
+                    $voucher->decrement('quantity', 1);
+
+                    if($voucher->quantity === 0){
+                        $voucher->update(['is_active' => 0]);
+                    }
+                }
+
                 DB::commit();
                 return response()->json([
                     'status' => 'Đơn hàng đã thanh toán thành công',
                     'payment_id' => $payment_id,
-                    'total_amount' => $total_amount
+                    'total_amount' => $totalAmount,
+                    'discount' => $discount
                 ], 201);
             } catch (\Exception $e) {
                 DB::rollBack();
@@ -384,5 +424,52 @@ class PaymentController extends Controller
         // $payment->delete();
 
         // return response()->json(['message' => 'Thanh toán đã xóa thành công.']);
+    }
+
+    public function applyVoucher(Request $request){
+
+        $params = $request->all();
+     
+        $voucherID = $request->input('voucher_id');
+
+        $voucher = Voucher::where('id', $voucherID)
+        ->where('is_active', true)
+        ->first();
+
+        $booking = Booking::findOrFail($params['booking_id']);
+
+        $subTotal = $booking->totalamount;
+
+        $discount = 0;
+
+        if(!$voucher) {
+            return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
+        }
+
+        if($voucher->end_date < now()){
+            return response()->json(['message' => 'Voucher đã hết hạn.'], 400);
+            
+        }
+
+        if($voucher->quantity === 0){
+            return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
+
+        }
+
+          // Kiểm tra tổng tiền đơn hàng có đủ để sử dụng voucher không
+          if ($subTotal > $voucher->min_total_amount) {
+            return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
+        }
+
+        if($voucher->type === '%'){
+            $discount = $subTotal * ($voucher->discount / 100);
+        }else{
+            $discount = $voucher->discount;
+        }
+
+        return response()->json([
+            'discount' => $discount,
+            'subTotal' => $subTotal
+        ], 201);
     }
 }
