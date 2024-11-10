@@ -64,57 +64,68 @@ const History2 = () => {
   return (
     <div className="flex flex-col lg:flex-row pb-20 mt-24">
       {/* Left side - Order Information */}
-      <div className="lg:w-2/3 p-4">
+      <div className="lg:w-1/2 p-4">
         <Title level={2}>Thông tin đặt hàng</Title>
         <Card>
           <Row gutter={16}>
-            <Col span={12}>
+            <Title level={4}>Thông tin người đặt</Title>
+            {/* Customer Info - One input per row */}
+            <Col span={24} className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tên khách hàng</label>
               <Input
-                label="Tên khách hàng"
+                aria-label="Tên khách hàng"
                 value={paymentData?.payment.user_name}
                 readOnly
               />
             </Col>
-            <Col span={12}>
+            <Col span={24} className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
               <Input
-                label="Email"
+                aria-label="Email"
                 value={paymentData?.payment.user_email}
                 readOnly
               />
             </Col>
-            <Col span={12}>
+            <Col span={24} className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
               <Input
-                label="Số điện thoại"
+                aria-label="Số điện thoại"
                 value={paymentData?.payment.user_phone}
                 readOnly
               />
             </Col>
-            <Col span={12}>
+            <Col span={24} className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Địa chỉ</label>
               <Input
-                label="Địa chỉ"
+                aria-label="Địa chỉ"
                 value={paymentData?.payment.user_address}
                 readOnly
               />
             </Col>
-            <Col span={12}>
+          </Row>
+        </Card>
+
+        <Card className="mt-10">
+          {/* Pet Info - One input per row */}
+          <Row gutter={16}>
+            <Title level={4}>Thông tin thú cưng</Title>
+            <Col span={24} className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tên thú cưng</label>
               <Input
-                label="Tên thú cưng"
+                aria-label="Tên thú cưng"
                 value={paymentData?.payment.pet_name}
                 readOnly
               />
             </Col>
-            <Col span={12}>
-              <Select
-                label="Loại thú cưng"
+            <Col span={24} className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Chủng loại</label>
+              <Input
+                aria-label="Loại thú cưng"
                 value={paymentData?.payment.pet_type}
-                disabled
-              >
-                <Option value={paymentData?.payment.pet_type}>
-                  {paymentData.payment.pet_type}
-                </Option>
-              </Select>
+                readOnly
+              />
             </Col>
-            <Col span={24}>
+            <Col span={24} className="mb-3">
               <Text strong>Mô tả chi tiết thú cưng</Text>
               <Input.TextArea
                 value={paymentData?.payment.pet_description}
@@ -122,9 +133,10 @@ const History2 = () => {
                 rows={3}
               />
             </Col>
-            <Col span={12}>
+            <Col span={24} className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tình trạng sức khỏe</label>
               <Input
-                label="Tình trạng sức khỏe"
+                aria-label="Tình trạng sức khỏe"
                 value={paymentData?.payment.pet_health}
                 readOnly
               />
@@ -136,8 +148,9 @@ const History2 = () => {
         <div className="mt-10">
           <Title level={2}>Phương thức thanh toán</Title>
           <Card>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tên khách hàng</label>
             <Input
-              label="Phương thức thanh toán"
+              aria-label="Phương thức thanh toán"
               value={payMethodData}
               readOnly
             />
@@ -157,18 +170,18 @@ const History2 = () => {
       </div>
 
       {/* Right side - Room Information and Services */}
-      <div className="lg:w-1/3 p-4 mt-20 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-full">
+      <div className="lg:w-1/2 p-4 mt-20 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-full">
         <Card>
           {/* Image Section with adjusted height */}
           <img
             src={roomData?.img_thumbnail}
             alt="Room Image"
-            className="w-full h-[500px] object-cover rounded-lg shadow mb-10" // Reduced height to 500px
+            className="w-full h-[300px] object-cover rounded-lg shadow mb-10"
           />
 
           <Title level={3}>{sizeData}</Title>
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={24} className="mb-3">
               <Text strong>Giá/ngày:</Text> {roomData?.price} VNĐ
             </Col>
           </Row>
@@ -205,8 +218,7 @@ const History2 = () => {
                   checked
                   className="block mb-2"
                 >
-                  {item.name} ({item.price.toLocaleString("vi-VN")} VNĐ) x{" "}
-                  {item.pivot?.quantity}
+                  {item.name} ({item.price.toLocaleString("vi-VN")} VNĐ)
                 </Checkbox>
               ))
             ) : (
