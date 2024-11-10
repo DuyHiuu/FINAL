@@ -213,14 +213,17 @@ class PaymentController extends Controller
                     }
 
                     $total_amount = $subTotal_room + $subTotal_service;
-
+                    
                     $voucherID = $request->input('voucher_id');
 
+                    $discount = 0;
+                    $totalAmount = $total_amount;
+
+                    if($voucherID){
+                  
                     $voucher = Voucher::where('id', $voucherID)
                     ->where('is_active', true)
                     ->first();
-            
-                    $discount = 0;
             
                     if(!$voucher) {
                         return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
@@ -246,12 +249,15 @@ class PaymentController extends Controller
                     }else{
                         $discount = $voucher->discount;
                     }
+
+                     $totalAmount = max(0, $total_amount - $discount);
+                    }
+
+                      // Thêm tổng tiền vào params trước khi tạo payment
+                      $params['total_amount'] = $totalAmount;
                 }
-
-                $totalAmount = max(0, $total_amount - $discount);
-
-                // Thêm tổng tiền vào params trước khi tạo payment
-                $params['total_amount'] = $totalAmount;
+                
+                $params['total_amount'] = $total_amount;
 
                 // Mặc định status_id = 1 khi thêm 
                 $params['status_id'] = $params['status_id'] ?? 1;
@@ -274,7 +280,8 @@ class PaymentController extends Controller
                 } else {
                     return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
                 }
-
+                
+                if($voucherID){
                 if($voucher->quantity > 0){
                     $voucher->decrement('quantity', 1);
 
@@ -282,6 +289,7 @@ class PaymentController extends Controller
                         $voucher->update(['is_active' => 0]);
                     }
                 }
+            }
 
                 DB::commit();
                 return response()->json([
