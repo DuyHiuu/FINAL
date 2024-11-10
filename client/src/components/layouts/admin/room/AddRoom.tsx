@@ -10,35 +10,37 @@ const AddRoom = () => {
     const [sizeId, setSizeId] = useState('');
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
-    const [statusRoom, setStatusRoom] = useState('Còn phòng'); // Trạng thái mặc định là "Còn phòng"
+    const [quantity, setQuantity] = useState('');
+    const [statusRoom, setStatusRoom] = useState('Còn phòng');
     const [imgThumbnail, setImgThumbnail] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null); // State để lưu URL ảnh xem trước
     const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
     const storeUrl = "http://localhost:8000/api/rooms";
     const { sizes } = useFetchSize();
 
-    // Kiểm tra dung lượng tệp ảnh
     const beforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
-        const isLt2M = file.size / 1024 / 1024 < 5; // Cho phép ảnh lớn hơn 2MB, nhưng không quá 5MB
+        const isLt5M = file.size / 1024 / 1024 < 5;
 
         if (!isImage) {
             message.error('Chỉ cho phép tải lên tệp hình ảnh!');
         }
-        if (!isLt2M) {
+        if (!isLt5M) {
             message.error('Ảnh không được vượt quá 5MB!');
         }
-        return isImage && isLt2M;
+        return isImage && isLt5M;
     };
 
     const handleSubmit = async (values) => {
-        setIsLoading(true); // Bắt đầu trạng thái loading
+        setIsLoading(true);
 
         const formData = new FormData();
         formData.append('price', values.price);
         formData.append('size_id', values.sizeId);
         formData.append('description', values.description);
+        formData.append('quantity', values.quantity);
         formData.append('statusroom', values.statusRoom);
         formData.append('img_thumbnail', imgThumbnail);
 
@@ -48,14 +50,14 @@ const AddRoom = () => {
                 body: formData,
             });
 
-            setIsLoading(false); // Kết thúc trạng thái loading
+            setIsLoading(false);
 
             if (response.ok) {
                 const data = await response.json();
                 console.log('Phòng đã thêm thành công:', data);
                 message.success("Phòng đã được thêm thành công!");
                 setTimeout(() => {
-                    navigate('/admin'); // Chuyển hướng sau 2 giây
+                    navigate('/admin');
                 }, 2000);
             } else {
                 const errorData = await response.json();
@@ -63,7 +65,7 @@ const AddRoom = () => {
                 message.error(`Thêm phòng thất bại: ${errorData.message}`);
             }
         } catch (error) {
-            setIsLoading(false); // Kết thúc trạng thái loading
+            setIsLoading(false);
             console.error('Lỗi kết nối API:', error);
             message.error("Đã xảy ra lỗi khi thêm phòng.");
         }
@@ -124,6 +126,20 @@ const AddRoom = () => {
                     />
                 </Form.Item>
 
+                {/* Số lượng */}
+                <Form.Item
+                    label="Số lượng"
+                    name="quantity"
+                    rules={[{ required: true, message: 'Vui lòng nhập số lượng phòng!' }]}
+                >
+                    <Input
+                        type="number"
+                        value={quantity}
+                        onChange={(e) => setQuantity(e.target.value)}
+                        className="w-full"
+                    />
+                </Form.Item>
+
                 {/* Trạng thái */}
                 <Form.Item
                     label="Trạng thái"
@@ -149,14 +165,22 @@ const AddRoom = () => {
                     <Upload
                         accept="image/*"
                         showUploadList={false}
-                        beforeUpload={beforeUpload} // Kiểm tra ảnh trước khi upload
+                        beforeUpload={beforeUpload}
                         customRequest={({ file, onSuccess }) => {
                             setImgThumbnail(file);
+                            setPreviewImage(URL.createObjectURL(file)); // Tạo URL xem trước
                             onSuccess();
                         }}
                     >
                         <Button icon={<PlusOutlined />}>Tải lên hình ảnh</Button>
                     </Upload>
+                    {previewImage && (
+                        <img
+                            src={previewImage}
+                            alt="Preview"
+                            style={{ marginTop: '16px', width: '40%', maxHeight: '300px', objectFit: 'cover' }}
+                        />
+                    )}
                 </Form.Item>
 
                 {/* Submit Button */}

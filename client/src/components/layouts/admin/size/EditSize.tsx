@@ -7,7 +7,6 @@ const EditSize = () => {
 
     const [tenSize, setTenSize] = useState('');
     const [moTa, setMoTa] = useState('');
-    const [soLuong, setSoLuong] = useState('');
     const [loading, setLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -21,7 +20,6 @@ const EditSize = () => {
                     const size = await response.json();
                     setTenSize(size.data.name);
                     setMoTa(size.data.description);
-                    setSoLuong(size.data.quantity);
                 } else {
                     setErrorMessage('Không thể lấy thông tin size');
                 }
@@ -44,7 +42,6 @@ const EditSize = () => {
         const updatedSize = {
             name: tenSize,
             description: moTa,
-            quantity: parseInt(soLuong),
         };
 
         try {
@@ -104,17 +101,7 @@ const EditSize = () => {
                     />
                 </div>
 
-                <div className="mb-4">
-                    <label htmlFor="soLuong" className="block text-sm font-medium text-gray-700">Số lượng Size:</label>
-                    <input
-                        type="number"
-                        id="soLuong"
-                        value={soLuong}
-                        onChange={(e) => setSoLuong(e.target.value)}
-                        required
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                    />
-                </div>
+                
 
                 <div className="mb-4">
                     <label htmlFor="moTa" className="block text-sm font-medium text-gray-700">Mô Tả:</label>
