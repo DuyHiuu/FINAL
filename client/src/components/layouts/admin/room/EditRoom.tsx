@@ -9,7 +9,7 @@ const EditRoom = () => {
     const showUrl = "http://localhost:8000/api/rooms";
     const { id } = useParams();
     const [form] = Form.useForm();
-    const [imgThumbnailBase64, setImgThumbnailBase64] = useState(null);
+    const [img_thumbnail, setImg_thumbnail] = useState(null);
     const navigate = useNavigate();
     const { sizes } = useFetchSize();
 
@@ -25,7 +25,7 @@ const EditRoom = () => {
                         description: room.description,
                         statusroom: room.statusroom,
                     });
-                    setImgThumbnailBase64(room.img_thumbnail); // Set initial image URL/base64
+                    setImg_thumbnail(room.img_thumbnail); // Set initial image URL/base64
                 } else {
                     message.error('Không thể lấy thông tin phòng');
                 }
@@ -42,7 +42,7 @@ const EditRoom = () => {
             size_id: values.size_id,
             description: values.description,
             statusroom: values.statusroom,
-            img_thumbnail: imgThumbnailBase64, // Send base64 or existing URL
+            img_thumbnail: img_thumbnail,
         };
 
         try {
@@ -70,7 +70,7 @@ const EditRoom = () => {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImgThumbnailBase64(reader.result); // Set base64 string of the image
+                setImg_thumbnail(reader.result);
             };
             reader.readAsDataURL(file);
         }
@@ -134,8 +134,8 @@ const EditRoom = () => {
             </Form.Item>
 
             <Form.Item label="Hình Ảnh Chính">
-                {imgThumbnailBase64 && (
-                    <img src={imgThumbnailBase64} alt="Room Thumbnail" className="h-32 mb-2" />
+                {img_thumbnail && (
+                    <img src={img_thumbnail} alt="Room Thumbnail" className="h-32 mb-2" />
                 )}
                 <input type="file" accept="image/*" onChange={handleImageChange} />
             </Form.Item>

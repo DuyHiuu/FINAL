@@ -146,22 +146,34 @@ class BlogController extends Controller
         $blog->content = $request->content ?? $blog->content;
         $blog->user_id = $request->user_id ?? $blog->user_id;
 
-        // Kiểm tra và cập nhật trường image
-        if ($request->file('image')) {
-            $image = $request->file('image');
-            //            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
-            //            $filePath = $image->storeAs('images', $uniqueFileName, 'public');
-            //            $fullPath = asset('storage/' . $filePath);
-            $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
+        if ($request->image && !str_starts_with($request->image, 'http')) {
+            try {
+                $base64Image = $request->image;
+                if (str_contains($base64Image, ',')) {
+                    $base64Image = explode(',', $base64Image)[1]; 
+                }
+                $image = base64_decode($base64Image);
 
-            $blog->image = $response;
-        } else {
-            // Nếu không có file image mới, giữ nguyên image cũ
-            $blog->image = $request->image ?? $blog->image;
+                // Tạo một file tạm thời từ base64 để upload lên Cloudinary
+                $tmpFilePath = sys_get_temp_dir() . '/' . uniqid() . '.png';
+                file_put_contents($tmpFilePath, $image);
+
+                // Upload file tạm lên Cloudinary
+                $response = Cloudinary::upload($tmpFilePath)->getSecurePath();
+
+                // Cập nhật đường dẫn ảnh mới
+                $blog->image = $response;
+
+                // Lưu lại blog
+                $blog->save();
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Lỗi khi cập nhật ảnh', 'error' => $e->getMessage()], 500);
+            }
+        } elseif ($request->image) {
+            // Nếu chỉ là URL ảnh đã có sẵn, không cần upload lại
+            $blog->image = $request->image;
+            $blog->save();
         }
-
-        // Lưu lại blog đã cập nhật
-        $blog->save();
 
 
         return response()->json(['message' => 'Cập nhật thành công'], 200);

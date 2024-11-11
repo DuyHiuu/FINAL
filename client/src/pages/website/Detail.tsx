@@ -109,7 +109,11 @@ const Detail = () => {
 
   const handleVoucherSelect = (voucher) => {
     if (voucher && voucher.id) {
-      setSelectedVoucher(voucher);
+      if (selectedVoucher?.id === voucher.id) {
+        setSelectedVoucher(null);
+      } else {
+        setSelectedVoucher(voucher);
+      }
     }
   };
 

@@ -9,7 +9,7 @@ const EditBlog = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
-  const [image, setImage] = useState<File | null>(null);
+  const [image, setImage] = useState(null);
   const navigate = useNavigate(); // Để điều hướng trang
 
   useEffect(() => {
@@ -63,6 +63,17 @@ const EditBlog = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md">
       <h2 className="text-2xl font-bold mb-4">Sửa Thông Tin Blog</h2>
@@ -102,11 +113,13 @@ const EditBlog = () => {
       </div>
       <div className="mb-4">
         <label htmlFor="image" className="block text-sm font-medium text-gray-700">Hình Ảnh:</label>
-        <img src={image} alt="" className='h-32' />
+        {image && (
+          <img src={image} alt="image" className="h-32 mb-2" />
+        )}
         <input
           type="file"
           id="image"
-          onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+          onChange={handleImageChange}
           accept="image/*"
           className="mt-1 block w-full text-gray-700 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
         />

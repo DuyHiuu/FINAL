@@ -6,6 +6,7 @@ use App\Http\Resources\ServiceResource;
 use App\Models\Service;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -136,27 +137,40 @@ class ServiceController extends Controller
             return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
         }
 
-        if ($request->hasFile('image')) {
-            if ($service->image && Storage::disk('public')->exists($service->image)) {
-                Storage::disk('public')->delete($service->image);
+        $service->update($request->except('image'));
+
+        if ($request->image && !str_starts_with($request->image, 'http')) {
+            try {
+                // Decode base64 nếu không có tiền tố "data:image/..."
+                $base64Image = $request->image;
+                if (str_contains($base64Image, ',')) {
+                    $base64Image = explode(',', $base64Image)[1]; // Loại bỏ tiền tố nếu có
+                }
+                $image = base64_decode($base64Image);
+    
+                // Tạo một file tạm thời từ base64 để upload lên Cloudinary
+                $tmpFilePath = sys_get_temp_dir() . '/' . uniqid() . '.png';
+                file_put_contents($tmpFilePath, $image);
+    
+                // Upload file tạm lên Cloudinary
+                $response = Cloudinary::upload($tmpFilePath)->getSecurePath();
+    
+                // Cập nhật đường dẫn ảnh mới
+                $service->image = $response;
+    
+                // Lưu lại room
+                $service->save();
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Lỗi khi cập nhật ảnh', 'error' => $e->getMessage()], 500);
             }
-            $filepath = $request->file('image')->store('uploads/services', 'public');
-
-            $fileUrl = Storage::url($filepath);
-        } else {
-
-            $filepath = $service->image;
-
-            $fileUrl = Storage::url($filepath);
+        } elseif ($request->image) {
+            // Nếu chỉ là URL ảnh đã có sẵn, không cần upload lại
+            $service->image = $request->image;
+            $service->save();
         }
 
-        $param['image'] = $filepath;
-
-        $service->update($param);
-
         return response()->json([
-            'message' => 'Cập nhập thành công',
-            'image_url' => $fileUrl
+            'message' => 'Cập nhập thành công'
         ], 200);
     }
 
