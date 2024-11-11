@@ -11,7 +11,7 @@ class Room extends Model
     use HasFactory, SoftDeletes;
     protected $table = 'rooms';
 
-    protected $fillable = ['price', 'description', 'statusroom', 'size_id', 'img_thumbnail','quantity'];
+    protected $fillable = ['price', 'description', 'statusroom', 'size_id', 'img_thumbnail', 'quantity'];
 
 
     public function comments()
@@ -27,5 +27,17 @@ class Room extends Model
     public function roomImages()
     {
         return $this->hasMany(Room_Image::class);
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function averageRating()
+    {
+        // Kiểm tra xem phòng có đánh giá không để tránh lỗi chia cho 0
+        $average = $this->ratings()->avg('rating');
+        return $average ? round($average, 1) : null; // làm tròn 1 chữ số thập phân
     }
 }

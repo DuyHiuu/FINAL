@@ -8,6 +8,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymethodController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomImageController;
@@ -154,4 +155,12 @@ Route::prefix('roomImages')->group(function () {
     Route::get('/{id}', [RoomImageController::class, 'show']);
     Route::put('/{id}', [RoomImageController::class, 'update']);
     Route::delete('/{id}', [RoomImageController::class, 'destroy']);
+});
+
+Route::prefix('ratings')->group(function () {
+    Route::get('/', [RatingController::class, 'index']);
+    Route::post('/', [RatingController::class, 'store']);
+    Route::get('/{id}', [RatingController::class, 'show']);
+    Route::put('/{id}', [RatingController::class, 'update']);
+    Route::delete('/{id}', [RatingController::class, 'destroy']);
 });
