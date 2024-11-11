@@ -80,11 +80,11 @@ const ListService = () => {
     },
     {
       title: "Ảnh",
-      dataIndex: "img_thumbnail",
-      key: "img_thumbnail",
-      render: (img) => (
+      dataIndex: "image",
+      key: "image",
+      render: (image) => (
         <img
-          src={img}
+          src={image}
           alt="service"
           className="w-20 h-20 object-cover rounded"
         />

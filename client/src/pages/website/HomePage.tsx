@@ -218,7 +218,7 @@ const HomePage = () => {
       <h2 className="text-2xl font-semibold mt-12">Một số hình ảnh của PetHouse</h2>
       <Row gutter={[16, 16]} justify="center" className="mt-6">
         {room?.slice(0, 3).map((item: any) => (
-          <Col key={room.id} xs={24} sm={12} md={8} lg={6}>
+          <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
             <Card
               cover={<img alt={item.size_name} src={item.img_thumbnail} className="h-[250px]" />}
               hoverable
@@ -240,7 +240,7 @@ const HomePage = () => {
       <p>Các dịch vụ  thực hiện bởi các nhân viên được đào tạo bài bản, có chứng chỉ hành nghề</p>
       <Row gutter={[16, 16]} justify="center" className="mt-6">
         {service?.slice(0, 3).map((item: any) => (
-          <Col key={service.id} xs={24} sm={12} md={8} lg={6}>
+          <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
             <Card
               cover={<img alt={item.name} src={item.image} />}
               hoverable
@@ -255,7 +255,7 @@ const HomePage = () => {
       <h2 className="text-2xl font-semibold mt-12">Blog</h2>
       <Row gutter={[16, 16]} justify="center" className="mt-6">
         {blog?.slice(0, 3).map((item: any) => (
-          <Col key={service.id} xs={24} sm={12} md={8} lg={6}>
+          <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
             <Card
               cover={<img alt={item.title} src={item.image} />}
               hoverable
