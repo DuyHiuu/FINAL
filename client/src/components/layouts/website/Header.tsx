@@ -111,12 +111,12 @@ const AppHeader = () => {
             <Dropdown
               overlay={userMenu}
               trigger={["click"]}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 bg-[#064749]"
             >
               <Button
                 type="primary"
                 icon={<DownOutlined />}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 bg-[#064749]"
               >
                 <Avatar>{userName[0]}</Avatar>
               </Button>
@@ -124,10 +124,10 @@ const AppHeader = () => {
           ) : (
             <>
               <Link to="/register">
-                <Button type="link">Đăng ký</Button>
+                <Button type="link" className="text-[#064749]">Đăng ký</Button>
               </Link>
               <Link to="/login">
-                <Button type="primary">Đăng nhập</Button>
+                <Button type="primary" className="bg-[#064749]">Đăng nhập</Button>
               </Link>
             </>
           )}

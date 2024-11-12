@@ -230,7 +230,7 @@ const HomePage = () => {
 
       {/* Rooms & Blogs */}
       <div className="mt-12 w-full text-center">
-        <Button type="primary" onClick={handleClickDanhsachphong} className="mr-4">
+        <Button type="primary" onClick={handleClickDanhsachphong} className="mr-4 bg-[#064749]">
           Xem danh sách phòng
         </Button>
       </div>
@@ -268,7 +268,7 @@ const HomePage = () => {
 
       {/* Rooms & Blogs */}
       <div className="mt-12 w-full text-center">
-        <Button type="primary" onClick={handleClickDocthem}>
+        <Button type="primary" onClick={handleClickDocthem} className="bg-[#064749]">
           Đọc thêm
         </Button>
       </div>

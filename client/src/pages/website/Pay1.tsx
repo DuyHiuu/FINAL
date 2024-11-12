@@ -118,7 +118,7 @@ const Pay1 = () => {
           type="primary"
           size="large"
           onClick={toPay}
-          style={{ marginTop: '20px', width: '150px' }}
+          style={{ marginTop: '20px', width: '150px',backgroundColor:'#064749' }}
         >
           Thanh Toán
         </Button>

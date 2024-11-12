@@ -376,7 +376,7 @@ const Detail = () => {
             <Button
               type="primary"
               htmlType="submit"
-              className="w-full py-2 mt-4 text-sm font-medium rounded-md"
+              className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
             >
               Đặt phòng
             </Button>
