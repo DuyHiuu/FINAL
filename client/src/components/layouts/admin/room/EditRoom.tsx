@@ -24,6 +24,7 @@ const EditRoom = () => {
                         size_id: room.size_id,
                         description: room.description,
                         statusroom: room.statusroom,
+                        quantity: room.quantity
                     });
                     setImg_thumbnail(room.img_thumbnail); // Set initial image URL/base64
                 } else {
@@ -42,6 +43,7 @@ const EditRoom = () => {
             size_id: values.size_id,
             description: values.description,
             statusroom: values.statusroom,
+            quantity: values.quantity,
             img_thumbnail: img_thumbnail,
         };
 
@@ -108,6 +110,18 @@ const EditRoom = () => {
                         </Select.Option>
                     ))}
                 </Select>
+            </Form.Item>
+
+            <Form.Item
+                label="Số lượng"
+                name="quantity"
+                rules={[{ required: true, message: 'Vui lòng nhập số lượng phòng!' }]}
+            >
+                <InputNumber
+                    style={{ width: '100%' }}
+                    placeholder="Nhập số lượng phòng"
+                    min={0}
+                />
             </Form.Item>
 
             <Form.Item

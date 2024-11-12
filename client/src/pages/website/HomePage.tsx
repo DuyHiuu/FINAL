@@ -115,23 +115,25 @@ const HomePage = () => {
 
   const ReviewsSection = () => {
     const { comments, loading, error } = useFetchComments();
+    console.log(comments);
+
 
     return (
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold mt-10">Đánh giá</h1>
         <p className="text-lg text-center mt-2">Một số đánh giá tiêu biểu</p>
         <div className="flex flex-wrap justify-center mt-6">
-          {loading && <Spin />}
+          {loading}
           {error && <p>Error: {error}</p>}
-          {comments.slice(0, 3).map((comment, index) => (
+          {comments?.slice(0, 3).map((comment) => (
             <Card
-              key={index}
-              title={comment.content}
+              key={comment?.id}
+              title={comment?.content}
               bordered={false}
               style={{ width: 350, marginBottom: 16 }}
               className="bg-[#F2F0F2] text-center"
             >
-              <p className="text-sm">Mô tả thêm về dịch vụ này.</p>
+              <p className="text-sm">-{comment?.user?.name}-</p>
             </Card>
           ))}
         </div>
