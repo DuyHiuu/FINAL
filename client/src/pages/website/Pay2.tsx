@@ -212,7 +212,7 @@ const Pay2 = () => {
                 </div>
 
                 <div className="text-center">
-                    <Button type="primary" htmlType="submit" className="mt-20">
+                    <Button type="primary" htmlType="submit" className="mt-20 bg-[#064749]">
                         Xác nhận
                     </Button>
                 </div>
@@ -253,7 +253,7 @@ const Pay2 = () => {
 
                     <div className="text-right">
                         <Text strong>Tổng tiền: </Text>
-                        <Text className="text-[#FF0000]">{total_amount.toLocaleString()} VNĐ</Text>
+                        <Text className="font-bold">{total_amount.toLocaleString()} VNĐ</Text>
                     </div>
                 </Card>
             </div>
