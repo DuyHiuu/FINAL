@@ -25,7 +25,7 @@ class VoucherController extends Controller
      */
     public function create()
     {
-        //phamtien
+      
     }
 
     /**
@@ -137,6 +137,7 @@ class VoucherController extends Controller
                 'start_date' => 'required|date|before:end_date',
                 'end_date' => 'required|date|after:start_date',
                 'quantity' => 'required|numeric|min:0',
+                'min_total_amount' => 'required|numeric|min:0',
         ],[
             'name.required' =>'Tên không được để trống',
             'name.max' => 'Tên không được vượt quá 255 kí tự',
@@ -153,6 +154,9 @@ class VoucherController extends Controller
             'quantity.required' => 'Số lượng không được để trống',
             'quantity.numeric' => 'Số lượng phải là số',
             'quantity.min' => 'Số lượng phải lớn hơn hoặc bằng 0',
+            'min_total_amount.required' => 'Tổng tiền tối thiểu không được bỏ trống',
+            'min_total_amount.numeric' => 'Tổng tiền tối thiểu phải là số',
+            'min_total_amount.min' => 'Tổng tiền tối thiểu phải lớn hơn hoặc bằng 0',
             ]
         );
 
@@ -175,5 +179,14 @@ class VoucherController extends Controller
         return response()->json([
             "message" => "Xóa thành công"
         ]);
+    }
+
+    public function paymentVoucher(Request $request)
+    {
+        $vouchers = Voucher::where('is_active', true)
+                    ->where('min_total_amount', '<', $request->total_amount)
+                    ->get();
+
+    return response()->json($vouchers);
     }
 }

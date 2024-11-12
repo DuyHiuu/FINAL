@@ -96,7 +96,6 @@ class PaymentController extends Controller
 
         $subTotal_service = 0;
         $subTotal_room = 0;
-        $subTotal_voucher = 0;
 
         foreach ($payments as $payment) {
             $booking = $payment->booking; // Lấy booking từ mỗi payment
@@ -115,23 +114,18 @@ class PaymentController extends Controller
                 if ($booking->services->isNotEmpty()) {
                     foreach ($booking->services as $service) {
                         // Tính tổng tiền dịch vụ và nhân với số lượng từ pivot table
-                        $subTotal_service += $service->price * $service->pivot->quantity;
+                        $subTotal_service += $service->price;
                     }
-                }
-                // Kiểm tra xem có voucher hay không và áp dụng giảm giá
-                if ($booking->voucher) {
-                    $subTotal_voucher += $booking->voucher->discount;
                 }
             }
         }
         $payment_method = $payment->paymethod;
 
-        $totalAmount = ($subTotal_service + $subTotal_room) - $subTotal_voucher;
+        $totalAmount = $subTotal_service + $subTotal_room;
 
         return response()->json([
             'subTotal_service' => $subTotal_service,
             'subTotal_room' => $subTotal_room,
-            'subTotal_voucher' => $subTotal_voucher,
             'totalAmount' => $totalAmount,
             'payment_method' =>   $payment_method
         ]);

@@ -46,24 +46,14 @@ class BookingController extends Controller
             }
         }
 
-        $subTotal_voucher = 0;
-
-
-        if ($booking->voucher_id) {
-            $voucher = Voucher::find($booking->voucher_id);
-            if ($voucher) {
-                $subTotal_voucher = $voucher->discount;
-            }
-        }
 
         //Tính tổng tiền
-        $totalamount = $booking->total_amount = $subTotal_room + $subTotal_service - $subTotal_voucher;
+        $totalamount = $booking->total_amount = $subTotal_room + $subTotal_service;
 
         return response()->json([
             'booking' => $booking,
             'subTotal_service' => $subTotal_service,
             'subTotal_room' => $subTotal_room,
-            'subTotal_voucher' => $subTotal_voucher,
             'total_amount' => $totalamount,
             'room_id'=> $booking->room_id,
             'start_date' => $booking->start_date,
