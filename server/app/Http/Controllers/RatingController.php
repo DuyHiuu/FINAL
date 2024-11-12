@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rating;
+use App\Models\Room;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class RatingController extends Controller
 {
@@ -32,27 +36,96 @@ class RatingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, $room_id)
+    // public function store(Request $request, $room_id)
+    // {
+    //     $request->validate([
+    //         'rating' => 'required|integer|min:1|max:5',
+    //     ]);
+
+    //     // Kiểm tra xem người dùng đã đánh giá phòng này chưa
+    //     $existingRating = Rating::where('room_id', $room_id)->where('user_id', auth()->id())->first();
+    //     if ($existingRating) {
+    //         // Cập nhật đánh giá nếu người dùng đã đánh giá
+    //         $existingRating->update(['rating' => $request->rating]);
+    //     } else {
+    //         // Tạo mới nếu người dùng chưa đánh giá
+    //         Rating::create([
+    //             'room_id' => $room_id,
+    //             'user_id' => auth()->id(),
+    //             'rating' => $request->rating,
+    //         ]);
+    //     }
+
+    //     return response()->json(['status' => 'success', 'message' => 'Đánh giá thành công!']);
+    // }
+
+    public function store(Request $request)
     {
-        $request->validate([
+        // Xác thực dữ liệu
+        $validator = Validator::make($request->all(), [
             'rating' => 'required|integer|min:1|max:5',
+            'content' => 'required|string|max:1000',
+            'room_id' => 'required|integer|exists:rooms,id', // Đảm bảo room_id được cung cấp và tồn tại
         ]);
 
-        // Kiểm tra xem người dùng đã đánh giá phòng này chưa
-        $existingRating = Rating::where('room_id', $room_id)->where('user_id', auth()->id())->first();
-        if ($existingRating) {
-            // Cập nhật đánh giá nếu người dùng đã đánh giá
-            $existingRating->update(['rating' => $request->rating]);
-        } else {
-            // Tạo mới nếu người dùng chưa đánh giá
-            Rating::create([
-                'room_id' => $room_id,
-                'user_id' => auth()->id(),
-                'rating' => $request->rating,
-            ]);
+        // Nếu xác thực thất bại, trả về lỗi
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        return response()->json(['status' => 'success', 'message' => 'Đánh giá thành công!']);
+        if ($request->isMethod('POST')) {
+            DB::beginTransaction(); // Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+
+            try {
+                $params = $request->all();
+                $user = User::find($params['user_id']);
+
+                // Kiểm tra người dùng có tồn tại không
+                if (!$user) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Người dùng không hợp lệ.'
+                    ], 404);
+                }
+
+                // Tạo mới một rating
+                $rating = new Rating();
+                $rating->rating = $params['rating'];
+                $rating->content = $params['content'];
+                $rating->user_id = $user->id;
+
+                // Kiểm tra và gán room_id nếu có
+                if (!empty($params['room_id'])) {
+                    $room = Room::find($params['room_id']);
+                    if ($room) {
+                        $rating->room_id = $room->id;
+                    } else {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Phòng không tồn tại.'
+                        ], 404);
+                    }
+                }
+
+                // Lưu rating vào cơ sở dữ liệu
+                $rating->save();
+
+                DB::commit(); // Hoàn thành transaction
+
+                return response()->json([
+                    'status' => 'Thành công',
+                    'message' => 'Đánh giá đã được lưu thành công',
+                    'rating' => $rating
+                ], 201);
+            } catch (\Exception $e) {
+                DB::rollBack(); // Rollback nếu có lỗi
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Xảy ra lỗi trong quá trình đánh giá. Vui lòng thử lại!',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+        }
     }
 
     /**
@@ -92,7 +165,38 @@ class RatingController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Xác thực dữ liệu đầu vào
+        $validator = Validator::make($request->all(), [
+            'rating' => 'required|integer|min:1|max:5',
+            'content' => 'required|string|max:1000',
+        ]);
+
+        // Nếu xác thực thất bại, trả về lỗi
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Tìm đánh giá dựa trên ID
+        $rating = Rating::find($id);
+
+        // Kiểm tra nếu đánh giá không tồn tại
+        if (!$rating) {
+            return response()->json([
+                'message' => 'Không tìm thấy đánh giá cho phòng này!'
+            ], 404);
+        }
+
+        // Cập nhật nội dung đánh giá
+        $rating->rating = $request->input('rating');
+        $rating->content = $request->input('content');
+        $rating->save();
+
+        // Trả về phản hồi thành công
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Cập nhật đánh giá thành công!',
+            'rating' => $rating
+        ], 200);
     }
 
     /**

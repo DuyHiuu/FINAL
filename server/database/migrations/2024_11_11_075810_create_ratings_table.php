@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('room_id');
             $table->unsignedBigInteger('user_id');
             $table->tinyInteger('rating')->unsigned(); // Đánh giá từ 1-5 sao
+            $table->text('content')->nullable();
             $table->timestamps();
 
             // Foreign keys
