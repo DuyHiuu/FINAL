@@ -17,7 +17,6 @@ class Booking extends Model
         'quantity_service',
         'room_id',
         'service_id',
-        'voucher_id',
     ];
 
     // Quan hệ với bảng Rooms
@@ -30,12 +29,6 @@ class Booking extends Model
     public function services()
 {
     return $this->belongsToMany(Service::class, 'booking_services');
-}
-
-
-public function voucher()
-{
-    return $this->belongsTo(Voucher::class);
 }
 
 }
