@@ -10,7 +10,7 @@ class Rating extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['room_id', 'user_id', 'rating'];
+    protected $fillable = ['room_id', 'user_id', 'rating', 'content'];
 
     // Quan hệ với model Room
     public function room()
