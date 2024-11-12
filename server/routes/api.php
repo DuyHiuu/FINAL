@@ -89,6 +89,7 @@ Route::prefix('services')->group(function () {
 
 Route::prefix('vouchers')->group(function () {
     Route::get('/', [VoucherController::class, 'index']);
+    Route::get('/listVoucher', [VoucherController::class, 'paymentVoucher']);
     Route::post('/', [VoucherController::class, 'store']);
     Route::get('/{id}', [VoucherController::class, 'show']);
     Route::put('/{id}', [VoucherController::class, 'update']);
