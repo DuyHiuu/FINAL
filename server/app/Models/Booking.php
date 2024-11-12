@@ -30,5 +30,4 @@ class Booking extends Model
 {
     return $this->belongsToMany(Service::class, 'booking_services');
 }
-
 }
