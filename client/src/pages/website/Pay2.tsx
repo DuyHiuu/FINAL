@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker } from 'antd';
+import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker, Modal, Checkbox } from 'antd';
 import useFetchPayMethod from '../../api/useFetchPayMethod';
 import { PulseLoader } from 'react-spinners';
 import moment from 'moment';
+import useFetchVoucher from '../../api/useFetchVoucher';
+import { TagOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
@@ -66,6 +68,7 @@ const Pay2 = () => {
     const [user_address, setUser_address] = useState("");
     const [user_email, setUser_email] = useState("");
     const [user_phone, setUser_phone] = useState("");
+    const [voucher_id, setVoucher_id] = useState<number[]>([]);
 
     useEffect(() => {
         const user_idFromStorage = localStorage.getItem("user_id");
@@ -94,6 +97,24 @@ const Pay2 = () => {
         }
     }, [user_id]);
 
+    const { vouchers } = useFetchVoucher();
+
+    const [voucherPopUp, setVoucherPopUp] = useState(false);
+    const [selectedVoucher, setSelectedVoucher] = useState(null);
+
+    const openVoucherPopUp = () => setVoucherPopUp(true);
+    const closeVoucherPopUp = () => setVoucherPopUp(false);
+
+    const handleVoucherSelect = (voucher) => {
+        if (voucher && voucher.id) {
+            if (selectedVoucher?.id === voucher.id) {
+                setSelectedVoucher(null);
+            } else {
+                setSelectedVoucher(voucher);
+            }
+        }
+    };
+
     const addPay = "http://localhost:8000/api/payments";
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -112,6 +133,10 @@ const Pay2 = () => {
         formData.append("paymethod_id", paymethod_id);
         formData.append("total_amount", total_amount);
 
+        if (selectedVoucher && selectedVoucher.id) {
+            formData.append("voucher_id", selectedVoucher.id ? selectedVoucher.id.toString() : "");
+        }
+        
         try {
             const response = await fetch(`${addPay}`, {
                 method: "POST",
@@ -194,9 +219,39 @@ const Pay2 = () => {
                     </Select>
                 </Form.Item>
 
+                {/* Voucher Selection */}
+                <div className="mt-4">
+                    <label className="block text-black text-sm font-bold">Chọn voucher</label>
+                    <Button onClick={openVoucherPopUp} className="w-full mt-1 text-sm">
+                        <TagOutlined />
+                        <span>{selectedVoucher ? selectedVoucher.code : "Voucher"}</span>
+                    </Button>
+                </div>
+
+                {/* Voucher Modal */}
+                <Modal
+                    title="Các voucher dành cho bạn"
+                    open={voucherPopUp}
+                    onCancel={closeVoucherPopUp}
+                    footer={null}
+                >
+                    <div className="space-y-2">
+                        {vouchers.map((voucher) => (
+                            <div key={voucher.id} className="flex items-center">
+                                <Checkbox
+                                    checked={selectedVoucher?.id === voucher.id}
+                                    onChange={() => handleVoucherSelect(voucher)}
+                                >
+                                    {voucher.name}
+                                </Checkbox>
+                            </div>
+                        ))}
+                    </div>
+                </Modal>
+
                 {/* Payment Method */}
                 <div className="mt-10">
-                    <Title level={2}>Phương thức thanh toán</Title>
+                    <p className='block text-black text-sm font-bold'>Phương thức thanh toán</p>
                     <Form.Item>
                         <Select
                             value={paymethod_id}

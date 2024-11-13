@@ -96,18 +96,14 @@ const Pay1 = () => {
               <div style={{ marginTop: '10px' }} />
               <Text className="d-block mt-2">Phí dịch vụ:</Text>
               <div style={{ marginTop: '10px' }} />
-              <Text className="d-block mt-2">Giảm giá:</Text>
-              <div style={{ marginTop: '10px' }} />
               <Text className="d-block mt-2 font-bold">Tổng:</Text>
             </Col>
             <Col span={12} style={{ textAlign: 'right' }}>
               <Text>{booking?.subTotal_room?.toLocaleString("vi-VN")} VNĐ</Text>
               <div style={{ marginTop: '10px' }} />
               <Text className="d-block mt-2 mb-10">
-                {booking?.subTotal_service === 0 ? "Không sử dụng dịch vụ" : booking?.subTotal_service.toLocaleString("vi-VN")} VNĐ
+                {booking?.subTotal_service === 0 ? "0" : booking?.subTotal_service.toLocaleString("vi-VN")} VNĐ
               </Text>
-              <div style={{ marginTop: '10px' }} />
-              <Text>{booking?.subTotal_voucher?.toLocaleString("vi-VN")} VNĐ</Text>
               <div style={{ marginTop: '10px' }} />
               <Text className="font-bold">{booking?.total_amount?.toLocaleString("vi-VN")} VNĐ</Text>
             </Col>
@@ -118,7 +114,7 @@ const Pay1 = () => {
           type="primary"
           size="large"
           onClick={toPay}
-          style={{ marginTop: '20px', width: '150px',backgroundColor:'#064749' }}
+          style={{ marginTop: '20px', width: '150px', backgroundColor: '#064749' }}
         >
           Thanh Toán
         </Button>

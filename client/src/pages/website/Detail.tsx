@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import useFetchServices from "../../api/useFetchServices";
 import { PulseLoader } from "react-spinners";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
-import { TagOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -18,7 +17,6 @@ import {
 } from "antd";
 import moment from "moment";
 import TextArea from "antd/es/input/TextArea";
-import useFetchVoucher from "../../api/useFetchVoucher";
 
 const Detail = () => {
   const { service } = useFetchServices();
@@ -99,26 +97,6 @@ const Detail = () => {
     });
   };
 
-  const { vouchers } = useFetchVoucher();
-
-  const [voucherPopUp, setVoucherPopUp] = useState(false);
-  const [selectedVoucher, setSelectedVoucher] = useState(null);
-
-  const openVoucherPopUp = () => setVoucherPopUp(true);
-  const closeVoucherPopUp = () => setVoucherPopUp(false);
-
-  const handleVoucherSelect = (voucher) => {
-    if (voucher && voucher.id) {
-      if (selectedVoucher?.id === voucher.id) {
-        setSelectedVoucher(null);
-      } else {
-        setSelectedVoucher(voucher);
-      }
-    }
-  };
-
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -135,10 +113,6 @@ const Detail = () => {
     formData.append("room_id", room_id);
     formData.append("start_date", start_date);
     formData.append("end_date", end_date);
-
-    if (selectedVoucher && selectedVoucher.id) {
-      formData.append("voucher_id", selectedVoucher.id ? selectedVoucher.id.toString() : "");
-    }
 
     try {
       const response = await fetch(`${API_URL}/bookings`, {
@@ -364,15 +338,6 @@ const Detail = () => {
               </div>
             </div>
 
-            {/* Voucher Selection */}
-            <div className="mt-4">
-              <label className="block text-black text-sm font-bold">Chọn voucher</label>
-              <Button onClick={openVoucherPopUp} className="w-full mt-1 text-sm">
-                <TagOutlined />
-                <span>{selectedVoucher ? selectedVoucher.name : "Voucher"}</span>
-              </Button>
-            </div>
-
             <Button
               type="primary"
               htmlType="submit"
@@ -380,27 +345,7 @@ const Detail = () => {
             >
               Đặt phòng
             </Button>
-
-            {/* Voucher Modal */}
-            <Modal
-              title="Các voucher dành cho bạn"
-              open={voucherPopUp}
-              onCancel={closeVoucherPopUp}
-              footer={null}
-            >
-              <div className="space-y-2">
-                {vouchers.map((voucher) => (
-                  <div key={voucher.id} className="flex items-center">
-                    <Checkbox
-                      checked={selectedVoucher?.id === voucher.id}
-                      onChange={() => handleVoucherSelect(voucher)}
-                    >
-                      {voucher.name}
-                    </Checkbox>
-                  </div>
-                ))}
-              </div>
-            </Modal>
+            
           </div>
 
         </div>
