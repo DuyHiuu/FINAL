@@ -133,8 +133,8 @@ class RatingController extends Controller
      */
     public function show(string $id)
     {
-        // Lấy danh sách đánh giá cho room_id cụ thể, cùng với thông tin người dùng
-        $ratings = Rating::where('room_id', $id)->with('user')->get();
+        // Lấy danh sách đánh giá cho room_id cụ thể, cùng với thông tin room
+        $ratings = Rating::where('room_id', $id)->with('room')->get();
 
         // Kiểm tra nếu không có đánh giá nào cho room_id
         if ($ratings->isEmpty()) {
