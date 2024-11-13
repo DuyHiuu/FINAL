@@ -245,14 +245,16 @@ class PaymentController extends Controller
                     }
 
                      $totalAmount = max(0, $total_amount - $discount);
-                    }
 
+                     
                       // Thêm tổng tiền vào params trước khi tạo payment
                       $params['total_amount'] = $totalAmount;
+                    }else{
+                        $params['total_amount'] = $total_amount;
+                    }
+
                 }
                 
-                $params['total_amount'] = $total_amount;
-
                 // Mặc định status_id = 1 khi thêm 
                 $params['status_id'] = $params['status_id'] ?? 1;
 
@@ -265,10 +267,9 @@ class PaymentController extends Controller
                 $room = $booking->room;
 
                 if($room->quantity > 0){
-                    $room->decrement('quantity', 1);
+                    $room->increment('is_booked', 1);
 
-                    // nếu số lượng bằng 0 thì thay đổi trạng thái hết phòng
-                    if($room->quantity === 0){
+                    if($room->quantity === $room->is_booked){
                         $room->update(['statusroom' => 'Hết phòng']);
                     }
                 } else {
