@@ -25,10 +25,15 @@ class Booking extends Model
         return $this->belongsTo(Room::class);
     }
 
+    // Quan hệ với bảng User
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     // Quan hệ với bảng Services
     public function services()
-{
-    return $this->belongsToMany(Service::class, 'booking_services');
-}
-
+    {
+        return $this->belongsToMany(Service::class, 'booking_services');
+    }
 }
