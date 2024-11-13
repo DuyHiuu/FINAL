@@ -29,17 +29,17 @@ class UpdateRoomQuantity extends Command
             // Cập nhật `is_processed` thành true cho các payments này
             Payment::whereIn('id', $payments->pluck('id'))->update(['is_processed' => true]);
 
-            // Tăng số lượng phòng
+            // Trừ số lượng phòng đã đặt
             foreach ($payments as $payment) {
                 if ($payment->booking && $payment->booking->room) {
                     $room = $payment->booking->room;
-                   // Kiểm tra trước khi tăng số lượng phòng
-                   if ($room && isset($room->quantity)) {
+                   
+                   if ($room && isset($room->is_booked)) {
                     // Tăng số lượng phòng
-                    $room->increment('quantity', 1);
+                    $room->decrement('is_booked', 1);
 
                     // Kiểm tra và cập nhật trạng thái phòng nếu số lượng lớn hơn 0
-                    if ($room->quantity > 0) {
+                    if ($room->quantity > $room->is_booked) {
                         $room->statusroom = 'Còn phòng';
                         $room->save();
                         $this->info("Cập nhật trạng thái phòng ID {$room->id} thành 'Còn phòng'.");

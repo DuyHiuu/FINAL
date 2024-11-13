@@ -11,7 +11,7 @@ class Room extends Model
     use HasFactory, SoftDeletes;
     protected $table = 'rooms';
 
-    protected $fillable = ['price', 'description', 'statusroom', 'size_id', 'img_thumbnail', 'quantity'];
+    protected $fillable = ['price', 'description', 'statusroom', 'size_id', 'img_thumbnail', 'quantity', 'is_booked'];
 
 
     public function comments()
