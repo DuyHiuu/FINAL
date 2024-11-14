@@ -38,6 +38,7 @@ class VoucherController extends Controller
             $request->all(),[
                 'name' =>'required|max:255',
                 'code' => 'required|unique:vouchers,code',
+                'type' => 'required',
                 'discount' => 'required|numeric|min:0',
                 'start_date' => 'required|date|before:end_date',
                 'end_date' => 'required|date|after:start_date',
@@ -48,6 +49,7 @@ class VoucherController extends Controller
             'name.max' => 'Tên không được vượt quá 255 kí tự',
             'code.required' => 'Mã phiếu không được để trống',
             'code.unique' => 'Mã phiếu không được phép trùng nhau',
+            'type.required' => 'Loại phiếu không được để trống',
             'discount.required' => 'Mức giảm không được để trống',
             'discount.numeric' => 'Mức giảm phải là số',
             'discount.min' => 'Mức giảm phải lớn hơn hoặc bằng 0',
@@ -133,6 +135,7 @@ class VoucherController extends Controller
             $request->all(),[
                 'name' =>'required|max:255',
                 'code' => 'required',
+                'type' => 'required',
                 'discount' => 'required|numeric|min:0',
                 'start_date' => 'required|date|before:end_date',
                 'end_date' => 'required|date|after:start_date',
@@ -142,6 +145,7 @@ class VoucherController extends Controller
             'name.required' =>'Tên không được để trống',
             'name.max' => 'Tên không được vượt quá 255 kí tự',
             'code.required' => 'Mã phiếu không được để trống',
+            'type.required' => 'Loại phiếu không được để trống',
             'discount.required' => 'Mức giảm không được để trống',
             'discount.numeric' => 'Mức giảm phải là số',
             'discount.min' => 'Mức giảm phải lớn hơn hoặc bằng 0',

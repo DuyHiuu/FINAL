@@ -310,7 +310,7 @@ const Detail = () => {
           </div>
 
           {/* Phần đặt phòng */}
-          <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-[250px]">
+          <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-[200px]">
             <h2 className="text-xl font-semibold text-gray-800">
               {room?.price?.toLocaleString("vi-VN")} VNĐ / ngày
             </h2>
@@ -345,7 +345,7 @@ const Detail = () => {
             >
               Đặt phòng
             </Button>
-            
+
           </div>
 
         </div>
