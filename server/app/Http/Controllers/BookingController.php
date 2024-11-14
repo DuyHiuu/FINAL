@@ -38,11 +38,17 @@ class BookingController extends Controller
 
         $subTotal_room = $days * $room->price;
 
-        //Tính tổng tiền dịch vụ
         if ($booking->services && $booking->services->isNotEmpty()) {
             foreach ($booking->services as $item) {
-                // Tính tổng tiền cho từng dịch vụ và cộng dồn
-                $subTotal_service += $item->price;
+                if($item->id === 2){
+                    // Tính quantity dựa trên days, đảm bảo quantity không dưới 1
+                    $quantity = max(1, floor($days / 3));
+
+                    $subTotal_service += $item->price * $quantity;
+                } else {
+                    // Tính tổng tiền cho các dịch vụ còn lại
+                    $subTotal_service += $item->price;
+                }
             }
         }
 

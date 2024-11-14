@@ -198,11 +198,17 @@ class PaymentController extends Controller
                     $subTotal_room += $booking->room->price * $days;
 
 
-                    // Tính tổng tiền cho các dịch vụ trong booking
-                    if ($booking->services->isNotEmpty()) {
-                        foreach ($booking->services as $service) {
-                            // Tính tổng tiền dịch vụ và nhân với số lượng từ pivot table
-                            $subTotal_service += $service->price;
+                    if ($booking->services && $booking->services->isNotEmpty()) {
+                        foreach ($booking->services as $item) {
+                            if($item->id === 2){
+                                // Tính quantity dựa trên days, đảm bảo quantity không dưới 1
+                                $quantity = max(1, floor($days / 3));
+
+                                $subTotal_service += $item->price * $quantity;
+                            } else {
+                                // Tính tổng tiền cho các dịch vụ còn lại
+                                $subTotal_service += $item->price;
+                            }
                         }
                     }
 
