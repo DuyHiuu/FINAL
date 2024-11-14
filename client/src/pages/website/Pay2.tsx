@@ -136,7 +136,7 @@ const Pay2 = () => {
         if (selectedVoucher && selectedVoucher.id) {
             formData.append("voucher_id", selectedVoucher.id ? selectedVoucher.id.toString() : "");
         }
-        
+
         try {
             const response = await fetch(`${addPay}`, {
                 method: "POST",
@@ -151,6 +151,22 @@ const Pay2 = () => {
             console.error("API connection error:", error);
         }
     };
+
+    let finalAmount = total_amount;
+
+    if (selectedVoucher) {
+        if (selectedVoucher.type === 'amount') {
+            // Giảm giá theo số tiền cố định
+            finalAmount -= selectedVoucher.discount;
+        } else if (selectedVoucher.type === '%') {
+            // Giảm giá theo phần trăm
+            finalAmount -= (total_amount * selectedVoucher.discount) / 100;
+        }
+    }
+
+    if (finalAmount < 0) {
+        finalAmount = 0;
+    }
 
     const [loading, setLoading] = useState(true);
 
@@ -308,7 +324,7 @@ const Pay2 = () => {
 
                     <div className="text-right">
                         <Text strong>Tổng tiền: </Text>
-                        <Text className="font-bold">{total_amount.toLocaleString()} VNĐ</Text>
+                        <Text className="font-bold">{finalAmount.toLocaleString()} VNĐ</Text>
                     </div>
                 </Card>
             </div>

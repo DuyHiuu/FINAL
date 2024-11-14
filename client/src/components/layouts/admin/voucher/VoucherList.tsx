@@ -76,10 +76,15 @@ const VoucherList = () => {
       key: "code",
     },
     {
+      title: "Loại",
+      dataIndex: "type",
+      key: "type",
+    },
+    {
       title: "Giảm giá",
       dataIndex: "discount",
       key: "discount",
-      render: (text) => `${text.toLocaleString("vi-VN")} VND`, // Định dạng tiền tệ
+      render: (text) => `${text.toLocaleString("vi-VN")}`,
     },
     {
       title: "Số Lượng",

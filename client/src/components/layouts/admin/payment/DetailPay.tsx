@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -69,6 +70,7 @@ const DetailPay = () => {
     const payMethodData = paymentData.paymentMethod;
     const sizeData = paymentData.size;
     const status_pay = paymentData.status_pay;
+    const voucherData = paymentData.voucher;
     const filteredStatus = status_pay.filter((item) => item.id >= paymentData.payment.status_id && item.id !== 4);
 
 
@@ -190,13 +192,30 @@ const DetailPay = () => {
                                         type="checkbox"
                                         className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
                                     />
-                                    <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ) x {item.pivot?.quantity}</span>
+                                    <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ) x
+                                        {Math.floor((moment(bookingData?.end_date)).diff((moment(bookingData?.start_date)), 'days') / 3)}
+                                    </span>
                                 </label>
                             </div>
                         ))
                     ) : (
                         <p className="text-gray-500">Không sử dụng dịch vụ.</p>
                     )}
+                </div>
+
+                <h3 className="text-left text-2xl font-semibold mt-10">
+                    Voucher
+                </h3>
+                <div className="mt-2">
+                    <label className="flex items-center mb-2">
+                        <input readOnly
+                            type="checkbox"
+                            className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
+                        />
+                        <span>
+                            {voucherData?.code} - {voucherData?.name}
+                        </span>
+                    </label>
                 </div>
 
                 <div className="flex justify-between mt-4">
@@ -213,10 +232,10 @@ const DetailPay = () => {
                                 className="block appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
                             >
                                 {filteredStatus?.map((item: any) => (
-                                        <option key={item.id} value={item.id}>
-                                            {item.status_name}
-                                        </option>
-                                    ))}
+                                    <option key={item.id} value={item.id}>
+                                        {item.status_name}
+                                    </option>
+                                ))}
                             </select>
                             <button
                                 type="submit"
