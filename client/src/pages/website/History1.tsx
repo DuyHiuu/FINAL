@@ -71,6 +71,22 @@ const History1 = () => {
     }
   };
 
+  const convertIdToCustomString = (id) => {
+    const prefix = "PETHOUSE-";  // Tiền tố cho ID
+    const strId = String(id);   // Chuyển ID thành chuỗi
+    let encodedId = "";
+
+    // Chuyển đổi từng chữ số trong ID thành một ký tự khác
+    for (let i = 0; i < strId.length; i++) {
+      const digit = parseInt(strId[i]);
+      // Mã hóa mỗi số thành một ký tự (ví dụ: 1 -> A, 2 -> B, ...)
+      encodedId += String.fromCharCode(65 + digit); // 65 là mã ASCII của 'A'
+    }
+
+    return `${prefix}${encodedId}`;
+  };
+
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -87,79 +103,82 @@ const History1 = () => {
       <div className="container mx-auto p-4 lg:p-8 flex flex-col lg:flex-row">
         <div className="flex-1 w-full lg:w-1/2">
           {Array.isArray(filteredPayments) && filteredPayments.length > 0 ? (
-            filteredPayments.map((item) => (
-              <Card key={item?.id} className="mb-6" hoverable>
-                <div className="flex items-start">
-                  <img
-                    alt={`image-${item?.id}`}
-                    src={item.booking?.room?.img_thumbnail}
-                    style={{
-                      width: "300px",
-                      height: "200px",
-                      objectFit: "cover",
-                    }}
-                    className="me-32"
-                  />
-                  <div className="ml-4 flex-1">
-                    <Card.Meta
-                      title={`ID hóa đơn: ${item?.id}`}
-                      description={
-                        <>
-                          <div className="text-yellow-500">
-                            {item.status?.status_name}
-                          </div>
-                          <Text>
-                            Ngày:{" "}
-                            {`${moment(item.booking?.start_date).format(
-                              "DD-MM-YYYY"
-                            )}`}{" "}
-                            &#8594;{" "}
-                            {`${moment(item.booking?.end_date).format(
-                              "DD-MM-YYYY"
-                            )}`}
-                          </Text>
-                          <div className="mt-2">
-                            <a
-                              href={`/history2/${item.id}`}
-                              className="text-blue-500"
-                            >
-                              Xem chi tiết
-                            </a>
-                          </div>
-                          <div className="mt-2 text-gray-500">
-                            Tổng tiền:{" "}
-                            {item.total_amount.toLocaleString("vi-VN")} VNĐ
-                          </div>
-
-                          {/* Star Rating Feature */}
-                          {item.status?.status_name === "Đã xác nhận" && (
-                            <div className="mt-2">
-                              <Rate
-                                value={rating[item.id] || 0}
-                                onChange={(value) =>
-                                  handleRatingChange(value, item.id)
-                                }
-                              />
-                              <Button
-                                type="primary"
-                                size="small"
-                                onClick={() =>
-                                  submitRating(item.id, item.booking.room.id)
-                                }
-                                disabled={!rating[item.id]}
-                                className="ml-2"
-                              >
-                                Đánh giá
-                              </Button>
-                            </div>
-                          )}
-                        </>
-                      }
+            filteredPayments.map((item) => {
+              const formattedId = convertIdToCustomString(item?.id);
+              return (
+                <Card key={item?.id} className="mb-6" hoverable>
+                  <div className="flex items-start">
+                    <img
+                      alt={`image-${formattedId}`}
+                      src={item.booking?.room?.img_thumbnail}
+                      style={{
+                        width: "300px",
+                        height: "200px",
+                        objectFit: "cover",
+                      }}
+                      className="me-32"
                     />
+                    <div className="ml-4 flex-1">
+                      <Card.Meta
+                        title={`ID: ${formattedId}`}
+                        description={
+                          <>
+                            <div className="text-yellow-500">
+                              {item.status?.status_name}
+                            </div>
+                            <Text>
+                              Ngày:{" "}
+                              {`${moment(item.booking?.start_date).format(
+                                "DD-MM-YYYY"
+                              )}`}{" "}
+                              &#8594;{" "}
+                              {`${moment(item.booking?.end_date).format(
+                                "DD-MM-YYYY"
+                              )}`}
+                            </Text>
+                            <div className="mt-2">
+                              <a
+                                href={`/history2/${item.id}`}
+                                className="text-blue-500"
+                              >
+                                Xem chi tiết
+                              </a>
+                            </div>
+                            <div className="mt-2 text-gray-500">
+                              Tổng tiền:{" "}
+                              {item.total_amount.toLocaleString("vi-VN")} VNĐ
+                            </div>
+
+                            {/* Star Rating Feature */}
+                            {item.status?.status_name === "Đã xác nhận" && (
+                              <div className="mt-2">
+                                <Rate
+                                  value={rating[item.id] || 0}
+                                  onChange={(value) =>
+                                    handleRatingChange(value, item.id)
+                                  }
+                                />
+                                <Button
+                                  type="primary"
+                                  size="small"
+                                  onClick={() =>
+                                    submitRating(item.id, item.booking.room.id)
+                                  }
+                                  disabled={!rating[item.id]}
+                                  className="ml-2"
+                                >
+                                  Đánh giá
+                                </Button>
+                              </div>
+                            )}
+                          </>
+                        }
+                      />
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))
+                </Card>
+              );
+            })
           ) : (
             <Text className="text-gray-500">Không có lịch sử mua hàng.</Text>
           )}

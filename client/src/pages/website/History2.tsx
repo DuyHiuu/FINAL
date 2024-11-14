@@ -62,9 +62,6 @@ const History2 = () => {
   const sizeData = paymentData.size;
   const voucherData = paymentData.voucher;
 
-  console.log(voucherData);
-
-
   return (
     <div className="flex flex-col lg:flex-row pb-20 mt-24">
       {/* Left side - Order Information */}
@@ -219,7 +216,14 @@ const History2 = () => {
                       className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
                     />
                     <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ) x
-                      {Math.floor((moment(bookingData?.end_date)).diff((moment(bookingData?.start_date)), 'days') / 3)}
+                      {item.id === 2
+                        ? Math.floor(
+                          moment(bookingData?.end_date).diff(
+                            moment(bookingData?.start_date),
+                            'days'
+                          ) / 3
+                        )
+                        : 1}
                     </span>
                   </label>
                 </div>
