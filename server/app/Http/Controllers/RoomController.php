@@ -144,13 +144,39 @@ class RoomController extends Controller
     {
         // Tìm room với ID
         $room = Room::find($id);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'price' => "required",
+                'description' => "required",
+                'quantity' => 'required',
+                'statusroom' => "required",
+                'size_id' => "required",
+                'img_thumbnail' => "required|image|mimes:jpeg,png,jpg,gif|max:2048",
+            ],
+            [
+                'price.required' => "Giá không được để trống",
+                'description.required' => "Mô tả không được để trống",
+                'quantity.required' => "Không được để trống",
+                'statusroom.required' => "Trạng thái phòng không được để trống",
+                'size_id.required' => "Kích thước không được để trống",
+                'img_thumbnail.required' => "Hình ảnh không được để trống",
+                'img_thumbnail.image' => "Tập tin không phải là hình ảnh",
+                'img_thumbnail.mimes' => "Hình ảnh phải là một trong các định dạng: jpeg, png, jpg, gif.",
+                'img_thumbnail.max' => "Hình ảnh không được vượt quá 2MB.",
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
+        }
         if (!$room) {
             return response()->json(['message' => 'Room không tồn tại'], 400);
         }
-    
+
         // Cập nhật các trường
         $room->update($request->except('img_thumbnail'));
-    
+
         // Kiểm tra nếu có chuỗi base64 trong `img_thumbnail`
         if ($request->img_thumbnail && !str_starts_with($request->img_thumbnail, 'http')) {
             try {
@@ -160,17 +186,17 @@ class RoomController extends Controller
                     $base64Image = explode(',', $base64Image)[1]; // Loại bỏ tiền tố nếu có
                 }
                 $image = base64_decode($base64Image);
-    
+
                 // Tạo một file tạm thời từ base64 để upload lên Cloudinary
                 $tmpFilePath = sys_get_temp_dir() . '/' . uniqid() . '.png';
                 file_put_contents($tmpFilePath, $image);
-    
+
                 // Upload file tạm lên Cloudinary
                 $response = Cloudinary::upload($tmpFilePath)->getSecurePath();
-    
+
                 // Cập nhật đường dẫn ảnh mới
                 $room->img_thumbnail = $response;
-    
+
                 // Lưu lại room
                 $room->save();
             } catch (\Exception $e) {
@@ -181,7 +207,7 @@ class RoomController extends Controller
             $room->img_thumbnail = $request->img_thumbnail;
             $room->save();
         }
-    
+
         return response()->json(['message' => 'Cập nhật thành công', 'data' => $room->toArray()], 200);
     }
 
