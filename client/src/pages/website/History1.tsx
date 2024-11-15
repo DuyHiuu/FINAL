@@ -7,6 +7,7 @@ import {
   Typography,
   Spin,
   Rate,
+  Input,
   message,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -20,7 +21,8 @@ const History1 = () => {
   const [startDate, setStartDate] = useState<moment.Moment | null>(null);
   const [endDate, setEndDate] = useState<moment.Moment | null>(null);
   const [filteredPayments, setFilteredPayments] = useState(payment || []);
-  const [rating, setRating] = useState({}); // Store individual ratings for each item
+  const [rating, setRating] = useState({});
+  const [ratingContent, setRatingContent] = useState({});
 
   const totalRoomsBooked = Array.isArray(filteredPayments)
     ? filteredPayments.length
@@ -56,19 +58,34 @@ const History1 = () => {
     setRating((prev) => ({ ...prev, [itemId]: value }));
   };
 
-  const submitRating = async (itemId, roomId) => {
-    console.log(roomId);
+  const handleContentChange = (e, itemId) => {
+    setRatingContent((prev) => ({ ...prev, [itemId]: e.target.value }));
+  };
 
+  const submitRating = async (itemId, roomId) => {
     try {
       await axios.post("http://localhost:8000/api/ratings", {
         rating: rating[itemId],
-        content: "Great stay!",
+        content: ratingContent[itemId],
         room_id: roomId,
       });
       message.success("Đánh giá đã được lưu thành công!");
     } catch (error) {
       message.error("Xảy ra lỗi khi lưu đánh giá.");
     }
+  };
+
+  const convertIdToCustomString = (id) => {
+    const prefix = "PETHOUSE-";
+    const strId = String(id);
+    let encodedId = "";
+
+    for (let i = 0; i < strId.length; i++) {
+      const digit = parseInt(strId[i]);
+      encodedId += String.fromCharCode(65 + digit);
+    }
+
+    return `${prefix}${encodedId}`;
   };
 
   if (loading) {
@@ -87,79 +104,93 @@ const History1 = () => {
       <div className="container mx-auto p-4 lg:p-8 flex flex-col lg:flex-row">
         <div className="flex-1 w-full lg:w-1/2">
           {Array.isArray(filteredPayments) && filteredPayments.length > 0 ? (
-            filteredPayments.map((item) => (
-              <Card key={item?.id} className="mb-6" hoverable>
-                <div className="flex items-start">
-                  <img
-                    alt={`image-${item?.id}`}
-                    src={item.booking?.room?.img_thumbnail}
-                    style={{
-                      width: "300px",
-                      height: "200px",
-                      objectFit: "cover",
-                    }}
-                    className="me-32"
-                  />
-                  <div className="ml-4 flex-1">
-                    <Card.Meta
-                      title={`ID hóa đơn: ${item?.id}`}
-                      description={
-                        <>
-                          <div className="text-yellow-500">
-                            {item.status?.status_name}
-                          </div>
-                          <Text>
-                            Ngày:{" "}
-                            {`${moment(item.booking?.start_date).format(
-                              "DD-MM-YYYY"
-                            )}`}{" "}
-                            &#8594;{" "}
-                            {`${moment(item.booking?.end_date).format(
-                              "DD-MM-YYYY"
-                            )}`}
-                          </Text>
-                          <div className="mt-2">
-                            <a
-                              href={`/history2/${item.id}`}
-                              className="text-blue-500"
-                            >
-                              Xem chi tiết
-                            </a>
-                          </div>
-                          <div className="mt-2 text-gray-500">
-                            Tổng tiền:{" "}
-                            {item.total_amount.toLocaleString("vi-VN")} VNĐ
-                          </div>
-
-                          {/* Star Rating Feature */}
-                          {item.status?.status_name === "Đã xác nhận" && (
-                            <div className="mt-2">
-                              <Rate
-                                value={rating[item.id] || 0}
-                                onChange={(value) =>
-                                  handleRatingChange(value, item.id)
-                                }
-                              />
-                              <Button
-                                type="primary"
-                                size="small"
-                                onClick={() =>
-                                  submitRating(item.id, item.booking.room.id)
-                                }
-                                disabled={!rating[item.id]}
-                                className="ml-2"
-                              >
-                                Đánh giá
-                              </Button>
-                            </div>
-                          )}
-                        </>
-                      }
+            filteredPayments.map((item) => {
+              const formattedId = convertIdToCustomString(item?.id);
+              return (
+                <Card key={item?.id} className="mb-6" hoverable>
+                  <div className="flex items-start">
+                    <img
+                      alt={`image-${formattedId}`}
+                      src={item.booking?.room?.img_thumbnail}
+                      style={{
+                        width: "300px",
+                        height: "200px",
+                        objectFit: "cover",
+                      }}
+                      className="me-32"
                     />
+                    <div className="ml-4 flex-1">
+                      <Card.Meta
+                        title={`ID: ${formattedId}`}
+                        description={
+                          <>
+                            <div className="text-yellow-500">
+                              {item.status?.status_name}
+                            </div>
+                            <Text>
+                              Ngày:{" "}
+                              {`${moment(item.booking?.start_date).format(
+                                "DD-MM-YYYY"
+                              )}`}{" "}
+                              &#8594;{" "}
+                              {`${moment(item.booking?.end_date).format(
+                                "DD-MM-YYYY"
+                              )}`}
+                            </Text>
+                            <div className="mt-2">
+                              <a
+                                href={`/history2/${item.id}`}
+                                className="text-blue-500"
+                              >
+                                Xem chi tiết
+                              </a>
+                            </div>
+                            <div className="mt-2 text-gray-500">
+                              Tổng tiền:{" "}
+                              {item.total_amount.toLocaleString("vi-VN")} VNĐ
+                            </div>
+
+                            {/* Star Rating Feature */}
+                            {item.status?.status_name === "Đã xác nhận" && (
+                              <div className="mt-2">
+                                <Rate
+                                  value={rating[item.id] || 0}
+                                  onChange={(value) =>
+                                    handleRatingChange(value, item.id)
+                                  }
+                                />
+                                <Input.TextArea
+                                  rows={3}
+                                  placeholder="Nhập nội dung đánh giá"
+                                  value={ratingContent[item.id] || ""}
+                                  onChange={(e) =>
+                                    handleContentChange(e, item.id)
+                                  }
+                                  className="mt-2"
+                                />
+                                <Button
+                                  type="primary"
+                                  size="small"
+                                  onClick={() =>
+                                    submitRating(item.id, item.booking.room.id)
+                                  }
+                                  disabled={
+                                    !rating[item.id] || !ratingContent[item.id]
+                                  }
+                                  className="mt-2"
+                                >
+                                  Đánh giá
+                                </Button>
+                              </div>
+                            )}
+                          </>
+                        }
+                      />
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))
+                </Card>
+              );
+            })
           ) : (
             <Text className="text-gray-500">Không có lịch sử mua hàng.</Text>
           )}
