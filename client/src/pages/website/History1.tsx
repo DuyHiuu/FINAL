@@ -7,6 +7,7 @@ import {
   Typography,
   Spin,
   Rate,
+  Input,
   message,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -20,7 +21,8 @@ const History1 = () => {
   const [startDate, setStartDate] = useState<moment.Moment | null>(null);
   const [endDate, setEndDate] = useState<moment.Moment | null>(null);
   const [filteredPayments, setFilteredPayments] = useState(payment || []);
-  const [rating, setRating] = useState({}); // Store individual ratings for each item
+  const [rating, setRating] = useState({});
+  const [ratingContent, setRatingContent] = useState({});
 
   const totalRoomsBooked = Array.isArray(filteredPayments)
     ? filteredPayments.length
@@ -56,13 +58,15 @@ const History1 = () => {
     setRating((prev) => ({ ...prev, [itemId]: value }));
   };
 
-  const submitRating = async (itemId, roomId) => {
-    console.log(roomId);
+  const handleContentChange = (e, itemId) => {
+    setRatingContent((prev) => ({ ...prev, [itemId]: e.target.value }));
+  };
 
+  const submitRating = async (itemId, roomId) => {
     try {
       await axios.post("http://localhost:8000/api/ratings", {
         rating: rating[itemId],
-        content: "Great stay!",
+        content: ratingContent[itemId],
         room_id: roomId,
       });
       message.success("Đánh giá đã được lưu thành công!");
@@ -72,20 +76,17 @@ const History1 = () => {
   };
 
   const convertIdToCustomString = (id) => {
-    const prefix = "PETHOUSE-";  // Tiền tố cho ID
-    const strId = String(id);   // Chuyển ID thành chuỗi
+    const prefix = "PETHOUSE-";
+    const strId = String(id);
     let encodedId = "";
 
-    // Chuyển đổi từng chữ số trong ID thành một ký tự khác
     for (let i = 0; i < strId.length; i++) {
       const digit = parseInt(strId[i]);
-      // Mã hóa mỗi số thành một ký tự (ví dụ: 1 -> A, 2 -> B, ...)
-      encodedId += String.fromCharCode(65 + digit); // 65 là mã ASCII của 'A'
+      encodedId += String.fromCharCode(65 + digit);
     }
 
     return `${prefix}${encodedId}`;
   };
-
 
   if (loading) {
     return (
@@ -158,14 +159,25 @@ const History1 = () => {
                                     handleRatingChange(value, item.id)
                                   }
                                 />
+                                <Input.TextArea
+                                  rows={3}
+                                  placeholder="Nhập nội dung đánh giá"
+                                  value={ratingContent[item.id] || ""}
+                                  onChange={(e) =>
+                                    handleContentChange(e, item.id)
+                                  }
+                                  className="mt-2"
+                                />
                                 <Button
                                   type="primary"
                                   size="small"
                                   onClick={() =>
                                     submitRating(item.id, item.booking.room.id)
                                   }
-                                  disabled={!rating[item.id]}
-                                  className="ml-2"
+                                  disabled={
+                                    !rating[item.id] || !ratingContent[item.id]
+                                  }
+                                  className="mt-2"
                                 >
                                   Đánh giá
                                 </Button>
