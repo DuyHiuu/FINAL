@@ -84,6 +84,11 @@ const RoomList = () => {
       key: "quantity",
     },
     {
+      title: "Đang Đặt",
+      dataIndex: "is_booked",
+      key: "is_booked",
+    },
+    {
       title: "Trạng Thái",
       dataIndex: "statusroom",
       key: "statusroom",

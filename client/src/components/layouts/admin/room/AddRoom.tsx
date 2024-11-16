@@ -12,9 +12,15 @@ const AddRoom = () => {
     const [description, setDescription] = useState('');
     const [quantity, setQuantity] = useState('');
     const [statusRoom, setStatusRoom] = useState('Còn phòng');
+
     const [imgThumbnail, setImgThumbnail] = useState(null);
     const [imgSubImages, setImgSubImages] = useState([]); // State để lưu ảnh phụ
     const [previewImage, setPreviewImage] = useState(null); // State để lưu URL ảnh xem trước
+
+    const [imageFiles, setImageFiles] = useState([]); // Array to hold multiple image files
+    const [previewImages, setPreviewImages] = useState([]); // Array to hold URLs of images for preview
+    const [primaryImageIndex, setPrimaryImageIndex] = useState(null); // To track the primary image
+
     const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -34,12 +40,24 @@ const AddRoom = () => {
         return isImage && isLt5M;
     };
 
+
     const handleSubImageChange = ({ fileList }) => {
         if (fileList.length > 4) {
             message.error('Chỉ được chọn tối đa 4 ảnh phụ');
             return;
         }
         setImgSubImages(fileList);
+
+    const handleImageUpload = ({ file }) => {
+        if (beforeUpload(file)) {
+            setImageFiles((prev) => [...prev, file]);
+            setPreviewImages((prev) => [...prev, URL.createObjectURL(file)]);
+        }
+    };
+
+    const handlePrimaryImageSelect = (index) => {
+        setPrimaryImageIndex(index);
+
     };
 
     const handleSubmit = async (values) => {
@@ -51,7 +69,13 @@ const AddRoom = () => {
         formData.append('description', values.description);
         formData.append('quantity', values.quantity);
         formData.append('statusroom', values.statusRoom);
-        formData.append('img_thumbnail', imgThumbnail);
+
+        imageFiles.forEach((file, index) => {
+            formData.append('images', file);
+            if (index === primaryImageIndex) {
+                formData.append('primary_image_index', index); // Specify primary image
+            }
+        });
 
         // Đẩy ảnh phụ vào formData
         imgSubImages.forEach((file) => {
@@ -68,19 +92,16 @@ const AddRoom = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Phòng đã thêm thành công:', data);
                 message.success("Phòng đã được thêm thành công!");
                 setTimeout(() => {
                     navigate('/admin');
                 }, 2000);
             } else {
                 const errorData = await response.json();
-                console.error('Lỗi khi thêm phòng:', errorData.message);
                 message.error(`Thêm phòng thất bại: ${errorData.message}`);
             }
         } catch (error) {
             setIsLoading(false);
-            console.error('Lỗi kết nối API:', error);
             message.error("Đã xảy ra lỗi khi thêm phòng.");
         }
     };
@@ -172,28 +193,44 @@ const AddRoom = () => {
 
                 {/* Hình ảnh chính */}
                 <Form.Item
+
                     label="Hình Ảnh Chính"
                     name="imgThumbnail"
                     rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh phòng!' }]}>
+
+                    label="Hình Ảnh"
+                    name="imgThumbnails"
+                    rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh phòng!' }]}
+                >
+
                     <Upload
                         accept="image/*"
+                        multiple
                         showUploadList={false}
-                        beforeUpload={beforeUpload}
-                        customRequest={({ file, onSuccess }) => {
-                            setImgThumbnail(file);
-                            setPreviewImage(URL.createObjectURL(file)); // Tạo URL xem trước
-                            onSuccess();
-                        }}
+                        customRequest={handleImageUpload}
                     >
                         <Button icon={<PlusOutlined />}>Tải lên hình ảnh</Button>
                     </Upload>
-                    {previewImage && (
-                        <img
-                            src={previewImage}
-                            alt="Preview"
-                            style={{ marginTop: '16px', width: '40%', maxHeight: '300px', objectFit: 'cover' }}
-                        />
-                    )}
+
+                    {/* Preview Thumbnails */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '16px' }}>
+                        {previewImages.map((imgUrl, index) => (
+                            <img
+                                key={index}
+                                src={imgUrl}
+                                alt="Preview"
+                                onClick={() => handlePrimaryImageSelect(index)}
+                                style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    objectFit: 'cover',
+                                    border: index === primaryImageIndex ? '2px solid blue' : '1px solid #ccc',
+                                    cursor: 'pointer',
+                                }}
+                            />
+                        ))}
+                    </div>
+                    {primaryImageIndex !== null && <p>Ảnh chính đã chọn: {primaryImageIndex + 1}</p>}
                 </Form.Item>
 
                 {/* Hình ảnh phụ */}

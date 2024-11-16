@@ -11,29 +11,38 @@ class Room extends Model
     use HasFactory, SoftDeletes;
     protected $table = 'rooms';
 
-    protected $fillable = ['price', 'description', 'statusroom', 'size_id', 'img_thumbnail', 'quantity'];
+    protected $fillable = ['price', 'description', 'statusroom', 'size_id', 'img_thumbnail', 'quantity', 'is_booked'];
 
-
+    // Quan hệ với bảng Comments
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
 
+    // Quan hệ với bảng Size
     public function size()
     {
         return $this->belongsTo(Size::class, 'size_id');
     }
 
+    // Quan hệ với bảng RoomImages
     public function roomImages()
     {
         return $this->hasMany(Room_Image::class, 'room_id');
     }
 
+    // Quan hệ với bảng Bookings
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    // Quan hệ với bảng Ratings
     public function ratings()
     {
         return $this->hasMany(Rating::class);
     }
-
+    // Đánh giá tổng
     public function averageRating()
     {
         // Kiểm tra xem phòng có đánh giá không để tránh lỗi chia cho 0

@@ -60,6 +60,7 @@ const History2 = () => {
   const bookingData = paymentData.booking;
   const payMethodData = paymentData.paymentMethod;
   const sizeData = paymentData.size;
+  const voucherData = paymentData.voucher;
 
   return (
     <div className="flex flex-col lg:flex-row pb-20 mt-24">
@@ -148,7 +149,6 @@ const History2 = () => {
         <div className="mt-10">
           <Title level={2}>Phương thức thanh toán</Title>
           <Card>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Tên khách hàng</label>
             <Input
               aria-label="Phương thức thanh toán"
               value={payMethodData}
@@ -180,11 +180,6 @@ const History2 = () => {
           />
 
           <Title level={3}>{sizeData}</Title>
-          <Row gutter={16}>
-            <Col span={24} className="mb-3">
-              <Text strong>Giá/ngày:</Text> {roomData?.price} VNĐ
-            </Col>
-          </Row>
           <Text>{roomData?.description}</Text>
 
           {/* Booking Dates */}
@@ -212,18 +207,45 @@ const History2 = () => {
           <div className="mt-2">
             {Array.isArray(servicesData) && servicesData.length > 0 ? (
               servicesData?.map((item) => (
-                <Checkbox
+                <div
                   key={item?.id}
-                  disabled
-                  checked
-                  className="block mb-2"
                 >
-                  {item.name} ({item.price.toLocaleString("vi-VN")} VNĐ)
-                </Checkbox>
+                  <label className="flex items-center mb-2">
+                    <input readOnly
+                      type="checkbox"
+                      className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
+                    />
+                    <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ) x
+                      {item.id === 2
+                        ? Math.floor(
+                          moment(bookingData?.end_date).diff(
+                            moment(bookingData?.start_date),
+                            'days'
+                          ) / 3
+                        )
+                        : 1}
+                    </span>
+                  </label>
+                </div>
               ))
             ) : (
               <Text className="text-gray-500">Không sử dụng dịch vụ.</Text>
             )}
+          </div>
+
+          <h3 className="text-left text-2xl font-semibold mt-10">
+            Voucher
+          </h3>
+          <div className="mt-2">
+            <label className="flex items-center mb-2">
+              <input readOnly
+                type="checkbox"
+                className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
+              />
+              <span>
+                {voucherData?.code} - {voucherData?.name}
+              </span>
+            </label>
           </div>
 
           <Divider />

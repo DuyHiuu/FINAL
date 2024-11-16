@@ -6,6 +6,8 @@ import { HiOutlineTicket } from 'react-icons/hi';
 const AddVoucher = () => {
   const [tenVoucher, setVoucher] = useState("");
   const [Code, setCode] = useState("");
+  const [type, setType] = useState('%');
+  const [min_total_amount, setMin_total_amount] = useState("");
   const [giamGia, setGiamGia] = useState("");
   const [soLuong, setSoLuong] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState("");
@@ -28,6 +30,8 @@ const AddVoucher = () => {
     const newVoucher = {
       name: tenVoucher.trim(),
       code: Code.trim(),
+      type: type.trim(),
+      min_total_amount: parseInt(min_total_amount),
       discount: parseInt(giamGia, 10),
       quantity: parseInt(soLuong, 10),
       start_date: ngayBatDau,
@@ -106,8 +110,22 @@ const AddVoucher = () => {
       </div>
 
       <div className="mb-4 relative">
+        <label htmlFor="Type" className="block text-sm font-medium text-gray-700">
+          Loại:
+        </label>
+        <div className="flex items-center">
+          <select name="type" id="" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={type}
+            onChange={(e) => setType(e.target.value)}>
+            <option value="%">%</option>
+            <option value="amount">Amount</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="mb-4 relative">
         <label htmlFor="giamGia" className="block text-sm font-medium text-gray-700">
-          Giảm giá (VND):
+          Giảm giá (VND/%):
         </label>
         <div className="flex items-center">
           <input
@@ -116,7 +134,24 @@ const AddVoucher = () => {
             value={giamGia}
             onChange={(e) => setGiamGia(e.target.value)}
             required
-            placeholder="Nhập số tiền giảm giá"
+            placeholder="Nhập số tiền/phần trăm giảm giá"
+            className="pl-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      <div className="mb-4 relative">
+        <label htmlFor="min_total_amount" className="block text-sm font-medium text-gray-700">
+          Số tiền tối thiểu để áp dụng:
+        </label>
+        <div className="flex items-center">
+          <input
+            type="number"
+            id="min_total_amount"
+            value={min_total_amount}
+            onChange={(e) => setMin_total_amount(e.target.value)}
+            required
+            placeholder="Nhập số tiền tối thiểu để áp dụng"
             className="pl-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

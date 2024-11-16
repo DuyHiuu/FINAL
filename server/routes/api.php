@@ -158,10 +158,11 @@ Route::prefix('roomImages')->group(function () {
     Route::delete('/{id}', [RoomImageController::class, 'destroy']);
 });
 
-Route::prefix('ratings')->group(function () {
-    Route::get('/', [RatingController::class, 'index']);
-    Route::post('/', [RatingController::class, 'store']);
-    Route::get('/{id}', [RatingController::class, 'show']);
-    Route::put('/{id}', [RatingController::class, 'update']);
-    Route::delete('/{id}', [RatingController::class, 'destroy']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/ratings', [RatingController::class, 'store']);
+    Route::put('/ratings/{id}', [RatingController::class, 'update']);
+    Route::delete('/ratings/{id}', [RatingController::class, 'destroy']);
 });
+
+Route::get('/ratings', [RatingController::class, 'index']);
+Route::get('/ratings/{id}', [RatingController::class, 'show']);

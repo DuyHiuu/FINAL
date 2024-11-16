@@ -19,73 +19,89 @@ class PaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    
-     public function index(String $id)
-     {
-         $payments = Payment::with(['status', 'booking.room.size', 'user'])
-             ->where('user_id', $id)
-             ->whereNull('deleted_at')
-             ->orderBy('id', 'desc')
-             ->get();
-     
-         $user = $payments->isNotEmpty() ? $payments->first()->user_id : null;
-     
-         $bookings = [];
-         $rooms = [];
-     
-         foreach ($payments as $payment) {
-             if ($payment->booking) {
-                 $bookings[] = $payment->booking;
-                 $rooms[] = [
-                     'room' => $payment->booking->room,
-                     'size_name' => $payment->booking->room->size->name ?? null,
-                 ];
-             }
-         }
-     
-         return response()->json([
-             'status' => true,
-             'data' => [
-                 'payment' => $payments,
-                 'user' => $user,
-                 'booking' => $bookings,
-                 'room' => $rooms,
-             ]
-         ]);
-     }
-     
-     public function payAd()
-     {
-         $payments = Payment::with(['status', 'booking.room.size', 'user'])
-             ->whereNull('deleted_at')
-             ->orderBy('id', 'desc')
-             ->get();
-     
-         $user = $payments->isNotEmpty() ? $payments->first()->user_id : null;
-     
-         $bookings = [];
-         $rooms = [];
-     
-         foreach ($payments as $payment) {
-             if ($payment->booking) {
-                 $bookings[] = $payment->booking;
-                 $rooms[] = [
-                     'room' => $payment->booking->room,
-                     'size_name' => $payment->booking->room->size->name ?? null,
-                 ];
-             }
-         }
-     
-         return response()->json([
-             'status' => true,
-             'data' => [
-                 'payment' => $payments,
-                 'user' => $user,
-                 'booking' => $bookings,
-                 'room' => $rooms,
-             ]
-         ]);
-     }
+
+    public function index(String $id)
+    {
+        $payments = Payment::with(['status', 'booking.room.size', 'user', 'voucher'])
+            ->where('user_id', $id)
+            ->whereNull('deleted_at')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $user = $payments->isNotEmpty() ? $payments->first()->user_id : null;
+
+        $bookings = [];
+        $rooms = [];
+        $vouchers = [];
+
+        foreach ($payments as $payment) {
+            if ($payment->booking) {
+                $bookings[] = $payment->booking;
+                $rooms[] = [
+                    'room' => $payment->booking->room,
+                    'size_name' => $payment->booking->room->size->name ?? null,
+                ];
+            }
+        }
+
+        if ($payment->voucher) {
+            $vouchers[] = [
+                'voucher_name' => $payment->voucher->name ?? 'No name',
+                'voucher_code' => $payment->voucher->code ?? 'No code',
+                'voucher_discount' => $payment->voucher->discount ?? 0,
+            ];
+        } else {
+            $vouchers[] = [
+                'voucher_name' => 'No voucher',
+                'voucher_code' => 'No code',
+                'voucher_discount' => 0,
+            ];
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'payment' => $payments,
+                'user' => $user,
+                'booking' => $bookings,
+                'room' => $rooms,
+                'voucher' => $vouchers,
+            ]
+        ]);
+    }
+
+    public function payAd()
+    {
+        $payments = Payment::with(['status', 'booking.room.size', 'user'])
+            ->whereNull('deleted_at')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $user = $payments->isNotEmpty() ? $payments->first()->user_id : null;
+
+        $bookings = [];
+        $rooms = [];
+
+        foreach ($payments as $payment) {
+            if ($payment->booking) {
+                $bookings[] = $payment->booking;
+                $rooms[] = [
+                    'room' => $payment->booking->room,
+                    'size_name' => $payment->booking->room->size->name ?? null,
+                ];
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'payment' => $payments,
+                'user' => $user,
+                'booking' => $bookings,
+                'room' => $rooms,
+            ]
+        ]);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -187,7 +203,7 @@ class PaymentController extends Controller
 
                 $subTotal_service = 0;
                 $subTotal_room = 0;
-               
+
                 if (!empty($booking)) {
                     $startDate = Carbon::parse($booking->start_date);
                     $endDate = Carbon::parse($booking->end_date);
@@ -198,60 +214,65 @@ class PaymentController extends Controller
                     $subTotal_room += $booking->room->price * $days;
 
 
-                    // Tính tổng tiền cho các dịch vụ trong booking
-                    if ($booking->services->isNotEmpty()) {
-                        foreach ($booking->services as $service) {
-                            // Tính tổng tiền dịch vụ và nhân với số lượng từ pivot table
-                            $subTotal_service += $service->price;
+                    if ($booking->services && $booking->services->isNotEmpty()) {
+                        foreach ($booking->services as $item) {
+                            if ($item->id === 2) {
+                                // Tính quantity dựa trên days, đảm bảo quantity không dưới 1
+                                $quantity = max(1, floor($days / 3));
+
+                                $subTotal_service += $item->price * $quantity;
+                            } else {
+                                // Tính tổng tiền cho các dịch vụ còn lại
+                                $subTotal_service += $item->price;
+                            }
                         }
                     }
 
                     $total_amount = $subTotal_room + $subTotal_service;
-                    
+
                     $voucherID = $request->input('voucher_id');
 
                     $discount = 0;
                     $totalAmount = $total_amount;
 
-                    if($voucherID){
-                  
-                    $voucher = Voucher::where('id', $voucherID)
-                    ->where('is_active', true)
-                    ->first();
-            
-                    if(!$voucher) {
-                        return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
-                    }
-            
-                    if($voucher->end_date < now()){
-                        return response()->json(['message' => 'Voucher đã hết hạn.'], 400);
-                        
-                    }
-            
-                    if($voucher->quantity === 0){
-                        return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
-            
-                    }
-            
-                      // Kiểm tra tổng tiền đơn hàng có đủ để sử dụng voucher không
-                      if ($total_amount < $voucher->min_total_amount) {
-                        return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
-                    }
-            
-                    if($voucher->type === '%'){
-                        $discount = $total_amount * ($voucher->discount / 100);
-                    }else{
-                        $discount = $voucher->discount;
-                    }
+                    if ($voucherID) {
 
-                     $totalAmount = max(0, $total_amount - $discount);
-                    }
+                        $voucher = Voucher::where('id', $voucherID)
+                            ->where('is_active', true)
+                            ->first();
 
-                      // Thêm tổng tiền vào params trước khi tạo payment
-                      $params['total_amount'] = $totalAmount;
+                        if (!$voucher) {
+                            return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
+                        }
+
+                        if ($voucher->end_date < now()) {
+                            return response()->json(['message' => 'Voucher đã hết hạn.'], 400);
+                        }
+
+                        if ($voucher->quantity === 0) {
+                            return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
+                        }
+
+                        // Kiểm tra tổng tiền đơn hàng có đủ để sử dụng voucher không
+                        if ($total_amount < $voucher->min_total_amount) {
+                            return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
+                        }
+
+                        if ($voucher->type === '%') {
+                            $discount = $total_amount * ($voucher->discount / 100);
+                        } else {
+                            $discount = $voucher->discount;
+                        }
+
+                        $totalAmount = max(0, $total_amount - $discount);
+
+
+                        // Thêm tổng tiền vào params trước khi tạo payment
+                        $params['total_amount'] = $totalAmount;
+                    } else {
+                        $params['total_amount'] = $total_amount;
+                    }
                 }
-                
-                $params['total_amount'] = $total_amount;
 
                 // Mặc định status_id = 1 khi thêm 
                 $params['status_id'] = $params['status_id'] ?? 1;
@@ -264,26 +285,25 @@ class PaymentController extends Controller
 
                 $room = $booking->room;
 
-                if($room->quantity > 0){
-                    $room->decrement('quantity', 1);
+                if ($room->quantity > 0) {
+                    $room->increment('is_booked', 1);
 
-                    // nếu số lượng bằng 0 thì thay đổi trạng thái hết phòng
-                    if($room->quantity === 0){
+                    if ($room->quantity === $room->is_booked) {
                         $room->update(['statusroom' => 'Hết phòng']);
                     }
                 } else {
                     return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
                 }
-                
-                if($voucherID){
-                if($voucher->quantity > 0){
-                    $voucher->decrement('quantity', 1);
 
-                    if($voucher->quantity === 0){
-                        $voucher->update(['is_active' => 0]);
+                if ($voucherID) {
+                    if ($voucher->quantity > 0) {
+                        $voucher->decrement('quantity', 1);
+
+                        if ($voucher->quantity === 0) {
+                            $voucher->update(['is_active' => 0]);
+                        }
                     }
                 }
-            }
 
                 DB::commit();
                 return response()->json([
@@ -309,9 +329,13 @@ class PaymentController extends Controller
 
         $status_pay = Status::get();
 
+        $voucher = Status::get();
+
         $paymentMethod = $payment->paymethod ? $payment->paymethod->name : null;
 
         $status = $payment->status ? $payment->status->status_name : null;
+
+        $voucher = $payment->voucher ? $payment->voucher : null;
 
         $booking = $payment->booking;
 
@@ -330,7 +354,8 @@ class PaymentController extends Controller
                 'paymentMethod' => $paymentMethod,
                 'status' => $status,
                 'size' => $size,
-                'status_pay' => $status_pay
+                'status_pay' => $status_pay,
+                'voucher' => $voucher,
             ]
         ]);
     }
@@ -391,27 +416,27 @@ class PaymentController extends Controller
         }
     }
     public function fetchChartData(Request $request)
-{
-    try {
-        // Xử lý các tham số và lấy dữ liệu
-        $type = $request->input('type');
-        $year = $request->input('year');
-        $month = $request->input('month');
-        $start = $request->input('start');
-        $end = $request->input('end');
+    {
+        try {
+            // Xử lý các tham số và lấy dữ liệu
+            $type = $request->input('type');
+            $year = $request->input('year');
+            $month = $request->input('month');
+            $start = $request->input('start');
+            $end = $request->input('end');
 
-        // Giả sử bạn có phương thức để lấy dữ liệu doanh thu
-        $chartData = $this->getRevenueData($type, $year, $month, $start, $end);
+            // Giả sử bạn có phương thức để lấy dữ liệu doanh thu
+            $chartData = $this->getRevenueData($type, $year, $month, $start, $end);
 
-        if (!$chartData) {
-            return response()->json(['status' => false, 'message' => 'Không có dữ liệu cho yêu cầu này.'], 404);
+            if (!$chartData) {
+                return response()->json(['status' => false, 'message' => 'Không có dữ liệu cho yêu cầu này.'], 404);
+            }
+
+            return response()->json(['status' => true, 'data' => $chartData]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'Có lỗi xảy ra trong quá trình xử lý.'], 500);
         }
-
-        return response()->json(['status' => true, 'data' => $chartData]);
-    } catch (\Exception $e) {
-        return response()->json(['status' => false, 'message' => 'Có lỗi xảy ra trong quá trình xử lý.'], 500);
     }
-}
 
 
     /**
@@ -428,15 +453,16 @@ class PaymentController extends Controller
         // return response()->json(['message' => 'Thanh toán đã xóa thành công.']);
     }
 
-    public function applyVoucher(Request $request){
+    public function applyVoucher(Request $request)
+    {
 
         $params = $request->all();
-     
+
         $voucherID = $request->input('voucher_id');
 
         $voucher = Voucher::where('id', $voucherID)
-        ->where('is_active', true)
-        ->first();
+            ->where('is_active', true)
+            ->first();
 
         $booking = Booking::findOrFail($params['booking_id']);
 
@@ -444,28 +470,26 @@ class PaymentController extends Controller
 
         $discount = 0;
 
-        if(!$voucher) {
+        if (!$voucher) {
             return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
         }
 
-        if($voucher->end_date < now()){
+        if ($voucher->end_date < now()) {
             return response()->json(['message' => 'Voucher đã hết hạn.'], 400);
-            
         }
 
-        if($voucher->quantity === 0){
+        if ($voucher->quantity === 0) {
             return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
-
         }
 
-          // Kiểm tra tổng tiền đơn hàng có đủ để sử dụng voucher không
-          if ($subTotal > $voucher->min_total_amount) {
+        // Kiểm tra tổng tiền đơn hàng có đủ để sử dụng voucher không
+        if ($subTotal > $voucher->min_total_amount) {
             return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
         }
 
-        if($voucher->type === '%'){
+        if ($voucher->type === '%') {
             $discount = $subTotal * ($voucher->discount / 100);
-        }else{
+        } else {
             $discount = $voucher->discount;
         }
 

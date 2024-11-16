@@ -9,8 +9,8 @@ use App\Models\Room;
 use App\Models\Service;
 use App\Models\Voucher;
 use Carbon\Carbon;
-use Dotenv\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
@@ -38,11 +38,17 @@ class BookingController extends Controller
 
         $subTotal_room = $days * $room->price;
 
-        //Tính tổng tiền dịch vụ
         if ($booking->services && $booking->services->isNotEmpty()) {
             foreach ($booking->services as $item) {
-                // Tính tổng tiền cho từng dịch vụ và cộng dồn
-                $subTotal_service += $item->price;
+                if($item->id === 2){
+                    // Tính quantity dựa trên days, đảm bảo quantity không dưới 1
+                    $quantity = max(1, floor($days / 3));
+
+                    $subTotal_service += $item->price * $quantity;
+                } else {
+                    // Tính tổng tiền cho các dịch vụ còn lại
+                    $subTotal_service += $item->price;
+                }
             }
         }
 
@@ -76,11 +82,45 @@ class BookingController extends Controller
      */
     public function addBooking(Request $request)
     {
-        // check đăng nhập hay chưa, nếu chưa thì mời đăng nhập
-        // if (!auth()->check()) {
-        //     // Chuyển hướng người dùng đến trang đăng nhập
-        //     return redirect()->route('login')->with('message', 'Đăng nhập để đặt phòng');
-        // }
+        $validator = Validator::make(
+            $request->all(),
+            [
+               'start_date' => [
+                                'required',
+                                'date',
+                                'after_or_equal:' . now()->format('Y-m-d H:i:s')
+                               ],
+
+                'end_date' => [
+                                'required',
+                                'date',
+                                'after:start_date',
+                                function ($attribute, $value, $fail) use ($request) {
+                                    $startDate = Carbon::parse($request->start_date);
+                                    $endDate = Carbon::parse($value);
+                                    
+                                    if ($endDate->gt($startDate->addMonth())) {
+                                        $fail('Ngày kết thúc phải nằm trong vòng 1 tháng kể từ ngày bắt đầu.');
+                                    }
+                                },
+                             ],
+                'room_id' => 'required|exists:rooms,id',
+            ],
+            [
+                'start_date.required' => 'Ngày bắt đầu không được để trống.',
+                'start_date.date' => 'Ngày bắt đầu phải là một ngày hợp lệ.',
+                'start_date.after_or_equal' => 'Ngày bắt đầu không thể là ngày trong quá khứ.',
+                'end_date.required' => 'Ngày kết thúc không được để trống.',
+                'end_date.date' => 'Ngày kết thúc phải là một ngày hợp lệ.',
+                'end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
+                'room_id.required' => 'Phòng không được để trống',
+                'room_id.exists' => 'Phòng phải tồn tại trong bảng phòng',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
+        }
 
         $roomID = $request->input('room_id');
 

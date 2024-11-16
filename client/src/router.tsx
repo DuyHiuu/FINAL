@@ -49,6 +49,8 @@ import AccoutProfile from "./pages/website/Accout/AccoutProfile";
 import UserInfo from "./pages/website/Accout/UserInfo";
 import EditUserInfo from "./pages/website/Accout/EditUserInfo";
 import ContactList from "./components/layouts/admin/contact/ContactList";
+import ForgotPassword from "./pages/website/ForgotPassword";
+import ResetPassword from "./pages/website/ResetPassword";
 
 export const router = createBrowserRouter([
   {
@@ -70,6 +72,12 @@ export const router = createBrowserRouter([
       { path: "/account", element: <AccoutProfile /> },
       { path: "/infor", element: <UserInfo /> },
       { path: "/editinfor", element: <EditUserInfo /> },
+      { path: "/forgot-password", element: <ForgotPassword /> },
+      { path: "/reset-password", element: <ResetPassword/> },
+
+
+
+
 
       // Áp dụng UserPrivateRoute cho trang lịch sử mua hàng
       {
