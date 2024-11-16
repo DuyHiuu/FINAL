@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Blog extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'blogs';
 
@@ -20,4 +20,9 @@ class Blog extends Model
         'user_id'
 
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
