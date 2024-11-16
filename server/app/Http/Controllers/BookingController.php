@@ -30,10 +30,8 @@ class BookingController extends Controller
         $startDate = Carbon::parse($booking->start_date);
         $endDate = Carbon::parse($booking->end_date);
 
-        // Tính khoảng cách ngày
         $days = max(1, $startDate->diffInDays($endDate));
 
-        //Tính tổng tiền phòng
         $room = Room::find($booking->room_id);
 
         $subTotal_room = $days * $room->price;
@@ -41,12 +39,10 @@ class BookingController extends Controller
         if ($booking->services && $booking->services->isNotEmpty()) {
             foreach ($booking->services as $item) {
                 if ($item->id === 2) {
-                    // Tính quantity dựa trên days, đảm bảo quantity không dưới 1
                     $quantity = max(1, floor($days / 3));
 
                     $subTotal_service += $item->price * $quantity;
                 } else {
-                    // Tính tổng tiền cho các dịch vụ còn lại
                     $subTotal_service += $item->price;
                 }
             }
@@ -122,10 +118,8 @@ class BookingController extends Controller
 
         $roomID = $request->input('room_id');
 
-        //Tìm thông tin phòng
         $room = Room::findOrFail($roomID);
 
-        //Tạo một booking mới và lưu vào CSDL
         $booking = Booking::create([
             'room_id' => $room->id,
             'start_date' => $request->input('start_date'),
@@ -138,12 +132,11 @@ class BookingController extends Controller
         if ($request->filled('service_ids')) {
             $serviceIDs = json_decode($request->input('service_ids'), true);
 
-            $serviceData = []; // mảng lưu dữ liệu bảng booking_services
+            $serviceData = []; 
 
             foreach ($serviceIDs as $index => $serviceID) {
-                $service = Service::findOrFail($serviceID); //tìm dịch vụ theo id
+                $service = Service::findOrFail($serviceID); 
 
-                // Thêm vào mảng servicesData với các thông tin cần thiết
                 $serviceData[$serviceID] = [
                     'price' => $service->price
                 ];
@@ -156,7 +149,7 @@ class BookingController extends Controller
             'message' => 'Thêm đơn đặt thàng công!',
             'booking' => $booking,
             'booking_id' => $booking->id,
-            'services' => $serviceData ?? [] // Trả về mảng rỗng nếu không có dịch vụ
+            'services' => $serviceData ?? [] 
         ]);
     }
 
@@ -173,9 +166,9 @@ class BookingController extends Controller
         if ($booking) {
             return response()->json([
                 'booking' => $booking,
-                'room' => $booking->room, // Thông tin phòng
-                'services' => $booking->services, // Danh sách dịch vụ
-                'voucher' => $booking->voucher, // Thông tin voucher
+                'room' => $booking->room, 
+                'services' => $booking->services, 
+                'voucher' => $booking->voucher, 
             ]);
         } else {
             return response()->json(['message' => 'Không tồn tại'], 404);
@@ -196,16 +189,16 @@ class BookingController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Tìm booking theo ID
+       
         $booking = Booking::find($id);
 
         if (!$booking) {
             return response()->json(['message' => 'Không tìm thấy bookings'], 404);
         }
 
-        // Cập nhật dữ liệu booking
+        
         $booking->update($request->all());
-        // Trả về phản hồi JSON
+      
         return response()->json(['message' => 'Cập nhật đặt phòng thành công!', 'booking' => $booking], 200);
     }
 
@@ -214,14 +207,14 @@ class BookingController extends Controller
      */
     public function destroy(string $id)
     {
-        // Tìm booking theo ID
+      
         $booking = Booking::find($id);
         if (!$booking) {
             return response()->json(['message' => 'Không tìm thấy bookings'], 404);
         }
-        // Xóa mềm (soft delete)
+       
         $booking->delete();
-        // Trả về phản hồi JSON
+      
         return response()->json(['message' => 'Xóa đặt phòng thành công!'], 200);
     }
 }
