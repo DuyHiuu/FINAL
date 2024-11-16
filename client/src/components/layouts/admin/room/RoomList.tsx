@@ -55,7 +55,7 @@ const RoomList = () => {
   // Cấu hình cho bảng
   const columns = [
     {
-      title: "STT",
+      title: "ID",
       dataIndex: "id",
       key: "id",
     },

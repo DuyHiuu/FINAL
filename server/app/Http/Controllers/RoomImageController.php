@@ -15,11 +15,11 @@ class RoomImageController extends Controller
      */
     public function index()
     {
-        $images = Room_Image::with('room')->get(); // lấy tất cả room_images cùng với thông tin rooms
+        $images = Room_Image::with('room')->get(); // Lấy tất cả room_images cùng với thông tin rooms
 
         return response()->json([
             'success' => true,
-            'message' => 'Lấy dữ liệu thành công!.',
+            'message' => 'Lấy dữ liệu thành công!',
             'data' => $images,
         ]);
     }
@@ -29,13 +29,12 @@ class RoomImageController extends Controller
      */
     public function create()
     {
-        //
+        // Logic nếu cần thiết
     }
 
     /**
      * Store a newly created resource in storage.
      */
-
     public function store(Request $request)
     {
         // Validate the incoming request
@@ -65,7 +64,7 @@ class RoomImageController extends Controller
         $newImagesCount = count($request->file('images'));
 
         if ($existingImagesCount + $newImagesCount > 4) {
-            return response()->json(['status' => 'error', 'message' => 'Mỗi phòng chỉ có thể chứa tối đa 4 ảnh!.'], 400);
+            return response()->json(['status' => 'error', 'message' => 'Mỗi phòng chỉ có thể chứa tối đa 4 ảnh!'], 400);
         }
 
         try {
@@ -126,7 +125,7 @@ class RoomImageController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        // Logic nếu cần thiết
     }
 
     /**
@@ -155,7 +154,7 @@ class RoomImageController extends Controller
         // Kiểm tra xem hình ảnh có tồn tại không
         $existingImage = Room_Image::find($id);
         if (!$existingImage) {
-            return response()->json(['status' => 'error', 'message' => 'Hình ảnh không tồn tại!.'], 404);
+            return response()->json(['status' => 'error', 'message' => 'Hình ảnh không tồn tại!'], 404);
         }
 
         // Kiểm tra tổng số hình ảnh của phòng
@@ -165,7 +164,7 @@ class RoomImageController extends Controller
 
         // Đảm bảo tổng số hình ảnh sau khi cập nhật không vượt quá 4
         if ($existingImagesCount + $newImagesCount > 4) {
-            return response()->json(['status' => 'error', 'message' => 'Mỗi phòng chỉ có thể chứa tối đa 4 ảnh!.'], 400);
+            return response()->json(['status' => 'error', 'message' => 'Mỗi phòng chỉ có thể chứa tối đa 4 ảnh!'], 400);
         }
 
         try {
@@ -194,6 +193,12 @@ class RoomImageController extends Controller
     public function destroy(String $id)
     {
         $roomImage = Room_Image::find($id);
+
+        // Xóa ảnh nếu tồn tại
+        if ($roomImage && Storage::disk('public')->exists($roomImage->image)) {
+            Storage::disk('public')->delete($roomImage->image);
+        }
+
         $roomImage->delete();
         return response()->json([
             "message" => "Xóa hình ảnh thành công!"

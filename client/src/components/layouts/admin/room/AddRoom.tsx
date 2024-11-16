@@ -13,6 +13,7 @@ const AddRoom = () => {
     const [quantity, setQuantity] = useState('');
     const [statusRoom, setStatusRoom] = useState('Còn phòng');
     const [imgThumbnail, setImgThumbnail] = useState(null);
+    const [imgSubImages, setImgSubImages] = useState([]); // State để lưu ảnh phụ
     const [previewImage, setPreviewImage] = useState(null); // State để lưu URL ảnh xem trước
     const [isLoading, setIsLoading] = useState(false);
 
@@ -33,6 +34,14 @@ const AddRoom = () => {
         return isImage && isLt5M;
     };
 
+    const handleSubImageChange = ({ fileList }) => {
+        if (fileList.length > 4) {
+            message.error('Chỉ được chọn tối đa 4 ảnh phụ');
+            return;
+        }
+        setImgSubImages(fileList);
+    };
+
     const handleSubmit = async (values) => {
         setIsLoading(true);
 
@@ -43,6 +52,11 @@ const AddRoom = () => {
         formData.append('quantity', values.quantity);
         formData.append('statusroom', values.statusRoom);
         formData.append('img_thumbnail', imgThumbnail);
+
+        // Đẩy ảnh phụ vào formData
+        imgSubImages.forEach((file) => {
+            formData.append('img_sub_images[]', file.originFileObj); // Thêm ảnh phụ vào formData
+        });
 
         try {
             const response = await fetch(storeUrl, {
@@ -156,12 +170,11 @@ const AddRoom = () => {
                     </Select>
                 </Form.Item>
 
-                {/* Hình ảnh */}
+                {/* Hình ảnh chính */}
                 <Form.Item
                     label="Hình Ảnh Chính"
                     name="imgThumbnail"
-                    rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh phòng!' }]}
-                >
+                    rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh phòng!' }]}>
                     <Upload
                         accept="image/*"
                         showUploadList={false}
@@ -181,6 +194,26 @@ const AddRoom = () => {
                             style={{ marginTop: '16px', width: '40%', maxHeight: '300px', objectFit: 'cover' }}
                         />
                     )}
+                </Form.Item>
+
+                {/* Hình ảnh phụ */}
+                <Form.Item
+                    label="Hình Ảnh Phụ"
+                    name="imgSubImages"
+                >
+                    <Upload
+                        accept="image/*"
+                        listType="picture-card"
+                        fileList={imgSubImages}
+                        onChange={handleSubImageChange}
+                        beforeUpload={beforeUpload}
+                        multiple
+                    >
+                        <div>
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Tải lên</div>
+                        </div>
+                    </Upload>
                 </Form.Item>
 
                 {/* Submit Button */}
