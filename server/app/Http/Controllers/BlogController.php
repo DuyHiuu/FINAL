@@ -15,6 +15,12 @@ class BlogController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    public function __construct()
+    {
+        $this->middleware('auth')->only(['store', 'update', 'destroy']);
+    }
+
     public function index()
     {
         $blog = Blog::join('users', 'blogs.user_id', '=', 'users.id')
@@ -37,6 +43,61 @@ class BlogController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    // public function store(Request $request)
+    // {
+    //     // Validate the incoming request
+    //     $validator = Validator::make(
+    //         $request->all(),
+    //         [
+    //             'title' => "required",
+    //             'description' => "required",
+    //             'content' => "required",
+    //             'user_id' => "required",
+    //             'image' => "required|image|mimes:jpeg,png,jpg,gif|max:2048",
+    //         ],
+    //         [
+    //             'title.required' => "title không được để trống",
+    //             'description.required' => "Mô tả không được để trống",
+    //             'content.required' => "content không được để trống",
+    //             'user_id.required' => "Tác giả không được để trống",
+    //             'image.required' => "Hình ảnh không được để trống",
+    //             'image.image' => "Tập tin không phải là hình ảnh",
+    //             'image.mimes' => "Hình ảnh phải là một trong các định dạng: jpeg, png, jpg, gif.",
+    //             'image.max' => "Hình ảnh không được vượt quá 2MB.",
+    //         ]
+    //     );
+
+    //     if ($validator->fails()) {
+    //         return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
+    //     }
+
+    //     try {
+    //         // Lấy tệp tin hình ảnh từ request
+    //         $image = $request->file('image');
+    //         // Upload lên Cloudinary
+    //         $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
+
+    //         $title = $request->get('title');
+    //         $description = $request->get('description');
+    //         $content = $request->get('content');
+    //         $user_id = $request->get('user_id');
+
+    //         $data = [
+    //             'image' => $response,
+    //             'title' => $title,
+    //             'description' => $description,
+    //             'content' => $content,
+    //             'user_id' => $user_id,
+    //         ];
+
+    //         Blog::create($data);
+
+    //         return response()->json(['status' => 'success', 'message' => 'Blog đã được thêm thành công', 'data' => $data], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    //     }
+    // }
+
     public function store(Request $request)
     {
         // Validate the incoming request
@@ -46,14 +107,12 @@ class BlogController extends Controller
                 'title' => "required",
                 'description' => "required",
                 'content' => "required",
-                'user_id' => "required",
                 'image' => "required|image|mimes:jpeg,png,jpg,gif|max:2048",
             ],
             [
-                'title.required' => "title không được để trống",
+                'title.required' => "Title không được để trống",
                 'description.required' => "Mô tả không được để trống",
-                'content.required' => "content không được để trống",
-                'user_id.required' => "Tác giả không được để trống",
+                'content.required' => "Content không được để trống",
                 'image.required' => "Hình ảnh không được để trống",
                 'image.image' => "Tập tin không phải là hình ảnh",
                 'image.mimes' => "Hình ảnh phải là một trong các định dạng: jpeg, png, jpg, gif.",
@@ -68,39 +127,23 @@ class BlogController extends Controller
         try {
             // Lấy tệp tin hình ảnh từ request
             $image = $request->file('image');
-
-            // Tạo một tên tệp tin duy nhất
-            //            $uniqueFileName = uniqid('file_') . '.' . $image->getClientOriginalExtension();
-
-            // Lưu tệp tin vào thư mục storage
-            //            $filePath = $image->storeAs('images', $uniqueFileName, 'public'); // Lưu vào thư mục 'images' trong 'storage/app/public'
-
-            // Upload lên Cloudinary
             $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
 
-            //            $fullPath = asset('storage/' . $filePath);
-
-
-            $title = $request->get('title');
-            $description = $request->get('description');
-            $content = $request->get('content');
-            $user_id = $request->get('user_id');
-
-            $data = [
+            // Tạo blog gắn với user đăng nhập
+            $blog = Blog::create([
                 'image' => $response,
-                'title' => $title,
-                'description' => $description,
-                'content' => $content,
-                'user_id' => $user_id,
-            ];
+                'title' => $request->get('title'),
+                'description' => $request->get('description'),
+                'content' => $request->get('content'),
+                'user_id' => auth()->id(), // Gán user_id từ người dùng đăng nhập
+            ]);
 
-            Blog::create($data);
-
-            return response()->json(['status' => 'success', 'message' => 'Blog đã được thêm thành công', 'data' => $data], 200);
+            return response()->json(['status' => 'success', 'message' => 'Blog đã được thêm thành công', 'data' => $blog], 200);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -150,7 +193,7 @@ class BlogController extends Controller
             try {
                 $base64Image = $request->image;
                 if (str_contains($base64Image, ',')) {
-                    $base64Image = explode(',', $base64Image)[1]; 
+                    $base64Image = explode(',', $base64Image)[1];
                 }
                 $image = base64_decode($base64Image);
 
