@@ -40,7 +40,7 @@ class BookingController extends Controller
 
         if ($booking->services && $booking->services->isNotEmpty()) {
             foreach ($booking->services as $item) {
-                if($item->id === 2){
+                if ($item->id === 2) {
                     // Tính quantity dựa trên days, đảm bảo quantity không dưới 1
                     $quantity = max(1, floor($days / 3));
 
@@ -61,12 +61,10 @@ class BookingController extends Controller
             'subTotal_service' => $subTotal_service,
             'subTotal_room' => $subTotal_room,
             'total_amount' => $totalamount,
-            'room_id'=> $booking->room_id,
+            'room_id' => $booking->room_id,
             'start_date' => $booking->start_date,
             'end_date' => $booking->end_date
         ]);
-
-
     }
 
     /**
@@ -85,25 +83,25 @@ class BookingController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-               'start_date' => [
-                                'required',
-                                'date',
-                                'after_or_equal:' . now()->format('Y-m-d H:i:s')
-                               ],
+                'start_date' => [
+                    'required',
+                    'date',
+                    'after_or_equal:' . now()->format('Y-m-d H:i:s')
+                ],
 
                 'end_date' => [
-                                'required',
-                                'date',
-                                'after:start_date',
-                                function ($attribute, $value, $fail) use ($request) {
-                                    $startDate = Carbon::parse($request->start_date);
-                                    $endDate = Carbon::parse($value);
-                                    
-                                    if ($endDate->gt($startDate->addMonth())) {
-                                        $fail('Ngày kết thúc phải nằm trong vòng 1 tháng kể từ ngày bắt đầu.');
-                                    }
-                                },
-                             ],
+                    'required',
+                    'date',
+                    'after:start_date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $startDate = Carbon::parse($request->start_date);
+                        $endDate = Carbon::parse($value);
+
+                        if ($endDate->gt($startDate->addMonth())) {
+                            $fail('Ngày kết thúc phải nằm trong vòng 1 tháng kể từ ngày bắt đầu.');
+                        }
+                    },
+                ],
                 'room_id' => 'required|exists:rooms,id',
             ],
             [
@@ -138,31 +136,28 @@ class BookingController extends Controller
 
         //Kiểm tra nếu có dịch vụ (service_ids k null)
         if ($request->filled('service_ids')) {
-            $serviceIDs = json_decode($request->input('service_ids'), true); 
+            $serviceIDs = json_decode($request->input('service_ids'), true);
 
             $serviceData = []; // mảng lưu dữ liệu bảng booking_services
 
             foreach ($serviceIDs as $index => $serviceID) {
                 $service = Service::findOrFail($serviceID); //tìm dịch vụ theo id
 
-                 // Thêm vào mảng servicesData với các thông tin cần thiết
+                // Thêm vào mảng servicesData với các thông tin cần thiết
                 $serviceData[$serviceID] = [
                     'price' => $service->price
                 ];
- 
             }
 
             $booking->services()->attach($serviceData);
-    
         }
-       
+
         return response()->json([
             'message' => 'Thêm đơn đặt thàng công!',
             'booking' => $booking,
             'booking_id' => $booking->id,
             'services' => $serviceData ?? [] // Trả về mảng rỗng nếu không có dịch vụ
         ]);
-
     }
 
     /**
@@ -174,7 +169,7 @@ class BookingController extends Controller
             ->where('id', $id)
             ->whereNull('deleted_at')
             ->first();
-    
+
         if ($booking) {
             return response()->json([
                 'booking' => $booking,
@@ -186,7 +181,7 @@ class BookingController extends Controller
             return response()->json(['message' => 'Không tồn tại'], 404);
         }
     }
-    
+
 
     /**
      * Show the form for editing the specified resource.
