@@ -252,16 +252,25 @@ const Pay2 = () => {
                     footer={null}
                 >
                     <div className="space-y-2">
-                        {vouchers.map((voucher) => (
-                            <div key={voucher.id} className="flex items-center">
-                                <Checkbox
-                                    checked={selectedVoucher?.id === voucher.id}
-                                    onChange={() => handleVoucherSelect(voucher)}
-                                >
-                                    {voucher.name}
-                                </Checkbox>
-                            </div>
-                        ))}
+                        {vouchers.map((voucher) => {
+                            const isDisabled = total_amount < voucher.min_total_amount; 
+                            return (
+                                <div key={voucher.id} className="flex items-center">
+                                    <Checkbox
+                                        checked={selectedVoucher?.id === voucher.id}
+                                        onChange={() => !isDisabled && handleVoucherSelect(voucher)}
+                                        disabled={isDisabled} 
+                                    >
+                                        {voucher.name}
+                                    </Checkbox>
+                                    {isDisabled && (
+                                        <span className="text-red-500 text-sm ml-2">
+                                            Không đủ điều kiện (Yêu cầu tối thiểu: {voucher.min_total_amount.toLocaleString()} VNĐ)
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
                 </Modal>
 
