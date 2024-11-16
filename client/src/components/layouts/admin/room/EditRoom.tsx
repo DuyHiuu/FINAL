@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Button, Select, message, InputNumber } from 'antd';
-import useFetchSize from '../../../../api/useFetchSize';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Form, Input, Button, Select, message, InputNumber, Upload } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import useFetchSize from "../../../../api/useFetchSize";
 
 const { TextArea } = Input;
 
 const EditRoom = () => {
     const showUrl = "http://localhost:8000/api/rooms";
+    const roomImageUrl = "http://localhost:8000/api/roomImages";
     const { id } = useParams();
     const [form] = Form.useForm();
     const [img_thumbnail, setImg_thumbnail] = useState(null);
+    const [roomImages, setRoomImages] = useState([]);
+    const [removedImages, setRemovedImages] = useState([]);
     const navigate = useNavigate();
     const { sizes } = useFetchSize();
 
@@ -24,14 +28,26 @@ const EditRoom = () => {
                         size_id: room.size_id,
                         description: room.description,
                         statusroom: room.statusroom,
-                        quantity: room.quantity
+                        quantity: room.quantity,
                     });
-                    setImg_thumbnail(room.img_thumbnail); // Set initial image URL/base64
+                    setImg_thumbnail(room.img_thumbnail);
+
+                    if (room.room_images) {
+                        const formattedImages = room.room_images.map((image) => ({
+                            uid: image.id,
+                            name: image.image,
+                            url: image.image,
+                            status: "done",
+                            isExisting: true,
+                        }));
+                        setRoomImages(formattedImages);
+                    }
                 } else {
-                    message.error('Không thể lấy thông tin phòng');
+                    message.error("Không thể lấy thông tin phòng");
                 }
             } catch (error) {
-                console.log(error);
+                console.error(error);
+                message.error("Lỗi khi kết nối API");
             }
         };
         fetchRoom();
@@ -47,23 +63,57 @@ const EditRoom = () => {
             img_thumbnail: img_thumbnail,
         };
 
+        const newImages = roomImages.filter((image) => !image.isExisting);
+        const existingImages = roomImages.filter((image) => image.isExisting);
+
         try {
+            // Cập nhật thông tin phòng
             const response = await fetch(`${showUrl}/${id}`, {
-                method: 'PUT',
+                method: "PUT",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(updateRoom),
             });
 
-            if (response.ok) {
-                message.success('Phòng đã sửa thành công');
-                navigate('/admin');
-            } else {
-                message.error('Lỗi khi sửa phòng');
+            if (!response.ok) {
+                throw new Error("Lỗi khi cập nhật phòng");
             }
+
+            // Thêm ảnh phụ mới
+            if (newImages.length > 0) {
+                const formData = new FormData();
+                formData.append("room_id", id);
+                newImages.forEach((image) => {
+                    formData.append("images[]", image.originFileObj);
+                });
+
+                const imageResponse = await fetch(`${roomImageUrl}`, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (!imageResponse.ok) {
+                    throw new Error("Lỗi khi thêm ảnh phụ");
+                }
+            }
+
+            // Xóa ảnh phụ đã bị gỡ
+            if (removedImages.length > 0) {
+                await Promise.all(
+                    removedImages.map(async (image) => {
+                        await fetch(`${roomImageUrl}/${image.uid}`, {
+                            method: "DELETE",
+                        });
+                    })
+                );
+            }
+
+            message.success("Phòng đã sửa thành công");
+            navigate("/admin");
         } catch (error) {
-            message.error('Lỗi kết nối API');
+            console.error(error);
+            message.error("Lỗi khi xử lý yêu cầu");
         }
     };
 
@@ -78,6 +128,25 @@ const EditRoom = () => {
         }
     };
 
+    const handleSubImageChange = ({ fileList }) => {
+        setRoomImages(fileList);
+    };
+
+    const handleRemoveImage = (file) => {
+        if (file.isExisting) {
+            setRemovedImages((prev) => [...prev, file]);
+        }
+        setRoomImages((prevImages) => prevImages.filter((image) => image.uid !== file.uid));
+    };
+
+    const beforeUpload = (file) => {
+        if (roomImages.length >= 4) {
+            message.warning("Chỉ được tải lên tối đa 4 ảnh phụ");
+            return false;
+        }
+        return true;
+    };
+
     return (
         <Form
             form={form}
@@ -89,19 +158,15 @@ const EditRoom = () => {
             <Form.Item
                 label="Giá (VND)"
                 name="price"
-                rules={[{ required: true, message: 'Vui lòng nhập giá phòng!' }]}
+                rules={[{ required: true, message: "Vui lòng nhập giá phòng!" }]}
             >
-                <InputNumber
-                    style={{ width: '100%' }}
-                    placeholder="Nhập giá phòng"
-                    min={0}
-                />
+                <InputNumber style={{ width: "100%" }} placeholder="Nhập giá phòng" min={0} />
             </Form.Item>
 
             <Form.Item
                 label="Size"
                 name="size_id"
-                rules={[{ required: true, message: 'Vui lòng chọn kích thước phòng!' }]}
+                rules={[{ required: true, message: "Vui lòng chọn kích thước phòng!" }]}
             >
                 <Select placeholder="Chọn kích thước">
                     {sizes?.map((size) => (
@@ -115,31 +180,23 @@ const EditRoom = () => {
             <Form.Item
                 label="Số lượng"
                 name="quantity"
-                rules={[{ required: true, message: 'Vui lòng nhập số lượng phòng!' }]}
+                rules={[{ required: true, message: "Vui lòng nhập số lượng phòng!" }]}
             >
-                <InputNumber
-                    style={{ width: '100%' }}
-                    placeholder="Nhập số lượng phòng"
-                    min={0}
-                />
+                <InputNumber style={{ width: "100%" }} placeholder="Nhập số lượng phòng" min={0} />
             </Form.Item>
 
             <Form.Item
                 label="Mô Tả"
                 name="description"
-                rules={[{ required: true, message: 'Vui lòng nhập mô tả phòng!' }]}
+                rules={[{ required: true, message: "Vui lòng nhập mô tả phòng!" }]}
             >
-                <TextArea
-                    placeholder="Nhập mô tả phòng"
-                    autoSize={{ minRows: 3, maxRows: 5 }}
-                />
+                <TextArea placeholder="Nhập mô tả phòng" autoSize={{ minRows: 3, maxRows: 5 }} />
             </Form.Item>
 
-            {/* Trạng Thái */}
             <Form.Item
                 label="Trạng Thái"
                 name="statusroom"
-                rules={[{ required: true, message: 'Vui lòng chọn trạng thái phòng!' }]}
+                rules={[{ required: true, message: "Vui lòng chọn trạng thái phòng!" }]}
             >
                 <Select placeholder="Chọn trạng thái phòng">
                     <Select.Option value="Còn phòng">Còn phòng</Select.Option>
@@ -154,12 +211,26 @@ const EditRoom = () => {
                 <input type="file" accept="image/*" onChange={handleImageChange} />
             </Form.Item>
 
-            <Form.Item>
-                <Button
-                    type="primary"
-                    htmlType="submit"
-                    style={{ width: '100%' }}
+            <Form.Item label="Hình Ảnh Phụ">
+                <Upload
+                    listType="picture-card"
+                    fileList={roomImages}
+                    onChange={handleSubImageChange}
+                    beforeUpload={beforeUpload}
+                    onRemove={handleRemoveImage}
+                    multiple
                 >
+                    {roomImages.length < 4 && (
+                        <div>
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Tải lên ảnh phụ</div>
+                        </div>
+                    )}
+                </Upload>
+            </Form.Item>
+
+            <Form.Item>
+                <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
                     Sửa
                 </Button>
             </Form.Item>

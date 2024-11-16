@@ -28,7 +28,7 @@ class Room extends Model
     // Quan hệ với bảng RoomImages
     public function roomImages()
     {
-        return $this->hasMany(Room_Image::class);
+        return $this->hasMany(Room_Image::class, 'room_id');
     }
 
     // Quan hệ với bảng Bookings

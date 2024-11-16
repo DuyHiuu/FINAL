@@ -212,50 +212,38 @@ const Detail = () => {
                 }}
               />
             }
-          >
-          </Card>
+          ></Card>
         </Col>
 
         <Col span={12}>
           <Row gutter={8} style={{ marginTop: "8px" }}>
-            <Col span={12}>
-              <img
-                src="/images/anh9.webp"
-                alt="Small"
-                className="w-full object-cover rounded-md"
-                style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
-              />
-            </Col>
-            <Col span={12}>
-              <img
-                src="/images/anh10.webp"
-                alt="Small"
-                className="w-full object-cover rounded-md"
-                style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
-              />
-            </Col>
+            {room?.room_images?.slice(0, 2).map((image: string, index: number) => (
+              <Col key={index} span={12}>
+                <img
+                  src={image}
+                  alt={`Small ${index + 1}`}
+                  className="w-full object-cover rounded-md"
+                  style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
+                />
+              </Col>
+            ))}
           </Row>
 
           <Row gutter={8} style={{ marginTop: "8px" }}>
-            <Col span={12}>
-              <img
-                src="/images/anh2.webp"
-                alt="Small"
-                className="w-full object-cover rounded-md"
-                style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
-              />
-            </Col>
-            <Col span={12}>
-              <img
-                src="/images/anh11.webp"
-                alt="Small"
-                className="w-full object-cover rounded-md"
-                style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
-              />
-            </Col>
+            {room?.room_images?.slice(2, 4).map((image: string, index: number) => (
+              <Col key={index + 2} span={12}>
+                <img
+                  src={image}
+                  alt={`Small ${index + 3}`}
+                  className="w-full object-cover rounded-md"
+                  style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
+                />
+              </Col>
+            ))}
           </Row>
         </Col>
       </Row>
+
 
       <form onSubmit={handleSubmit}>
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-6">

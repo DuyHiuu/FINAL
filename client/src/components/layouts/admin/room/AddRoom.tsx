@@ -12,9 +12,15 @@ const AddRoom = () => {
     const [description, setDescription] = useState('');
     const [quantity, setQuantity] = useState('');
     const [statusRoom, setStatusRoom] = useState('Còn phòng');
+
+    const [imgThumbnail, setImgThumbnail] = useState(null);
+    const [imgSubImages, setImgSubImages] = useState([]); // State để lưu ảnh phụ
+    const [previewImage, setPreviewImage] = useState(null); // State để lưu URL ảnh xem trước
+
     const [imageFiles, setImageFiles] = useState([]); // Array to hold multiple image files
     const [previewImages, setPreviewImages] = useState([]); // Array to hold URLs of images for preview
     const [primaryImageIndex, setPrimaryImageIndex] = useState(null); // To track the primary image
+
     const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -34,6 +40,14 @@ const AddRoom = () => {
         return isImage && isLt5M;
     };
 
+
+    const handleSubImageChange = ({ fileList }) => {
+        if (fileList.length > 4) {
+            message.error('Chỉ được chọn tối đa 4 ảnh phụ');
+            return;
+        }
+        setImgSubImages(fileList);
+
     const handleImageUpload = ({ file }) => {
         if (beforeUpload(file)) {
             setImageFiles((prev) => [...prev, file]);
@@ -43,6 +57,7 @@ const AddRoom = () => {
 
     const handlePrimaryImageSelect = (index) => {
         setPrimaryImageIndex(index);
+
     };
 
     const handleSubmit = async (values) => {
@@ -60,6 +75,11 @@ const AddRoom = () => {
             if (index === primaryImageIndex) {
                 formData.append('primary_image_index', index); // Specify primary image
             }
+        });
+
+        // Đẩy ảnh phụ vào formData
+        imgSubImages.forEach((file) => {
+            formData.append('img_sub_images[]', file.originFileObj); // Thêm ảnh phụ vào formData
         });
 
         try {
@@ -171,12 +191,18 @@ const AddRoom = () => {
                     </Select>
                 </Form.Item>
 
-                {/* Hình ảnh */}
+                {/* Hình ảnh chính */}
                 <Form.Item
+
+                    label="Hình Ảnh Chính"
+                    name="imgThumbnail"
+                    rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh phòng!' }]}>
+
                     label="Hình Ảnh"
                     name="imgThumbnails"
                     rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh phòng!' }]}
                 >
+
                     <Upload
                         accept="image/*"
                         multiple
@@ -205,6 +231,26 @@ const AddRoom = () => {
                         ))}
                     </div>
                     {primaryImageIndex !== null && <p>Ảnh chính đã chọn: {primaryImageIndex + 1}</p>}
+                </Form.Item>
+
+                {/* Hình ảnh phụ */}
+                <Form.Item
+                    label="Hình Ảnh Phụ"
+                    name="imgSubImages"
+                >
+                    <Upload
+                        accept="image/*"
+                        listType="picture-card"
+                        fileList={imgSubImages}
+                        onChange={handleSubImageChange}
+                        beforeUpload={beforeUpload}
+                        multiple
+                    >
+                        <div>
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Tải lên</div>
+                        </div>
+                    </Upload>
                 </Form.Item>
 
                 {/* Submit Button */}
