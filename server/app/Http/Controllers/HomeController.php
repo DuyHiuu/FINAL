@@ -6,6 +6,7 @@ use App\Models\Blog;
 use App\Models\Room;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Mail;
 
 class HomeController extends Controller
 {
@@ -44,5 +45,13 @@ class HomeController extends Controller
             ->take(3)
             ->get();
         return response()->json($service);
+    }
+
+    public function testEmail()
+    {
+        Mail::send('emails.test', ['name' => 'test name for email'], function ($email) {
+            $email->subject('PetHotel');
+            $email->to('nghiadz29112004@gmail.com', 'Henshin');
+        });
     }
 }

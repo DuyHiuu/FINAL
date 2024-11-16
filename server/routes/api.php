@@ -34,12 +34,16 @@ use Illuminate\Support\Facades\Route;
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //    return $request->user();
 //});
+Route::get('test-email', [HomeController::class, 'testEmail']);
 Route::match(['GET', 'POST'], '/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth:sanctum');
 Route::get('/room_home', [HomeController::class, 'room_home'])->name('room_home');
 Route::get('/blog_home', [HomeController::class, 'blog_home'])->name('blog_home');
 Route::get('/top_three', [HomeController::class, 'top_three'])->name('top_three');
+
+
+
 
 Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
