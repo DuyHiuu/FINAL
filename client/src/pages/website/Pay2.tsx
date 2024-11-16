@@ -120,7 +120,7 @@ const Pay2 = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append("booking_id", id);
+        formData.append("booking_id", id); // kiểm tra lại id
         formData.append("pet_name", pet_name);
         formData.append("pet_type", pet_type);
         formData.append("pet_description", pet_description);
@@ -129,12 +129,12 @@ const Pay2 = () => {
         formData.append("user_address", user_address);
         formData.append("user_email", user_email);
         formData.append("user_phone", user_phone);
-        formData.append("user_id", user_id);
-        formData.append("paymethod_id", paymethod_id);
-        formData.append("total_amount", total_amount);
+        formData.append("user_id", user_id); // kiểm tra lại user_id
+        formData.append("paymethod_id", paymethod_id.toString()); // convert số thành chuỗi
+        formData.append("total_amount", total_amount.toString()); // convert số thành chuỗi
 
         if (selectedVoucher && selectedVoucher.id) {
-            formData.append("voucher_id", selectedVoucher.id ? selectedVoucher.id.toString() : "");
+            formData.append("voucher_id", selectedVoucher.id.toString());
         }
 
         try {
@@ -151,6 +151,7 @@ const Pay2 = () => {
             console.error("API connection error:", error);
         }
     };
+
 
     let finalAmount = total_amount;
 

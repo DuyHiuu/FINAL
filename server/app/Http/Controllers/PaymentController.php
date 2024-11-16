@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderConfirmation;
 
 class PaymentController extends Controller
 {
@@ -304,7 +306,14 @@ class PaymentController extends Controller
                         }
                     }
                 }
+                $payment = Payment::create($params);
+                $payment_id = $payment->id;
 
+                // Send order confirmation email to the user
+                Mail::to($payment->user->email)->send(new OrderConfirmation());
+
+
+                // Commit the transaction
                 DB::commit();
                 return response()->json([
                     'status' => 'Đơn hàng đã thanh toán thành công',
