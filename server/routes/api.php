@@ -43,7 +43,6 @@ Route::get('/blog_home', [HomeController::class, 'blog_home'])->name('blog_home'
 Route::get('/top_three', [HomeController::class, 'top_three'])->name('top_three');
 
 
-Route::middleware(['checkrole'])->group(function () {
     Route::prefix('rooms')->group(function () {
         Route::get('/', [RoomController::class, 'index']);
         Route::post('/', [RoomController::class, 'store']);
@@ -51,7 +50,7 @@ Route::middleware(['checkrole'])->group(function () {
         Route::put('/{id}', [RoomController::class, 'update']);
         Route::delete('/{id}', [RoomController::class, 'destroy']);
     });
-});
+
 
 
 Route::prefix('sizes')->group(function () {
