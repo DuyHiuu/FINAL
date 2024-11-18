@@ -186,6 +186,44 @@ const Detail = () => {
     setOpenServiceId(openServiceId === id ? null : id);
   };
 
+  const [roomImages, setRoomImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchRoomImages = async () => {
+      try {
+        const res = await fetch(`${API_URL}/roomImages/${id}`, {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
+        }
+        const jsonResponse = await res.json();
+        const images = jsonResponse.data.map((item: any) => {
+          return item.image_url.replace("http://localhost:8000/storage/", "");
+        });
+
+        setRoomImages(images);
+      } catch (error) {
+        console.error("Lỗi khi lấy phòng:", error);
+      }
+    };
+
+    fetchRoomImages();
+  }, [id]);
+
+  const [popupImage, setPopupImage] = useState(null);
+
+  const openPopup = (image) => {
+    setPopupImage(image);
+  };
+
+  const closePopup = () => {
+    setPopupImage(null);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
@@ -196,54 +234,59 @@ const Detail = () => {
 
   return (
     <div className="container mx-auto p-4 lg:p-8 mt-24">
-      <Row gutter={0}>
+      <Row gutter={16}>
         <Col span={12}>
           <Card
             hoverable
             cover={
-              <img
-                alt="Room"
-                src={room?.img_thumbnail}
-                style={{
-                  width: "100%",
-                  height: "500px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                }}
-              />
+              <div className="relative overflow-hidden rounded-lg h-[500px]"
+                onClick={() => openPopup(room?.img_thumbnail)}>
+                <img
+                  alt="Room"
+                  src={room?.img_thumbnail}
+                  className="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </div>
             }
+            style={{ height: "500px", borderRadius: "8px" }}
           ></Card>
         </Col>
 
         <Col span={12}>
-          <Row gutter={8} style={{ marginTop: "8px" }}>
-            {room?.room_images?.slice(0, 2).map((image: string, index: number) => (
-              <Col key={index} span={12}>
-                <img
-                  src={image}
-                  alt={`Small ${index + 1}`}
-                  className="w-full object-cover rounded-md"
-                  style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
-                />
-              </Col>
-            ))}
-          </Row>
-
-          <Row gutter={8} style={{ marginTop: "8px" }}>
-            {room?.room_images?.slice(2, 4).map((image: string, index: number) => (
-              <Col key={index + 2} span={12}>
-                <img
-                  src={image}
-                  alt={`Small ${index + 3}`}
-                  className="w-full object-cover rounded-md"
-                  style={{ height: "250px", objectFit: "cover", borderRadius: "8px" }}
-                />
+          <Row gutter={[8, 8]} style={{ height: "500px" }}>
+            {roomImages.slice(0, 4).map((image, index) => (
+              <Col key={index} span={12} style={{ height: "50%" }}>
+                <div className="relative overflow-hidden rounded-lg h-full"
+                  onClick={() => openPopup(image)}>
+                  <img
+                    src={image}
+                    alt={`Room ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-110"
+                  />
+                </div>
               </Col>
             ))}
           </Row>
         </Col>
       </Row>
 
+      {popupImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="relative">
+            <img
+              src={popupImage}
+              alt="Popup"
+              className="max-w-[100%] max-h-[100%] rounded-lg"
+            />
+            <button
+              onClick={closePopup}
+              className="absolute top-2 right-2 text-white text-xl bg-black bg-opacity-50 rounded-full p-2"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
@@ -370,7 +413,6 @@ const Detail = () => {
         </Button>
 
       </div>
-
 
     </div>
   );
