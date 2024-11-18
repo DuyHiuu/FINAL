@@ -9,38 +9,32 @@ const { Option } = Select;
 const ListRoom = () => {
   const [sizeFilter, setSizeFilter] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 3; // Chỉ hiển thị 3 sản phẩm mỗi trang
+  const itemsPerPage = 3; 
 
-  // Lấy dữ liệu phòng và kích thước từ API
   const { room, loading: loadingRooms, error: errorRooms } = useFetchRooms("", sizeFilter);
   const { sizes, loading: loadingSizes, error: errorSizes } = useFetchSize();
 
-  // Hàm thay đổi filter size
   const handleSizeChange = (value: string) => {
     setSizeFilter(value);
-    setCurrentPage(1); // Reset trang khi thay đổi filter
+    setCurrentPage(1); 
   };
 
-  // Tính toán các chỉ số cho phân trang
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentRooms = room?.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Hàm xử lý chuyển trang
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
   return (
     <div className="flex flex-col items-center mb-10 mt-24">
-      {/* Banner Image */}
       <img
         className="w-full h-auto max-h-[450px] sm:max-h-[350px] md:max-h-[450px] lg:max-h-[600px] object-cover"
         src="/images/img.webp"
         alt="PetSpa"
       />
 
-      {/* Filter Form */}
       <div className="mt-4 mb-6 w-full max-w-2xl mx-auto">
         <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-lg border">
           <div className="flex items-center space-x-2">
@@ -74,7 +68,6 @@ const ListRoom = () => {
         </div>
       </div>
 
-      {/* Room List */}
       <div className="container mx-auto p-4 lg:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {!loadingRooms &&
           currentRooms
@@ -136,7 +129,6 @@ const ListRoom = () => {
 
       </div>
 
-      {/* Pagination Controls */}
       <div className="flex justify-center mt-4">
         <Pagination
           current={currentPage}
