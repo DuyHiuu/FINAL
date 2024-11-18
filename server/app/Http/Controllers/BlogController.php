@@ -100,7 +100,6 @@ class BlogController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the incoming request
         $validator = Validator::make(
             $request->all(),
             [
@@ -125,17 +124,15 @@ class BlogController extends Controller
         }
 
         try {
-            // Lấy tệp tin hình ảnh từ request
             $image = $request->file('image');
             $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
 
-            // Tạo blog gắn với user đăng nhập
             $blog = Blog::create([
                 'image' => $response,
                 'title' => $request->get('title'),
                 'description' => $request->get('description'),
                 'content' => $request->get('content'),
-                'user_id' => auth()->id(), // Gán user_id từ người dùng đăng nhập
+                'user_id' => auth()->id(),
             ]);
 
             return response()->json(['status' => 'success', 'message' => 'Blog đã được thêm thành công', 'data' => $blog], 200);
@@ -183,7 +180,6 @@ class BlogController extends Controller
             return response()->json(['message' => 'Blog không tồn tại'], 400);
         }
 
-        // Cập nhật các trường title, description, content, user_id
         $blog->title = $request->title ?? $blog->title;
         $blog->description = $request->description ?? $blog->description;
         $blog->content = $request->content ?? $blog->content;
@@ -197,23 +193,18 @@ class BlogController extends Controller
                 }
                 $image = base64_decode($base64Image);
 
-                // Tạo một file tạm thời từ base64 để upload lên Cloudinary
                 $tmpFilePath = sys_get_temp_dir() . '/' . uniqid() . '.png';
                 file_put_contents($tmpFilePath, $image);
 
-                // Upload file tạm lên Cloudinary
                 $response = Cloudinary::upload($tmpFilePath)->getSecurePath();
 
-                // Cập nhật đường dẫn ảnh mới
                 $blog->image = $response;
 
-                // Lưu lại blog
                 $blog->save();
             } catch (\Exception $e) {
                 return response()->json(['message' => 'Lỗi khi cập nhật ảnh', 'error' => $e->getMessage()], 500);
             }
         } elseif ($request->image) {
-            // Nếu chỉ là URL ảnh đã có sẵn, không cần upload lại
             $blog->image = $request->image;
             $blog->save();
         }

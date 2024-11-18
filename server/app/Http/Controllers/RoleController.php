@@ -15,7 +15,7 @@ class RoleController extends Controller
     {
         $role = Role::all();
 
-        return response()->json( $role);
+        return response()->json($role);
     }
 
     /**
@@ -31,19 +31,15 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-
-        // Xác thực dữ liệu
         $validator = Validator::make($request->all(), [
             'role_name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
-        // Nếu xác thực thất bại, trả về lỗi
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Tạo role mới
         $role = Role::create([
             'role_name' => $request->role_name,
             'description' => $request->description,
@@ -60,7 +56,7 @@ class RoleController extends Controller
         $role = Role::find($id);
 
         if ($role) {
-            return response()->json( $role);
+            return response()->json($role);
         } else {
             return response()->json([
                 'status' => false,
@@ -83,45 +79,21 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // $role = Role::find($id);
-
-        // if (!$role) {
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'Không tìm thấy role',
-        //         'data' => []
-        //     ], 404);
-        // }
-
-        // $role->update([
-        //     'role_name' => $request->role_name,
-        //     'description' => $request->description,
-        // ]);
-
-        // return response()->json([
-        //     'status' => true,
-        //     'message' => 'Cập nhật role thành công',
-        //     'data' => $role->toArray() // Trả về mảng role sau khi cập nhật
-        // ], 200);
-
         $role = Role::find($id);
-        
+
         if (!$role) {
             return response()->json(['message' => 'Role not found'], 404);
         }
 
-        // Xác thực dữ liệu
         $validator = Validator::make($request->all(), [
             'role_name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
-        // Nếu xác thực thất bại, trả về lỗi
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Cập nhật dữ liệu
         $role->update([
             'role_name' => $request->role_name,
             'description' => $request->description,

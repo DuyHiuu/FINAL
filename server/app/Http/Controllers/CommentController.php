@@ -19,7 +19,6 @@ class CommentController extends Controller
      */
     public function index()
     {
-        // Lấy tất cả comment và kèm theo thông tin của user
         $comments = Comment::with('user', 'room')->get();
 
         return response()->json([
@@ -43,25 +42,22 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        // Xác thực dữ liệu
         $validator = Validator::make($request->all(), [
             'content' => 'required|string|max:1000',
-            'room_id' => 'required|integer|exists:rooms,id', // Đảm bảo room_id được cung cấp và tồn tại
+            'room_id' => 'required|integer|exists:rooms,id',
         ]);
 
-        // Nếu xác thực thất bại, trả về lỗi
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
         if ($request->isMethod('POST')) {
-            DB::beginTransaction(); // Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+            DB::beginTransaction();
 
             try {
                 $params = $request->all();
                 $user = User::find($params['user_id']);
 
-                // Kiểm tra người dùng có tồn tại không
                 if (!$user) {
                     return response()->json([
                         'status' => 'error',
@@ -69,12 +65,10 @@ class CommentController extends Controller
                     ], 404);
                 }
 
-                // Tạo mới một comment
                 $comment = new Comment();
                 $comment->content = $params['content'];
                 $comment->user_id = $user->id;
 
-                // Kiểm tra và gán room_id nếu có
                 if (!empty($params['room_id'])) {
                     $room = Room::find($params['room_id']);
                     if ($room) {
@@ -87,10 +81,9 @@ class CommentController extends Controller
                     }
                 }
 
-                // Lưu comment vào cơ sở dữ liệu
                 $comment->save();
 
-                DB::commit(); // Hoàn thành transaction
+                DB::commit();
 
                 return response()->json([
                     'status' => 'Thành công',
@@ -98,7 +91,7 @@ class CommentController extends Controller
                     'comment' => $comment
                 ], 201);
             } catch (\Exception $e) {
-                DB::rollBack(); // Rollback nếu có lỗi
+                DB::rollBack();
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Xảy ra lỗi trong quá trình lưu comment. Vui lòng thử lại!',
@@ -114,16 +107,8 @@ class CommentController extends Controller
      */
     public function show($room_id)
     {
-        // Lấy tất cả các bình luận cho Room cụ thể
         $comments = Comment::where('room_id', $room_id)->with('user')->get();
 
-        // Trả về JSON với các bình luận của room đó
-        // return response()->json([
-        //     'status' => 'success',
-        //     'comments' => $comments
-        // ], 200);
-
-        // Kiểm tra nếu tìm thấy bình luận
         if ($comments->isEmpty()) {
             return response()->json([
                 'status' => 'error',
@@ -131,7 +116,6 @@ class CommentController extends Controller
             ], 404);
         }
 
-        // Nếu có bình luận, trả về dữ liệu
         return response()->json([
             'status' => 'success',
             'comments' => $comments
@@ -151,31 +135,25 @@ class CommentController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Xác thực dữ liệu đầu vào
         $validator = Validator::make($request->all(), [
             'content' => 'required|string|max:1000',
         ]);
 
-        // Nếu xác thực thất bại, trả về lỗi
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Tìm bình luận dựa trên ID
         $comment = Comment::find($id);
 
-        // Kiểm tra nếu bình luận không tồn tại
         if (!$comment) {
             return response()->json([
                 'message' => 'Không tìm thấy bình luận!'
             ], 404);
         }
 
-        // Cập nhật nội dung bình luận
         $comment->content = $request->input('content');
         $comment->save();
 
-        // Trả về phản hồi thành công
         return response()->json([
             'status' => 'success',
             'message' => 'Cập nhật bình luận thành công!',
@@ -189,12 +167,8 @@ class CommentController extends Controller
      */
     public function destroy(string $id)
     {
-        // Tìm Payment theo id
         $comment = Comment::findOrFail($id);
-
-        // Xóa mềm (soft delete)
         $comment->delete();
-
         return response()->json(['message' => 'Comment đã xóa thành công.']);
     }
 }
