@@ -15,15 +15,14 @@ class SizeController extends Controller
      */
     public function index()
     {
-        $sizes = Size::all(); // Lấy tất cả sizes
+        $sizes = Size::all();
 
-        // Chuyển đổi danh sách size thành mảng
         $sizeArray = $sizes->toArray();
 
         return response()->json([
             'status' => true,
             'message' => 'Lấy danh sách thành công',
-            'data' => $sizeArray // Trả về mảng size thay vì resource
+            'data' => $sizeArray
         ]);
     }
 
@@ -40,7 +39,7 @@ class SizeController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Tạo size mới thành công',
-            'data' => $size->toArray() // Trả về mảng size mới tạo
+            'data' => $size->toArray()
         ], 201);
     }
 
@@ -55,7 +54,7 @@ class SizeController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Lấy thông tin size thành công',
-                'data' => $size->toArray() // Trả về mảng size cụ thể
+                'data' => $size->toArray()
             ]);
         } else {
             return response()->json([
@@ -89,7 +88,7 @@ class SizeController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Cập nhật size thành công',
-            'data' => $size->toArray() // Trả về mảng size sau khi cập nhật
+            'data' => $size->toArray()
         ], 200);
     }
 

@@ -108,7 +108,6 @@ const HomePage = () => {
     },
   ];
 
-
   const { room } = useFetchRooms();
   const { service } = useFetchServices();
   const { blog } = useFetchBlogs();
@@ -117,12 +116,11 @@ const HomePage = () => {
     const { comments, loading, error } = useFetchComments();
     console.log(comments);
 
-
     return (
       <div className="flex flex-col items-center">
         <h1 className="text-3xl font-bold mt-10">Đánh giá</h1>
         <p className="text-lg text-center mt-2">Một số đánh giá tiêu biểu</p>
-        <div className="flex flex-wrap justify-center mt-6">
+        <div className="flex flex-wrap justify-center mt-6 gap-4">
           {loading}
           {error && <p>Error: {error}</p>}
           {comments?.slice(0, 3).map((comment) => (
@@ -130,7 +128,7 @@ const HomePage = () => {
               key={comment?.id}
               title={comment?.content}
               bordered={false}
-              style={{ width: 350, marginBottom: 16 }}
+              style={{ width: 350 }}
               className="bg-[#F2F0F2] text-center"
             >
               <p className="text-sm">-{comment?.user?.name}-</p>
@@ -149,7 +147,6 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col items-center mb-20 mt-24">
-      {/* Banner Image */}
       <Swiper
         spaceBetween={30}
         centeredSlides={true}
@@ -172,7 +169,6 @@ const HomePage = () => {
         ))}
       </Swiper>
 
-      {/* Search Input */}
       <div className="flex justify-center mt-10">
         <div className="relative w-full max-w-md">
           <Input
@@ -194,7 +190,6 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Content */}
       <h1 className="text-3xl font-bold mt-4 text-center">
         PetSpa xin chào bạn
       </h1>
@@ -203,80 +198,173 @@ const HomePage = () => {
       </p>
       <p>Liên hệ hotline: 0868403204</p>
 
-      {/* Cards Section */}
       <Row gutter={[16, 16]} justify="center" className="mt-10">
         {cards.map((card, index) => (
           <Col key={index} xs={24} sm={12} md={8} lg={6}>
-            <Card className="bg-[#E2F1E8]" hoverable>
-              <div className="mb-2">{card.icon}</div>
-              <h1 className="font-bold text-xl">{card.title}</h1>
-              <p>{card.description}</p>
+            <Card
+              hoverable
+              className="bg-[#E2F1E8]"
+              style={{
+                height: "170px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: "8px",
+                  width: "100%",
+                }}
+              >
+                {card.icon}
+              </div>
+              <h1
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "1.25rem",
+                  textAlign: "center",
+                }}
+              >
+                {card.title}
+              </h1>
+              <p style={{ textAlign: "center" }}>{card.description}</p>
             </Card>
           </Col>
         ))}
       </Row>
 
-      {/* Services Section */}
-      <h2 className="text-2xl font-semibold mt-12">Một số hình ảnh của PetHouse</h2>
+      <h2 className="text-2xl font-semibold mt-12">
+        Một số hình ảnh của PetHouse
+      </h2>
       <Row gutter={[16, 16]} justify="center" className="mt-6">
         {room?.slice(0, 3).map((item: any) => (
           <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
             <Card
-              cover={<img alt={item.size_name} src={item.img_thumbnail} className="h-[250px]" />}
+              cover={
+                <img
+                  alt={item.size_name}
+                  src={item.img_thumbnail}
+                  style={{
+                    height: "250px",
+                    width: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              }
               hoverable
-            >
-            </Card>
+              style={{
+                height: "350px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            ></Card>
           </Col>
         ))}
       </Row>
 
-      {/* Rooms & Blogs */}
       <div className="mt-12 w-full text-center">
-        <Button type="primary" onClick={handleClickDanhsachphong} className="mr-4 bg-[#064749]">
+        <Button
+          type="primary"
+          onClick={handleClickDanhsachphong}
+          className="mr-4 bg-[#064749]"
+        >
           Xem danh sách phòng
         </Button>
       </div>
 
-      {/* Services Section */}
       <h2 className="text-2xl font-semibold mt-12">Các dịch vụ chăm sóc</h2>
-      <p>Các dịch vụ  thực hiện bởi các nhân viên được đào tạo bài bản, có chứng chỉ hành nghề</p>
+      <p>
+        Các dịch vụ thực hiện bởi các nhân viên được đào tạo bài bản, có chứng
+        chỉ hành nghề
+      </p>
       <Row gutter={[16, 16]} justify="center" className="mt-6">
         {service?.slice(0, 3).map((item: any) => (
           <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
             <Card
-              cover={<img alt={item.name} src={item.image} />}
               hoverable
+              cover={
+                <img
+                  alt={item.name}
+                  src={item.image}
+                  style={{
+                    height: "250px",
+                    objectFit: "cover",
+                    width: "100%",
+                  }}
+                />
+              }
+              style={{
+                height: "450px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
             >
-              <Card.Meta title={item.name} description={item.description} />
+              <Card.Meta
+                title={item.name}
+                description={item.description}
+                style={{
+                  textAlign: "center",
+                }}
+              />
             </Card>
           </Col>
         ))}
       </Row>
 
-      {/* Services Section */}
       <h2 className="text-2xl font-semibold mt-12">Blog</h2>
-      <Row gutter={[16, 16]} justify="center" className="mt-6">
+      <Row gutter={[16, 16]} justify="center" align="stretch" className="mt-6">
         {blog?.slice(0, 3).map((item: any) => (
           <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
             <Card
-              cover={<img alt={item.title} src={item.image} />}
               hoverable
+              cover={
+                <img
+                  alt={item.title}
+                  src={item.image}
+                  style={{
+                    height: "200px",
+                    objectFit: "cover",
+                    width: "100%",
+                  }}
+                />
+              }
+              style={{
+                height: "450px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
             >
-              <Card.Meta title={item.title} description={item.description} />
+              <Card.Meta
+                title={item.title}
+                description={item.description}
+                style={{
+                  textAlign: "center",
+                }}
+              />
             </Card>
           </Col>
         ))}
       </Row>
 
-      {/* Rooms & Blogs */}
       <div className="mt-12 w-full text-center">
-        <Button type="primary" onClick={handleClickDocthem} className="bg-[#064749]">
+        <Button
+          type="primary"
+          onClick={handleClickDocthem}
+          className="bg-[#064749]"
+        >
           Đọc thêm
         </Button>
       </div>
 
       <ReviewsSection />
-
     </div>
   );
 };

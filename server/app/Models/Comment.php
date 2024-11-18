@@ -17,13 +17,11 @@ class Comment extends Model
         'room_id',
     ];
 
-    // Quan hệ với bảng Rooms
     public function room()
     {
         return $this->belongsTo(Room::class, 'room_id');
     }
 
-    // Quan hệ với bảng User
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

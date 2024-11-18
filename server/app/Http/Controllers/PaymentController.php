@@ -116,22 +116,19 @@ class PaymentController extends Controller
         $subTotal_room = 0;
 
         foreach ($payments as $payment) {
-            $booking = $payment->booking; // Lấy booking từ mỗi payment
+            $booking = $payment->booking; 
 
             if (!empty($booking)) {
                 $startDate = Carbon::parse($booking->start_date);
                 $endDate = Carbon::parse($booking->end_date);
 
-                // Tính khoảng cách ngày
                 $days = max(1, $startDate->diffInDays($endDate));
                 if ($booking->room) {
                     $subTotal_room += $booking->room->price * $days;
                 }
 
-                // Tính tổng tiền cho các dịch vụ trong booking
                 if ($booking->services->isNotEmpty()) {
                     foreach ($booking->services as $service) {
-                        // Tính tổng tiền dịch vụ và nhân với số lượng từ pivot table
                         $subTotal_service += $service->price;
                     }
                 }
@@ -202,7 +199,7 @@ class PaymentController extends Controller
 
             try {
                 $params = $request->all();
-                // Lấy booking dựa trên booking_id từ request
+              
                 $booking = Booking::find($params['booking_id']);
 
                 $subTotal_service = 0;
@@ -212,7 +209,6 @@ class PaymentController extends Controller
                     $startDate = Carbon::parse($booking->start_date);
                     $endDate = Carbon::parse($booking->end_date);
 
-                    // Tính khoảng cách ngày
                     $days = max(1, $startDate->diffInDays($endDate));
 
                     $subTotal_room += $booking->room->price * $days;
@@ -221,12 +217,9 @@ class PaymentController extends Controller
                     if ($booking->services && $booking->services->isNotEmpty()) {
                         foreach ($booking->services as $item) {
                             if ($item->id === 2) {
-                                // Tính quantity dựa trên days, đảm bảo quantity không dưới 1
                                 $quantity = max(1, floor($days / 3));
-
                                 $subTotal_service += $item->price * $quantity;
                             } else {
-                                // Tính tổng tiền cho các dịch vụ còn lại
                                 $subTotal_service += $item->price;
                             }
                         }
@@ -257,7 +250,6 @@ class PaymentController extends Controller
                             return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
                         }
 
-                        // Kiểm tra tổng tiền đơn hàng có đủ để sử dụng voucher không
                         if ($total_amount < $voucher->min_total_amount) {
                             return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
                         }
@@ -270,8 +262,6 @@ class PaymentController extends Controller
 
                         $totalAmount = max(0, $total_amount - $discount);
 
-
-                        // Thêm tổng tiền vào params trước khi tạo payment
                         $params['total_amount'] = $totalAmount;
                     } else {
                         $params['total_amount'] = $total_amount;
@@ -279,12 +269,11 @@ class PaymentController extends Controller
                 }
 
                 // Mặc định status_id = 1 khi thêm
+
                 $params['status_id'] = $params['status_id'] ?? 1;
 
-                // Tạo một bản ghi payment mới với tổng tiền
                 $payment = Payment::query()->create($params);
 
-                // Lưu ID của payment
                 $payment_id = $payment->id;
 
                 $room = $booking->room;
@@ -311,8 +300,13 @@ class PaymentController extends Controller
                 $payment = Payment::create($params);
                 $payment_id = $payment->id;
 
+
                 // Send order confirmation email to the user
-//                Mail::to($payment->user->email)->send(new OrderConfirmation());
+//              Mail::to($payment->user->email)->send(new OrderConfirmation());
+
+                // // Send order confirmation email to the user
+                // Mail::to($payment->user->email)->send(new OrderConfirmation());
+
 
 
                 // Commit the transaction
@@ -384,16 +378,12 @@ class PaymentController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Tìm Payment theo id
         $payment = Payment::findOrFail($id);
 
-        // Validate dữ liệuDB::beginTransaction();
-
         $validator = Validator::make($request->all(), [
-            'status_id' => 'required|integer|exists:status_payments,id', // Giả sử status lưu trong bảng 'statuses'
+            'status_id' => 'required|integer|exists:status_payments,id', 
         ]);
 
-        // Nếu xác thực thất bại, trả về lỗi
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
@@ -420,7 +410,6 @@ class PaymentController extends Controller
             DB::rollBack();
 
             return response()->json([
-                'status' => 'error',
                 'message' => 'Đã xảy ra lỗi trong quá trình cập nhật trạng thái. Vui lòng thử lại!',
                 'error' => $e->getMessage()
             ], 500);

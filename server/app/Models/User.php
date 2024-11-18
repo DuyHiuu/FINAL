@@ -46,25 +46,21 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    // Quan hệ với bảng Role
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
 
-    // Quan hệ với bảng Payment
     public function payment()
     {
         return $this->hasMany(Payment::class);
     }
 
-    // Quan hệ với bảng Bookings
     public function bookings()
     {
         return $this->hasMany(Booking::class);
     }
 
-    // Quan hệ với bảng Ratings
     public function ratings()
     {
         return $this->hasMany(Rating::class);

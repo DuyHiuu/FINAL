@@ -15,7 +15,7 @@ class RoomImageController extends Controller
      */
     public function index()
     {
-        $images = Room_Image::with('room')->get(); // Lấy tất cả room_images cùng với thông tin rooms
+        $images = Room_Image::with('room')->get();
 
         return response()->json([
             'success' => true,
@@ -37,7 +37,6 @@ class RoomImageController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the incoming request
         $validator = Validator::make(
             $request->all(),
             [
@@ -59,7 +58,6 @@ class RoomImageController extends Controller
 
         $room_id = $request->get('room_id');
 
-        // Kiểm tra số lượng hình ảnh hiện có của phòng này
         $existingImagesCount = Room_Image::where('room_id', $room_id)->count();
         $newImagesCount = count($request->file('images'));
 
@@ -71,10 +69,7 @@ class RoomImageController extends Controller
             $uploadedImages = [];
 
             foreach ($request->file('images') as $image) {
-                // Tải từng hình ảnh lên Cloudinary
                 $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
-
-                // Tạo bản ghi cho mỗi hình ảnh được tải lên
                 $data = [
                     'image' => $response,
                     'room_id' => $room_id,
@@ -95,10 +90,8 @@ class RoomImageController extends Controller
      */
     public function show(string $id)
     {
-        // Lấy tất cả các ảnh từ room_imges với room_id cụ thể
         $images = Room_Image::where('room_id', $id)->get();
 
-        // Định dạng dữ liệu ảnh để trả về JSON
         $imageData = $images->map(function ($image) {
             return [
                 'id' => $image->id,
@@ -133,7 +126,6 @@ class RoomImageController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Validate the incoming request
         $validator = Validator::make(
             $request->all(),
             [
@@ -151,18 +143,15 @@ class RoomImageController extends Controller
             return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
         }
 
-        // Kiểm tra xem hình ảnh có tồn tại không
         $existingImage = Room_Image::find($id);
         if (!$existingImage) {
             return response()->json(['status' => 'error', 'message' => 'Hình ảnh không tồn tại!'], 404);
         }
 
-        // Kiểm tra tổng số hình ảnh của phòng
         $room_id = $existingImage->room_id;
         $existingImagesCount = Room_Image::where('room_id', $room_id)->count();
         $newImagesCount = count($request->file('images'));
 
-        // Đảm bảo tổng số hình ảnh sau khi cập nhật không vượt quá 4
         if ($existingImagesCount + $newImagesCount > 4) {
             return response()->json(['status' => 'error', 'message' => 'Mỗi phòng chỉ có thể chứa tối đa 4 ảnh!'], 400);
         }
@@ -170,12 +159,10 @@ class RoomImageController extends Controller
         try {
             $uploadedImages = [];
 
-            // Cập nhật hình ảnh mới hoặc thay thế hình ảnh hiện có
             foreach ($request->file('images') as $image) {
-                // Tải hình ảnh mới lên Cloudinary
+
                 $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
 
-                // Cập nhật dữ liệu hình ảnh
                 $existingImage->update(['image' => $response]);
 
                 $uploadedImages[] = ['image' => $response, 'room_id' => $room_id];
@@ -194,7 +181,6 @@ class RoomImageController extends Controller
     {
         $roomImage = Room_Image::find($id);
 
-        // Xóa ảnh nếu tồn tại
         if ($roomImage && Storage::disk('public')->exists($roomImage->image)) {
             Storage::disk('public')->delete($roomImage->image);
         }

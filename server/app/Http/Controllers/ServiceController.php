@@ -37,7 +37,6 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the incoming request
         $validator = FacadesValidator::make(
             $request->all(),
             [
@@ -141,30 +140,24 @@ class ServiceController extends Controller
 
         if ($request->image && !str_starts_with($request->image, 'http')) {
             try {
-                // Decode base64 nếu không có tiền tố "data:image/..."
                 $base64Image = $request->image;
                 if (str_contains($base64Image, ',')) {
-                    $base64Image = explode(',', $base64Image)[1]; // Loại bỏ tiền tố nếu có
+                    $base64Image = explode(',', $base64Image)[1];
                 }
                 $image = base64_decode($base64Image);
-    
-                // Tạo một file tạm thời từ base64 để upload lên Cloudinary
+
                 $tmpFilePath = sys_get_temp_dir() . '/' . uniqid() . '.png';
                 file_put_contents($tmpFilePath, $image);
-    
-                // Upload file tạm lên Cloudinary
+
                 $response = Cloudinary::upload($tmpFilePath)->getSecurePath();
-    
-                // Cập nhật đường dẫn ảnh mới
+
                 $service->image = $response;
-    
-                // Lưu lại room
+
                 $service->save();
             } catch (\Exception $e) {
                 return response()->json(['message' => 'Lỗi khi cập nhật ảnh', 'error' => $e->getMessage()], 500);
             }
         } elseif ($request->image) {
-            // Nếu chỉ là URL ảnh đã có sẵn, không cần upload lại
             $service->image = $request->image;
             $service->save();
         }

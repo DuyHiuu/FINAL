@@ -34,6 +34,10 @@ const AppHeader = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("name");
         localStorage.removeItem("role_id");
+        localStorage.removeItem("role_name");
+        localStorage.removeItem("email");
+        localStorage.removeItem("phone");
+        localStorage.removeItem("user_id");
 
         setIsLoggedIn(false);
         setUserName("");
@@ -49,17 +53,14 @@ const AppHeader = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Hàm điều hướng đến trang admin
   const handleGoToAdmin = () => {
     navigate("/admin");
   };
 
-  // Hàm điều hướng đến lịch sử đơn hàng
   const handleGoToHistory = () => {
     navigate("/history1");
   };
 
-  // Hàm điều hướng đến thông tin tài khoản
   const handleGoToAccountInfo = () => {
     navigate("/account");
   };
@@ -78,15 +79,15 @@ const AppHeader = () => {
   return (
     <Header
       className="bg-white shadow-lg fixed top-0 left-0 right-0 z-50"
-      style={{ height: "100px" }} // Đặt chiều cao của Header là 80px
+      style={{ height: "100px" }}
     >
       <div className="container mx-auto flex items-center justify-between p-6">
-        {/* Logo */}
+       
         <Link to="/">
-          <img src="/images/logo.png" alt="Logo" className="h-12" /> {/* Tăng chiều cao của logo */}
+          <img src="/images/logo.png" alt="Logo" className="h-12" />{" "}
+       
         </Link>
 
-        {/* Menu for large screens */}
         <Menu mode="horizontal" className="hidden lg:flex">
           <Menu.Item key="home">
             <Link to="/">Trang chủ</Link>
@@ -105,7 +106,6 @@ const AppHeader = () => {
           </Menu.Item>
         </Menu>
 
-        {/* Right section for login/logout */}
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <Dropdown
@@ -124,16 +124,19 @@ const AppHeader = () => {
           ) : (
             <>
               <Link to="/register">
-                <Button type="link" className="text-[#064749]">Đăng ký</Button>
+                <Button type="link" className="text-[#064749]">
+                  Đăng ký
+                </Button>
               </Link>
               <Link to="/login">
-                <Button type="primary" className="bg-[#064749]">Đăng nhập</Button>
+                <Button type="primary" className="bg-[#064749]">
+                  Đăng nhập
+                </Button>
               </Link>
             </>
           )}
         </div>
 
-        {/* Mobile Menu */}
         <div className="lg:hidden">
           <Button
             icon={<DownOutlined />}
