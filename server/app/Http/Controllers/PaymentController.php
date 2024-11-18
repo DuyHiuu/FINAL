@@ -151,6 +151,8 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request);
+        die;
         $validator = Validator::make(
             $request->all(),
             [
@@ -266,6 +268,8 @@ class PaymentController extends Controller
                     }
                 }
 
+                // Mặc định status_id = 1 khi thêm
+
                 $params['status_id'] = $params['status_id'] ?? 1;
 
                 $payment = Payment::query()->create($params);
@@ -296,8 +300,13 @@ class PaymentController extends Controller
                 $payment = Payment::create($params);
                 $payment_id = $payment->id;
 
+
+                // Send order confirmation email to the user
+//              Mail::to($payment->user->email)->send(new OrderConfirmation());
+
                 // // Send order confirmation email to the user
                 // Mail::to($payment->user->email)->send(new OrderConfirmation());
+
 
 
                 // Commit the transaction
