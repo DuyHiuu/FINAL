@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Table, Button, Input, message, Popconfirm } from "antd";
+import { Table, Button, Input, message, Popconfirm, Checkbox } from "antd";
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'; // Thêm icon
 import useFetchRooms from "../../../../api/useFetchRooms";
 
@@ -21,8 +21,8 @@ const RoomList = () => {
     return <div className="text-center text-red-600 mt-5">{error}</div>;
 
   // Hàm xử lý thay đổi bộ lọc kích thước
-  const handleSizeChange = (e) => {
-    setSizeFilter(e.target.value);
+  const handleSizeChange = (checkedValues) => {
+    setSizeFilter(checkedValues); // Cập nhật giá trị đã chọn
   };
 
   // Hàm xóa phòng
@@ -48,8 +48,8 @@ const RoomList = () => {
   };
 
   // Lọc danh sách phòng dựa trên kích thước
-  const filteredRooms = sizeFilter
-    ? room.filter((r) => r.size_name.toLowerCase().includes(sizeFilter.toLowerCase()))
+  const filteredRooms = sizeFilter.length > 0
+    ? room.filter((r) => sizeFilter.includes(r.size_name))
     : room;
 
   // Cấu hình cho bảng
@@ -76,17 +76,23 @@ const RoomList = () => {
       title: "Giá (VND)",
       dataIndex: "price",
       key: "price",
+      sorter: (a, b) => a.price - b.price,
+      sortDirections: ['ascend', 'descend'],
       render: (text) => `${text.toLocaleString("vi-VN")} VND`,
     },
     {
       title: "Số Lượng",
       dataIndex: "quantity",
       key: "quantity",
+      sorter: (a, b) => a.quantity - b.quantity,
+      sortDirections: ['ascend', 'descend'],
     },
     {
       title: "Đang Đặt",
       dataIndex: "is_booked",
       key: "is_booked",
+      sorter: (a, b) => a.is_booked - b.is_booked,
+      sortDirections: ['ascend', 'descend'],
     },
     {
       title: "Trạng Thái",
@@ -124,6 +130,8 @@ const RoomList = () => {
     },
   ];
 
+  const sizeOptions = [...new Set(room.map((r) => r.size_name))];
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
@@ -136,13 +144,12 @@ const RoomList = () => {
         </Link>
       </div>
 
-      {/* Thanh tìm kiếm */}
       <div className="mb-4">
-        <Input
-          placeholder="Tìm theo kích thước phòng..."
+        <h3 className="text-lg font-semibold">Tìm kiếm theo kích thước</h3>
+        <Checkbox.Group
+          options={sizeOptions}
           value={sizeFilter}
           onChange={handleSizeChange}
-          className="w-64"
         />
       </div>
 
