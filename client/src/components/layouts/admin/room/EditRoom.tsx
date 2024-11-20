@@ -80,6 +80,16 @@ const EditRoom = () => {
                 throw new Error("Lỗi khi cập nhật phòng");
             }
 
+            if (removedImages.length > 0) {
+                await Promise.all(
+                    removedImages.map(async (image) => {
+                        await fetch(`${roomImageUrl}/${image.uid}`, {
+                            method: "DELETE",
+                        });
+                    })
+                );
+            }
+
             // Thêm ảnh phụ mới
             if (newImages.length > 0) {
                 const formData = new FormData();
@@ -96,17 +106,6 @@ const EditRoom = () => {
                 if (!imageResponse.ok) {
                     throw new Error("Lỗi khi thêm ảnh phụ");
                 }
-            }
-
-            // Xóa ảnh phụ đã bị gỡ
-            if (removedImages.length > 0) {
-                await Promise.all(
-                    removedImages.map(async (image) => {
-                        await fetch(`${roomImageUrl}/${image.uid}`, {
-                            method: "DELETE",
-                        });
-                    })
-                );
             }
 
             message.success("Phòng đã sửa thành công");
@@ -151,6 +150,14 @@ const EditRoom = () => {
         <Form
             form={form}
             onFinish={handleSubmit}
+            onValuesChange={(changedValues) => {
+                if (changedValues.quantity !== undefined) {
+                    const quantity = changedValues.quantity;
+                    form.setFieldsValue({
+                        statusroom: quantity === 0 ? "Hết phòng" : "Còn phòng",
+                    });
+                }
+            }}
             className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md"
         >
             <h2 className="text-2xl font-bold mb-4">Sửa Thông Tin Phòng</h2>
@@ -196,9 +203,8 @@ const EditRoom = () => {
             <Form.Item
                 label="Trạng Thái"
                 name="statusroom"
-                rules={[{ required: true, message: "Vui lòng chọn trạng thái phòng!" }]}
             >
-                <Select placeholder="Chọn trạng thái phòng">
+                <Select placeholder="Chọn trạng thái phòng" disabled>
                     <Select.Option value="Còn phòng">Còn phòng</Select.Option>
                     <Select.Option value="Hết phòng">Hết phòng</Select.Option>
                 </Select>

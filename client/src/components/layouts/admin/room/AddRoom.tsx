@@ -50,7 +50,7 @@ const AddRoom = () => {
         formData.append('size_id', values.sizeId);
         formData.append('description', values.description);
         formData.append('quantity', values.quantity);
-        formData.append('statusroom', values.statusRoom);
+        formData.append('statusroom', 'Còn phòng');
         formData.append('img_thumbnail', imgThumbnail);
 
         // Đẩy ảnh phụ vào formData
@@ -144,7 +144,17 @@ const AddRoom = () => {
                 <Form.Item
                     label="Số lượng"
                     name="quantity"
-                    rules={[{ required: true, message: 'Vui lòng nhập số lượng phòng!' }]}
+                    rules={[
+                        { required: true, message: 'Vui lòng nhập số lượng phòng!' },
+                        {
+                            validator: (_, value) => {
+                                if (!value || value >= 1) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('Số lượng không nhỏ hơn 1!'));
+                            },
+                        },
+                    ]}
                 >
                     <Input
                         type="number"
@@ -152,22 +162,6 @@ const AddRoom = () => {
                         onChange={(e) => setQuantity(e.target.value)}
                         className="w-full"
                     />
-                </Form.Item>
-
-                {/* Trạng thái */}
-                <Form.Item
-                    label="Trạng thái"
-                    name="statusRoom"
-                    rules={[{ required: true, message: 'Vui lòng chọn trạng thái phòng!' }]}
-                >
-                    <Select
-                        value={statusRoom}
-                        onChange={(value) => setStatusRoom(value)}
-                        className="w-full"
-                    >
-                        <Option value="Còn phòng">Còn phòng</Option>
-                        <Option value="Hết phòng">Hết phòng</Option>
-                    </Select>
                 </Form.Item>
 
                 {/* Hình ảnh chính */}
@@ -200,6 +194,7 @@ const AddRoom = () => {
                 <Form.Item
                     label="Hình Ảnh Phụ"
                     name="imgSubImages"
+                    rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh phòng!' }]}
                 >
                     <Upload
                         accept="image/*"
