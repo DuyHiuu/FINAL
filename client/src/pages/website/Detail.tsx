@@ -276,7 +276,7 @@ const Detail = () => {
             <img
               src={popupImage}
               alt="Popup"
-              className="max-w-[100%] max-h-[100%] rounded-lg"
+              className="w-[600px] h-[600px] rounded-lg"
             />
             <button
               onClick={closePopup}
@@ -288,7 +288,7 @@ const Detail = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="mt-8">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           <div className="space-y-6">
             <h1 className="text-3xl font-bold">{room?.size_name}</h1>
@@ -322,7 +322,7 @@ const Detail = () => {
                     </div>
 
                     {openServiceId === service.id && (
-                      <div className="mt-2 text-sm text-blue-600 pl-6">
+                      <div className="mt-2 text-sm text-[#064749] pl-6">
                         {service?.description}
                       </div>
                     )}
@@ -340,7 +340,6 @@ const Detail = () => {
             </div>
           </div>
 
-          {/* Phần đặt phòng */}
           <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-[200px]">
             <h2 className="text-xl font-semibold text-gray-800">
               {room?.price?.toLocaleString("vi-VN")} VNĐ / ngày
@@ -364,7 +363,7 @@ const Detail = () => {
                   onChange={(date) => setEnd_date(date?.format("YYYY-MM-DD") || "")}
                   placeholder="Ngày check-out"
                   className="w-full mt-1 text-sm"
-                  disabledDate={(current) => current && current < moment().endOf("day")}
+                  disabledDate={(current) => current && current < moment().endOf("day") || current && current < moment(start_date).endOf("day")}
                 />
               </div>
             </div>
