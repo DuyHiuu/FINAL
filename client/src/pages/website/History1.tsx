@@ -124,19 +124,23 @@ const History1 = () => {
                         title={`ID: ${formattedId}`}
                         description={
                           <>
-                            <div className="text-yellow-500">
-                              {item.status?.status_name}
+                            <div className="inline-flex items-center px-3 py-1 rounded-full bg-yellow-300">
+                              <Text className="text-yellow-800 text-sm">
+                                {item.status?.status_name}
+                              </Text>
                             </div>
-                            <Text>
-                              Ngày:{" "}
-                              {`${moment(item.booking?.start_date).format(
-                                "DD-MM-YYYY"
-                              )}`}{" "}
-                              &#8594;{" "}
-                              {`${moment(item.booking?.end_date).format(
-                                "DD-MM-YYYY"
-                              )}`}
-                            </Text>
+                            <div>
+                              <Text>
+                                Ngày:{" "}
+                                {`${moment(item.booking?.start_date).format(
+                                  "DD-MM-YYYY"
+                                )}`}{" "}
+                                &#8594;{" "}
+                                {`${moment(item.booking?.end_date).format(
+                                  "DD-MM-YYYY"
+                                )}`}
+                              </Text>
+                            </div>
                             <div className="mt-2">
                               <a
                                 href={`/history2/${item.id}`}
