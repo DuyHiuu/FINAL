@@ -387,7 +387,7 @@ const Pay2 = () => {
                             <Text className="font-semibold text-[#064749]">Tổng:</Text>
                         </Col>
                         <Col span={12} style={{ textAlign: 'right' }}>
-                            <Text className="font-semibold text-[#064749]">{booking?.total_amount?.toLocaleString("vi-VN")} VNĐ</Text>
+                            <Text className="font-semibold text-[#064749]">{finalAmount.toLocaleString("vi-VN")} VNĐ</Text>
                         </Col>
                     </Row>
                 </Card>
