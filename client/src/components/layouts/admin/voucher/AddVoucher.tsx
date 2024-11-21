@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaPercentage, FaCalendarAlt, FaBarcode } from 'react-icons/fa';
-import { HiOutlineTicket } from 'react-icons/hi';
+import { FaPercentage, FaCalendarAlt, FaBarcode } from "react-icons/fa";
+import { HiOutlineTicket } from "react-icons/hi";
 
 const AddVoucher = () => {
   const [tenVoucher, setVoucher] = useState("");
   const [Code, setCode] = useState("");
-  const [type, setType] = useState('%');
+  const [type, setType] = useState("%");
   const [min_total_amount, setMin_total_amount] = useState("");
   const [giamGia, setGiamGia] = useState("");
   const [soLuong, setSoLuong] = useState("");
@@ -20,18 +20,28 @@ const AddVoucher = () => {
   const validate = () => {
     const newErrors = {};
 
-    if (!tenVoucher.trim()) newErrors.tenVoucher = "Tên voucher không được để trống.";
+    if (!tenVoucher.trim())
+      newErrors.tenVoucher = "Tên voucher không được để trống.";
     if (!Code.trim()) newErrors.Code = "Mã code không được để trống.";
     if (!type) newErrors.type = "Vui lòng chọn loại.";
     if (!giamGia || isNaN(giamGia) || parseFloat(giamGia) <= 0)
       newErrors.giamGia = "Giảm giá phải là số lớn hơn 0.";
-    if (!min_total_amount || isNaN(min_total_amount) || parseFloat(min_total_amount) < 0)
+    if (
+      !min_total_amount ||
+      isNaN(min_total_amount) ||
+      parseFloat(min_total_amount) < 0
+    )
       newErrors.min_total_amount = "Số tiền tối thiểu phải là số không âm.";
     if (!soLuong || isNaN(soLuong) || parseInt(soLuong, 10) <= 0)
       newErrors.soLuong = "Số lượng phải là số nguyên lớn hơn 0.";
     if (!ngayBatDau) newErrors.ngayBatDau = "Ngày bắt đầu không được để trống.";
-    if (!ngayKetThuc) newErrors.ngayKetThuc = "Ngày kết thúc không được để trống.";
-    if (ngayBatDau && ngayKetThuc && new Date(ngayBatDau) > new Date(ngayKetThuc))
+    if (!ngayKetThuc)
+      newErrors.ngayKetThuc = "Ngày kết thúc không được để trống.";
+    if (
+      ngayBatDau &&
+      ngayKetThuc &&
+      new Date(ngayBatDau) > new Date(ngayKetThuc)
+    )
       newErrors.ngayKetThuc = "Ngày kết thúc phải sau ngày bắt đầu.";
 
     setErrors(newErrors);
@@ -43,7 +53,7 @@ const AddVoucher = () => {
     setSuccessMessage("");
     setErrors({});
 
-    if (!validate()) return; 
+    if (!validate()) return;
 
     const newVoucher = {
       name: tenVoucher.trim(),
@@ -67,7 +77,9 @@ const AddVoucher = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        setErrors(errorData.message || { general: "Đã xảy ra lỗi không xác định." });
+        setErrors(
+          errorData.message || { general: "Đã xảy ra lỗi không xác định." }
+        );
       } else {
         setSuccessMessage("Thêm voucher thành công!");
         setTimeout(() => navigate("/admin/vouchers"), 1500);
@@ -86,11 +98,18 @@ const AddVoucher = () => {
         Thêm Voucher Mới
       </h2>
 
-      {errors.general && <p className="text-red-500 text-sm mb-4">{errors.general}</p>}
-      {successMessage && <p className="text-green-500 text-sm mb-4">{successMessage}</p>}
+      {errors.general && (
+        <p className="text-red-500 text-sm mb-4">{errors.general}</p>
+      )}
+      {successMessage && (
+        <p className="text-green-500 text-sm mb-4">{successMessage}</p>
+      )}
 
       <div className="mb-4 relative">
-        <label htmlFor="tenVoucher" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="tenVoucher"
+          className="block text-sm font-medium text-gray-700"
+        >
           Tên Voucher:
         </label>
         <input
@@ -105,11 +124,16 @@ const AddVoucher = () => {
             errors.tenVoucher ? "focus:ring-red-500" : "focus:ring-blue-500"
           }`}
         />
-        {errors.tenVoucher && <p className="text-red-500 text-sm mt-1">{errors.tenVoucher}</p>}
+        {errors.tenVoucher && (
+          <p className="text-red-500 text-sm mt-1">{errors.tenVoucher}</p>
+        )}
       </div>
 
       <div className="mb-4 relative">
-        <label htmlFor="Code" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="Code"
+          className="block text-sm font-medium text-gray-700"
+        >
           Code:
         </label>
         <input
@@ -124,11 +148,16 @@ const AddVoucher = () => {
             errors.Code ? "focus:ring-red-500" : "focus:ring-blue-500"
           }`}
         />
-        {errors.Code && <p className="text-red-500 text-sm mt-1">{errors.Code}</p>}
+        {errors.Code && (
+          <p className="text-red-500 text-sm mt-1">{errors.Code}</p>
+        )}
       </div>
 
       <div className="mb-4 relative">
-        <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="type"
+          className="block text-sm font-medium text-gray-700"
+        >
           Loại:
         </label>
         <select
@@ -144,11 +173,16 @@ const AddVoucher = () => {
           <option value="%">%</option>
           <option value="amount">Amount</option>
         </select>
-        {errors.type && <p className="text-red-500 text-sm mt-1">{errors.type}</p>}
+        {errors.type && (
+          <p className="text-red-500 text-sm mt-1">{errors.type}</p>
+        )}
       </div>
 
       <div className="mb-4 relative">
-        <label htmlFor="giamGia" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="giamGia"
+          className="block text-sm font-medium text-gray-700"
+        >
           Giảm giá (VND/%):
         </label>
         <input
@@ -163,11 +197,16 @@ const AddVoucher = () => {
             errors.giamGia ? "focus:ring-red-500" : "focus:ring-blue-500"
           }`}
         />
-        {errors.giamGia && <p className="text-red-500 text-sm mt-1">{errors.giamGia}</p>}
+        {errors.giamGia && (
+          <p className="text-red-500 text-sm mt-1">{errors.giamGia}</p>
+        )}
       </div>
 
       <div className="mb-4 relative">
-        <label htmlFor="min_total_amount" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="min_total_amount"
+          className="block text-sm font-medium text-gray-700"
+        >
           Số tiền tối thiểu để áp dụng:
         </label>
         <input
@@ -179,14 +218,21 @@ const AddVoucher = () => {
           className={`mt-1 block w-full border ${
             errors.min_total_amount ? "border-red-500" : "border-gray-300"
           } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${
-            errors.min_total_amount ? "focus:ring-red-500" : "focus:ring-blue-500"
+            errors.min_total_amount
+              ? "focus:ring-red-500"
+              : "focus:ring-blue-500"
           }`}
         />
-        {errors.min_total_amount && <p className="text-red-500 text-sm mt-1">{errors.min_total_amount}</p>}
+        {errors.min_total_amount && (
+          <p className="text-red-500 text-sm mt-1">{errors.min_total_amount}</p>
+        )}
       </div>
 
       <div className="mb-4 relative">
-        <label htmlFor="soLuong" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="soLuong"
+          className="block text-sm font-medium text-gray-700"
+        >
           Số lượng:
         </label>
         <input
@@ -201,11 +247,16 @@ const AddVoucher = () => {
             errors.soLuong ? "focus:ring-red-500" : "focus:ring-blue-500"
           }`}
         />
-        {errors.soLuong && <p className="text-red-500 text-sm mt-1">{errors.soLuong}</p>}
+        {errors.soLuong && (
+          <p className="text-red-500 text-sm mt-1">{errors.soLuong}</p>
+        )}
       </div>
 
       <div className="mb-4 relative">
-        <label htmlFor="ngayBatDau" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="ngayBatDau"
+          className="block text-sm font-medium text-gray-700"
+        >
           Ngày bắt đầu:
         </label>
         <input
@@ -213,17 +264,23 @@ const AddVoucher = () => {
           id="ngayBatDau"
           value={ngayBatDau}
           onChange={(e) => setNgayBatDau(e.target.value)}
+          min={new Date().toISOString().split("T")[0]} // Giới hạn ngày bắt đầu không được nhỏ hơn hôm nay
           className={`mt-1 block w-full border ${
             errors.ngayBatDau ? "border-red-500" : "border-gray-300"
           } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${
             errors.ngayBatDau ? "focus:ring-red-500" : "focus:ring-blue-500"
           }`}
         />
-        {errors.ngayBatDau && <p className="text-red-500 text-sm mt-1">{errors.ngayBatDau}</p>}
+        {errors.ngayBatDau && (
+          <p className="text-red-500 text-sm mt-1">{errors.ngayBatDau}</p>
+        )}
       </div>
 
       <div className="mb-4 relative">
-        <label htmlFor="ngayKetThuc" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="ngayKetThuc"
+          className="block text-sm font-medium text-gray-700"
+        >
           Ngày kết thúc:
         </label>
         <input
@@ -231,13 +288,16 @@ const AddVoucher = () => {
           id="ngayKetThuc"
           value={ngayKetThuc}
           onChange={(e) => setNgayKetThuc(e.target.value)}
+          min={ngayBatDau || new Date().toISOString().split("T")[0]} // Ngày kết thúc không được nhỏ hơn ngày bắt đầu
           className={`mt-1 block w-full border ${
             errors.ngayKetThuc ? "border-red-500" : "border-gray-300"
           } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${
             errors.ngayKetThuc ? "focus:ring-red-500" : "focus:ring-blue-500"
           }`}
         />
-        {errors.ngayKetThuc && <p className="text-red-500 text-sm mt-1">{errors.ngayKetThuc}</p>}
+        {errors.ngayKetThuc && (
+          <p className="text-red-500 text-sm mt-1">{errors.ngayKetThuc}</p>
+        )}
       </div>
 
       <button
