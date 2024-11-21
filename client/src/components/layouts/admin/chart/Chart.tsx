@@ -221,10 +221,11 @@ const Chart = () => {
   };
   return (
     <>
-      <div className="mb-[25px] mt-[-30px] text-2xl">
-        Thống kê tổng doanh thu
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">
+          Thống kê tổng doanh thu
+        </h1>
       </div>
-
       <div className="flex gap-[40px] ml-[4%]">
         <div className="flex text-center">
           <DatePicker
