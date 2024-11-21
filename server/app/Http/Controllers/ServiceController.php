@@ -60,11 +60,10 @@ class ServiceController extends Controller
         }
 
         try {
+            $imgPath = null;
             if ($request->hasFile('image')) {
-                $filepath = $request->file('image')->store('uploads/services', 'public');
-                $fileUrl = Storage::url($filepath);
-            } else {
-                $fileUrl = null;
+                $image = $request->file('image');
+                $imgPath = Cloudinary::upload($image->getRealPath())->getSecurePath();
             }
 
             $name = $request->get('name');
@@ -73,7 +72,7 @@ class ServiceController extends Controller
 
             $data = [
                 'name' => $name,
-                'image' => $fileUrl,
+                'image' => $imgPath,
                 'description' => $description,
                 'price' => $price,
             ];
