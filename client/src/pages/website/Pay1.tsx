@@ -85,9 +85,8 @@ const Pay1 = () => {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row pb-20 mt-24">
-      {/* Phần thông tin thanh toán */}
-      <div className="lg:w-1/2 p-4">
+    <div className="flex flex-col lg:flex-row pb-20 mt-32">
+      <div className="lg:w-1/2 p-4 mx-auto">
         <div className="text-left">
           <Title level={1}>Xác nhận thanh toán</Title>
           <Row justify="space-between" className="mt-20 w-auto">
@@ -120,25 +119,23 @@ const Pay1 = () => {
         </Button>
       </div>
 
-      {/* Phần thông tin đặt phòng */}
-      <div className="lg:w-1/2 p-4 mt-10 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2]">
+      <div className="lg:w-1/3 p-4 mt-8 border rounded-lg shadow-md mx-auto bg-white">
         <Card
           cover={
             <img
               src={room?.img_thumbnail}
               alt={room?.size_name}
-              className="w-full object-cover rounded-lg shadow mb-10"
-              style={{ height: '300px' }} // Đặt chiều cao cho ảnh
+              className="w-full object-cover rounded-lg shadow-sm"
+              style={{ height: '250px' }}
             />
           }
         >
-          <Title level={3}>{room?.size_name}</Title>
+          <Title level={4} className="text-center text-[#333]">{room?.size_name}</Title>
           <div className="flex items-center mt-3 mb-3">
-            <p>{room?.description}</p>
+            <p className="text-gray-700">{room?.description}</p>
           </div>
 
-          {/* Ngày vào và Ngày ra */}
-          <Row gutter={16} className="mb-10">
+          <Row gutter={16} className="mb-8">
             <Col span={12}>
               <strong>Ngày check-in</strong>
               <DatePicker
@@ -157,20 +154,19 @@ const Pay1 = () => {
             </Col>
           </Row>
 
-          <Text>Mọi chi phí đã được tính tổng</Text>
+          <Text className="text-gray-600 mb-4">Mọi chi phí đã được tính tổng</Text>
 
-          {/* Chi phí */}
           <Row justify="space-between" className="mt-4">
             <Col span={12}>
-              <Text className="font-bold">Tổng:</Text>
+              <Text className="font-semibold text-[#064749]">Tổng:</Text>
             </Col>
             <Col span={12} style={{ textAlign: 'right' }}>
-              <Text className="font-bold">{booking?.total_amount?.toLocaleString("vi-VN")} VNĐ</Text>
+              <Text className="font-semibold text-[#064749]">{booking?.total_amount?.toLocaleString("vi-VN")} VNĐ</Text>
             </Col>
           </Row>
-
         </Card>
       </div>
+
     </div>
 
   );

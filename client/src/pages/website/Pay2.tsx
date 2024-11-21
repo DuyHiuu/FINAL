@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker, Modal, Checkbox } from 'antd';
+import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker, Modal, Checkbox, Row, Col } from 'antd';
 import useFetchPayMethod from '../../api/useFetchPayMethod';
 import { PulseLoader } from 'react-spinners';
 import moment from 'moment';
@@ -120,7 +120,7 @@ const Pay2 = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append("booking_id", id); // kiểm tra lại id
+        formData.append("booking_id", id);
         formData.append("pet_name", pet_name);
         formData.append("pet_type", pet_type);
         formData.append("pet_description", pet_description);
@@ -129,9 +129,9 @@ const Pay2 = () => {
         formData.append("user_address", user_address);
         formData.append("user_email", user_email);
         formData.append("user_phone", user_phone);
-        formData.append("user_id", user_id); // kiểm tra lại user_id
-        formData.append("paymethod_id", paymethod_id.toString()); // convert số thành chuỗi
-        formData.append("total_amount", total_amount.toString()); // convert số thành chuỗi
+        formData.append("user_id", user_id);
+        formData.append("paymethod_id", paymethod_id.toString());
+        formData.append("total_amount", total_amount.toString());
 
         if (selectedVoucher && selectedVoucher.id) {
             formData.append("voucher_id", selectedVoucher.id.toString());
@@ -157,10 +157,8 @@ const Pay2 = () => {
 
     if (selectedVoucher) {
         if (selectedVoucher.type === 'amount') {
-            // Giảm giá theo số tiền cố định
             finalAmount -= selectedVoucher.discount;
         } else if (selectedVoucher.type === '%') {
-            // Giảm giá theo phần trăm
             finalAmount -= (total_amount * selectedVoucher.discount) / 100;
         }
     }
@@ -189,54 +187,93 @@ const Pay2 = () => {
 
     return (
         <div className="flex flex-col lg:flex-row pb-20 mt-24">
-            {/* Customer Information */}
-            <Form className="lg:w-1/2 p-4" onSubmitCapture={handleSubmit}>
+
+            <form onSubmitCapture={handleSubmit} className="lg:w-1/2 p-4 mx-auto">
                 <Title level={2}>Thông tin khách hàng</Title>
 
-                <Form.Item label="Tên khách hàng">
-                    <Input value={user_name} onChange={(e) => setUser_name(e.target.value)} />
-                </Form.Item>
+                <Card>
+                    <Row gutter={16}>
+                        <Col span={24} className="mb-3">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Tên khách hàng</label>
+                            <Input
+                                value={user_name}
+                                onChange={(e) => setUser_name(e.target.value)}
+                            />
+                        </Col>
 
-                <Form.Item label="Email">
-                    <Input value={user_email} onChange={(e) => setUser_email(e.target.value)} />
-                </Form.Item>
+                        <Col span={24} className="mb-3">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <Input
+                                value={user_email}
+                                onChange={(e) => setUser_email(e.target.value)}
+                            />
+                        </Col>
 
-                <Form.Item label="Số điện thoại">
-                    <Input value={user_phone} onChange={(e) => setUser_phone(e.target.value)} />
-                </Form.Item>
+                        <Col span={24} className="mb-3">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
+                            <Input
+                                value={user_phone}
+                                onChange={(e) => setUser_phone(e.target.value)}
+                            />
+                        </Col>
 
-                <Form.Item label="Địa chỉ">
-                    <Input value={user_address} onChange={(e) => setUser_address(e.target.value)} />
-                </Form.Item>
+                        <Col span={24} className="mb-3">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Địa chỉ</label>
+                            <Input
+                                value={user_address}
+                                onChange={(e) => setUser_address(e.target.value)}
+                            />
+                        </Col>
+                    </Row>
+                </Card>
 
-                <Form.Item label="Tên thú cưng">
-                    <Input value={pet_name} onChange={(e) => setPet_name(e.target.value)} required />
-                </Form.Item>
+                <Card className="mt-10">
+                    <Row gutter={16}>
+                        <Title level={4}>Thông tin thú cưng</Title>
 
-                <Form.Item label="Loại thú cưng">
-                    <Select value={pet_type} onChange={(value) => setPet_type(value)}>
-                        <Select.Option value="Chó">Chó</Select.Option>
-                        <Select.Option value="Mèo">Mèo</Select.Option>
-                    </Select>
-                </Form.Item>
+                        <Col span={24} className="mb-3">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Tên thú cưng</label>
+                            <Input
+                                value={pet_name}
+                                onChange={(e) => setPet_name(e.target.value)}
+                                required
+                            />
+                        </Col>
 
-                <Form.Item label="Mô tả chi tiết thú cưng (Màu, giống,...)">
-                    <Input.TextArea
-                        value={pet_description}
-                        onChange={(e) => setPet_description(e.target.value)}
-                        rows={3}
-                        required
-                    />
-                </Form.Item>
+                        <Col span={24} className="mb-3">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Loại thú cưng</label>
+                            <Select
+                                value={pet_type}
+                                onChange={(value) => setPet_type(value)}
+                            >
+                                <Select.Option value="Chó">Chó</Select.Option>
+                                <Select.Option value="Mèo">Mèo</Select.Option>
+                            </Select>
+                        </Col>
 
-                <Form.Item label="Tình trạng sức khỏe">
-                    <Select value={pet_health} onChange={(value) => setPet_health(value)}>
-                        <Select.Option value="Khỏe mạnh">Khỏe mạnh</Select.Option>
-                        <Select.Option value="Có vấn đề về sức khỏe">Có vấn đề về sức khỏe</Select.Option>
-                    </Select>
-                </Form.Item>
+                        <Col span={24} className="mb-3">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả chi tiết thú cưng (Màu, giống, ...)</label>
+                            <Input.TextArea
+                                value={pet_description}
+                                onChange={(e) => setPet_description(e.target.value)}
+                                rows={3}
+                                required
+                            />
+                        </Col>
 
-                {/* Voucher Selection */}
+                        <Col span={24} className="mb-3">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Tình trạng sức khỏe</label>
+                            <Select
+                                value={pet_health}
+                                onChange={(value) => setPet_health(value)}
+                            >
+                                <Select.Option value="Khỏe mạnh">Khỏe mạnh</Select.Option>
+                                <Select.Option value="Có vấn đề về sức khỏe">Có vấn đề về sức khỏe</Select.Option>
+                            </Select>
+                        </Col>
+                    </Row>
+                </Card>
+
                 <div className="mt-4">
                     <label className="block text-black text-sm font-bold">Chọn voucher</label>
                     <Button onClick={openVoucherPopUp} className="w-full mt-1 text-sm">
@@ -245,7 +282,6 @@ const Pay2 = () => {
                     </Button>
                 </div>
 
-                {/* Voucher Modal */}
                 <Modal
                     title="Các voucher dành cho bạn"
                     open={voucherPopUp}
@@ -253,31 +289,39 @@ const Pay2 = () => {
                     footer={null}
                 >
                     <div className="space-y-2">
-                        {vouchers.map((voucher) => {
-                            const isDisabled = total_amount < voucher.min_total_amount; 
-                            return (
-                                <div key={voucher.id} className="flex items-center">
-                                    <Checkbox
-                                        checked={selectedVoucher?.id === voucher.id}
-                                        onChange={() => !isDisabled && handleVoucherSelect(voucher)}
-                                        disabled={isDisabled} 
-                                    >
-                                        {voucher.name}
-                                    </Checkbox>
-                                    {isDisabled && (
-                                        <span className="text-red-500 text-sm ml-2">
-                                            Không đủ điều kiện (Yêu cầu tối thiểu: {voucher.min_total_amount.toLocaleString()} VNĐ)
-                                        </span>
-                                    )}
-                                </div>
-                            );
-                        })}
+                        {vouchers
+                            .filter((voucher) => {
+                                const checkEnd_date = new Date(voucher.end_date) < new Date();
+                                const checkStart_date = new Date(voucher.start_date) > new Date();
+                                const checkQuantity = voucher.quantity <= 0;
+
+                                return !checkEnd_date && !checkStart_date && !checkQuantity;
+                            })
+                            .map((voucher) => {
+                                const checkMin = total_amount < voucher.min_total_amount;
+
+                                return (
+                                    <div key={voucher.id} className="flex items-center">
+                                        <Checkbox
+                                            checked={selectedVoucher?.id === voucher.id}
+                                            onChange={() => !checkMin && handleVoucherSelect(voucher)}
+                                            disabled={checkMin}
+                                        >
+                                            {voucher.name}
+                                        </Checkbox>
+                                        {checkMin && (
+                                            <span className="text-red-500 text-sm ml-2">
+                                                Không đủ điều kiện (Yêu cầu tối thiểu: {voucher.min_total_amount.toLocaleString()} VNĐ)
+                                            </span>
+                                        )}
+                                    </div>
+                                );
+                            })}
                     </div>
                 </Modal>
 
-                {/* Payment Method */}
                 <div className="mt-10">
-                    <p className='block text-black text-sm font-bold'>Phương thức thanh toán</p>
+                    <p className="block text-black text-sm font-bold">Phương thức thanh toán</p>
                     <Form.Item>
                         <Select
                             value={paymethod_id}
@@ -292,50 +336,60 @@ const Pay2 = () => {
                     </Form.Item>
                 </div>
 
+                {/* Submit Button */}
                 <div className="text-center">
                     <Button type="primary" htmlType="submit" className="mt-20 bg-[#064749]">
                         Xác nhận
                     </Button>
                 </div>
-            </Form>
+            </form>
 
-            {/* Room Information */}
-            <div className="lg:w-1/2 p-4 mt-20 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-2/3">
+
+            <div className="lg:w-1/3 p-4 mt-8 border rounded-lg shadow-md mx-auto bg-white h-[550px]">
                 <Card
                     cover={
                         <img
                             src={room?.img_thumbnail}
                             alt={room?.size_name}
-                            className="w-full h-[300px] object-cover rounded-lg shadow mb-10"
+                            className="w-full object-cover rounded-lg shadow-sm"
+                            style={{ height: '250px' }}
                         />
                     }
                 >
-                    <Title level={3}>{room?.size_name}</Title>
-                    <Text>{room?.description}</Text>
+                    <Title level={4} className="text-center text-[#333]">{room?.size_name}</Title>
+                    <div className="flex items-center mt-3 mb-3">
+                        <p className="text-gray-700">{room?.description}</p>
+                    </div>
 
-                    <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 mb-10 mt-10">
-                        <div className="w-full lg:w-1/2">
+                    <Row gutter={16} className="mb-8">
+                        <Col span={12}>
                             <strong>Ngày check-in</strong>
                             <DatePicker
                                 value={booking?.start_date ? moment(booking?.start_date) : null}
                                 disabled
                                 style={{ width: '100%' }}
                             />
-                        </div>
-                        <div className="w-full lg:w-1/2">
+                        </Col>
+                        <Col span={12}>
                             <strong>Ngày check-out</strong>
                             <DatePicker
                                 value={booking?.end_date ? moment(booking?.end_date) : null}
                                 disabled
                                 style={{ width: '100%' }}
                             />
-                        </div>
-                    </div>
+                        </Col>
+                    </Row>
 
-                    <div className="text-right">
-                        <Text strong>Tổng tiền: </Text>
-                        <Text className="font-bold">{finalAmount.toLocaleString()} VNĐ</Text>
-                    </div>
+                    <Text className="text-gray-600 mb-4">Mọi chi phí đã được tính tổng</Text>
+
+                    <Row justify="space-between" className="mt-4">
+                        <Col span={12}>
+                            <Text className="font-semibold text-[#064749]">Tổng:</Text>
+                        </Col>
+                        <Col span={12} style={{ textAlign: 'right' }}>
+                            <Text className="font-semibold text-[#064749]">{finalAmount.toLocaleString("vi-VN")} VNĐ</Text>
+                        </Col>
+                    </Row>
                 </Card>
             </div>
         </div>

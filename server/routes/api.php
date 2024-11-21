@@ -35,14 +35,12 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 Route::get('test-email', [HomeController::class, 'testEmail']);
-Route::match(['GET', 'POST'], '/login', [AuthController::class, 'login']);
+Route::match(['GET', 'POST'], '/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth:sanctum');
 Route::get('/room_home', [HomeController::class, 'room_home'])->name('room_home');
 Route::get('/blog_home', [HomeController::class, 'blog_home'])->name('blog_home');
 Route::get('/top_three', [HomeController::class, 'top_three'])->name('top_three');
-
-
 
 
 Route::prefix('rooms')->group(function () {
@@ -52,6 +50,8 @@ Route::prefix('rooms')->group(function () {
     Route::put('/{id}', [RoomController::class, 'update']);
     Route::delete('/{id}', [RoomController::class, 'destroy']);
 });
+
+
 Route::prefix('sizes')->group(function () {
     Route::get('/', [SizeController::class, 'index']); // Lấy danh sách các size
     Route::post('/', [SizeController::class, 'store']); // Tạo mới một size
@@ -179,4 +179,3 @@ Route::middleware(['auth'])->group(function () {
 });
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{id}', [BlogController::class, 'show']);
-
