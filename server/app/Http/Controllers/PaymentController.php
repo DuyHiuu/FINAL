@@ -117,7 +117,7 @@ class PaymentController extends Controller
         $subTotal_room = 0;
 
         foreach ($payments as $payment) {
-            $booking = $payment->booking; 
+            $booking = $payment->booking;
 
             if (!empty($booking)) {
                 $startDate = Carbon::parse($booking->start_date);
@@ -198,7 +198,7 @@ class PaymentController extends Controller
 
             try {
                 $params = $request->all();
-              
+
                 $booking = Booking::find($params['booking_id']);
 
                 $subTotal_service = 0;
@@ -271,10 +271,6 @@ class PaymentController extends Controller
 
                 $params['status_id'] = $params['status_id'] ?? 1;
 
-                $payment = Payment::query()->create($params);
-
-                $payment_id = $payment->id;
-
                 $room = $booking->room;
 
                 if ($room->quantity > 0) {
@@ -300,6 +296,7 @@ class PaymentController extends Controller
                 $payment_id = $payment->id;
 
                 DB::commit();
+
 
                 // gửi mail khi đặt hàng thành công
                 Mail::to($payment->user->email)->send(new PaymentConfirm($payment));
@@ -374,7 +371,7 @@ class PaymentController extends Controller
         $payment = Payment::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'status_id' => 'required|integer|exists:status_payments,id', 
+            'status_id' => 'required|integer|exists:status_payments,id',
         ]);
 
         if ($validator->fails()) {

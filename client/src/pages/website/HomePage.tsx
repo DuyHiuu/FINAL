@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Button, Row, Col, Input, Spin } from "antd";
+import { Card, Button, Row, Col, Input, Spin, Avatar, Modal, Divider } from "antd";
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchServices from "../../api/useFetchServices";
 import useFetchBlogs from "../../api/useFetchBlogs";
@@ -10,6 +10,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
 import { Autoplay, Pagination } from "swiper/modules";
+// import AOS from "aos";
+// import "aos/dist/aos.css";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -24,6 +26,10 @@ const HomePage = () => {
   const handleClickDocthem = () => {
     navigate("/blog");
   };
+
+  // useEffect(() => {
+  //   AOS.init({ duration: 1000 });
+  // }, []);
 
   const cards = [
     {
@@ -117,25 +123,36 @@ const HomePage = () => {
     console.log(comments);
 
     return (
-      <div className="flex flex-col items-center">
-        <h1 className="text-3xl font-bold mt-10">Đánh giá</h1>
-        <p className="text-lg text-center mt-2">Một số đánh giá tiêu biểu</p>
-        <div className="flex flex-wrap justify-center mt-6 gap-4">
+      <div className="py-12 px-6">
+        <h2 className="text-3xl font-semibold text-center text-gray-800">
+          Đánh giá từ khách hàng
+        </h2>
+        <p className="text-center text-gray-500 mt-2 mb-8">
+          Khách hàng của chúng tôi nói gì về dịch vụ PetHouse?
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {loading}
           {error && <p>Error: {error}</p>}
           {comments?.slice(0, 3).map((comment) => (
-            <Card
+            <div
               key={comment?.id}
-              title={comment?.content}
-              bordered={false}
-              style={{ width: 350 }}
-              className="bg-[#F2F0F2] text-center"
+              className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
+              data-aos="fade-up"
             >
-              <p className="text-sm">-{comment?.user?.name}-</p>
-            </Card>
+              <div className="flex items-start mb-4">
+                <Avatar className="me-3 bg-[#064749]">{comment?.user?.name[0]}</Avatar>
+                <div className="flex flex-col">
+                  <h4 className="text-lg font-semibold">{comment?.user?.name}</h4>
+                  <p className="text-sm text-gray-600">{comment?.content}</p>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
+
+
     );
   };
 
@@ -144,6 +161,19 @@ const HomePage = () => {
     "/images/banner2.jpg",
     "/images/banner5.jpg",
   ];
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentService, setCurrentService] = useState(null);
+
+  const showModal = (service) => {
+    setCurrentService(service);
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setCurrentService(null);
+  };
 
   return (
     <div className="flex flex-col items-center mb-20 mt-24">
@@ -154,6 +184,8 @@ const HomePage = () => {
           delay: 3000,
           disableOnInteraction: false,
         }}
+        effect="fade"
+        parallax={true}
         pagination={{ clickable: true }}
         modules={[Autoplay, Pagination]}
         className="w-full max-h-[600px]"
@@ -169,28 +201,7 @@ const HomePage = () => {
         ))}
       </Swiper>
 
-      <div className="flex justify-center mt-10">
-        <div className="relative w-full max-w-md">
-          <Input
-            placeholder="Tìm kiếm..."
-            prefix={
-              <svg
-                className="w-5 h-5 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-              >
-                <path d="M21 21l-4.35-4.35M18.5 10.5A7.5 7.5 0 1111 3a7.5 7.5 0 017.5 7.5z" />
-              </svg>
-            }
-          />
-        </div>
-      </div>
-
-      <h1 className="text-3xl font-bold mt-4 text-center">
+      <h1 className="text-3xl font-bold mt-12 text-center">
         PetSpa xin chào bạn
       </h1>
       <p className="text-lg text-center mt-2">
@@ -203,7 +214,7 @@ const HomePage = () => {
           <Col key={index} xs={24} sm={12} md={8} lg={6}>
             <Card
               hoverable
-              className="bg-[#E2F1E8]"
+              className="bg-[#E2F1E8] hover:shadow-lg transition-transform transform hover:scale-105"
               style={{
                 height: "170px",
                 display: "flex",
@@ -211,6 +222,7 @@ const HomePage = () => {
                 justifyContent: "space-between",
                 alignItems: "center",
               }}
+              data-aos="fade-up"
             >
               <div
                 style={{
@@ -241,29 +253,20 @@ const HomePage = () => {
       <h2 className="text-2xl font-semibold mt-12">
         Một số hình ảnh của PetHouse
       </h2>
-      <Row gutter={[16, 16]} justify="center" className="mt-6">
-        {room?.slice(0, 3).map((item: any) => (
-          <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
-            <Card
-              cover={
-                <img
-                  alt={item.size_name}
-                  src={item.img_thumbnail}
-                  style={{
-                    height: "250px",
-                    width: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              }
-              hoverable
+      <Row gutter={[16, 16]} justify="center" className="mt-6" data-aos="fade-up">
+        {room?.slice(0, 5).map((item: any) => (
+          <Col key={item.id} xs={24} sm={6} md={4} lg={4} className="flex justify-center">
+            <img
+              alt={item.size_name}
+              src={item.img_thumbnail}
               style={{
-                height: "350px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
+                height: "300px",
+                width: "300px",
+                objectFit: "cover",
+                borderRadius: "12px",
+                margin: "0 8px",
               }}
-            ></Card>
+            />
           </Col>
         ))}
       </Row>
@@ -278,45 +281,68 @@ const HomePage = () => {
         </Button>
       </div>
 
-      <h2 className="text-2xl font-semibold mt-12">Các dịch vụ chăm sóc</h2>
-      <p>
-        Các dịch vụ thực hiện bởi các nhân viên được đào tạo bài bản, có chứng
-        chỉ hành nghề
-      </p>
-      <Row gutter={[16, 16]} justify="center" className="mt-6">
-        {service?.slice(0, 3).map((item: any) => (
-          <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
+      <h2 className="mt-12 text-2xl font-semibold">Các dịch vụ chăm sóc</h2>
+      <p className="text-center mt-4">Các dịch vụ thực hiện bởi các nhân viên được đào tạo bài bản, có chứng chỉ hành nghề.</p>
+
+      <Row gutter={[16, 16]} justify="center" className="mt-6 mb-20" data-aos="fade-up">
+        {service?.slice(0, 3).map((service) => (
+          <Col key={service.id} xs={24} sm={12} md={8} lg={6}>
             <Card
               hoverable
               cover={
                 <img
-                  alt={item.name}
-                  src={item.image}
+                  alt={service.name}
+                  src={service.image}
                   style={{
-                    height: "250px",
+                    height: "350px",
                     objectFit: "cover",
                     width: "100%",
                   }}
                 />
               }
               style={{
-                height: "450px",
+                height: "350px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
               }}
             >
               <Card.Meta
-                title={item.name}
-                description={item.description}
-                style={{
-                  textAlign: "center",
-                }}
+                title={service.name}
               />
+              <Button
+                type="link"
+                onClick={() => showModal(service)}
+                className="text-sm text-[#064749] mt-2"
+              >
+                Xem chi tiết
+              </Button>
             </Card>
           </Col>
         ))}
       </Row>
+
+      <Modal
+        title={currentService?.name}
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width={800}
+      >
+        <div>
+          <img
+            alt={currentService?.name}
+            src={currentService?.image}
+            style={{
+              width: "150px",
+              height: "auto",
+              objectFit: "contain",
+              marginBottom: "16px",
+            }}
+          />
+          <p>{currentService?.description}</p>
+        </div>
+      </Modal>
 
       <h2 className="text-2xl font-semibold mt-12">Blog</h2>
       <Row gutter={[16, 16]} justify="center" align="stretch" className="mt-6">
@@ -333,6 +359,7 @@ const HomePage = () => {
                     objectFit: "cover",
                     width: "100%",
                   }}
+                  data-aos="fade-up"
                 />
               }
               style={{

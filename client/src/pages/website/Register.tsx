@@ -22,7 +22,8 @@ const Register = () => {
 
   // Hàm kiểm tra mật khẩuu
   const validatePassword = (password) => {
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordPattern =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return passwordPattern.test(password);
   };
 
@@ -42,6 +43,22 @@ const Register = () => {
       setError(
         "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt."
       );
+      return;
+    }
+    if (!formData.name) {
+      setError("Name không được để trống");
+      return;
+    }
+    if (!formData.email) {
+      setError("Email không được để trống.");
+      return;
+    }
+    if (!formData.phone) {
+      setError("Phone không được để trống");
+      return;
+    }
+    if (!formData.password) {
+      setError("Pass không được để trống");
       return;
     }
 
@@ -103,7 +120,6 @@ const Register = () => {
               id="name"
               name="name"
               type="text"
-              required
               value={formData.name}
               onChange={handleChange}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm"
@@ -122,7 +138,6 @@ const Register = () => {
               id="email"
               name="email"
               type="email"
-              required
               value={formData.email}
               onChange={handleChange}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm"
@@ -141,7 +156,6 @@ const Register = () => {
               id="phone"
               name="phone"
               type="tel"
-              required
               value={formData.phone}
               onChange={handleChange}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm"
@@ -160,7 +174,6 @@ const Register = () => {
               id="password"
               name="password"
               type="password"
-              required
               value={formData.password}
               onChange={handleChange}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm"
@@ -179,7 +192,6 @@ const Register = () => {
               id="confirmPassword"
               name="confirmPassword"
               type="password"
-              required
               value={formData.confirmPassword}
               onChange={handleChange}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm"
@@ -197,7 +209,6 @@ const Register = () => {
             <textarea
               id="address"
               name="address"
-              required
               value={formData.address}
               onChange={handleChange}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm"
