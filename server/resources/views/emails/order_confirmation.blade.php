@@ -1,22 +1,28 @@
-<!DOCTYPE html>
-<html lang="vi">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xác Nhận Đơn Hàng</title>
-</head>
+@component('mail::message')
 
-<body>
-    <h1>Cảm ơn bạn đã đặt phòng!</h1>
-    <p>Chúng tôi xin xác nhận rằng đơn đặt phòng của bạn đã được tạo thành công.</p>
-    <p><strong>Booking ID:</strong> {{ $booking->id }}</p>
-    <p><strong>Ngày bắt đầu:</strong> {{ \Carbon\Carbon::parse($booking->start_date)->format('d/m/Y') }}</p>
-    <p><strong>Ngày kết thúc:</strong> {{ \Carbon\Carbon::parse($booking->end_date)->format('d/m/Y') }}</p>
-    <p><strong>Phòng:</strong> {{ $booking->room->name }}</p>
-    <p><strong>Tổng tiền:</strong> {{ number_format($booking->total_amount, 0, ',', '.') }} VNĐ</p>
+# Xác nhận đơn đặt phòng
 
-    <p>Chúng tôi hy vọng bạn sẽ có một kỳ nghỉ tuyệt vời!</p>
-</body>
+{{-- <div style="background-image: url('https://e0.pxfuel.com/wallpapers/906/85/desktop-wallpaper-wide-mouth-singing-cat-pop-cat-pop-cat-cat-memes-cat-profile-popcat.jpg'); 
+            background-size: cover; padding-left: 50px; padding-top: 50px;"> --}}
 
-</html>
+Xin chào {{$payment->user->name}},
+
+Cảm ơn bạn đã tin tưởng và đặt phòng tại Petspa. Đây là thông tin đơn đặt phòng của bạn:
+
+<p><strong>Ngày bắt đầu:</strong> {{ \Carbon\Carbon::parse($payment->booking->start_date)->format('d/m/Y') }}</p>
+<p><strong>Ngày kết thúc:</strong> {{ \Carbon\Carbon::parse($payment->booking->end_date)->format('d/m/Y') }}</p>
+<p><strong>Phòng và dịch vụ(nếu có):</strong></p>
+<p><strong>Mô tả phòng: </strong>{{ $payment->booking->room->description }}</p>
+<p><strong>Gía phòng: </strong>{{ number_format($payment->booking->room->price, 0, ',', '.') }} VNĐ</p>
+
+@if ($payment->booking->services && $payment->booking->services->isNotEmpty())
+@foreach($payment->booking->services as $service)
+    Dịch vụ: {{ $service->name }}
+    Giá: {{ number_format($service->price, 0, ',', '.') }} VNĐ
+@endforeach
+@endif
+
+ <p><strong>Tổng tiền:</strong> {{ number_format($payment->total_amount, 0, ',', '.') }} VNĐ</p>
+@endcomponent
+

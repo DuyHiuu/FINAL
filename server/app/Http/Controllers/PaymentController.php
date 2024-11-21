@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PaymentConfirm;
 use App\Models\Payment;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
@@ -151,8 +152,6 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request);
-        die;
         $validator = Validator::make(
             $request->all(),
             [
@@ -300,17 +299,11 @@ class PaymentController extends Controller
                 $payment = Payment::create($params);
                 $payment_id = $payment->id;
 
-
-                // Send order confirmation email to the user
-//              Mail::to($payment->user->email)->send(new OrderConfirmation());
-
-                // // Send order confirmation email to the user
-                // Mail::to($payment->user->email)->send(new OrderConfirmation());
-
-
-
-                // Commit the transaction
                 DB::commit();
+
+                // gửi mail khi đặt hàng thành công
+                Mail::to($payment->user->email)->send(new PaymentConfirm($payment));
+
                 return response()->json([
                     'status' => 'Đơn hàng đã thanh toán thành công',
                     'payment_id' => $payment_id,
