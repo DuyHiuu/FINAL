@@ -43,14 +43,12 @@ Route::get('/blog_home', [HomeController::class, 'blog_home'])->name('blog_home'
 Route::get('/top_three', [HomeController::class, 'top_three'])->name('top_three');
 
 
-Route::middleware(['checkrole'])->group(function () {
-    Route::prefix('rooms')->group(function () {
-        Route::get('/', [RoomController::class, 'index']);
-        Route::post('/', [RoomController::class, 'store']);
-        Route::get('/{id}', [RoomController::class, 'show']);
-        Route::put('/{id}', [RoomController::class, 'update']);
-        Route::delete('/{id}', [RoomController::class, 'destroy']);
-    });
+Route::prefix('rooms')->group(function () {
+    Route::get('/', [RoomController::class, 'index']);
+    Route::post('/', [RoomController::class, 'store']);
+    Route::get('/{id}', [RoomController::class, 'show']);
+    Route::put('/{id}', [RoomController::class, 'update']);
+    Route::delete('/{id}', [RoomController::class, 'destroy']);
 });
 
 
@@ -181,4 +179,3 @@ Route::middleware(['auth'])->group(function () {
 });
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{id}', [BlogController::class, 'show']);
-
