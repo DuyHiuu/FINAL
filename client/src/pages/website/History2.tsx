@@ -64,13 +64,11 @@ const History2 = () => {
 
   return (
     <div className="flex flex-col lg:flex-row pb-20 mt-24">
-      {/* Left side - Order Information */}
-      <div className="lg:w-1/2 p-4">
+      <div className="lg:w-1/2 p-4 mx-auto">
         <Title level={2}>Thông tin đặt hàng</Title>
         <Card>
           <Row gutter={16}>
             <Title level={4}>Thông tin người đặt</Title>
-            {/* Customer Info - One input per row */}
             <Col span={24} className="mb-3">
               <label className="block text-sm font-medium text-gray-700 mb-2">Tên khách hàng</label>
               <Input
@@ -107,7 +105,6 @@ const History2 = () => {
         </Card>
 
         <Card className="mt-10">
-          {/* Pet Info - One input per row */}
           <Row gutter={16}>
             <Title level={4}>Thông tin thú cưng</Title>
             <Col span={24} className="mb-3">
@@ -145,7 +142,6 @@ const History2 = () => {
           </Row>
         </Card>
 
-        {/* Payment Method Section */}
         <div className="mt-10">
           <Title level={2}>Phương thức thanh toán</Title>
           <Card>
@@ -163,16 +159,15 @@ const History2 = () => {
             size="large"
             icon={<ArrowLeftOutlined />}
             href="/history1"
+            className="bg-[#064749]"
           >
             Quay lại
           </Button>
         </div>
       </div>
 
-      {/* Right side - Room Information and Services */}
-      <div className="lg:w-1/2 p-4 mt-20 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-[#F2F0F2] h-full">
+      <div className="lg:w-1/3 p-4 mt-20 border rounded-lg shadow-lg mx-auto bg-white h-full">
         <Card>
-          {/* Image Section with adjusted height */}
           <img
             src={roomData?.img_thumbnail}
             alt="Room Image"
@@ -182,7 +177,6 @@ const History2 = () => {
           <Title level={3}>{sizeData}</Title>
           <Text>{roomData?.description}</Text>
 
-          {/* Booking Dates */}
           <Row gutter={16} className="mt-5 mb-10">
             <Col span={12}>
               <DatePicker

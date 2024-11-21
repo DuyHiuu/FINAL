@@ -1,22 +1,29 @@
 import React, { useState } from "react";
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchSize from "../../api/useFetchSize";
-import { Select, Button, Spin, Pagination } from "antd";
+import { Select, Button, Slider, Pagination, Row, Col, Typography } from "antd";
 import { Link } from "react-router-dom";
 
 const { Option } = Select;
+const { Title } = Typography;
 
 const ListRoom = () => {
   const [sizeFilter, setSizeFilter] = useState<string>("");
+  const [priceRange, setPriceRange] = useState([0, 500000]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 3; 
+  const itemsPerPage = 6;
 
   const { room, loading: loadingRooms, error: errorRooms } = useFetchRooms("", sizeFilter);
   const { sizes, loading: loadingSizes, error: errorSizes } = useFetchSize();
 
   const handleSizeChange = (value: string) => {
     setSizeFilter(value);
-    setCurrentPage(1); 
+    setCurrentPage(1);
+  };
+
+  const handlePriceChange = (value: number[]) => {
+    setPriceRange(value);
+    setCurrentPage(1);
   };
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -28,117 +35,153 @@ const ListRoom = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mb-10 mt-24">
-      {/* Banner Image */}
-      <img
-        className="w-full h-auto max-h-[450px] sm:max-h-[350px] md:max-h-[450px] lg:max-h-[600px] object-cover"
-        src="/images/img.webp"
-        alt="PetSpa"
-      />
+    <div className="p-8 mt-32">
+      <div className="w-full max-w-7xl mx-auto">
 
-      <div className="mt-4 mb-6 w-full max-w-2xl mx-auto">
-        <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-lg border">
-          <div className="flex items-center space-x-2">
-            <label htmlFor="size" className="font-semibold">
-              Size:
-            </label>
-            <Select
-              id="size"
-              value={sizeFilter}
-              onChange={handleSizeChange}
-              style={{ width: 200 }}
-              placeholder="Chọn size"
-              loading={loadingSizes}
-              disabled={loadingSizes || errorSizes}
+        <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
+          <Title level={3} className="text-center mb-4">Tìm phòng</Title>
+          <Row gutter={[16, 16]} justify="center">
+
+            <Col xs={24} sm={8} md={6}>
+              <label htmlFor="size" className="font-semibold">Chọn kích thước phòng:</label>
+              <Select
+                id="size"
+                value={sizeFilter}
+                onChange={handleSizeChange}
+                style={{ width: "100%" }}
+                placeholder="Chọn kích thước phòng"
+                loading={loadingSizes}
+                disabled={loadingSizes || errorSizes}
+              >
+                <Option value="">Tất cả</Option>
+                {sizes?.map((size) => (
+                  <Option key={size.id} value={size.name}>
+                    {size.name}
+                  </Option>
+                ))}
+              </Select>
+            </Col>
+
+            <Col xs={24} sm={8} md={6}>
+              <label className="font-semibold">Giá (VNĐ):</label>
+              <Slider
+                range
+                min={0}
+                max={500000}
+                step={100000}
+                value={priceRange}
+                onChange={handlePriceChange}
+                tipFormatter={(value) => `${value.toLocaleString()} VNĐ`}
+                trackStyle={{
+                  backgroundColor: "#064749",
+                }}
+                railStyle={{
+                  backgroundColor: "#ddd",
+                }}
+                handleStyle={{
+                  borderColor: "#064749",
+                  backgroundColor: "#064749",
+                }}
+              />
+            </Col>
+          </Row>
+          <Row justify="center" className="mt-4">
+            <Button
+              onClick={() => {
+                setSizeFilter("");
+                setPriceRange([0, 500000]);
+              }}
+              type="default"
+              style={{ backgroundColor: "#FF4D4F", color: "#fff" }}
             >
-              <Option value="">Chọn size</Option>
-              {sizes?.map((size) => (
-                <Option key={size.id} value={size.name}>
-                  {size.name}
-                </Option>
-              ))}
-            </Select>
-          </div>
-          <Button
-            onClick={() => setSizeFilter("")}
-            type="default"
-            style={{ backgroundColor: "#FF4D4F", color: "#fff" }}
-          >
-            Quay lại
-          </Button>
+              Xóa
+            </Button>
+          </Row>
         </div>
-      </div>
 
-      <div className="container mx-auto p-4 lg:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {!loadingRooms &&
-          currentRooms
-            ?.filter((r) => sizeFilter === "" || r.size_name === sizeFilter)
-            .map((room) => (
-              <div key={room.id} className="flex flex-col items-center mb-6 p-4 bg-white shadow rounded-lg">
-                {room.statusroom === "Còn phòng" ? (
-                  <Link to={`/detail/${room.id}`} className="text-center">
-                    <div className="flex-shrink-0 mb-4 mx-auto">
-                      <img
-                        src={room.img_thumbnail}
-                        alt={`image-${room.id}`}
-                        className="w-full h-[250px] object-cover rounded-md"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h1 className="text-xl font-bold text-gray-900">{room.description}</h1>
-                      <div className="flex justify-center items-center mt-1">
-                        <p className="text-gray-600">Size: {room.size_name}</p>
-                      </div>
-                      <p className="text-gray-600 mt-2">{room.description}</p>
-                      <div
-                        className={`mt-2 inline-flex items-center px-3 py-1 rounded-full
-                          ${room.statusroom === "Còn phòng" ? "bg-[#064749] text-green-800" : "bg-[#FF0000] text-red-800"}`}
-                      >
-                        <p className="text-white text-sm">{room.statusroom}</p>
-                      </div>
-                      <span className="ml-2 text-gray-500">
-                        Giá: {room.price.toLocaleString("vi-VN")} VNĐ
-                      </span>
-                    </div>
-                  </Link>
-                ) : (
-                  <div className="text-center cursor-not-allowed opacity-70">
-                    <div className="flex-shrink-0 mb-4 mx-auto">
-                      <img
-                        src={room.img_thumbnail}
-                        alt={`image-${room.id}`}
-                        className="w-full h-[250px] object-cover rounded-md"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h1 className="text-xl font-bold text-gray-900">{room.description}</h1>
-                      <div className="flex justify-center items-center mt-1">
-                        <p className="text-gray-600">Size: {room.size_name}</p>
-                      </div>
-                      <p className="text-gray-600 mt-2">{room.description}</p>
-                      <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-[#FF0000] text-red-800">
-                        <p className="text-white text-sm">{room.statusroom}</p>
-                      </div>
-                      <span className="ml-2 text-gray-500">
-                        Giá: {room.price.toLocaleString("vi-VN")} VNĐ
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+        <Row gutter={[16, 16]}>
+          <Col span={24}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {!loadingRooms &&
+                currentRooms
+                  ?.filter(
+                    (r) =>
+                      (sizeFilter === "" || r.size_name === sizeFilter) &&
+                      r.price >= priceRange[0] &&
+                      r.price <= priceRange[1]
+                  )
+                  .map((room) => (
+                    <div
+                      key={room.id}
+                      className="flex flex-col items-center bg-white shadow-lg rounded-lg p-4 transition-transform transform hover:scale-105 hover:shadow-xl hover:opacity-90"
+                    >
+                      {room.statusroom === "Còn phòng" ? (
+                        <Link to={`/detail/${room.id}`} className="w-full">
+                          <div className="flex-shrink-0 mb-4 mx-auto overflow-hidden rounded-lg">
+                            <img
+                              src={room.img_thumbnail}
+                              alt={`image-${room.id}`}
+                              className="w-full h-[200px] object-cover transform transition-transform duration-300 hover:scale-105"
+                            />
+                          </div>
+                          <div className="flex-1 p-3">
+                            <h1 className="text-lg font-semibold text-gray-800 hover:text-[#064749] transition-colors">{room.description}</h1>
 
-      </div>
+                            <p className="text-sm font-semibold text-[#064749] mt-2">
+                              <span className="text-sm font-semibold text-gray-800">Kích thước:</span> {room.size_name}
+                            </p>
 
-      <div className="flex justify-center mt-4">
-        <Pagination
-          current={currentPage}
-          pageSize={itemsPerPage}
-          total={room?.length || 0}
-          onChange={handlePageChange}
-       
-          className="pagination"
-        />
+                            <p className="text-sm text-gray-600 mt-2">
+                              <span className="font-semibold text-gray-800">Mô tả:</span> {room.description}
+                            </p>
+
+                            <div
+                              className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+                        ${room.statusroom === "Còn phòng" ? "bg-[#064749] text-white" : "bg-red-500 text-white"}`}
+                            >
+                              {room.statusroom}
+                            </div>
+                            <div className="mt-4 text-lg font-semibold text-gray-800">
+                              Giá: {room.price.toLocaleString("vi-VN")} VNĐ
+                            </div>
+                          </div>
+                        </Link>
+                      ) : (
+                        <div className={`w-full cursor-not-allowed opacity-50 `}>
+                          <div className="flex-shrink-0 mb-4 mx-auto overflow-hidden rounded-lg opacity-50">
+                            <img
+                              src={room.img_thumbnail}
+                              alt={`image-${room.id}`}
+                              className="w-full h-[200px] object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 p-3 opacity-50">
+                            <h1 className="text-lg font-semibold text-gray-800">{room.description}</h1>
+                            <p className="text-sm font-semibold text-[#FF4D4F] mt-2">Kích thước: {room.size_name}</p>
+                            <p className="text-sm text-gray-600 mt-2">{room.description}</p>
+                            <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-500 text-white">
+                              {room.statusroom}
+                            </div>
+                            <div className="mt-4 text-lg font-semibold text-gray-800">
+                              Giá: {room.price.toLocaleString("vi-VN")} VNĐ
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+            </div>
+          </Col>
+        </Row>
+
+        <Row justify="center" className="mt-6">
+          <Pagination
+            current={currentPage}
+            pageSize={itemsPerPage}
+            total={room?.length || 0}
+            onChange={handlePageChange}
+          />
+        </Row>
       </div>
     </div>
   );

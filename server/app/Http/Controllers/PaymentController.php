@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PaymentConfirm;
 use App\Models\Payment;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
@@ -270,10 +271,6 @@ class PaymentController extends Controller
 
                 $params['status_id'] = $params['status_id'] ?? 1;
 
-                $payment = Payment::query()->create($params);
-
-                $payment_id = $payment->id;
-
                 $room = $booking->room;
 
                 if ($room->quantity > 0) {
@@ -371,17 +368,12 @@ class PaymentController extends Controller
                     return response()->json($vnp_Url);
                 }
 
-
-                // Send order confirmation email to the user
-//              Mail::to($payment->user->email)->send(new OrderConfirmation());
-
-                // // Send order confirmation email to the user
-                // Mail::to($payment->user->email)->send(new OrderConfirmation());
-
-
-
-                // Commit the transaction
                 DB::commit();
+
+
+                // gửi mail khi đặt hàng thành công
+                Mail::to($payment->user->email)->send(new PaymentConfirm($payment));
+
                 return response()->json([
                     'status' => 'Đơn hàng đã thanh toán thành công',
                     'payment_id' => $payment_id,
