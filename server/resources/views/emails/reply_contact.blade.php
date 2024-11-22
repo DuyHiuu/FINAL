@@ -31,7 +31,7 @@
 </style>
 
 <div class="banner">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXwiOlo6US3qe6hXoaHSs9jSvpaPO_j_KPnQ&s" alt="Petspa">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXwiOlo6US3qe6hXoaHSs9jSvpaPO_j_KPnQ&s" alt="Petspa.">
 </div>
 
 <div class="container">

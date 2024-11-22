@@ -56,7 +56,6 @@ class ContactController extends Controller
             Chúng tôi đã nhận được yêu cầu của bạn và sẽ phản hồi trong thời gian sớm nhất.";
             // Tu dong gui mail khi nhap noi dung lien he
             Mail::to($contact->email)->send(new ReplyContactMail($contact, $replyMessage));
-
             return response()->json([
                 'message' => 'Liên hệ của bạn đã được gửi đi và email phản hồi đã được gửi!',
                 'contact' => $contact,
