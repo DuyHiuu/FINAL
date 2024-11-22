@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Form, Input, Button, Upload, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 
 const EditService = () => {
 
@@ -9,6 +11,8 @@ const EditService = () => {
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
     const [image, setImage] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [form] = Form.useForm();
 
     const navigate = useNavigate();
 
@@ -18,9 +22,11 @@ const EditService = () => {
                 const res = await fetch(`${showUrl}/${id}`);
                 if (res.ok) {
                     const service = await res.json();
-                    setName(service.name);
-                    setPrice(service.price);
-                    setDescription(service.description);
+                    form.setFieldsValue({
+                        name: service.name,
+                        price: service.price,
+                        description: service.description,
+                    });
                     setImage(service.image);
                 } else {
                     console.error('Không thể lấy thông tin phòng');
@@ -30,19 +36,19 @@ const EditService = () => {
             }
         };
         fetchService();
-    }, [id]);
+    }, [id, form]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (values) => {
+        setIsLoading(true);
 
         const updateService = {
-            price: price,
-            name: name,
-            description: description,
+            price: values.price,
+            name: values.name,
+            description: values.description,
             image: image,
         };
-
-
+        console.log(updateService);
+        
 
         try {
             const response = await fetch(`${showUrl}/${id}`, {
@@ -52,6 +58,7 @@ const EditService = () => {
                 },
                 body: JSON.stringify(updateService),
             });
+            setIsLoading(false);
 
             if (response.ok) {
                 console.log('Dịch vụ đã sửa thành công:');
@@ -60,6 +67,7 @@ const EditService = () => {
                 console.error('Lỗi khi sửa dịch vụ:', response.statusText);
             }
         } catch (error) {
+            setIsLoading(false);
             console.error('Lỗi kết nối API:', error);
         }
     };
@@ -76,65 +84,82 @@ const EditService = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md">
-            <h2 className="text-2xl font-bold mb-4">Sửa Thông Tin Dịch Vụ</h2>
+        <Form
+            form={form}
+            onFinish={handleSubmit}
+            className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md"
+        >
+            <h2 className="text-2xl font-bold mb-4 text-center">Sửa Dịch Vụ</h2>
 
-            <div className="mb-4">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Tên:</label>
-                <input
-                    type="text"
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="image" className="block text-sm font-medium text-gray-700">Hình Ảnh:</label>
-                {image && (
-                    <img src={image} alt="Room Thumbnail" className="h-32 mb-2" />
-                )}
-                <input
-                    type="file"
-                    id="image"
-                    onChange={handleImageChange}
-                    accept="image/*"
-                    className="mt-1 block w-full text-gray-700 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">Mô Tả:</label>
-                <textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <div className="mb-4">
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700">Giá (VND):</label>
-                <input
-                    type="number"
-                    id="price"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-                />
-            </div>
-
-            <button
-                type="submit"
-                className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200"
+            {/* Tên dịch vụ */}
+            <Form.Item
+                label="Tên"
+                name="name"
+                rules={[{ required: true, message: 'Vui lòng nhập tên dịch vụ!' }]}
             >
-                Sửa
-            </button>
-        </form>
+                <Input
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full"
+                />
+            </Form.Item>
+
+            {/* Hình ảnh */}
+            <Form.Item label="Hình Ảnh Chính">
+                {image && (
+                    <img src={image} alt="Image" className="h-32 mb-2" />
+                )}
+                <input type="file" accept="image/*" onChange={handleImageChange} />
+            </Form.Item>
+
+            {/* Mô tả */}
+            <Form.Item
+                label="Mô Tả"
+                name="description"
+                rules={[{ required: true, message: 'Vui lòng nhập mô tả dịch vụ!' }]}
+            >
+                <Input.TextArea
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full"
+                    rows={4}
+                />
+            </Form.Item>
+
+            {/* Giá */}
+            <Form.Item
+                label="Giá (VND)"
+                name="price"
+                rules={[
+                    { required: true, message: 'Vui lòng nhập giá!' },
+                    {
+                        validator: (_, value) => {
+                            if (!value || value >= 1) {
+                                return Promise.resolve();
+                            }
+                            return Promise.reject(new Error('Giá không nhỏ hơn 1!'));
+                        },
+                    },
+                ]}
+            >
+                <Input
+                    type="number"
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="w-full"
+                />
+            </Form.Item>
+
+            {/* Nút submit */}
+            <Form.Item>
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                    block
+                    loading={isLoading}
+                    className={`w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200 ${isLoading ? 'bg-gray-400' : ''}`}
+                >
+                    {isLoading ? 'Đang sửa...' : 'Sửa Dịch Vụ'}
+                </Button>
+            </Form.Item>
+        </Form>
     );
 };
 

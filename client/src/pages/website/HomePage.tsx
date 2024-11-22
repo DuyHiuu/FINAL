@@ -10,8 +10,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
 import { Autoplay, Pagination } from "swiper/modules";
-// import AOS from "aos";
-// import "aos/dist/aos.css";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -27,9 +27,9 @@ const HomePage = () => {
     navigate("/blog");
   };
 
-  // useEffect(() => {
-  //   AOS.init({ duration: 1000 });
-  // }, []);
+  useEffect(() => {
+    AOS.init({ duration: 1000 });
+  }, []);
 
   const cards = [
     {

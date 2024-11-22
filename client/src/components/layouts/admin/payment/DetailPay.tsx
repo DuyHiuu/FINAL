@@ -71,7 +71,23 @@ const DetailPay = () => {
     const sizeData = paymentData.size;
     const status_pay = paymentData.status_pay;
     const voucherData = paymentData.voucher;
-    const filteredStatus = status_pay.filter((item) => item.id >= paymentData.payment.status_id && item.id !== 4);
+    const filteredStatus = status_pay.filter((item) => {
+        const currentStatus = paymentData.payment.status_id;
+
+        if (currentStatus === 2) {
+            return item.id !== 1;
+        } else if (currentStatus === 3) {
+            return item.id !== 1 && item.id !== 2 && item.id !== 4 && item.id !== 5;
+        } else if (currentStatus === 4) {
+            return item.id !== 1 && item.id !== 2 && item.id !== 3;
+        } else if (currentStatus === 5) {
+            return item.id !== 1 && item.id !== 2 && item.id !== 3 && item.id !== 4;
+        }
+        return true;
+    });
+
+
+
 
 
 

@@ -13,13 +13,14 @@ const AddRoom = () => {
     const [quantity, setQuantity] = useState('');
     const [statusRoom, setStatusRoom] = useState('Còn phòng');
     const [imgThumbnail, setImgThumbnail] = useState(null);
-    const [imgSubImages, setImgSubImages] = useState([]); // State để lưu ảnh phụ
-    const [previewImage, setPreviewImage] = useState(null); // State để lưu URL ảnh xem trước
+    const [imgSubImages, setImgSubImages] = useState([]); 
+    const [previewImage, setPreviewImage] = useState(null); 
     const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
     const storeUrl = "http://localhost:8000/api/rooms";
     const { sizes } = useFetchSize();
+    
 
     const beforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
@@ -55,7 +56,7 @@ const AddRoom = () => {
 
         // Đẩy ảnh phụ vào formData
         imgSubImages.forEach((file) => {
-            formData.append('img_sub_images[]', file.originFileObj); // Thêm ảnh phụ vào formData
+            formData.append('img_sub_images[]', file.originFileObj); 
         });
 
         try {
@@ -97,7 +98,17 @@ const AddRoom = () => {
                 <Form.Item
                     label="Giá"
                     name="price"
-                    rules={[{ required: true, message: 'Vui lòng nhập giá phòng!' }]}
+                    rules={[
+                        { required: true, message: 'Vui lòng nhập số lượng phòng!' },
+                        {
+                            validator: (_, value) => {
+                                if (!value || value >= 1) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('Số lượng không nhỏ hơn 1!'));
+                            },
+                        },
+                    ]}
                 >
                     <Input
                         type="number"

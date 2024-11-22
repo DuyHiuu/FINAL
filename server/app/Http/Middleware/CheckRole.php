@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -28,13 +29,14 @@ class CheckRole
 
         // Kiểm tra model và role_id
         $model = $accessToken->tokenable_type;
-        $user = $accessToken->tokenable_id;
+        $id_user = $accessToken->tokenable_id;
+        $user=User::find($id_user);
 
         if ($model !== "App\Models\User") {
             return response()->json(['error' => 'Token không hợp lệ'], 403);
         }
 
-        if ($user->role_id !== 1) {
+        if ($user->role_id !== 2) {
             return response()->json(['error' => 'Chỉ có admin mới truy cập được vào đây'], 403);
         }
 
