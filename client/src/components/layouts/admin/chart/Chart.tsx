@@ -97,19 +97,6 @@ const Chart = () => {
             onChange={(dates, dateStrings) => setDateRange(dateStrings)}
             format="DD-MM-YYYY"
             placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
-    <>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">
-          Thống kê tổng doanh thu
-        </h1>
-      </div>
-      <div className="flex gap-[40px] ml-[4%]">
-        <div className="flex text-center">
-          <DatePicker
-            style={{ width: 160 }}
-            onChange={onChangeDateStart}
-            placeholder="Ngày bắt đầu"
-            format={"DD-MM-YYYY"}
           />
           <Button type="primary" onClick={handleSearch}>
             Tra cứu theo ngày
