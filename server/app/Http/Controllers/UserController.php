@@ -184,4 +184,24 @@ class UserController extends Controller
     //         return response()->json(["error" => "Vui lòng thực hiện lại vì link đã quá hạn"]);
     //     }
     // }
+
+    public function activate($token)
+{
+    
+    $userId = decrypt($token);  
+
+    $user = User::find($userId);
+
+    if ($user) {
+        $user->is_active = 1;  
+        $user->save();  
+          $loginUrl = config('app.frontend_url') . '/login';
+            return redirect($loginUrl)->with('message', 'Tài khoản đã được kích hoạt!');
+    }
+
+    return redirect()->route('login')->with('error', 'Token không hợp lệ!');
 }
+
+}
+
+

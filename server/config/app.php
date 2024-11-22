@@ -187,4 +187,6 @@ return [
     ])->toArray(),
 
     'cloud_url' => env('CLOUDINARY_URL'),
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
+
 ];
