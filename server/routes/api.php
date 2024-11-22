@@ -179,3 +179,5 @@ Route::middleware(['auth'])->group(function () {
 });
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{id}', [BlogController::class, 'show']);
+
+Route::get('/activate/{token}', [UserController::class, 'activate'])->name('user.active');

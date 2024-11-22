@@ -292,6 +292,7 @@ class PaymentController extends Controller
                         }
                     }
                 }
+                
                 $payment = Payment::create($params);
                 $payment_id = $payment->id;
 

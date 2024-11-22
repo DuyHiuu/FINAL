@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\RegisterConfirm;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -18,6 +20,12 @@ class AuthController extends Controller
         if(Auth::attempt(['email'=>$request->email,'password'=>$request->password],false)){
             //lay thong tin nguoi dung da dang nhap
             $user= Auth::user();
+
+            if ($user->is_active === 0) {
+                return response([
+                    'error' => 'Tài khoản của bạn chưa được kích hoạt. Vui lòng kiểm tra email để kích hoạt.',
+                ], 403);
+            }
 
             //tao token
             $token = $user->createToken($user->email . 'token')->plainTextToken;
@@ -74,8 +82,10 @@ class AuthController extends Controller
             $data['role_id'] = '1';
             $data['address']= $request->address ?? null;
             $user = User::create($data);
+            Mail::to($user->email)->send(new RegisterConfirm($user));
             return response(new UserResource($user),201);
         }
+
     }
     public function logout(Request $request)
     {
