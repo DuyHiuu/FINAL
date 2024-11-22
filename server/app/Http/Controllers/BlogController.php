@@ -124,15 +124,18 @@ class BlogController extends Controller
         }
 
         try {
-            $image = $request->file('image');
-            $response = Cloudinary::upload($image->getRealPath())->getSecurePath();
+            $imgPath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imgPath = Cloudinary::upload($image->getRealPath())->getSecurePath();
+            }
 
             $blog = Blog::create([
-                'image' => $response,
+                'image' => $imgPath,
                 'title' => $request->get('title'),
                 'description' => $request->get('description'),
                 'content' => $request->get('content'),
-                'user_id' => auth()->id(),
+                // 'user_id' => auth()->id(),
             ]);
 
             return response()->json(['status' => 'success', 'message' => 'Blog đã được thêm thành công', 'data' => $blog], 200);
@@ -180,35 +183,37 @@ class BlogController extends Controller
             return response()->json(['message' => 'Blog không tồn tại'], 400);
         }
 
-        $blog->title = $request->title ?? $blog->title;
-        $blog->description = $request->description ?? $blog->description;
-        $blog->content = $request->content ?? $blog->content;
-        $blog->user_id = $request->user_id ?? $blog->user_id;
+        $blog->update($request->except('image'));
 
         if ($request->image && !str_starts_with($request->image, 'http')) {
             try {
+                // Decode base64 nếu không có tiền tố "data:image/... "
                 $base64Image = $request->image;
                 if (str_contains($base64Image, ',')) {
-                    $base64Image = explode(',', $base64Image)[1];
+                    $base64Image = explode(',', $base64Image)[1]; // Loại bỏ tiền tố nếu có
                 }
                 $image = base64_decode($base64Image);
 
+                // Tạo một file tạm thời từ base64 để upload lên Cloudinary
                 $tmpFilePath = sys_get_temp_dir() . '/' . uniqid() . '.png';
                 file_put_contents($tmpFilePath, $image);
 
+                // Upload file tạm lên Cloudinary
                 $response = Cloudinary::upload($tmpFilePath)->getSecurePath();
 
+                // Cập nhật đường dẫn ảnh thumbnail mới
                 $blog->image = $response;
 
+                // Cập nhật thông tin phòng
                 $blog->save();
             } catch (\Exception $e) {
                 return response()->json(['message' => 'Lỗi khi cập nhật ảnh', 'error' => $e->getMessage()], 500);
             }
         } elseif ($request->image) {
+            // Nếu chỉ là URL ảnh đã có sẵn, không cần upload lại
             $blog->image = $request->image;
             $blog->save();
         }
-
 
         return response()->json(['message' => 'Cập nhật thành công'], 200);
     }
