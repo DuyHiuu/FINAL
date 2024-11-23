@@ -184,8 +184,14 @@ const HomePage = () => {
           delay: 3000,
           disableOnInteraction: false,
         }}
-        effect="fade"
-        parallax={true}
+        effect="coverflow" // Thêm hiệu ứng coverflow
+        coverflowEffect={{
+          rotate: 50,
+          stretch: 0,
+          depth: 100,
+          modifier: 1,
+          slideShadows: true,
+        }}
         pagination={{ clickable: true }}
         modules={[Autoplay, Pagination]}
         className="w-full max-h-[600px]"
@@ -200,6 +206,7 @@ const HomePage = () => {
           </SwiperSlide>
         ))}
       </Swiper>
+
 
       <h1 className="text-3xl font-bold mt-12 text-center">
         PetSpa xin chào bạn
