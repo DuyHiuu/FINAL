@@ -6,6 +6,7 @@ use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
@@ -148,40 +149,58 @@ class UserController extends Controller
         ]);
     }
 
-    // public function update_new_pass(Request $request)
-    // {
-    //     $data = $request->all();
-    //     $token_random = Str::random();
-    //     $user = User::where('email', $data['email'])->where('user_token', $data['token'])->first();
-    //     if ($user) {
-    //         $validator = Validator::make(
-    //             $data,
-    //             [
-    //                 'password' => [
-    //                     'required',
-    //                     'confirmed',
-    //                     'min:8',
-    //                     'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/'
-    //                 ]
-    //             ],
-    //             [
-    //                 'password.required' => "Mật khẩu không được để trống",
-    //                 'password.confirmed' => "Mật khẩu không trùng khớp",
-    //                 'password.min' | 'password.regex' => "Yêu cầu mật khẩu có ít nhất 8 ký tự, chứa các chữ cái và bao gồm các ký tự đặc biệt(*@!#...)."
-    //             ]
+    //quen mk
+    public function forgot_password(Request $request)
+    {
+        $to_email=$request->email;
+        $title_email = "Lấy lại mật khẩu ". $to_email;
+        $user = User::where('email',$to_email)->first();
+        if($user){
+            $rs_user=User::find($user->id);
+            $link_rs_pass = url('http://localhost:5173/forgot-password?email=' . $to_email);
+            $data = array("name" => $title_email, "body" => $link_rs_pass, "email" => $to_email);
+            Mail::send('forgot_password', $data, function ($message) use ($title_email, $to_email) {
+                $message->to($to_email)->subject($title_email);
 
-    //         );
-    //         if ($validator->fails()) {
-    //             return response()->json($validator->messages());
-    //         } else {
-    //             $reset = User::find($user->id);
-    //             $reset->password = bcrypt($data['password']);
-    //             $reset->user_token = $token_random;
-    //             $reset->save();
-    //             return response()->json(["message" => "Đổi mật khẩu thành công. Vui lòng đăng nhập lại"]);
-    //         }
-    //     } else {
-    //         return response()->json(["error" => "Vui lòng thực hiện lại vì link đã quá hạn"]);
-    //     }
-    // }
+                $message->from($to_email, $title_email);
+            });
+            return response()->json(["message" => "Gửi email thành công. Vui lòng check email để reset password"]);
+        }else{
+            return response()->json(["error" => "Email chưa được đăng ký"], 404);
+        }
+    }
+     public function update_new_pass(Request $request)
+     {
+         $data = $request->all();
+         $user = User::where('email', $data['email'])->first();
+         if ($user) {
+             $validator = Validator::make(
+                 $data,
+                 [
+                     'password' => [
+                         'required',
+                         'confirmed',
+                         'min:8',
+                         'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/'
+                     ]
+                 ],
+                 [
+                     'password.required' => "Mật khẩu không được để trống",
+                     'password.confirmed' => "Mật khẩu không trùng khớp",
+                     'password.min' | 'password.regex' => "Yêu cầu mật khẩu có ít nhất 8 ký tự, chứa các chữ cái và bao gồm các ký tự đặc biệt(*@!#...)."
+                 ]
+
+             );
+             if ($validator->fails()) {
+                 return response()->json($validator->messages());
+             } else {
+                 $reset = User::find($user->id);
+                 $reset->password = bcrypt($data['password']);
+                 $reset->save();
+                 return response()->json(["message" => "Đổi mật khẩu thành công. Vui lòng đăng nhập lại"]);
+             }
+         } else {
+             return response()->json(["error" => "Vui lòng thực hiện lại vì link đã quá hạn"]);
+         }
+     }
 }
