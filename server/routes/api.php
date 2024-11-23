@@ -135,6 +135,7 @@ Route::prefix('payments')->group(function () {
     Route::get('/', [PaymentController::class, 'payAd']);
     Route::post('/', [PaymentController::class, 'store']);
     Route::post('/vn_pay', [PaymentController::class, 'vn_payment']);
+    Route::post('/pay_on_check', [PaymentController::class, 'check_payment']);
     Route::get('/{id}', [PaymentController::class, 'show']);
     Route::put('/{id}', [PaymentController::class, 'update']);
     Route::delete('/{id}', [PaymentController::class, 'destroy']);

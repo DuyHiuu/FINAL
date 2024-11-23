@@ -69,6 +69,60 @@ const Pay2 = () => {
     const [user_email, setUser_email] = useState("");
     const [user_phone, setUser_phone] = useState("");
     const [voucher_id, setVoucher_id] = useState<number[]>([]);
+    const [user_nameError, setUser_nameError] = useState("");
+    const [user_emailError, setUser_emailError] = useState("");
+    const [user_phoneError, setUser_phoneError] = useState("");
+    const [user_addressError, setUser_addressError] = useState("");
+    const [pet_nameError, setPet_nameError] = useState("");
+    const [pet_descriptionError, setPet_descriptionError] = useState("");
+
+    const validateForm = () => {
+        let valid = true;
+
+        if (!user_name.trim()) {
+            setUser_nameError("Tên khách hàng không được bỏ trống!");
+            valid = false;
+        } else {
+            setUser_nameError("");
+        }
+
+        if (!user_email.trim()) {
+            setUser_emailError("Email không được bỏ trống!");
+            valid = false;
+        } else {
+            setUser_emailError("");
+        }
+
+        if (!user_phone.trim()) {
+            setUser_phoneError("Số điện thoại không được bỏ trống!");
+            valid = false;
+        } else {
+            setUser_phoneError("");
+        }
+
+        if (!user_address.trim()) {
+            setUser_addressError("Địa chỉ không được bỏ trống!");
+            valid = false;
+        } else {
+            setUser_addressError("");
+        }
+
+        if (!pet_name.trim()) {
+            setPet_nameError("Tên thú cưng không được bỏ trống!");
+            valid = false;
+        } else {
+            setPet_nameError("");
+        }
+
+        if (!pet_description.trim()) {
+            setPet_descriptionError("Mô tả thú cưng không được bỏ trống!");
+            valid = false;
+        } else {
+            setPet_descriptionError("");
+        }
+
+        return valid;
+    };
 
     useEffect(() => {
         const user_idFromStorage = localStorage.getItem("user_id");
@@ -117,8 +171,53 @@ const Pay2 = () => {
 
     const addPay = "http://localhost:8000/api/payments";
 
+    const checkPaymentValidity = async () => {
+        try {
+            const response = await fetch(`${addPay}/pay_on_check`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    booking_id: id,
+                    paymethod_id,
+                    voucher_id: selectedVoucher ? selectedVoucher.id : null,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                alert(result.message || 'Kiểm tra thanh toán không thành công.');
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error during payment check:', error);
+            alert('Đã xảy ra lỗi khi kiểm tra thanh toán.');
+            return false;
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
+        // if (paymethod_id === 2) {
+        //     const isPaymentValid = await checkPaymentValidity();
+        //     if (!isPaymentValid) {
+        //         return;
+        //     }
+        // }
+
         const formData = new FormData();
         formData.append("booking_id", id);
         formData.append("pet_name", pet_name);
@@ -139,18 +238,18 @@ const Pay2 = () => {
 
         try {
 
-            if(paymethod_id ==2) {
+            if (paymethod_id == 2) {
                 const response = await fetch(`${addPay}/vn_pay`, {
                     method: "POST",
                     body: formData,
                 });
-    
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-    
+
                 const result = await response.json();
-    
+
                 if (result.status === "success") {
                     const vnpUrl = result.vnp_Url;
                     window.location.href = vnpUrl;
@@ -219,32 +318,48 @@ const Pay2 = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">Tên khách hàng</label>
                             <Input
                                 value={user_name}
-                                onChange={(e) => setUser_name(e.target.value)}
+                                onChange={(e) => {
+                                    setUser_name(e.target.value);
+                                    setUser_nameError("");
+                                }}
                             />
+                            {user_nameError && <p className="text-red-500 text-sm mt-1">{user_nameError}</p>}
                         </Col>
 
                         <Col span={24} className="mb-3">
                             <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                             <Input
                                 value={user_email}
-                                onChange={(e) => setUser_email(e.target.value)}
+                                onChange={(e) => {
+                                    setUser_email(e.target.value);
+                                    setUser_emailError("");
+                                }}
                             />
+                            {user_emailError && <p className="text-red-500 text-sm mt-1">{user_emailError}</p>}
                         </Col>
 
                         <Col span={24} className="mb-3">
                             <label className="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
                             <Input
                                 value={user_phone}
-                                onChange={(e) => setUser_phone(e.target.value)}
+                                onChange={(e) => {
+                                    setUser_phone(e.target.value);
+                                    setUser_phoneError("");
+                                }}
                             />
+                            {user_phoneError && <p className="text-red-500 text-sm mt-1">{user_phoneError}</p>}
                         </Col>
 
                         <Col span={24} className="mb-3">
                             <label className="block text-sm font-medium text-gray-700 mb-2">Địa chỉ</label>
                             <Input
                                 value={user_address}
-                                onChange={(e) => setUser_address(e.target.value)}
+                                onChange={(e) => {
+                                    setUser_address(e.target.value);
+                                    setUser_addressError("");
+                                }}
                             />
+                            {user_addressError && <p className="text-red-500 text-sm mt-1">{user_addressError}</p>}
                         </Col>
                     </Row>
                 </Card>
@@ -257,9 +372,12 @@ const Pay2 = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">Tên thú cưng</label>
                             <Input
                                 value={pet_name}
-                                onChange={(e) => setPet_name(e.target.value)}
-                                required
+                                onChange={(e) => {
+                                    setPet_name(e.target.value);
+                                    setPet_nameError("");
+                                }}
                             />
+                            {pet_nameError && <p className="text-red-500 text-sm mt-1">{pet_nameError}</p>}
                         </Col>
 
                         <Col span={24} className="mb-3">
@@ -277,10 +395,13 @@ const Pay2 = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả chi tiết thú cưng (Màu, giống, ...)</label>
                             <Input.TextArea
                                 value={pet_description}
-                                onChange={(e) => setPet_description(e.target.value)}
+                                onChange={(e) => {
+                                    setPet_description(e.target.value);
+                                    setPet_descriptionError("");
+                                }}
                                 rows={3}
-                                required
                             />
+                            {pet_descriptionError && <p className="text-red-500 text-sm mt-1">{pet_descriptionError}</p>}
                         </Col>
 
                         <Col span={24} className="mb-3">
