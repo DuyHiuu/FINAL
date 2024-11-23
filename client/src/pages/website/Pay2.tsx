@@ -171,12 +171,52 @@ const Pay2 = () => {
 
     const addPay = "http://localhost:8000/api/payments";
 
+    const checkPaymentValidity = async () => {
+        try {
+            const response = await fetch(`${addPay}/pay_on_check`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    booking_id: id,
+                    paymethod_id,
+                    voucher_id: selectedVoucher ? selectedVoucher.id : null,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                alert(result.message || 'Kiểm tra thanh toán không thành công.');
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error during payment check:', error);
+            alert('Đã xảy ra lỗi khi kiểm tra thanh toán.');
+            return false;
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!validateForm()) {
             return;
         }
+
+        // if (paymethod_id === 2) {
+        //     const isPaymentValid = await checkPaymentValidity();
+        //     if (!isPaymentValid) {
+        //         return;
+        //     }
+        // }
 
         const formData = new FormData();
         formData.append("booking_id", id);
