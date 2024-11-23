@@ -44,12 +44,14 @@ const History1 = () => {
     ? filteredPayments.length
     : 0;
 
+  const userID = localStorage.getItem("user_id"); // Lấy user_id từ localStorage hoặc từ auth token
+
   useEffect(() => {
     setFilteredPayments(payment);
   }, [payment]);
 
-  const handleStartDateChange = (date) => setStartDate(date);
-  const handleEndDateChange = (date) => setEndDate(date);
+  const handleStartDateChange = (date: moment.Moment | null) => setStartDate(date);
+  const handleEndDateChange = (date: moment.Moment | null) => setEndDate(date);
 
   const handleSearch = () => {
     let filtered = payment;
@@ -88,24 +90,47 @@ const History1 = () => {
     setRating((prev) => ({ ...prev, [itemId]: value }));
   };
 
-  const handleContentChange = (e, itemId) => {
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>, itemId: string) => {
     setRatingContent((prev) => ({ ...prev, [itemId]: e.target.value }));
   };
 
-  const submitRating = async (itemId, roomId) => {
+  const submitRating = async (itemId: string, roomId: number) => {
+    const token = `Bearer ${localStorage.getItem("auth_token")}`;
+
+    if (!token) {
+      message.error("Bạn chưa đăng nhập. Vui lòng đăng nhập để tiếp tục.");
+      return;
+    }
+
+    if (!rating[itemId] || !ratingContent[itemId]) {
+      message.warning("Vui lòng nhập đầy đủ nội dung và đánh giá sao.");
+      return;
+    }
+
     try {
-      await axios.post("http://localhost:8000/api/ratings", {
-        rating: rating[itemId],
-        content: ratingContent[itemId],
-        room_id: roomId,
-      });
+      await axios.post(
+        "http://localhost:8000/api/ratings",
+        {
+          rating: rating[itemId],
+          content: ratingContent[itemId],
+          room_id: roomId,
+          user_id: userID, // Gửi user_id cùng với đánh giá
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
       message.success("Đánh giá đã được lưu thành công!");
     } catch (error) {
+      console.error(error.response?.data || error.message);
       message.error("Xảy ra lỗi khi lưu đánh giá.");
     }
   };
 
-  const convertIdToCustomString = (id) => {
+  const convertIdToCustomString = (id: number) => {
     const prefix = "PETHOUSE-";
     const strId = String(id);
     let encodedId = "";
@@ -257,7 +282,6 @@ const History1 = () => {
             <Text strong>Tổng số phòng đã đặt:</Text>
             <Text>{totalRoomsBooked}</Text>
           </div>
-
           <div className="mb-4">
             <DatePicker
               value={startDate}
