@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ReplyContactMail;
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class ContactController extends Controller
@@ -49,9 +51,18 @@ class ContactController extends Controller
         } else {
             $data = $request->all();
             $contact = Contact::create($data);
-            return response()->json($contact, 200);
+
+            $replyMessage = "Cảm ơn bạn, {$contact->name}, đã liên hệ với chúng tôi! 
+            Chúng tôi đã nhận được yêu cầu của bạn và sẽ phản hồi trong thời gian sớm nhất.";
+            // Tu dong gui mail khi nhap noi dung lien he
+            Mail::to($contact->email)->send(new ReplyContactMail($contact, $replyMessage));
+            return response()->json([
+                'message' => 'Liên hệ của bạn đã được gửi đi và email phản hồi đã được gửi!',
+                'contact' => $contact,
+            ], 200);
         }
     }
+
     public function show(string $id)
     {
         $contact = Contact::find($id);

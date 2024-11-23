@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchSize from "../../api/useFetchSize";
 import { Select, Button, Slider, Pagination, Row, Col, Typography } from "antd";
 import { Link } from "react-router-dom";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -15,6 +17,10 @@ const ListRoom = () => {
 
   const { room, loading: loadingRooms, error: errorRooms } = useFetchRooms("", sizeFilter);
   const { sizes, loading: loadingSizes, error: errorSizes } = useFetchSize();
+
+  useEffect(() => {
+    AOS.init({ duration: 1000 });
+  }, []);
 
   const handleSizeChange = (value: string) => {
     setSizeFilter(value);
@@ -35,13 +41,11 @@ const ListRoom = () => {
   };
 
   return (
-    <div className="p-8 mt-32">
+    <div className="p-8 mt-32" data-aos="fade-up">
       <div className="w-full max-w-7xl mx-auto">
-
         <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
           <Title level={3} className="text-center mb-4">Tìm phòng</Title>
           <Row gutter={[16, 16]} justify="center">
-
             <Col xs={24} sm={8} md={6}>
               <label htmlFor="size" className="font-semibold">Chọn kích thước phòng:</label>
               <Select
@@ -92,14 +96,20 @@ const ListRoom = () => {
                 setPriceRange([0, 500000]);
               }}
               type="default"
-              style={{ backgroundColor: "#FF4D4F", color: "#fff" }}
+              style={{
+                backgroundColor: "#FF4D4F",
+                color: "#fff",
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                transition: "all 0.3s ease",
+              }}
+              className="hover:bg-red-600 hover:scale-105"
             >
               Xóa
             </Button>
           </Row>
         </div>
 
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} data-aos="fade-up">
           <Col span={24}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {!loadingRooms &&
@@ -116,7 +126,10 @@ const ListRoom = () => {
                       className="flex flex-col items-center bg-white shadow-lg rounded-lg p-4 transition-transform transform hover:scale-105 hover:shadow-xl hover:opacity-90"
                     >
                       {room.statusroom === "Còn phòng" ? (
-                        <Link to={`/detail/${room.id}`} className="w-full">
+                        <Link
+                          to={`/detail/${room.id}`}
+                          className="w-full transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
+                        >
                           <div className="flex-shrink-0 mb-4 mx-auto overflow-hidden rounded-lg">
                             <img
                               src={room.img_thumbnail}
@@ -125,7 +138,9 @@ const ListRoom = () => {
                             />
                           </div>
                           <div className="flex-1 p-3">
-                            <h1 className="text-lg font-semibold text-gray-800 hover:text-[#064749] transition-colors">{room.description}</h1>
+                            <h1 className="text-lg font-semibold text-gray-800 hover:text-[#064749] transition-colors">
+                              {room.description}
+                            </h1>
 
                             <p className="text-sm font-semibold text-[#064749] mt-2">
                               <span className="text-sm font-semibold text-gray-800">Kích thước:</span> {room.size_name}
@@ -136,8 +151,8 @@ const ListRoom = () => {
                             </p>
 
                             <div
-                              className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
-                        ${room.statusroom === "Còn phòng" ? "bg-[#064749] text-white" : "bg-red-500 text-white"}`}
+                              className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${room.statusroom === "Còn phòng" ? "bg-[#064749] text-white" : "bg-red-500 text-white"
+                                }`}
                             >
                               {room.statusroom}
                             </div>
@@ -147,7 +162,7 @@ const ListRoom = () => {
                           </div>
                         </Link>
                       ) : (
-                        <div className={`w-full cursor-not-allowed opacity-50 `}>
+                        <div className="w-full cursor-not-allowed opacity-50">
                           <div className="flex-shrink-0 mb-4 mx-auto overflow-hidden rounded-lg opacity-50">
                             <img
                               src={room.img_thumbnail}
@@ -180,11 +195,13 @@ const ListRoom = () => {
             pageSize={itemsPerPage}
             total={room?.length || 0}
             onChange={handlePageChange}
+            className="transition-all duration-300 transform hover:scale-105"
           />
         </Row>
       </div>
     </div>
   );
+
 };
 
 export default ListRoom;

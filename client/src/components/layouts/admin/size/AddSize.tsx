@@ -4,16 +4,33 @@ import { useNavigate } from 'react-router-dom';
 const AddSize = () => {
     const [tenSize, setTenSize] = useState('');
     const [moTa, setMoTa] = useState('');
+    const [errors, setErrors] = useState({});
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
 
+    // Validate form data
+    const validate = () => {
+        const newErrors = {};
+        if (!tenSize.trim()) {
+            newErrors.tenSize = 'Tên size không được để trống.';
+        }
+      
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0; // Trả về true nếu không có lỗi
+    };
+
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Prepare new size data without quantity
+        // Kiểm tra dữ liệu trước khi gửi
+        if (!validate()) {
+            return;
+        }
+
+        // Dữ liệu hợp lệ, chuẩn bị gửi yêu cầu
         const newSize = {
             name: tenSize,
             description: moTa,
@@ -33,7 +50,7 @@ const AddSize = () => {
             setIsLoading(false);
 
             if (response.ok) {
-                setMessage("Thêm size thành công!");
+                setMessage('Thêm size thành công!');
                 setTimeout(() => {
                     navigate('/admin/sizes');
                 }, 2000);
@@ -45,7 +62,7 @@ const AddSize = () => {
         } catch (error) {
             setIsLoading(false);
             console.error('Lỗi:', error);
-            setMessage("Đã xảy ra lỗi. Vui lòng thử lại.");
+            setMessage('Đã xảy ra lỗi. Vui lòng thử lại.');
         }
     };
 
@@ -58,32 +75,48 @@ const AddSize = () => {
 
             {/* Notification message */}
             {message && (
-                <div className={`mb-4 p-2 rounded ${message.includes('thất bại') ? 'bg-red-200 text-red-700' : 'bg-green-200 text-green-700'}`}>
+                <div
+                    className={`mb-4 p-2 rounded ${
+                        message.includes('thất bại') ? 'bg-red-200 text-red-700' : 'bg-green-200 text-green-700'
+                    }`}
+                >
                     {message}
                 </div>
             )}
 
             <div className="mb-4">
-                <label htmlFor="tenSize" className="block text-sm font-medium text-gray-700">Tên Size:</label>
+                <label htmlFor="tenSize" className="block text-sm font-medium text-gray-700">
+                    Tên Size:
+                </label>
                 <input
                     type="text"
                     id="tenSize"
                     value={tenSize}
                     onChange={(e) => setTenSize(e.target.value)}
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
+                    className={`mt-1 block w-full border ${
+                        errors.tenSize ? 'border-red-500' : 'border-gray-300'
+                    } rounded-md shadow-sm p-2 focus:outline-none focus:ring ${
+                        errors.tenSize ? 'focus:ring-red-500' : 'focus:ring-blue-500'
+                    }`}
                 />
+                {errors.tenSize && <p className="text-red-500 text-sm mt-1">{errors.tenSize}</p>}
             </div>
 
             <div className="mb-4">
-                <label htmlFor="moTa" className="block text-sm font-medium text-gray-700">Mô Tả:</label>
+                <label htmlFor="moTa" className="block text-sm font-medium text-gray-700">
+                    Mô Tả:
+                </label>
                 <textarea
                     id="moTa"
                     value={moTa}
                     onChange={(e) => setMoTa(e.target.value)}
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
+                    className={`mt-1 block w-full border ${
+                        errors.moTa ? 'border-red-500' : 'border-gray-300'
+                    } rounded-md shadow-sm p-2 focus:outline-none focus:ring ${
+                        errors.moTa ? 'focus:ring-red-500' : 'focus:ring-blue-500'
+                    }`}
                 />
+                {errors.moTa && <p className="text-red-500 text-sm mt-1">{errors.moTa}</p>}
             </div>
 
             <button

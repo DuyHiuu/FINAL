@@ -13,10 +13,12 @@ import {
   Row,
   Select,
   Tooltip,
-  Modal
+  Modal,
 } from "antd";
 import moment from "moment";
 import TextArea from "antd/es/input/TextArea";
+import { message } from "antd";
+
 
 const Detail = () => {
   const { service } = useFetchServices();
@@ -99,6 +101,12 @@ const Detail = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Kiểm tra nếu ngày chưa được chọn
+    if (!start_date || !end_date) {
+      setMessage("Vui lòng chọn ngày check-in và check-out trước khi đặt phòng.");
+      return;
+    }
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -239,8 +247,10 @@ const Detail = () => {
           <Card
             hoverable
             cover={
-              <div className="relative overflow-hidden rounded-lg h-[500px]"
-                onClick={() => openPopup(room?.img_thumbnail)}>
+              <div
+                className="relative overflow-hidden rounded-lg h-[500px]"
+                onClick={() => openPopup(room?.img_thumbnail)}
+              >
                 <img
                   alt="Room"
                   src={room?.img_thumbnail}
@@ -256,8 +266,10 @@ const Detail = () => {
           <Row gutter={[8, 8]} style={{ height: "500px" }}>
             {roomImages.slice(0, 4).map((image, index) => (
               <Col key={index} span={12} style={{ height: "50%" }}>
-                <div className="relative overflow-hidden rounded-lg h-full"
-                  onClick={() => openPopup(image)}>
+                <div
+                  className="relative overflow-hidden rounded-lg h-full"
+                  onClick={() => openPopup(image)}
+                >
                   <img
                     src={image}
                     alt={`Room ${index + 1}`}
@@ -289,6 +301,11 @@ const Detail = () => {
       )}
 
       <form onSubmit={handleSubmit} className="mt-8">
+        {message && (
+          <div className="bg-red-100 text-red-600 px-4 py-2 rounded-md mb-4">
+            {message}
+          </div>
+        )}
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           <div className="space-y-6">
             <h1 className="text-3xl font-bold">{room?.size_name}</h1>
@@ -305,7 +322,8 @@ const Detail = () => {
                         onChange={() => changeService(service.id)}
                         className="mr-2"
                       >
-                        {service?.name} ({service?.price?.toLocaleString("vi-VN")} VNĐ)
+                        {service?.name} (
+                        {service?.price?.toLocaleString("vi-VN")} VNĐ)
                       </Checkbox>
                       <Button
                         type="link"
@@ -329,14 +347,11 @@ const Detail = () => {
                   </div>
                 ))}
               </div>
-
             </div>
 
             <div>
               <h3 className="text-xl font-semibold">Mô tả</h3>
-              <p className="text-gray-700">
-                {room?.description}
-              </p>
+              <p className="text-gray-700">{room?.description}</p>
             </div>
           </div>
 
@@ -347,23 +362,36 @@ const Detail = () => {
 
             <div className="mt-4 flex justify-between items-center space-x-3">
               <div className="w-1/2">
-                <label className="block text-black text-sm font-bold">Ngày check-in</label>
+                <label className="block text-black text-sm font-bold">
+                  Ngày check-in
+                </label>
                 <DatePicker
                   value={start_date ? moment(start_date) : null}
-                  onChange={(date) => setStart_date(date?.format("YYYY-MM-DD") || "")}
+                  onChange={(date) =>
+                    setStart_date(date?.format("YYYY-MM-DD") || "")
+                  }
                   placeholder="Ngày check-in"
                   className="w-full mt-1 text-sm"
-                  disabledDate={(current) => current && current < moment().endOf("day")}
+                  disabledDate={(current) =>
+                    current && current < moment().endOf("day")
+                  }
                 />
               </div>
               <div className="w-1/2">
-                <label className="block text-black text-sm font-bold">Ngày check-out</label>
+                <label className="block text-black text-sm font-bold">
+                  Ngày check-out
+                </label>
                 <DatePicker
                   value={end_date ? moment(end_date) : null}
-                  onChange={(date) => setEnd_date(date?.format("YYYY-MM-DD") || "")}
+                  onChange={(date) =>
+                    setEnd_date(date?.format("YYYY-MM-DD") || "")
+                  }
                   placeholder="Ngày check-out"
                   className="w-full mt-1 text-sm"
-                  disabledDate={(current) => current && current < moment().endOf("day") || current && current < moment(start_date).endOf("day")}
+                  disabledDate={(current) =>
+                    (current && current < moment().endOf("day")) ||
+                    (current && current < moment(start_date).endOf("day"))
+                  }
                 />
               </div>
             </div>
@@ -375,9 +403,7 @@ const Detail = () => {
             >
               Đặt phòng
             </Button>
-
           </div>
-
         </div>
       </form>
 
@@ -385,11 +411,15 @@ const Detail = () => {
         <h3 className="text-lg font-semibold text-gray-700">Bình luận</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-3">
           {comments.map((comment) => (
-            <div key={comment.id} className="border p-3 rounded-lg shadow-sm bg-white">
+            <div
+              key={comment.id}
+              className="border p-3 rounded-lg shadow-sm bg-white"
+            >
               <p className="text-gray-800 text-sm">{comment.content}</p>
               <p className="text-gray-400 text-xs mt-2">
-                Bình luận bởi: <span className="text-gray-600">{comment.user?.name}</span> - ngày:{" "}
-                {new Date(comment.created_at).toLocaleDateString("vi-VN")}
+                Bình luận bởi:{" "}
+                <span className="text-gray-600">{comment.user?.name}</span> -
+                ngày: {new Date(comment.created_at).toLocaleDateString("vi-VN")}
               </p>
             </div>
           ))}
@@ -410,9 +440,7 @@ const Detail = () => {
         >
           Thêm Bình luận
         </Button>
-
       </div>
-
     </div>
   );
 };

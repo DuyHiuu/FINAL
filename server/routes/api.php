@@ -47,13 +47,13 @@ Route::post('/update_new_pass', [UserController::class, 'update_new_pass'])->nam
 
 
 //Route::middleware('checkrole')->group(function () {
-    Route::prefix('rooms')->group(function () {
-        Route::get('/', [RoomController::class, 'index']);
-        Route::post('/', [RoomController::class, 'store']);
-        Route::get('/{id}', [RoomController::class, 'show']);
-        Route::put('/{id}', [RoomController::class, 'update']);
-        Route::delete('/{id}', [RoomController::class, 'destroy']);
-    });
+Route::prefix('rooms')->group(function () {
+    Route::get('/', [RoomController::class, 'index']);
+    Route::post('/', [RoomController::class, 'store']);
+    Route::get('/{id}', [RoomController::class, 'show']);
+    Route::put('/{id}', [RoomController::class, 'update']);
+    Route::delete('/{id}', [RoomController::class, 'destroy']);
+});
 //});
 
 
@@ -168,20 +168,22 @@ Route::prefix('roomImages')->group(function () {
     Route::delete('/{id}', [RoomImageController::class, 'destroy']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/ratings', [RatingController::class, 'store']);
-    Route::put('/ratings/{id}', [RatingController::class, 'update']);
-    Route::delete('/ratings/{id}', [RatingController::class, 'destroy']);
-});
+// Route::middleware('auth:sanctum')->group(function () {
+Route::post('/ratings', [RatingController::class, 'store']);
+Route::put('/ratings/{id}', [RatingController::class, 'update']);
+Route::delete('/ratings/{id}', [RatingController::class, 'destroy']);
+// });
 Route::get('/ratings', [RatingController::class, 'index']);
 Route::get('/ratings/{id}', [RatingController::class, 'show']);
 
 
 
-Route::middleware(['auth'])->group(function () {
-    Route::post('/blogs', [BlogController::class, 'store']);
-    Route::put('/blogs/{id}', [BlogController::class, 'update']);
-    Route::delete('/blogs/{id}', [BlogController::class, 'destroy']);
-});
+// Route::middleware(['auth'])->group(function () {
+Route::post('/blogs', [BlogController::class, 'store']);
+Route::put('/blogs/{id}', [BlogController::class, 'update']);
+Route::delete('/blogs/{id}', [BlogController::class, 'destroy']);
+// });
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{id}', [BlogController::class, 'show']);
+
+Route::get('/activate/{token}', [UserController::class, 'activate'])->name('user.active');
