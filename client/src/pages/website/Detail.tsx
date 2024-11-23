@@ -101,13 +101,13 @@ const Detail = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     // Kiểm tra nếu ngày chưa được chọn
     if (!start_date || !end_date) {
       setMessage("Vui lòng chọn ngày check-in và check-out trước khi đặt phòng.");
       return;
     }
-  
+
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
@@ -179,8 +179,7 @@ const Detail = () => {
         const errorResponse = await response.json();
         console.error("Error posting comment:", errorResponse);
         setMessage(
-          `Thêm bình luận thất bại: ${
-            errorResponse.message || response.statusText
+          `Thêm bình luận thất bại: ${errorResponse.message || response.statusText
           }`
         );
       }
@@ -302,11 +301,11 @@ const Detail = () => {
       )}
 
       <form onSubmit={handleSubmit} className="mt-8">
-      {message && (
-    <div className="bg-red-100 text-red-600 px-4 py-2 rounded-md mb-4">
-      {message}
-    </div>
-  )}
+        {message && (
+          <div className="bg-red-100 text-red-600 px-4 py-2 rounded-md mb-4">
+            {message}
+          </div>
+        )}
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           <div className="space-y-6">
             <h1 className="text-3xl font-bold">{room?.size_name}</h1>

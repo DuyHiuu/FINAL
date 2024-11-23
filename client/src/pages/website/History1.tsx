@@ -13,6 +13,7 @@ import {
 import { SearchOutlined } from "@ant-design/icons";
 import moment from "moment";
 import axios from "axios";
+import { useRevalidator } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -21,19 +22,21 @@ const History1 = () => {
   const [startDate, setStartDate] = useState<moment.Moment | null>(null);
   const [endDate, setEndDate] = useState<moment.Moment | null>(null);
   const [filteredPayments, setFilteredPayments] = useState(payment || []);
-  const [rating, setRating] = useState({});
-  const [ratingContent, setRatingContent] = useState({});
+  const [rating, setRating] = useState<{ [key: string]: number }>({});
+  const [ratingContent, setRatingContent] = useState<{ [key: string]: string }>({});
 
   const totalRoomsBooked = Array.isArray(filteredPayments)
     ? filteredPayments.length
     : 0;
 
+  const userID = localStorage.getItem("user_id"); // Lấy user_id từ localStorage hoặc từ auth token
+
   useEffect(() => {
     setFilteredPayments(payment);
   }, [payment]);
 
-  const handleStartDateChange = (date) => setStartDate(date);
-  const handleEndDateChange = (date) => setEndDate(date);
+  const handleStartDateChange = (date: moment.Moment | null) => setStartDate(date);
+  const handleEndDateChange = (date: moment.Moment | null) => setEndDate(date);
 
   const handleSearch = () => {
     if (!startDate && !endDate) {
@@ -54,28 +57,51 @@ const History1 = () => {
     setFilteredPayments(filtered);
   };
 
-  const handleRatingChange = (value, itemId) => {
+  const handleRatingChange = (value: number, itemId: string) => {
     setRating((prev) => ({ ...prev, [itemId]: value }));
   };
 
-  const handleContentChange = (e, itemId) => {
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>, itemId: string) => {
     setRatingContent((prev) => ({ ...prev, [itemId]: e.target.value }));
   };
 
-  const submitRating = async (itemId, roomId) => {
+  const submitRating = async (itemId: string, roomId: number) => {
+    const token = `Bearer ${localStorage.getItem("auth_token")}`;
+
+    if (!token) {
+      message.error("Bạn chưa đăng nhập. Vui lòng đăng nhập để tiếp tục.");
+      return;
+    }
+
+    if (!rating[itemId] || !ratingContent[itemId]) {
+      message.warning("Vui lòng nhập đầy đủ nội dung và đánh giá sao.");
+      return;
+    }
+
     try {
-      await axios.post("http://localhost:8000/api/ratings", {
-        rating: rating[itemId],
-        content: ratingContent[itemId],
-        room_id: roomId,
-      });
+      await axios.post(
+        "http://localhost:8000/api/ratings",
+        {
+          rating: rating[itemId],
+          content: ratingContent[itemId],
+          room_id: roomId,
+          user_id: userID, // Gửi user_id cùng với đánh giá
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
       message.success("Đánh giá đã được lưu thành công!");
     } catch (error) {
+      console.error(error.response?.data || error.message);
       message.error("Xảy ra lỗi khi lưu đánh giá.");
     }
   };
 
-  const convertIdToCustomString = (id) => {
+  const convertIdToCustomString = (id: number) => {
     const prefix = "PETHOUSE-";
     const strId = String(id);
     let encodedId = "";
@@ -153,8 +179,6 @@ const History1 = () => {
                               Tổng tiền:{" "}
                               {item.total_amount.toLocaleString("vi-VN")} VNĐ
                             </div>
-
-                            {/* Star Rating Feature */}
                             {item.status?.status_name === "Đã xác nhận" && (
                               <div className="mt-2">
                                 <Rate
@@ -199,13 +223,11 @@ const History1 = () => {
             <Text className="text-gray-500">Không có lịch sử mua hàng.</Text>
           )}
         </div>
-
         <div className="lg:w-1/3 p-4 border rounded-lg shadow-lg ml-0 lg:ml-4 bg-white h-full">
           <div className="flex items-center justify-between mb-4">
             <Text strong>Tổng số phòng đã đặt:</Text>
             <Text>{totalRoomsBooked}</Text>
           </div>
-
           <div className="mb-4">
             <DatePicker
               value={startDate}
@@ -220,7 +242,6 @@ const History1 = () => {
               style={{ width: "100%" }}
             />
           </div>
-
           <Button
             type="primary"
             onClick={handleSearch}
@@ -236,3 +257,4 @@ const History1 = () => {
 };
 
 export default History1;
+``

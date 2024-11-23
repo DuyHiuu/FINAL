@@ -4,17 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Rating;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class RatingController extends Controller
 {
-    public function __construct()
-    {
-        // Chỉ cho phép người dùng đã đăng nhập truy cập các phương thức này
-        $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
-    }
 
     public function index()
     {
@@ -29,62 +25,83 @@ class RatingController extends Controller
 
     public function store(Request $request)
     {
+        // Validate input
         $validator = Validator::make($request->all(), [
             'rating' => 'required|integer|min:1|max:5',
             'content' => 'required|string|max:1000',
             'room_id' => 'required|integer|exists:rooms,id',
+            'user_id' => 'required|integer|exists:users,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $user = auth()->user();
+        if ($request->isMethod('POST')) {
+            DB::beginTransaction();
 
-        $hasCompletedBooking = Booking::where('room_id', $request->room_id)
-            ->where('user_id', $user->id)
-            ->where('status', 'completed')
-            ->exists();
+            try {
+                // Lấy thông tin từ request
+                $params = $request->all();
 
-        if (!$hasCompletedBooking) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Bạn chỉ có thể đánh giá sau khi hoàn tất đặt phòng và thanh toán!'
-            ], 403);
-        }
+                // Kiểm tra xem user_id có tồn tại trong request không
+                if (!isset($params['user_id'])) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'user_id không tồn tại trong request.'
+                    ], 400);
+                }
 
-        DB::beginTransaction();
+                // Lấy thông tin người dùng từ user_id
+                $user = User::find($params['user_id']);
 
-        try {
-            $rating = new Rating();
-            $rating->rating = $request->rating;
-            $rating->content = $request->content;
-            $rating->user_id = $user->id;
-            $rating->room_id = $request->room_id;
-            $rating->save();
+                // Kiểm tra người dùng có hợp lệ không
+                if (!$user) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Người dùng không hợp lệ.'
+                    ], 404);
+                }
 
-            DB::commit();
+                // Lưu thông tin đánh giá
+                $rating = new Rating();
+                $rating->rating = $params['rating'];
+                $rating->content = $params['content'];
+                $rating->room_id = $params['room_id'];
+                $rating->user_id = $user->id;
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Đánh giá đã được lưu thành công!',
-                'rating' => $rating
-            ], 201);
-        } catch (\Exception $e) {
-            DB::rollBack();
+                // Lưu đánh giá
+                $rating->save();
 
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Xảy ra lỗi trong quá trình đánh giá. Vui lòng thử lại!',
-                'error' => $e->getMessage()
-            ], 500);
+                DB::commit();
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Đánh giá đã được lưu thành công!',
+                    'rating' => $rating
+                ], 201);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Xảy ra lỗi trong quá trình lưu đánh giá. Vui lòng thử lại!',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
         }
     }
 
+
+
+
     public function show(string $id)
     {
-        $ratings = Rating::where('room_id', $id)->with('room')->get();
+        // Lấy tất cả đánh giá của phòng
+        $ratings = Rating::where('room_id', $id)
+            ->with('room', 'user') // Thêm 'user' để lấy thông tin người dùng đã đánh giá
+            ->get();
 
+        // Kiểm tra nếu không có đánh giá nào
         if ($ratings->isEmpty()) {
             return response()->json([
                 'success' => false,
@@ -99,6 +116,7 @@ class RatingController extends Controller
             'data' => $ratings,
         ]);
     }
+
 
     public function update(Request $request, string $id)
     {
