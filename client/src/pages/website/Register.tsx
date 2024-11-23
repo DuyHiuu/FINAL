@@ -31,37 +31,12 @@ const Register = () => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
-
-    // Kiểm tra mật khẩu và mật khẩu xác nhận
+  
     if (formData.password !== formData.confirmPassword) {
       setError("Mật khẩu và mật khẩu xác nhận không khớp");
       return;
     }
-
-    // Kiểm tra định dạng mật khẩu
-    if (!validatePassword(formData.password)) {
-      setError(
-        "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt."
-      );
-      return;
-    }
-    if (!formData.name) {
-      setError("Name không được để trống");
-      return;
-    }
-    if (!formData.email) {
-      setError("Email không được để trống.");
-      return;
-    }
-    if (!formData.phone) {
-      setError("Phone không được để trống");
-      return;
-    }
-    if (!formData.password) {
-      setError("Pass không được để trống");
-      return;
-    }
-
+  
     try {
       const response = await fetch("http://localhost:8000/api/register", {
         method: "POST",
@@ -76,23 +51,21 @@ const Register = () => {
           role_id: formData.role_id,
         }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-
-        setSuccessMessage("Đăng ký thành công!");
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
-      } else {
+  
+      if (!response.ok) {
         const result = await response.json();
-        setError(result.message || "Đăng ký không thành công");
+        setError(result.errors ? Object.values(result.errors).flat().join(", ") : result.message);
+        return;
       }
-    } catch (err) {
-      setError("Đã xảy ra lỗi, vui lòng thử lại sau");
+  
+      const data = await response.json();
+      setSuccessMessage("Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.");
+      setTimeout(() => navigate("/login"), 2000);
+    } catch (error) {
+      setError("Đã xảy ra lỗi. Vui lòng thử lại sau.");
     }
   };
+  
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 mt-10">
