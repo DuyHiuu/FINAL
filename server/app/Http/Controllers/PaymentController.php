@@ -581,7 +581,10 @@ class PaymentController extends Controller
 //                        echo json_encode($returnData);
 //                    }
                     // vui lòng tham khảo thêm tại code demo
-                    return response()->json($vnp_Url);
+                    return response()->json([
+                        'status' => 'success',
+                        'vnp_Url' => $vnp_Url,
+                    ]);                    
             } catch (\Exception $e) {
                 DB::rollBack();
 

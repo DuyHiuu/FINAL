@@ -138,15 +138,37 @@ const Pay2 = () => {
         }
 
         try {
-            const response = await fetch(`${addPay}`, {
-                method: "POST",
-                body: formData,
-            });
-            if (response.ok) {
-                navigate("/history1");
+
+            if(paymethod_id ==2) {
+                const response = await fetch(`${addPay}/vn_pay`, {
+                    method: "POST",
+                    body: formData,
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+    
+                const result = await response.json();
+    
+                if (result.status === "success") {
+                    const vnpUrl = result.vnp_Url;
+                    window.location.href = vnpUrl;
+                } else {
+                    alert("Thanh toán không thành công, vui lòng thử lại.");
+                }
             } else {
-                console.error("Error:", response.statusText);
+                const response = await fetch(`${addPay}`, {
+                    method: "POST",
+                    body: formData,
+                });
+                if (response.ok) {
+                    navigate("/history1");
+                } else {
+                    console.error("Error:", response.statusText);
+                }
             }
+
         } catch (error) {
             console.error("API connection error:", error);
         }
