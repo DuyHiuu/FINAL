@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import useFetchPayments from "../../api/useFetchPayments";
+import useFetchRatings from "../../api/useFetchRatings";
 import {
   Button,
   DatePicker,
@@ -24,14 +25,18 @@ const History1 = () => {
   const [filteredPayments, setFilteredPayments] = useState(payment || []);
   const [rating, setRating] = useState<{ [key: string]: number }>({});
   const [ratingContent, setRatingContent] = useState<{ [key: string]: string }>({});
+  const [hasRated, setHasRated] = useState<{ [key: string]: boolean }>({});
 
   const totalRoomsBooked = Array.isArray(filteredPayments)
     ? filteredPayments.length
     : 0;
 
-  const userID = localStorage.getItem("user_id"); // Lấy user_id từ localStorage hoặc từ auth token
+  const userID = localStorage.getItem("user_id");
 
   useEffect(() => {
+    const storedRatings = JSON.parse(localStorage.getItem("ratings") || "{}");
+    setHasRated(storedRatings);
+
     setFilteredPayments(payment);
   }, [payment]);
 
@@ -85,7 +90,7 @@ const History1 = () => {
           rating: rating[itemId],
           content: ratingContent[itemId],
           room_id: roomId,
-          user_id: userID, // Gửi user_id cùng với đánh giá
+          user_id: userID,
         },
         {
           headers: {
@@ -94,7 +99,11 @@ const History1 = () => {
           },
         }
       );
+
       message.success("Đánh giá đã được lưu thành công!");
+      const updatedRatings = { ...hasRated, [itemId]: true };
+      setHasRated(updatedRatings);
+      localStorage.setItem("ratings", JSON.stringify(updatedRatings));
     } catch (error) {
       console.error(error.response?.data || error.message);
       message.error("Xảy ra lỗi khi lưu đánh giá.");
@@ -158,8 +167,7 @@ const History1 = () => {
                             <div>
                               <Text>
                                 Ngày:{" "}
-                                {`${moment(item.booking?.start_date).format(
-                                  "DD-MM-YYYY"
+                                {`${moment(item.booking?.start_date).format("DD-MM-YYYY"
                                 )}`}{" "}
                                 &#8594;{" "}
                                 {`${moment(item.booking?.end_date).format(
@@ -179,7 +187,7 @@ const History1 = () => {
                               Tổng tiền:{" "}
                               {item.total_amount.toLocaleString("vi-VN")} VNĐ
                             </div>
-                            {item.status?.status_name === "Đã xác nhận" && (
+                            {item.status?.status_name === "Đã xác nhận" && !hasRated[item.id] && (
                               <div className="mt-2">
                                 <Rate
                                   value={rating[item.id] || 0}
@@ -211,7 +219,9 @@ const History1 = () => {
                                 </Button>
                               </div>
                             )}
-                          </>
+                            {hasRated[item.id] && (
+                              <div className="mt-2 text-green-500">Bạn đã đánh giá phòng này.</div>
+                            )} </>
                         }
                       />
                     </div>
@@ -233,7 +243,7 @@ const History1 = () => {
               value={startDate}
               onChange={handleStartDateChange}
               placeholder="Ngày bắt đầu"
-              style={{ width: "100%", marginBottom: 8 }}
+              style={{ width: "100%" }}
             />
             <DatePicker
               value={endDate}
@@ -257,4 +267,3 @@ const History1 = () => {
 };
 
 export default History1;
-``

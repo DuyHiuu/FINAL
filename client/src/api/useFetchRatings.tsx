@@ -1,4 +1,3 @@
-// useFetchRatings.ts
 import { useState, useEffect } from 'react';
 
 const useFetchRatings = (roomId: string) => {
@@ -9,9 +8,29 @@ const useFetchRatings = (roomId: string) => {
   useEffect(() => {
     const fetchRatings = async () => {
       try {
+        // Kiểm tra roomId có hợp lệ hay không
+        if (!roomId) {
+          setError('Room ID is required');
+          setLoading(false);
+          return;
+        }
+
         const response = await fetch(`/api/ratings?roomId=${roomId}`);
+
+        // Kiểm tra phản hồi từ API
+        if (!response.ok) {
+          throw new Error('Failed to fetch ratings');
+        }
+
         const data = await response.json();
-        setRatings(data); // Giả sử API trả về một mảng các đánh giá
+
+        // Kiểm tra xem data có phải là mảng không
+        if (Array.isArray(data)) {
+          setRatings(data);
+        } else {
+          setError('Unexpected data format');
+        }
+
         setLoading(false);
       } catch (error) {
         setError('Failed to load ratings');
@@ -19,9 +38,7 @@ const useFetchRatings = (roomId: string) => {
       }
     };
 
-    if (roomId) {
-      fetchRatings();
-    }
+    fetchRatings();
   }, [roomId]);
 
   return { ratings, loading, error };
