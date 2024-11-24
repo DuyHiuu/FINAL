@@ -26,7 +26,7 @@ const History1 = () => {
   const [rating, setRating] = useState<{ [key: string]: number }>({});
   const [ratingContent, setRatingContent] = useState<{ [key: string]: string }>({});
   const [hasRated, setHasRated] = useState<{ [key: string]: boolean }>({});
-
+  const [selectedStatus, setSelectedStatus] = useState("");
   const totalRoomsBooked = Array.isArray(filteredPayments)
     ? filteredPayments.length
     : 0;
@@ -44,7 +44,7 @@ const History1 = () => {
   const handleEndDateChange = (date: moment.Moment | null) => setEndDate(date);
 
   const handleSearch = () => {
-    if (!startDate && !endDate) {
+    if (!startDate && !endDate && !selectedStatus) {
       setFilteredPayments(payment);
       return;
     }
@@ -56,7 +56,11 @@ const History1 = () => {
         ? bookingStartDate >= new Date(startDate)
         : true;
       const isBeforeEnd = endDate ? bookingEndDate <= new Date(endDate) : true;
-      return isAfterStart && isBeforeEnd;
+
+      const matchesStatus =
+        !selectedStatus || String(item.status?.id) === selectedStatus;
+
+      return isAfterStart && isBeforeEnd && matchesStatus;
     });
 
     setFilteredPayments(filtered);
@@ -142,7 +146,9 @@ const History1 = () => {
             filteredPayments.map((item) => {
               const formattedId = convertIdToCustomString(item?.id);
               return (
-                <Card key={item?.id} className="mb-6" hoverable>
+                <Card key={item?.id}
+                  className="mb-6 hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                  hoverable>
                   <div className="flex items-start">
                     <img
                       alt={`image-${formattedId}`}
@@ -251,6 +257,18 @@ const History1 = () => {
               placeholder="Ngày kết thúc"
               style={{ width: "100%" }}
             />
+          </div>
+          <div className="mb-4">
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">Tất cả trạng thái</option>
+              <option value="6">Đã check-out</option>
+              <option value="5">Đã check-in</option>
+              <option value="7">Đã hủy</option>
+            </select>
           </div>
           <Button
             type="primary"
