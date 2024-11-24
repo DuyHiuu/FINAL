@@ -12,7 +12,6 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     address: "",
-    role_id: 1,
   });
 
   const handleChange = (e) => {
@@ -48,7 +47,6 @@ const Register = () => {
           password: formData.password,
           password_confirmation: formData.confirmPassword,
           address: formData.address,
-          role_id: formData.role_id,
         }),
       });
   
