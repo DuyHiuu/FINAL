@@ -4,6 +4,7 @@ import { Input, Button, Table, Pagination, message } from "antd";
 import { FaSearch } from "react-icons/fa";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import useFetchServices from "../../../../api/useFetchServices";
+import authClient from "../../../../api/authClient";
 
 const ListService = () => {
   const { service, loading, error } = useFetchServices();
@@ -27,10 +28,8 @@ const ListService = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/api/services/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
+      const response = await authClient.delete(`/services/${id}`); 
+      if (response.status === 200) {
         message.success("Dịch vụ đã được xóa thành công");
         window.location.reload();
       } else {

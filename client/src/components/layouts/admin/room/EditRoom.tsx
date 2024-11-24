@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Form, Input, Button, Select, message, InputNumber, Upload } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import useFetchSize from "../../../../api/useFetchSize";
+import authClient from "../../../../api/authClient";
 
 const { TextArea } = Input;
 
@@ -69,15 +70,9 @@ const EditRoom = () => {
 
         try {
             // Cập nhật thông tin phòng
-            const response = await fetch(`${showUrl}/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(updateRoom),
-            });
+            const response = await authClient.put(`${showUrl}/${id}`, updateRoom);
 
-            if (!response.ok) {
+            if (response.status !== 200) {
                 throw new Error("Lỗi khi cập nhật phòng");
             }
 
@@ -210,7 +205,7 @@ const EditRoom = () => {
                 label="Số lượng phòng đang được đặt"
                 name="is_booked"
             >
-                <InputNumber style={{ width: "100%" }} disabled/>
+                <InputNumber style={{ width: "100%" }} disabled />
             </Form.Item>
 
             <Form.Item

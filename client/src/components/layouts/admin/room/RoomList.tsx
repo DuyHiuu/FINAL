@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Table, Button, Input, message, Popconfirm, Checkbox } from "antd";
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'; // Thêm icon
 import useFetchRooms from "../../../../api/useFetchRooms";
+import authClient from "../../../../api/authClient";
 
 const RoomList = () => {
   const { room, loading, error } = useFetchRooms(); // Giả định useFetchRooms cũng có trạng thái loading và error
@@ -29,24 +30,25 @@ const RoomList = () => {
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa phòng này?");
     if (!confirmDelete) return;
-
+  
     try {
-      const response = await fetch(`http://localhost:8000/api/rooms/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
+      const response = await authClient.delete(`/rooms/${id}`); 
+      if (response.status === 200) {
         message.success("Phòng đã được xóa thành công");
-        window.location.reload(); // Tải lại trang sau khi xóa thành công
+        window.location.reload();
       } else {
-        const errorData = await response.json(); // Lấy dữ liệu lỗi từ phản hồi
-        message.error(`Xóa Phòng thất bại: ${errorData.message}`);
+        message.error("Xóa phòng thất bại");
       }
     } catch (error) {
       console.error("Lỗi:", error);
-      message.error("Đã xảy ra lỗi khi xóa Phòng");
+      if (error.response && error.response.status === 401) {
+        message.error("Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.");
+      } else {
+        message.error("Đã xảy ra lỗi khi xóa phòng");
+      }
     }
   };
-
+  
   // Lọc danh sách phòng dựa trên kích thước
   const filteredRooms = sizeFilter.length > 0
     ? room.filter((r) => sizeFilter.includes(r.size_name))
