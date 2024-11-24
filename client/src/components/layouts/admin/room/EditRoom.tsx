@@ -29,6 +29,7 @@ const EditRoom = () => {
                         description: room.description,
                         statusroom: room.statusroom,
                         quantity: room.quantity,
+                        is_booked: room.is_booked,
                     });
                     setImg_thumbnail(room.img_thumbnail);
 
@@ -187,9 +188,29 @@ const EditRoom = () => {
             <Form.Item
                 label="Số lượng"
                 name="quantity"
-                rules={[{ required: true, message: "Vui lòng nhập số lượng phòng!" }]}
+                rules={[
+                    { required: true, message: 'Vui lòng nhập số lượng phòng!' },
+                    {
+                        validator: (_, value) => {
+                            const isBooked = form.getFieldValue('is_booked');
+                            console.log(isBooked);
+
+                            if (!value || value >= isBooked) {
+                                return Promise.resolve();
+                            }
+                            return Promise.reject(new Error('Số lượng không hợp lệ!'));
+                        },
+                    },
+                ]}
             >
-                <InputNumber style={{ width: "100%" }} placeholder="Nhập số lượng phòng" min={0} />
+                <InputNumber style={{ width: "100%" }} placeholder="Nhập số lượng phòng" />
+            </Form.Item>
+
+            <Form.Item
+                label="Số lượng phòng đang được đặt"
+                name="is_booked"
+            >
+                <InputNumber style={{ width: "100%" }} disabled/>
             </Form.Item>
 
             <Form.Item

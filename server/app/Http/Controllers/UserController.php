@@ -157,7 +157,7 @@ class UserController extends Controller
         $user = User::where('email',$to_email)->first();
         if($user){
             $rs_user=User::find($user->id);
-            $link_rs_pass = url('http://localhost:5173/forgot-password?email=' . $to_email);
+            $link_rs_pass = url('http://localhost:5173/reset-password?email=' . $to_email);
             $data = array("name" => $title_email, "body" => $link_rs_pass, "email" => $to_email);
             Mail::send('forgot_password', $data, function ($message) use ($title_email, $to_email) {
                 $message->to($to_email)->subject($title_email);

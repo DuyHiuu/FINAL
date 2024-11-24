@@ -24,12 +24,11 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/reset-password", {
+      const response = await fetch("http://localhost:8000/api/update_new_pass", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
-          token,
           password,
           password_confirmation: confirmPassword,
         }),
