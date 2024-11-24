@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Table, Input, Button, Pagination, Modal } from "antd";
+import { Table, Input, Button, Pagination, Modal, Spin } from "antd";
 import { SearchOutlined, EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import useFetchBlogs from "../../../../api/useFetchBlogs";
 
 const BlogList = () => {
-  const { blog, loading } = useFetchBlogs();
+  const { blog, loading } = useFetchBlogs(); // Sử dụng useFetchBlogs
   const [searchTerm, setSearchTerm] = useState("");
   const [filterBy, setFilterBy] = useState("title");
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,9 +72,8 @@ const BlogList = () => {
       title: "Ảnh",
       dataIndex: "image",
       key: "image",
-      render: (image) => (
-        image ? <img src={image} alt="blog thumbnail" className="w-20 h-20 object-cover rounded" /> : null
-      ),
+      render: (image) =>
+        image ? <img src={image} alt="blog thumbnail" className="w-20 h-20 object-cover rounded" /> : null,
     },
     {
       title: "Hành động",
@@ -93,6 +92,14 @@ const BlogList = () => {
       ),
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <Spin size="large" tip="Đang tải dữ liệu..." />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6">
@@ -138,7 +145,6 @@ const BlogList = () => {
         columns={columns}
         dataSource={filteredBlogs.slice((currentPage - 1) * blogsPerPage, currentPage * blogsPerPage)}
         pagination={false}
-        loading={loading}
         rowKey="id"
         bordered
       />

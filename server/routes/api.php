@@ -42,7 +42,7 @@ Route::get('/room_home', [HomeController::class, 'room_home'])->name('room_home'
 Route::get('/blog_home', [HomeController::class, 'blog_home'])->name('blog_home');
 Route::get('/top_three', [HomeController::class, 'top_three'])->name('top_three');
 Route::post('/check_payment', [PaymentController::class, 'check_payment']);
-Route::post('/forgot_password',[UserController::class,'forgot_password']);
+Route::post('/forgot_password', [UserController::class, 'forgot_password']);
 Route::post('/update_new_pass', [UserController::class, 'update_new_pass'])->name('update_new_pass');
 
 
