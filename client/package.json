@@ -37,6 +37,7 @@
     "react-router-dom": "^6.26.2",
     "react-spinners": "^0.14.1",
     "react-spring": "^9.7.4",
+    "react-toastify": "^10.0.6",
     "recharts": "^2.13.0",
     "redux": "^5.0.1",
     "swiper": "^11.1.14",

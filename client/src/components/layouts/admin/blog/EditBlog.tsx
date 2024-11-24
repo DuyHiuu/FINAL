@@ -10,6 +10,10 @@ const EditBlog = () => {
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<any>({});
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate(); // Để điều hướng trang
 
   useEffect(() => {
@@ -36,6 +40,10 @@ const EditBlog = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setErrors({});
+    setMessage('');
+    setSuccessMessage(''); // Reset success message before submitting
+
     const updatedBlog = {
       title: title,
       description: description,
@@ -43,23 +51,45 @@ const EditBlog = () => {
       image: image,
     };
 
+    setIsLoading(true);
+
     try {
       const response = await fetch(`${showUrl}/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedBlog), // Chuyển đổi đối tượng thành chuỗi JSON
+        body: JSON.stringify(updatedBlog),
       });
 
+      setIsLoading(false);
+
       if (response.ok) {
-        console.log('Blog đã được cập nhật thành công');
-        navigate('/admin/blogs'); // Điều hướng về danh sách blog
+        setSuccessMessage('Bài viết đã được cập nhật thành công!');
+
+        // Hiển thị thông báo thành công trong 3 giây rồi chuyển trang
+        setTimeout(() => {
+          setSuccessMessage('');
+          navigate('/admin/blogs');
+        }, 3000);
       } else {
-        console.error('Lỗi khi sửa phòng:', response.statusText);
+        const errorData = await response.json();
+        if (errorData.message) {
+          let errorMessages: string[] = [];
+          for (const [field, messages] of Object.entries(errorData.message)) {
+            if (Array.isArray(messages)) {
+              messages.forEach((msg) => {
+                errorMessages.push(`${field}: ${msg}`);
+              });
+            }
+          }
+          setMessage(errorMessages.join(", "));
+        }
+        setErrors(errorData.message);
       }
     } catch (error) {
-      console.error('Lỗi kết nối API:', error);
+      setIsLoading(false);
+      setMessage('Đã xảy ra lỗi khi kết nối với server.');
     }
   };
 
@@ -75,63 +105,88 @@ const EditBlog = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 border border-gray-300 rounded shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Sửa Thông Tin Blog</h2>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold text-gray-800 mb-4 text-center">Sửa Bài Viết</h1>
 
-      <div className="mb-4">
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">Tiêu Đề:</label>
-        <input
-          type="text"
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)} // Cập nhật state khi thay đổi
-          required
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-        />
-      </div>
+      {/* Hiển thị thông báo thành công trong trang */}
+      {successMessage && (
+        <div className="bg-green-200 text-green-800 p-4 rounded-lg mb-4">
+          <p>{successMessage}</p>
+        </div>
+      )}
 
-      <div className="mb-4">
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">Mô Tả:</label>
-        <textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)} // Cập nhật state khi thay đổi
-          required
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-        />
-      </div>
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
+            Tiêu đề
+          </label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-500"
+            placeholder="Nhập tiêu đề"
+          />
+          {errors.title && <div className="text-red-500 text-sm mt-2">{errors.title}</div>}
+        </div>
 
-      <div className="mb-4">
-        <label htmlFor="content" className="block text-sm font-medium text-gray-700">Nội Dung:</label>
-        <textarea
-          id="content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)} // Cập nhật state khi thay đổi
-          required
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-        />
-      </div>
-      <div className="mb-4">
-        <label htmlFor="image" className="block text-sm font-medium text-gray-700">Hình Ảnh:</label>
-        {image && (
-          <img src={image} alt="image" className="h-32 mb-2" />
-        )}
-        <input
-          type="file"
-          id="image"
-          onChange={handleImageChange}
-          accept="image/*"
-          className="mt-1 block w-full text-gray-700 border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring focus:ring-blue-500"
-        />
-      </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">
+            Ảnh
+          </label>
+          {image && (
+            <img src={image} alt="image" className="h-32 mb-2" />
+          )}
+          <input
+            type="file"
+            id="image"
+            onChange={handleImageChange}
+            accept="image/*"
+            className="w-full text-gray-700 border rounded focus:outline-none focus:ring focus:ring-blue-500"
+          />
+          {errors.image && <div className="text-red-500 text-sm mt-2">{errors.image}</div>}
+        </div>
 
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200"
-      >
-        Cập Nhật
-      </button>
-    </form>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
+            Mô tả
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-500"
+            placeholder="Nhập mô tả"
+          />
+          {errors.description && <div className="text-red-500 text-sm mt-2">{errors.description}</div>}
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="content">
+            Nội dung bài viết
+          </label>
+          <textarea
+            id="content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-500"
+            placeholder="Nhập nội dung bài viết"
+          />
+          {errors.content && <div className="text-red-500 text-sm mt-2">{errors.content}</div>}
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition duration-200 ${isLoading ? 'bg-gray-400' : ''}`}
+          >
+            {isLoading ? 'Đang cập nhật...' : 'Cập nhật bài viết'}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

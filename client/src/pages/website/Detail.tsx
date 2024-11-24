@@ -52,6 +52,7 @@ const Detail = () => {
   const [voucher_id, setVoucher_id] = useState<number[]>([]);
   const [newComment, setNewComment] = useState<string>("");
   const [message, setMessage] = useState<string>("");
+  const [visibleCommentsCount, setVisibleCommentsCount] = useState(4);
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -84,12 +85,17 @@ const Detail = () => {
         console.error("Error fetching comments:", error);
         setComments([]);
       }
+      const res = await fetch(`${API_URL}/comments/${id}`);
+      const data = await res.json();
+      setComments(data.comments || []);
     };
 
     fetchRoom();
     fetchComments();
   }, [id]);
-
+  const handleShowMoreComments = () => {
+    setVisibleCommentsCount((prev) => prev + 4); // Tăng thêm 4 bình luận
+  };
   const changeService = (serviceId: number) => {
     setService_ids((prevState) => {
       if (prevState.includes(serviceId)) {
@@ -407,40 +413,55 @@ const Detail = () => {
         </div>
       </form>
 
-      <div className="mt-6 ">
-        <h3 className="text-lg font-semibold text-gray-700">Bình luận</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-3">
-          {comments.map((comment) => (
+      <div className="mt-8 max-w-md">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">Bình luận</h3>
+        <div className="space-y-4">
+          {comments.slice(0, visibleCommentsCount).map((comment) => (
             <div
               key={comment.id}
-              className="border p-3 rounded-lg shadow-sm bg-white"
+              className="bg-white p-4 rounded-md border border-gray-200 w-full"
             >
-              <p className="text-gray-800 text-sm">{comment.content}</p>
-              <p className="text-gray-400 text-xs mt-2">
-                Bình luận bởi:{" "}
-                <span className="text-gray-600">{comment.user?.name}</span> -
-                ngày: {new Date(comment.created_at).toLocaleDateString("vi-VN")}
-              </p>
+              <p className="text-gray-700 text-sm">{comment.content}</p>
+              <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+                <div className="font-medium">{comment.user?.name}</div>
+                <span>{new Date(comment.created_at).toLocaleDateString("vi-VN")}</span>
+              </div>
             </div>
           ))}
         </div>
-        <TextArea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Thêm bình luận..."
-          rows={3}
-          className="w-[350px] mt-4 p-2 text-sm rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary block"
-        />
 
-        <Button
-          type="primary"
-          onClick={handleAddComment}
-          className="w-[350px] mt-3 py-2 text-sm font-medium rounded-md block"
-          disabled={!newComment.trim()}
-        >
-          Thêm Bình luận
-        </Button>
+        {comments.length > visibleCommentsCount && (
+          <div className="mt-4 text-center">
+            <Button
+              type="link"
+              onClick={handleShowMoreComments}
+              className="text-blue-500"
+            >
+              Xem thêm
+            </Button>
+          </div>
+        )}
+
+        <div className="mt-6 max-w-md w-full">
+          <TextArea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Thêm bình luận..."
+            rows={3}
+            className="p-3 text-sm rounded-md border border-gray-300 w-full"
+          />
+          <Button
+            type="primary"
+            onClick={handleAddComment}
+            className="mt-4 py-2 text-sm font-medium rounded-md bg-blue-500 w-full text-white hover:bg-blue-600 disabled:bg-gray-300"
+            disabled={!newComment.trim()}
+          >
+            Thêm Bình luận
+          </Button>
+        </div>
       </div>
+
+
     </div>
   );
 };
