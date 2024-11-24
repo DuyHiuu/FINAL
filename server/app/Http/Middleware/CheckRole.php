@@ -30,7 +30,7 @@ class CheckRole
         // Kiểm tra model và role_id
         $model = $accessToken->tokenable_type;
         $id_user = $accessToken->tokenable_id;
-        $user=User::find($id_user);
+        $user = User::find($id_user);
 
         if ($model !== "App\Models\User") {
             return response()->json(['error' => 'Token không hợp lệ'], 403);

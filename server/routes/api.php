@@ -46,15 +46,15 @@ Route::post('/forgot_password', [UserController::class, 'forgot_password']);
 Route::post('/update_new_pass', [UserController::class, 'update_new_pass'])->name('update_new_pass');
 
 
-//Route::middleware('checkrole')->group(function () {
 Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
-    Route::post('/', [RoomController::class, 'store']);
     Route::get('/{id}', [RoomController::class, 'show']);
-    Route::put('/{id}', [RoomController::class, 'update']);
-    Route::delete('/{id}', [RoomController::class, 'destroy']);
+    Route::middleware('checkrole')->group(function () {
+        Route::post('/', [RoomController::class, 'store']);
+        Route::put('/{id}', [RoomController::class, 'update']);
+        Route::delete('/{id}', [RoomController::class, 'destroy']);
+    });
 });
-//});
 
 
 Route::prefix('sizes')->group(function () {

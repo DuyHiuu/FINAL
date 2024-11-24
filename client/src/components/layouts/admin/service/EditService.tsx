@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Form, Input, Button, Upload, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import authClient from '../../../../api/authClient';
 
 const EditService = () => {
 
@@ -51,16 +52,10 @@ const EditService = () => {
         
 
         try {
-            const response = await fetch(`${showUrl}/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updateService),
-            });
+            const response = await authClient.put(`${showUrl}/${id}`, updateService);
             setIsLoading(false);
 
-            if (response.ok) {
+            if (response.status ===200) {
                 console.log('Dịch vụ đã sửa thành công:');
                 navigate('/admin/services');
             } else {
