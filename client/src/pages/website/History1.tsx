@@ -165,11 +165,35 @@ const History1 = () => {
                         title={`ID: ${formattedId}`}
                         description={
                           <>
-                            <div className="inline-flex items-center px-3 py-1 rounded-full bg-yellow-300">
-                              <Text className="text-yellow-800 text-sm">
+                            <div
+                              className="inline-flex items-center px-3 py-1 rounded-full"
+                              style={{
+                                backgroundColor:
+                                  item.status?.id === 1
+                                    ? "#fcd34d" 
+                                    : item.status?.id === 2
+                                      ? "#10b981" 
+                                      : item.status?.id === 4
+                                        ? "#10b981" 
+                                        : item.status?.id === 5
+                                          ? "#00FFFF" 
+                                          : item.status?.id === 6
+                                            ? "#0000FF" 
+                                            : item.status?.id === 7
+                                            ? "#FF0000" 
+                                            : "#e5e7eb",
+                              }}
+                            >
+                              <Text
+                                className="text-sm"
+                                style={{
+                                  color: "#fff"
+                                }}
+                              >
                                 {item.status?.status_name}
                               </Text>
                             </div>
+
                             <div>
                               <Text>
                                 Ngày:{" "}
@@ -193,7 +217,7 @@ const History1 = () => {
                               Tổng tiền:{" "}
                               {item.total_amount.toLocaleString("vi-VN")} VNĐ
                             </div>
-                            {item.status?.status_name === "Đã xác nhận" && !hasRated[item.id] && (
+                            {item.status?.id === 6 && !hasRated[item.id] && (
                               <div className="mt-2">
                                 <Rate
                                   value={rating[item.id] || 0}

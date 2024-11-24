@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker, Modal, Checkbox, Row, Col } from 'antd';
+import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker, Modal, Checkbox, Row, Col, Divider } from 'antd';
 import useFetchPayMethod from '../../api/useFetchPayMethod';
 import { PulseLoader } from 'react-spinners';
 import moment from 'moment';
@@ -158,6 +158,8 @@ const Pay2 = () => {
 
     const openVoucherPopUp = () => setVoucherPopUp(true);
     const closeVoucherPopUp = () => setVoucherPopUp(false);
+
+    const servicesData = booking?.booking?.services;
 
     const handleVoucherSelect = (voucher) => {
         if (voucher && voucher.id) {
@@ -488,7 +490,7 @@ const Pay2 = () => {
             </form>
 
 
-            <div className="lg:w-1/3 p-4 mt-8 border rounded-lg shadow-md mx-auto bg-white h-[550px]">
+            <div className="lg:w-1/3 p-4 mt-8 border rounded-lg shadow-md mx-auto bg-white h-[700px]">
                 <Card
                     cover={
                         <img
@@ -522,6 +524,42 @@ const Pay2 = () => {
                             />
                         </Col>
                     </Row>
+
+                    <h3 className="text-left text-2xl font-semibold mt-10">
+                        Dịch vụ kèm thêm
+                    </h3>
+
+                    <div className="mt-2">
+                        {Array.isArray(servicesData) && servicesData.length > 0 ? (
+                            servicesData?.map((item) => (
+                                <div
+                                    key={item?.id}
+                                >
+                                    <label className="flex items-center mb-2">
+                                        <input readOnly
+                                            type="checkbox"
+                                            className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
+                                        />
+                                        <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ)
+                                            {item.id === 2 && moment(booking?.booking?.end_date).diff(moment(booking?.booking?.start_date), 'days') >= 3
+                                                ? `x ${Math.floor(
+                                                    moment(booking?.booking?.end_date).diff(
+                                                        moment(booking?.booking?.start_date),
+                                                        'days'
+                                                    ) / 3
+                                                )}`
+                                                : ""}
+
+                                        </span>
+                                    </label>
+                                </div>
+                            ))
+                        ) : (
+                            <Text className="text-gray-500">Không sử dụng dịch vụ.</Text>
+                        )}
+                    </div>
+
+                    <Divider />
 
                     <Text className="text-gray-600 mb-4">Mọi chi phí đã được tính tổng</Text>
 

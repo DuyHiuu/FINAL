@@ -42,9 +42,18 @@ const RoomList = () => {
             key: "status",
             render: (status, record) => (
                 <Badge
-                    color={record.status_id === 1 ? "yellow" : "green"}
+                    color={
+                        record.status_id === 1 ? "#fcd34d" :
+                            record.status_id === 2 ? "#10b981" :
+                                record.status_id === 4 ? "#10b981" :
+                                    record.status_id === 5 ? "#00FFFF" :
+                                        record.status_id === 6 ? "#0000FF" :
+                                            record.status_id === 7 ? "#FF0000" :
+                                                "gray"
+                    }
                     text={status}
                 />
+
             ),
         },
         {
