@@ -484,7 +484,7 @@ class PaymentController extends Controller
 
                 // Mặc định status_id = 1 khi thêm
 
-                $params['status_id'] = $params['status_id'] ?? 1;
+                $params['status_id'] = $params['status_id'] ?? 3;
 
                 $room = $booking->room;
 
@@ -640,11 +640,13 @@ class PaymentController extends Controller
                 if ($payment != NULL) {
                     if ($payment["total_amount"] == $vnp_Amount) //Kiểm tra số tiền thanh toán của giao dịch: giả sử số tiền kiểm tra là đúng,
                     {
-                        if ($payment["status_id"] == 1) {
+                        if ($payment["status_id"] == 3) {
                             if ($inputData['vnp_ResponseCode'] == '00' || $inputData['vnp_TransactionStatus'] == '00') {
                                 $Status = 4; // Trạng thái thanh toán thành công
                                 $returnData['RspCode'] = '00';
                                 $returnData['Message'] = 'Thanh toán thành công';
+                                // gửi mail khi đặt hàng thành công
+                                Mail::to($payment->user->email)->send(new PaymentConfirm($payment));
                             } else {
                                 $Status = 6; // Trạng thái thanh toán thất bại / lỗi
                                 $returnData['RspCode'] = '99';
