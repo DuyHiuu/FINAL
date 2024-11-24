@@ -75,13 +75,15 @@ const DetailPay = () => {
         const currentStatus = paymentData.payment.status_id;
 
         if (currentStatus === 2) {
-            return item.id !== 1;
+            return item.id !== 1 ;
         } else if (currentStatus === 3) {
-            return item.id !== 1 && item.id !== 2 && item.id !== 4 && item.id !== 5;
+            return item.id !== 1 && item.id !== 2 ;
         } else if (currentStatus === 4) {
             return item.id !== 1 && item.id !== 2 && item.id !== 3;
         } else if (currentStatus === 5) {
             return item.id !== 1 && item.id !== 2 && item.id !== 3 && item.id !== 4;
+        } else if (currentStatus === 6){
+            return item.id !== 1 && item.id !== 2 && item.id !== 3 && item.id !== 4 && item.id !==5 && item.id !==7;
         }
         return true;
     });
