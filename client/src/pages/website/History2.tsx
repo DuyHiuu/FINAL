@@ -209,15 +209,15 @@ const History2 = () => {
                       type="checkbox"
                       className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
                     />
-                    <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ) x
+                    <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ)
                       {item.id === 2
-                        ? Math.floor(
+                        ? `x ${Math.floor(
                           moment(bookingData?.end_date).diff(
                             moment(bookingData?.start_date),
                             'days'
                           ) / 3
-                        )
-                        : 1}
+                        )}`
+                        : ""}
                     </span>
                   </label>
                 </div>
@@ -230,17 +230,25 @@ const History2 = () => {
           <h3 className="text-left text-2xl font-semibold mt-10">
             Voucher
           </h3>
-          <div className="mt-2">
-            <label className="flex items-center mb-2">
-              <input readOnly
-                type="checkbox"
-                className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
-              />
-              <span>
-                {voucherData?.code} - {voucherData?.name}
-              </span>
-            </label>
-          </div>
+          {voucherData ? (
+            <div className="mt-2">
+              <label className="flex items-center mb-2">
+                <input
+                  readOnly
+                  type="checkbox"
+                  className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
+                />
+                <span>
+                  {voucherData.code} - {voucherData.name}
+                </span>
+              </label>
+            </div>
+          ) : (
+            <div className="mt-2">
+              <span>Không sử dụng voucher</span>
+            </div>
+          )}
+
 
           <Divider />
           <Row gutter={16} className="mt-4">

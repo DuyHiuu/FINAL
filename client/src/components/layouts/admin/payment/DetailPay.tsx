@@ -1,3 +1,4 @@
+import { Divider } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -73,38 +74,29 @@ const DetailPay = () => {
     const voucherData = paymentData.voucher;
     const filteredStatus = status_pay.filter((item) => {
         const currentStatus = paymentData.payment.status_id;
-    
-      
-        if (item.id === 7) {
-            return false; 
+
+        if (item.id === 7 || item.id === 3 || item.id === 4) {
+            return false;
         }
-    
-        
+
         if (currentStatus === 7) {
-            return false; 
+            return false;
         }
-    
-        
-        if (currentStatus === 2) { 
-            return item.id !== 1; 
-        } else if (currentStatus === 3) { 
+
+        if (currentStatus === 2) {
+            return item.id !== 1;
+        } else if (currentStatus === 3) {
             return item.id !== 1 && item.id !== 2;
-        } else if (currentStatus === 4) { 
-            return item.id !== 1 && item.id !== 2 && item.id !== 3; 
-        } else if (currentStatus === 5) { 
-            return item.id !== 1 && item.id !== 2 && item.id !== 3 && item.id !== 4; 
-        } else if (currentStatus === 6) { 
-            return item.id !== 1 && item.id !== 2 && item.id !== 3 && item.id !== 4 && item.id !== 5; 
+        } else if (currentStatus === 4) {
+            return item.id !== 1 && item.id !== 2 && item.id !== 3;
+        } else if (currentStatus === 5) {
+            return item.id !== 1 && item.id !== 2 && item.id !== 3 && item.id !== 4;
+        } else if (currentStatus === 6) {
+            return item.id !== 1 && item.id !== 2 && item.id !== 3 && item.id !== 4 && item.id !== 5;
         }
-    
-        return true; 
+
+        return true;
     });
-    
-
-
-
-
-
 
     return (
         <div className="flex flex-col lg:flex-row">
@@ -193,11 +185,8 @@ const DetailPay = () => {
                 />
                 <strong className="text-4xl font-semibold">{sizeData}</strong>
                 <div className="flex items-center mt-3 mb-3">
-                    <span className="flex items-center justify-center mr-2">
-                        Giá/ngày : {roomData?.price}
-                    </span>
+                    <p>{roomData?.description}</p>
                 </div>
-                <p>{roomData?.description}</p>
 
                 {/* Ngày vào và Ngày ra nằm ngang */}
                 <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 mb-10 mt-5">
@@ -211,7 +200,9 @@ const DetailPay = () => {
                     </label>
                 </div>
 
-                <h3 className="text-left text-2xl font-semibold mt-10">Dịch vụ kèm thêm</h3>
+                <h3 className="text-left text-2xl font-semibold mt-10">
+                    Dịch vụ kèm thêm
+                </h3>
                 <div className="mt-2">
                     {Array.isArray(servicesData) && servicesData.length > 0 ? (
                         servicesData?.map((item) => (
@@ -223,31 +214,48 @@ const DetailPay = () => {
                                         type="checkbox"
                                         className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
                                     />
-                                    <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ) x
-                                        {Math.floor((moment(bookingData?.end_date)).diff((moment(bookingData?.start_date)), 'days') / 3)}
+                                    <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ)
+                                        {item.id === 2
+                                            ? `x ${Math.floor(
+                                                moment(bookingData?.end_date).diff(
+                                                    moment(bookingData?.start_date),
+                                                    'days'
+                                                ) / 3
+                                            )}`
+                                            : ""}
                                     </span>
                                 </label>
                             </div>
                         ))
                     ) : (
-                        <p className="text-gray-500">Không sử dụng dịch vụ.</p>
+                        <Text className="text-gray-500">Không sử dụng dịch vụ.</Text>
                     )}
                 </div>
 
                 <h3 className="text-left text-2xl font-semibold mt-10">
                     Voucher
                 </h3>
-                <div className="mt-2">
-                    <label className="flex items-center mb-2">
-                        <input readOnly
-                            type="checkbox"
-                            className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
-                        />
-                        <span>
-                            {voucherData?.code} - {voucherData?.name}
-                        </span>
-                    </label>
-                </div>
+                {voucherData ? (
+                    <div className="mt-2">
+                        <label className="flex items-center mb-2">
+                            <input
+                                readOnly
+                                type="checkbox"
+                                className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
+                            />
+                            <span>
+                                {voucherData.code} - {voucherData.name}
+                            </span>
+                        </label>
+                    </div>
+                ) : (
+                    <div className="mt-2">
+                        <span>Không sử dụng voucher</span>
+                    </div>
+                )}
+
+
+                <Divider />
 
                 <div className="flex justify-between mt-4">
                     <div>
@@ -258,12 +266,19 @@ const DetailPay = () => {
                             <select
                                 name="status_id"
                                 id="status_id"
-                                value={selectedStatus}
+                                value={selectedStatus || paymentData?.payment?.status_id}
                                 onChange={handleStatusChange}
                                 className="block appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
                             >
-                                {filteredStatus?.map((item: any) => (
-                                    <option key={item.id} value={item.id}>
+                                {filteredStatus?.map((item) => (
+                                    <option
+                                        key={item.id}
+                                        value={item.id}
+                                        disabled={
+                                            (item.id === 7 || item.id === 3 || item.id === 4) || // Lọc các trạng thái không muốn hiển thị trong dropdown
+                                            item.id === paymentData.payment.status_id // Disable trạng thái hiện tại
+                                        }
+                                    >
                                         {item.status_name}
                                     </option>
                                 ))}
