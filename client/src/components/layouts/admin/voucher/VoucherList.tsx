@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Table, Input, Button, Popconfirm, message, Pagination } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons"; // Import icons
 import useFetchVoucher from "../../../../api/useFetchVoucher";
+import authClient from "../../../../api/authClient";
 
 const VoucherList = () => {
   const { vouchers, setVouchers, loading } = useFetchVoucher();
@@ -35,10 +36,8 @@ const VoucherList = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/api/vouchers/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
+      const response = await authClient.delete(`/vouchers/${id}`);
+      if (response.status === 200) {
         message.success("Voucher đã được xóa thành công");
         setVouchers((prevVouchers) => prevVouchers.filter((voucher) => voucher.id !== id));
       } else {

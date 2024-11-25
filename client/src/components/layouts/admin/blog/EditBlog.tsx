@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import authClient from '../../../../api/authClient';
+import { updateLocale } from 'moment';
 
 const EditBlog = () => {
   const showUrl = "http://localhost:8000/api/blogs"; // URL API
@@ -66,7 +68,6 @@ const EditBlog = () => {
       return;
     }
 
-    // Create FormData for submission
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
@@ -74,17 +75,19 @@ const EditBlog = () => {
     if (image && typeof image !== 'string') {
       formData.append('image', image);
     }
-    formData.append('_method', 'PUT'); // Required for Laravel PUT request
+    formData.append('_method', 'PUT');
 
     try {
-      const response = await fetch(`${showUrl}/${id}`, {
-        method: 'POST', // PUT via POST + `_method`
-        body: formData,
+      const response = await authClient.post(`http://127.0.0.1:8000/api/blogs/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
+
 
       setIsLoading(false);
 
-      if (response.ok) {
+      if (response.status === 200) {
         setSuccessMessage('Bài viết đã được cập nhật thành công!');
         setTimeout(() => {
           navigate('/admin/blogs');

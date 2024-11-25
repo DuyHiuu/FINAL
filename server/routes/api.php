@@ -58,11 +58,13 @@ Route::prefix('rooms')->group(function () {
 
 
 Route::prefix('sizes')->group(function () {
-    Route::get('/', [SizeController::class, 'index']); // Lấy danh sách các size
-    Route::post('/', [SizeController::class, 'store']); // Tạo mới một size
-    Route::get('/{id}', [SizeController::class, 'show']); // Hiển thị chi tiết một size
-    Route::put('/{id}', [SizeController::class, 'update']); // Cập nhật một size
-    Route::delete('/{id}', [SizeController::class, 'destroy']); // Xóa một size
+    Route::get('/', [SizeController::class, 'index']);
+    Route::get('/{id}', [SizeController::class, 'show']);
+    route::middleware('checkrole')->group(function () {
+        Route::post('/', [SizeController::class, 'store']);
+        Route::put('/{id}', [SizeController::class, 'update']);
+        Route::delete('/{id}', [SizeController::class, 'destroy']);
+    });
 });
 
 Route::prefix('services')->group(function () {
@@ -99,10 +101,12 @@ Route::prefix('services')->group(function () {
 Route::prefix('vouchers')->group(function () {
     Route::get('/', [VoucherController::class, 'index']);
     Route::get('/listVoucher', [VoucherController::class, 'paymentVoucher']);
-    Route::post('/', [VoucherController::class, 'store']);
     Route::get('/{id}', [VoucherController::class, 'show']);
-    Route::put('/{id}', [VoucherController::class, 'update']);
-    Route::delete('/{id}', [VoucherController::class, 'destroy']);
+    route::middleware('checkrole')->group(function () {
+        Route::post('/', [VoucherController::class, 'store']);
+        Route::put('/{id}', [VoucherController::class, 'update']);
+        Route::delete('/{id}', [VoucherController::class, 'destroy']);
+    });
 });
 
 
@@ -151,10 +155,12 @@ Route::prefix('comments')->group(function () {
 
 Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
-    Route::post('/', [UserController::class, 'store']);
     Route::get('/{id}', [UserController::class, 'show']);
-    Route::put('/{id}', [UserController::class, 'update']);
-    Route::delete('/{id}', [UserController::class, 'destroy']);
+    route::middleware('checkrole')->group(function () {
+        Route::post('/', [UserController::class, 'store']);
+        Route::put('/{id}', [UserController::class, 'update']);
+        Route::delete('/{id}', [UserController::class, 'destroy']);
+    });
 });
 
 Route::prefix('paymethods')->group(function () {
@@ -179,11 +185,11 @@ Route::get('/ratings/{id}', [RatingController::class, 'show']);
 
 
 
-// Route::middleware(['auth'])->group(function () {
-Route::post('/blogs', [BlogController::class, 'store']);
-Route::put('/blogs/{id}', [BlogController::class, 'update']);
-Route::delete('/blogs/{id}', [BlogController::class, 'destroy']);
-// });
+Route::middleware('checkrole')->group(function () {
+    Route::post('/blogs', [BlogController::class, 'store']);
+    Route::put('/blogs/{id}', [BlogController::class, 'update']);
+    Route::delete('/blogs/{id}', [BlogController::class, 'destroy']);
+});
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{id}', [BlogController::class, 'show']);
 

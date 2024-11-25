@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Table, Input, Button, Pagination, Modal, Spin } from "antd";
 import { SearchOutlined, EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import useFetchBlogs from "../../../../api/useFetchBlogs";
+import authClient from "../../../../api/authClient";
 
 const BlogList = () => {
   const { blog, loading } = useFetchBlogs(); // Sử dụng useFetchBlogs
@@ -35,10 +36,8 @@ const BlogList = () => {
       content: "Bạn có chắc chắn muốn xóa bài viết này?",
       onOk: async () => {
         try {
-          const response = await fetch(`http://localhost:8000/api/blogs/${id}`, {
-            method: "DELETE",
-          });
-          if (response.ok) {
+          const response = await authClient.delete(`/blogs/${id}`);
+          if (response.status === 200) {
             alert("Bài viết đã được xóa thành công");
             window.location.reload();
           } else {

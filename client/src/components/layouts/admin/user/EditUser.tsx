@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useFetchRoles from '../../../../api/admin/useFetchRole';
 import { useNavigate, useParams } from 'react-router-dom';
+import authClient from '../../../../api/authClient';
 
 const EditUser = () => {
     const showUrl = "http://localhost:8000/api/users";
@@ -53,15 +54,9 @@ const EditUser = () => {
 
         setLoading(true);
         try {
-            const response = await fetch(`${showUrl}/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updateUser),
-            });
+            const response = await authClient.put(`http://127.0.0.1:8000/api/users/${id}`, updateUser);
 
-            if (response.ok) {
+            if (response.status === 200) {
                 setSuccessMessage('Người dùng đã cập nhật thành công!');
                 setTimeout(() => {
                     navigate('/admin/users');
