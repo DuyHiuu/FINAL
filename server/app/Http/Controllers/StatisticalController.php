@@ -172,4 +172,40 @@ class StatisticalController extends Controller
             return response()->json($total_revenue);
         }
     }
+    //thong ke 3 phong duoc dat nhieu nhat
+    public function get_top3_room(Request $request)
+    {
+        $data=$request->all();
+        $year=$data['year'];
+        $timeline = $data['timeline'];
+
+        $rooms=Room::leftjoin("bookings","bookings.room_id","=","rooms.id")
+            ->leftjoin("payments","payments.booking_id","=","bookings.id")
+            ->where("payments.status_id",6);
+        if ($timeline == 'month') {
+            $month = $data['month'];
+            $rooms->whereMonth("payments.created_at", $month)
+                ->whereYear("payments.created_at", $year);
+        } elseif ($timeline == 'year') {
+            $rooms->whereYear("payments.created_at", $year);
+        }
+        $result = $rooms->select(
+            "rooms.description",
+            DB::raw("COUNT(payments.id) as total_payments_sold"),
+            DB::raw("SUM(rooms.price) as total_revenue")
+        )
+            ->groupBy("rooms.description")
+            ->orderByDesc("total_revenue")
+            ->take(3)
+            ->get();
+        if (count($result) == 0) {
+            if ($data['timeline'] == 'year') {
+                return response()->json(["message" => "Không có dữ liệu thống kê top 5 phim có doanh thu cao nhất năm " . $data['year']]);
+            } else {
+                return response()->json(["message" => "Không có dữ liệu thống kê top 5 phim có doanh thu cao nhất tháng " . $data['month'] . " năm " . $data['year']]);
+            }
+        } else {
+            return response()->json($result);
+        }
+    }
 }
