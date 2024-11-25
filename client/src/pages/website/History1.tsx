@@ -169,19 +169,12 @@ const History1 = () => {
                               className="inline-flex items-center px-3 py-1 rounded-full"
                               style={{
                                 backgroundColor:
-                                  item.status?.id === 1
-                                    ? "#fcd34d" 
-                                    : item.status?.id === 2
-                                      ? "#10b981" 
-                                      : item.status?.id === 4
-                                        ? "#10b981" 
-                                        : item.status?.id === 5
-                                          ? "#00FFFF" 
-                                          : item.status?.id === 6
-                                            ? "#0000FF" 
-                                            : item.status?.id === 7
-                                            ? "#FF0000" 
-                                            : "#e5e7eb",
+                                  item.status?.id === 1 ? "#fcd34d":
+                                  item.status?.id === 2 ? "#10b981":
+                                  item.status?.id === 4 ? "#10b981":
+                                  item.status?.id === 5 ? "#5F9EA0":
+                                  item.status?.id === 6 ? "#0000FF":
+                                  item.status?.id === 7 ? "#FF0000": "#e5e7eb",
                               }}
                             >
                               <Text
