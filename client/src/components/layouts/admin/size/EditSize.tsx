@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import authClient from '../../../../api/authClient';
 
 const EditSize = () => {
     const { id } = useParams();
@@ -45,15 +46,9 @@ const EditSize = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:8000/api/sizes/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedSize),
-            });
+            const response = await authClient.put(`http://127.0.0.1:8000/api/sizes/${id}`, updatedSize);
 
-            if (response.ok) {
+            if (response.status === 200) {
                 setSuccessMessage('Cập nhật size thành công!');
                 setTimeout(() => {
                     navigate('/admin/sizes');
@@ -101,7 +96,7 @@ const EditSize = () => {
                     />
                 </div>
 
-                
+
 
                 <div className="mb-4">
                     <label htmlFor="moTa" className="block text-sm font-medium text-gray-700">Mô Tả:</label>

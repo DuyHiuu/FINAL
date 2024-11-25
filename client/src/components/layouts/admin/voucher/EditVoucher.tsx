@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import authClient from "../../../../api/authClient";
 
 const EditVoucher = () => {
   const [tenVoucher, setVoucher] = useState("");
@@ -64,15 +65,9 @@ const EditVoucher = () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:8000/api/vouchers/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedVoucher),
-      });
+      const response = await authClient.put(`http://127.0.0.1:8000/api/vouchers/${id}`, updatedVoucher);
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         const errorData = await response.json();
         setError(`Cập nhật thất bại: ${errorData.message}`);
       } else {
@@ -140,18 +135,18 @@ const EditVoucher = () => {
         </div>
 
         <div className="mb-4 relative">
-        <label htmlFor="Type" className="block text-sm font-medium text-gray-700">
-          Loại:
-        </label>
-        <div className="flex items-center">
-          <select name="type" id="" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={type}
-            onChange={(e) => setType(e.target.value)}>
-            <option value="%">%</option>
-            <option value="amount">Amount</option>
-          </select>
+          <label htmlFor="Type" className="block text-sm font-medium text-gray-700">
+            Loại:
+          </label>
+          <div className="flex items-center">
+            <select name="type" id="" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={type}
+              onChange={(e) => setType(e.target.value)}>
+              <option value="%">%</option>
+              <option value="amount">Amount</option>
+            </select>
+          </div>
         </div>
-      </div>
 
         <div className="mb-4">
           <label htmlFor="giamGia" className="block text-sm font-medium text-gray-700">
@@ -169,21 +164,21 @@ const EditVoucher = () => {
         </div>
 
         <div className="mb-4 relative">
-        <label htmlFor="min_total_amount" className="block text-sm font-medium text-gray-700">
-          Số tiền tối thiểu để áp dụng:
-        </label>
-        <div className="flex items-center">
-          <input
-            type="number"
-            id="min_total_amount"
-            value={min_total_amount}
-            onChange={(e) => setMin_total_amount(e.target.value)}
-            required
-            placeholder="Nhập số tiền tối thiểu để áp dụng"
-            className="pl-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <label htmlFor="min_total_amount" className="block text-sm font-medium text-gray-700">
+            Số tiền tối thiểu để áp dụng:
+          </label>
+          <div className="flex items-center">
+            <input
+              type="number"
+              id="min_total_amount"
+              value={min_total_amount}
+              onChange={(e) => setMin_total_amount(e.target.value)}
+              required
+              placeholder="Nhập số tiền tối thiểu để áp dụng"
+              className="pl-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
         </div>
-      </div>
 
         <div className="mb-4">
           <label htmlFor="soLuong" className="block text-sm font-medium text-gray-700">

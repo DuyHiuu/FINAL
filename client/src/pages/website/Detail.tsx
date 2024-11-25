@@ -52,6 +52,8 @@ const Detail = () => {
   const [voucher_id, setVoucher_id] = useState<number[]>([]);
   const [newComment, setNewComment] = useState<string>("");
   const [message, setMessage] = useState<string>("");
+  const [ratings, setRatings] = useState<any[]>([]);
+  const [filterRating, setFilterRating] = useState<number | null>(null);
   const [visibleCommentsCount, setVisibleCommentsCount] = useState(4);
 
   useEffect(() => {
@@ -72,7 +74,20 @@ const Detail = () => {
         console.error("Lỗi khi lấy phòng:", error);
       }
     };
+    const fetchRating = async () => {
+      try {
+        const ratingsRes = await fetch(`${API_URL}/ratings/${id}`);
+        if (!ratingsRes.ok) {
+          throw new Error("Lỗi khi lấy đánh giá");
+        }
+        const ratingsData = await ratingsRes.json();
 
+        // Gán dữ liệu đánh giá vào state
+        setRatings(ratingsData.data || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
     const fetchComments = async () => {
       try {
         const res = await fetch(`${API_URL}/comments/${id}`);
@@ -89,7 +104,7 @@ const Detail = () => {
       const data = await res.json();
       setComments(data.comments || []);
     };
-
+    fetchRating();
     fetchRoom();
     fetchComments();
   }, [id]);
@@ -104,7 +119,12 @@ const Detail = () => {
       return [...prevState, serviceId];
     });
   };
-
+  const handleFilterChange = (rating: number) => {
+    setFilterRating(rating === filterRating ? null : rating);
+  };
+  const filteredRatings = filterRating
+    ? ratings.filter((rating) => rating.rating === filterRating)
+    : ratings;
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -460,8 +480,61 @@ const Detail = () => {
           </Button>
         </div>
       </div>
+      <div className="mt-8 max-w-md">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">Đánh giá</h3>
+        <div className="mb-4 flex items-center space-x-4">
 
-
+          <button
+            onClick={() => handleFilterChange(5)}
+            className={`px-4 py-2 rounded-lg border ${filterRating === 5 ? "bg-yellow-500 text-white" : "bg-white text-gray-700"}`}
+          >
+            5 Sao
+          </button>
+          <button
+            onClick={() => handleFilterChange(4)}
+            className={`px-4 py-2 rounded-lg border ${filterRating === 4 ? "bg-yellow-500 text-white" : "bg-white text-gray-700"}`}
+          >
+            4 Sao
+          </button>
+          <button
+            onClick={() => handleFilterChange(3)}
+            className={`px-4 py-2 rounded-lg border ${filterRating === 3 ? "bg-yellow-500 text-white" : "bg-white text-gray-700"}`}
+          >
+            3 Sao
+          </button>
+          <button
+            onClick={() => handleFilterChange(2)}
+            className={`px-4 py-2 rounded-lg border ${filterRating === 2 ? "bg-yellow-500 text-white" : "bg-white text-gray-700"}`}
+          >
+            2 Sao
+          </button>
+          <button
+            onClick={() => handleFilterChange(1)}
+            className={`px-4 py-2 rounded-lg border ${filterRating === 1 ? "bg-yellow-500 text-white" : "bg-white text-gray-700"}`}
+          >
+            1 Sao
+          </button>
+        </div>
+        {filteredRatings.length === 0 ? (
+          <p className="text-gray-600">Chưa có đánh giá nào.</p>
+        ) : (
+          filteredRatings.map((rating) => (
+            <div key={rating.id} className="border-b border-gray-300 py-4">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-gray-800">{rating.user.name}</span>
+                <span className="text-gray-500 text-sm">
+                  {new Date(rating.created_at).toLocaleDateString()}
+                </span>
+              </div>
+              <div className="mt-2 text-gray-600">{rating.content}</div>
+              <div className="mt-2 text-yellow-500">
+                {"★".repeat(rating.rating)}{" "}
+                <span className="text-gray-500 text-sm">({rating.rating} sao)</span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };

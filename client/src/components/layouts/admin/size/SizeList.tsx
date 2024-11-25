@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Table, Input, Button, message, Pagination, Popconfirm } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons"; // Import icons
 import useFetchSize from "../../../../api/useFetchSize";
+import authClient from "../../../../api/authClient";
 
 const SizeList = () => {
   const { sizes, loading } = useFetchSize();
@@ -35,10 +36,8 @@ const SizeList = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/api/sizes/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
+      const response = await authClient.delete(`/sizes/${id}`);
+      if (response.status === 200) {
         message.success("Size đã được xóa thành công");
         setCurrentPage(1); // Reset lại trang khi xóa thành công
       } else {

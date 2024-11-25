@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Table, Input, Button, message, Popconfirm, Pagination, Switch } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import useFetchUsers from '../../../../api/useFetchUsers';
+import authClient from '../../../../api/authClient';
 
 const UserList = () => {
     const { users, loading } = useFetchUsers();
@@ -34,10 +35,8 @@ const UserList = () => {
         if (!confirmDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:8000/api/users/${id}`, {
-                method: "DELETE",
-            });
-            if (response.ok) {
+            const response = await authClient.delete(`/users/${id}`);
+            if (response.status === 200) {
                 message.success("Người dùng đã được xóa thành công");
                 setCurrentPage(1); // Reset lại trang khi xóa thành công
             } else {
@@ -94,7 +93,7 @@ const UserList = () => {
                     >
                         <EditOutlined />
                     </Link>
-                    
+
                     {/* Nút bật/tắt xóa */}
                     <Switch
                         checkedChildren={<DeleteOutlined />}
