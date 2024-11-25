@@ -258,6 +258,8 @@ const Detail = () => {
     setPopupImage(null);
   };
 
+  const maxEndDate = moment(start_date).add(30, "days").startOf("day");
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
@@ -416,7 +418,8 @@ const Detail = () => {
                   className="w-full mt-1 text-sm"
                   disabledDate={(current) =>
                     (current && current < moment().endOf("day")) ||
-                    (current && current < moment(start_date).endOf("day"))
+                    (current && current < moment(start_date).endOf("day")) ||
+                    (current && current >= maxEndDate )
                   }
                 />
               </div>
