@@ -185,9 +185,8 @@ const Chart = () => {
     if (active) {
       return (
         <div className="box-border rounded border-2 bg-slate-300 px-[10px]">
-          <h4>{`${
-            typeSearch === "month" ? `Ngày ${label}` : `Tháng ${label}`
-          }`}</h4>
+          <h4>{`${typeSearch === "month" ? `Ngày ${label}` : `Tháng ${label}`
+            }`}</h4>
           <h4>{`${Number(payload[0]?.value)
             ?.toString()
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}(VNĐ)`}</h4>
@@ -296,7 +295,7 @@ const Chart = () => {
         </div>
         <div className="ml-[30px] mt-[50px]">
           <LineChart
-            width={750}
+            width={550}
             height={350}
             data={dataChart}
             margin={{
