@@ -18,17 +18,16 @@ class StatisticalController extends Controller
         $currentYear = Carbon::now()->year;
         $currentMonth = Carbon::now()->month;
 
-        if($data['timeline'] == 'day'){
-            $start = Carbon::createFromFormat('d-m-Y',$data['start'])->format('Y-m-d');
-            $end = Carbon::createFromFormat('d-m-Y',$data['end'])->format('Y-m-d');
+        if ($data['timeline'] == 'day') {
+            $start = Carbon::createFromFormat('d-m-Y', $data['start'])->format('Y-m-d');
+            $end = Carbon::createFromFormat('d-m-Y', $data['end'])->format('Y-m-d');
 
             //start> hien tai
-            if(Carbon::parse($start)->greaterThan(now())){
-                return response()->json(['error'=>'Không thể xuất doanh thu của ngày tương lai.']);
+            if (Carbon::parse($start)->greaterThan(now())) {
+                return response()->json(['error' => 'Không thể xuất doanh thu của ngày tương lai.']);
             }
-        }
-        else{
-            $start =now();
+        } else {
+            $start = now();
             $end = now();
         }
         // Kiểm tra nếu năm > hiện tại hoặc tháng > tháng hiện tại
@@ -38,18 +37,17 @@ class StatisticalController extends Controller
         ) {
             return response()->json(['error' => 'Không thể xuất doanh thu của thời gian trong tương lai.']);
         }
-        $total_revenue =[];
-//        $endDay = Carbon::createFromFormat('d-m-Y', $data['end'])->endOfDay();
-//        $end = $endDay->format("Y-m-d H:i:s");
-        $paymentQuery = Payment::where('status_id',2);
+        $total_revenue = [];
+        //        $endDay = Carbon::createFromFormat('d-m-Y', $data['end'])->endOfDay();
+        //        $end = $endDay->format("Y-m-d H:i:s");
+        $paymentQuery = Payment::where('status_id', 6);
 
-        if($data['timeline'] == 'year'){
-            $paymentQuery->whereYear("created_at",$data['year']);
-        }elseif ($data['timeline'] == 'month'){
-            $paymentQuery->whereYear("created_at",$data['year'])->whereMonth("created_at",$data['month']);
-        }
-        elseif ($data['timeline'] == 'day'){
-            $paymentQuery->whereBetween("created_at",[$start,$end]);
+        if ($data['timeline'] == 'year') {
+            $paymentQuery->whereYear("created_at", $data['year']);
+        } elseif ($data['timeline'] == 'month') {
+            $paymentQuery->whereYear("created_at", $data['year'])->whereMonth("created_at", $data['month']);
+        } elseif ($data['timeline'] == 'day') {
+            $paymentQuery->whereBetween("created_at", [$start, $end]);
         }
         $payments = $paymentQuery->select(
             DB::raw("SUM(total_amount) as total"),
@@ -59,46 +57,43 @@ class StatisticalController extends Controller
         $total_revenue['quantity_payment'] = $payments->quantity;
         $total_revenue['total_money'] = $payments->total ?? 0;
 
-        $roomAndServiceQuery = function ($query) use ($data,$start,$end){
-            if($data['timeline'] == 'year'){
-                $query->whereYear("payments.created_at",$data['year']);
-            }elseif ($data['timeline'] == 'month'){
-                $query->whereYear("payments.created_at",$data['year'])->whereMonth("payments.created_at",$data['month']);
-            }
-            elseif ($data['timeline'] == 'day'){
-                $query->whereBetween("payments.created_at",[$start,$end]);
-
+        $roomAndServiceQuery = function ($query) use ($data, $start, $end) {
+            if ($data['timeline'] == 'year') {
+                $query->whereYear("payments.created_at", $data['year']);
+            } elseif ($data['timeline'] == 'month') {
+                $query->whereYear("payments.created_at", $data['year'])->whereMonth("payments.created_at", $data['month']);
+            } elseif ($data['timeline'] == 'day') {
+                $query->whereBetween("payments.created_at", [$start, $end]);
             }
         };
 
-        $roomTotal = Room::leftjoin("bookings","bookings.room_id","=","rooms.id")
-            ->leftjoin("payments","payments.booking_id","=","bookings.id")
-            ->where("payments.status_id",6)
+        $roomTotal = Room::leftjoin("bookings", "bookings.room_id", "=", "rooms.id")
+            ->leftjoin("payments", "payments.booking_id", "=", "bookings.id")
+            ->where("payments.status_id", 6)
             ->where($roomAndServiceQuery)
             ->select(DB::raw("SUM(price) as total"))
             ->first();
 
-        $serviceTotal = Service::leftjoin("booking_services","booking_services.service_id","=","services.id")
-            ->join("bookings","booking_services.booking_id","=","bookings.id")
-            ->leftjoin("payments","payments.booking_id","=","bookings.id")
-            ->where("payments.status_id",6)
+        $serviceTotal = Service::leftjoin("booking_services", "booking_services.service_id", "=", "services.id")
+            ->join("bookings", "booking_services.booking_id", "=", "bookings.id")
+            ->leftjoin("payments", "payments.booking_id", "=", "bookings.id")
+            ->where("payments.status_id", 6)
             ->where($roomAndServiceQuery)
             ->whereNull("services.deleted_at")
             ->select(DB::raw("SUM(services.price) as total"))
             ->first();
 
-        if($payments->quantity>0){
+        if ($payments->quantity > 0) {
             $total_revenue['total_money_room'] = $roomTotal->total;
-            $total_revenue['percent_room'] = round($roomTotal->total/$payments->total *100,2);
+            $total_revenue['percent_room'] = round($roomTotal->total / $payments->total * 100, 2);
             $total_revenue['total_money_service'] = $serviceTotal->total;
-            $total_revenue['percent_service'] = round($serviceTotal->total/$payments->total *100,2);
-
-        }else{
+            $total_revenue['percent_service'] = round($serviceTotal->total / $payments->total * 100, 2);
+        } else {
             $total_revenue += [
-              'total_money_room' =>0,
-              'percent_room' =>0,
-              'total_money_service' =>0,
-              'percent_service' =>0,
+                'total_money_room' => 0,
+                'percent_room' => 0,
+                'total_money_service' => 0,
+                'percent_service' => 0,
             ];
         }
         if ($data['timeline'] == 'day') {
@@ -115,15 +110,13 @@ class StatisticalController extends Controller
 
             $dailyRevenue = [];
 
-            while ($start<=$end){
-                $dailySum = Payment::whereDate('created_at',$start)->where('status_id',6)->sum('total_amount');
+            while ($start <= $end) {
+                $dailySum = Payment::whereDate('created_at', $start)->where('status_id', 6)->sum('total_amount');
                 $dailyRevenue[] = ['date' => Carbon::parse($start)->format('d-m-Y'), 'total_money' => $dailySum];
                 $start = Carbon::parse($start)->addDay()->format('Y-m-d');
             }
             $total_revenue['dailyRevenue'] = $dailyRevenue;
-
-    }
-        elseif ($data['timeline'] == 'year') {
+        } elseif ($data['timeline'] == 'year') {
             $selectedMonths = $data['year'] == $currentYear ? range(1, $currentMonth) : range(1, 12);
 
             $monthlyRevenue = [];
@@ -139,8 +132,7 @@ class StatisticalController extends Controller
                 $monthlyRevenue[] = ['month' => $month, 'total_amount' => $sum];
             }
             $total_revenue['monthlyRevenue'] = $monthlyRevenue;
-    }
-        elseif ($data['timeline'] == 'month') {
+        } elseif ($data['timeline'] == 'month') {
             $firstDay = Carbon::createFromDate($data['year'], $data['month'], 1);
             $lastDay = now()->endOfMonth();
 
@@ -175,13 +167,13 @@ class StatisticalController extends Controller
     //thong ke 3 phong duoc dat nhieu nhat
     public function get_top3_room(Request $request)
     {
-        $data=$request->all();
-        $year=$data['year'];
+        $data = $request->all();
+        $year = $data['year'];
         $timeline = $data['timeline'];
 
-        $rooms=Room::leftjoin("bookings","bookings.room_id","=","rooms.id")
-            ->leftjoin("payments","payments.booking_id","=","bookings.id")
-            ->where("payments.status_id",6);
+        $rooms = Room::leftjoin("bookings", "bookings.room_id", "=", "rooms.id")
+            ->leftjoin("payments", "payments.booking_id", "=", "bookings.id")
+            ->where("payments.status_id", 6);
         if ($timeline == 'month') {
             $month = $data['month'];
             $rooms->whereMonth("payments.created_at", $month)
