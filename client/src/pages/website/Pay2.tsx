@@ -18,6 +18,7 @@ const Pay2 = () => {
     const [booking, setBooking] = useState<any>();
     const [room, setRoom] = useState<any>();
 
+
     useEffect(() => {
         const fetBooking = async () => {
             try {
@@ -52,6 +53,7 @@ const Pay2 = () => {
     const [pet_type, setPet_type] = useState("Chó");
     const [pet_description, setPet_description] = useState("");
     const [pet_health, setPet_health] = useState("Khỏe mạnh");
+    const [healthIssue, setHealthIssue] = useState("");
     const [user_id, setUser_id] = useState("");
     const [paymethod_id, setPaymethod_id] = useState(1);
     const [total_amount, setTotal_amount] = useState(0);
@@ -152,13 +154,10 @@ const Pay2 = () => {
     }, [user_id]);
 
     const { vouchers } = useFetchVoucher();
-
     const [voucherPopUp, setVoucherPopUp] = useState(false);
     const [selectedVoucher, setSelectedVoucher] = useState(null);
-
     const openVoucherPopUp = () => setVoucherPopUp(true);
     const closeVoucherPopUp = () => setVoucherPopUp(false);
-
     const servicesData = booking?.booking?.services;
 
     const handleVoucherSelect = (voucher) => {
@@ -226,6 +225,7 @@ const Pay2 = () => {
         formData.append("pet_type", pet_type);
         formData.append("pet_description", pet_description);
         formData.append("pet_health", pet_health);
+        formData.append("healthIssue", healthIssue);
         formData.append("user_name", user_name);
         formData.append("user_address", user_address);
         formData.append("user_email", user_email);
@@ -366,58 +366,72 @@ const Pay2 = () => {
                     </Row>
                 </Card>
 
-                <Card className="mt-10">
-                    <Row gutter={16}>
-                        <Title level={4}>Thông tin thú cưng</Title>
+                <div className="mt-5">
+                    <Title level={2}>Thông tin thú cưng</Title>
+                    <Card>
+                        <Row gutter={16}>
+                            <Col span={24} className="mb-3">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Tên thú cưng</label>
+                                <Input
+                                    value={pet_name}
+                                    onChange={(e) => {
+                                        setPet_name(e.target.value);
+                                        setPet_nameError("");
+                                    }}
+                                />
+                                {pet_nameError && <p className="text-red-500 text-sm mt-1">{pet_nameError}</p>}
+                            </Col>
 
-                        <Col span={24} className="mb-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Tên thú cưng</label>
-                            <Input
-                                value={pet_name}
-                                onChange={(e) => {
-                                    setPet_name(e.target.value);
-                                    setPet_nameError("");
-                                }}
-                            />
-                            {pet_nameError && <p className="text-red-500 text-sm mt-1">{pet_nameError}</p>}
-                        </Col>
+                            <Col span={24} className="mb-3">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Loại thú cưng</label>
+                                <Select
+                                    value={pet_type}
+                                    onChange={(value) => setPet_type(value)}
+                                >
+                                    <Select.Option value="Chó">Chó</Select.Option>
+                                    <Select.Option value="Mèo">Mèo</Select.Option>
+                                </Select>
+                            </Col>
 
-                        <Col span={24} className="mb-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Loại thú cưng</label>
-                            <Select
-                                value={pet_type}
-                                onChange={(value) => setPet_type(value)}
-                            >
-                                <Select.Option value="Chó">Chó</Select.Option>
-                                <Select.Option value="Mèo">Mèo</Select.Option>
-                            </Select>
-                        </Col>
+                            <Col span={24} className="mb-3">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả chi tiết thú cưng (Màu, giống, ...)</label>
+                                <Input.TextArea
+                                    value={pet_description}
+                                    onChange={(e) => {
+                                        setPet_description(e.target.value);
+                                        setPet_descriptionError("");
+                                    }}
+                                    rows={3}
+                                />
+                                {pet_descriptionError && <p className="text-red-500 text-sm mt-1">{pet_descriptionError}</p>}
+                            </Col>
 
-                        <Col span={24} className="mb-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả chi tiết thú cưng (Màu, giống, ...)</label>
-                            <Input.TextArea
-                                value={pet_description}
-                                onChange={(e) => {
-                                    setPet_description(e.target.value);
-                                    setPet_descriptionError("");
-                                }}
-                                rows={3}
-                            />
-                            {pet_descriptionError && <p className="text-red-500 text-sm mt-1">{pet_descriptionError}</p>}
-                        </Col>
-
-                        <Col span={24} className="mb-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Tình trạng sức khỏe</label>
-                            <Select
-                                value={pet_health}
-                                onChange={(value) => setPet_health(value)}
-                            >
-                                <Select.Option value="Khỏe mạnh">Khỏe mạnh</Select.Option>
-                                <Select.Option value="Có vấn đề về sức khỏe">Có vấn đề về sức khỏe</Select.Option>
-                            </Select>
-                        </Col>
-                    </Row>
-                </Card>
+                            <Col span={24} className="mb-3">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Tình trạng sức khỏe</label>
+                                <Select
+                                    value={pet_health}
+                                    onChange={(value) => setPet_health(value)}
+                                >
+                                    <Select.Option value="Khỏe mạnh">Khỏe mạnh</Select.Option>
+                                    <Select.Option value="Có vấn đề về sức khỏe">Có vấn đề về sức khỏe</Select.Option>
+                                </Select>
+                            </Col>
+                            {pet_health === "Có vấn đề về sức khỏe" && (
+                                <Col span={24} className="mb-3">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Mô tả vấn đề sức khỏe
+                                    </label>
+                                    <Input.TextArea
+                                        value={healthIssue}
+                                        onChange={(e) => setHealthIssue(e.target.value)}
+                                        placeholder="Nhập mô tả vấn đề sức khỏe của thú cưng..."
+                                        rows={4}
+                                    />
+                                </Col>
+                            )}
+                        </Row>
+                    </Card>
+                </div>
 
                 <div className="mt-4">
                     <label className="block text-black text-sm font-bold">Chọn voucher</label>

@@ -44,12 +44,11 @@ const RoomList = () => {
                 <Badge
                     color={
                         record.status_id === 1 ? "#fcd34d" :
-                            record.status_id === 2 ? "#10b981" :
-                                record.status_id === 4 ? "#10b981" :
-                                    record.status_id === 5 ? "#00FFFF" :
-                                        record.status_id === 6 ? "#0000FF" :
-                                            record.status_id === 7 ? "#FF0000" :
-                                                "gray"
+                        record.status_id === 2 ? "#10b981" :
+                        record.status_id === 4 ? "#10b981" :
+                        record.status_id === 5 ? "#5F9EA0" :
+                        record.status_id === 6 ? "#0000FF" :
+                        record.status_id === 7 ? "#FF0000" : "gray"
                     }
                     text={status}
                 />

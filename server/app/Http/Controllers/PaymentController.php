@@ -199,6 +199,17 @@ class PaymentController extends Controller
             try {
                 $params = $request->all();
 
+                // Xử lý tình trạng sức khỏe
+                if ($params['pet_health'] === 'Khỏe mạnh') {
+                    $params['pet_health'] = 'Khỏe mạnh';
+                } else {
+                    $healthIssue = $request->input('healthIssue');
+                    if (!$healthIssue) {
+                        return response()->json(['error' => 'Vui lòng nhập mô tả tình trạng sức khỏe'], 400);
+                    }
+                    $params['pet_health'] = $healthIssue;
+                }
+
                 $booking = Booking::find($params['booking_id']);
 
                 $subTotal_service = 0;
@@ -659,12 +670,12 @@ class PaymentController extends Controller
                             $returnData['RspCode'] = '02';
                             $returnData['Message'] = 'Đơn hàng đã được xác thực';
                         }
-//                        else {
-//                            // Trạng thái thanh toán thất bại / lỗi
-//                            Payment::where('id', $payment_id)->update(['status_id' => 4]);
-//                            $returnData['RspCode'] = '99';
-//                            $returnData['error'] = 'Thanh toán thất bại / lỗi';
-//                        }
+                        //                        else {
+                        //                            // Trạng thái thanh toán thất bại / lỗi
+                        //                            Payment::where('id', $payment_id)->update(['status_id' => 4]);
+                        //                            $returnData['RspCode'] = '99';
+                        //                            $returnData['error'] = 'Thanh toán thất bại / lỗi';
+                        //                        }
                     } else {
                         Payment::where('id', $payment_id)->update(['status_id' => 6]);
                         $returnData['RspCode'] = '04';
@@ -678,7 +689,7 @@ class PaymentController extends Controller
                 $returnData['RspCode'] = '97';
                 $returnData['Message'] = 'Chữ ký không hợp lệ';
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $returnData['RspCode'] = '99';
             $returnData['Message'] = 'Unknow error';
         }
