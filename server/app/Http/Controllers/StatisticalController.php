@@ -73,7 +73,7 @@ class StatisticalController extends Controller
 
         $roomTotal = Room::leftjoin("bookings","bookings.room_id","=","rooms.id")
             ->leftjoin("payments","payments.booking_id","=","bookings.id")
-            ->where("payments.status_id",2)
+            ->where("payments.status_id",6)
             ->where($roomAndServiceQuery)
             ->select(DB::raw("SUM(price) as total"))
             ->first();
@@ -81,10 +81,10 @@ class StatisticalController extends Controller
         $serviceTotal = Service::leftjoin("booking_services","booking_services.service_id","=","services.id")
             ->join("bookings","booking_services.booking_id","=","bookings.id")
             ->leftjoin("payments","payments.booking_id","=","bookings.id")
-            ->where("payments.status_id",2)
+            ->where("payments.status_id",6)
             ->where($roomAndServiceQuery)
             ->whereNull("services.deleted_at")
-            ->select(DB::raw("SUM(price) as total"))
+            ->select(DB::raw("SUM(services.price) as total"))
             ->first();
 
         if($payments->quantity>0){
@@ -116,7 +116,7 @@ class StatisticalController extends Controller
             $dailyRevenue = [];
 
             while ($start<=$end){
-                $dailySum = Payment::whereDate('created_at',$start)->where('status_id',2)->sum('total_amount');
+                $dailySum = Payment::whereDate('created_at',$start)->where('status_id',6)->sum('total_amount');
                 $dailyRevenue[] = ['date' => Carbon::parse($start)->format('d-m-Y'), 'total_money' => $dailySum];
                 $start = Carbon::parse($start)->addDay()->format('Y-m-d');
             }
@@ -132,7 +132,7 @@ class StatisticalController extends Controller
                 $firstDay = Carbon::create($data['year'], $month, 1);
                 $lastDay = $firstDay->copy()->endOfMonth();
 
-                $sum = Payment::whereBetween('created_at', [$firstDay, $lastDay])->where('status_id', 2)
+                $sum = Payment::whereBetween('created_at', [$firstDay, $lastDay])->where('status_id', 6)
                     ->select(DB::raw('COALESCE(SUM(total_amount), 0) as total_money'))
                     ->value('total_money');
 
@@ -151,7 +151,7 @@ class StatisticalController extends Controller
             $dailyRevenue = [];
 
             while ($firstDay->lte($lastDay) && $firstDay->month == $data['month']) {
-                $dailySum = Payment::whereDate('created_at', $firstDay)->where('status_id', 2)->sum('total_amount');
+                $dailySum = Payment::whereDate('created_at', $firstDay)->where('status_id', 6)->sum('total_amount');
                 $dailyRevenue[] = ['date' => $firstDay->format('d-m-Y'), 'total_amount' => $dailySum];
                 $firstDay->addDay();
             }
