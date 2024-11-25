@@ -69,34 +69,27 @@ Route::prefix('sizes')->group(function () {
 
 Route::prefix('services')->group(function () {
     Route::get('/', [ServiceController::class, 'index']);
-    Route::post('/', [ServiceController::class, 'store']);
     Route::get('/{id}', [ServiceController::class, 'show']);
-    Route::put('/{id}', [ServiceController::class, 'update']);
-    Route::delete('/{id}', [ServiceController::class, 'destroy']);
+    route::middleware('checkrole')->group(function () {
+        Route::post('/', [ServiceController::class, 'store']);
+        Route::put('/{id}', [ServiceController::class, 'update']);
+        Route::delete('/{id}', [ServiceController::class, 'destroy']);
+    });
 });
-// Route::prefix('blogs')->group(function () {
-//     Route::get('/', [BlogController::class, 'index']);
-//     Route::post('/', [BlogController::class, 'store']);
-//     Route::get('/{id}', [BlogController::class, 'show']);
-//     Route::put('/{id}', [BlogController::class, 'update']);
-//     Route::delete('/{id}', [BlogController::class, 'destroy']);
-// });
+
+Route::prefix('blogs')->group(function () {
+    Route::get('/', [BlogController::class, 'index']);
+    Route::post('/', [BlogController::class, 'store']);
+    Route::get('/{id}', [BlogController::class, 'show']);
+    Route::put('/{id}', [BlogController::class, 'update']);
+    Route::delete('/{id}', [BlogController::class, 'destroy']);
+});
+
+// route::middleware('checkrole')->group(function () {
 Route::prefix('chart')->group(function () {
     Route::get('/', [StatisticalController::class, 'total_revenue']);
 });
-
-
-// Route::resource('paymethods', PaymethodController::class);
-// Route::resource('payments', PaymentController::class);
-// Route::resource('bookings', BookingController::class);
-
-Route::prefix('services')->group(function () {
-    Route::get('/', [ServiceController::class, 'index']);
-    Route::post('/', [ServiceController::class, 'store']);
-    Route::get('/{id}', [ServiceController::class, 'show']);
-    Route::put('/{id}', [ServiceController::class, 'update']);
-    Route::delete('/{id}', [ServiceController::class, 'destroy']);
-});
+// });
 
 Route::prefix('vouchers')->group(function () {
     Route::get('/', [VoucherController::class, 'index']);
@@ -183,14 +176,5 @@ Route::delete('/ratings/{id}', [RatingController::class, 'destroy']);
 Route::get('/ratings', [RatingController::class, 'index']);
 Route::get('/ratings/{id}', [RatingController::class, 'show']);
 
-
-
-Route::middleware('checkrole')->group(function () {
-    Route::post('/blogs', [BlogController::class, 'store']);
-    Route::put('/blogs/{id}', [BlogController::class, 'update']);
-    Route::delete('/blogs/{id}', [BlogController::class, 'destroy']);
-});
-Route::get('/blogs', [BlogController::class, 'index']);
-Route::get('/blogs/{id}', [BlogController::class, 'show']);
 
 Route::get('/activate/{token}', [UserController::class, 'activate'])->name('user.active');
