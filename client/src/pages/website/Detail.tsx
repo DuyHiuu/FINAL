@@ -14,11 +14,12 @@ import {
   Select,
   Tooltip,
   Modal,
+  notification
 } from "antd";
 import moment from "moment";
 import TextArea from "antd/es/input/TextArea";
 import { message } from "antd";
-
+import { StarFilled } from "@ant-design/icons";
 
 const Detail = () => {
   const { service } = useFetchServices();
@@ -119,12 +120,16 @@ const Detail = () => {
       return [...prevState, serviceId];
     });
   };
-  const handleFilterChange = (rating: number) => {
-    setFilterRating(rating === filterRating ? null : rating);
+
+  const openNotification = (message) => {
+    notification.open({
+      message: 'Thông báo',
+      description: message,
+      type: 'error',
+      duration: 3,
+    });
   };
-  const filteredRatings = filterRating
-    ? ratings.filter((rating) => rating.rating === filterRating)
-    : ratings;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -260,6 +265,19 @@ const Detail = () => {
 
   const maxEndDate = moment(start_date).add(30, "days").startOf("day");
 
+  const averageRating = ratings.length
+    ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
+    : 0;
+
+  const [showPopup, setShowPopup] = useState(false);
+
+  const openPopup1 = () => setShowPopup(true);
+  const closePopup1 = () => setShowPopup(false);
+
+  const filteredRatings = filterRating
+    ? ratings.filter(rating => rating.rating === filterRating)
+    : ratings;
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
@@ -328,7 +346,98 @@ const Detail = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="mt-8">
+      <div className="mt-8 max-w-md">
+        <h1 className="text-3xl font-bold">{room?.size_name}</h1>
+        <p className="text-green-500">{room?.statusroom}</p>
+
+        <div className="flex items-center justify-between mt-3">
+          <div className="flex items-center gap-2 text-yellow-500">
+            <StarFilled className="text-2xl" />
+            <span className="text-xl font-semibold text-gray-800">
+              {averageRating.toFixed(1)} / 5
+            </span>
+            <span className="text-gray-500 text-sm">
+              ({ratings.length} lượt đánh giá)
+            </span>
+          </div>
+          <button
+            onClick={openPopup1}
+            className="px-4 py-2 text-sm rounded-lg border bg-yellow-500 text-white hover:bg-yellow-600"
+          >
+            Xem đánh giá
+          </button>
+        </div>
+
+        <Modal
+          title="Chi tiết đánh giá"
+          visible={showPopup}
+          onCancel={closePopup1}
+          footer={null}
+          width={600}
+          className="rounded-lg"
+        >
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-4">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setFilterRating(star)}
+                  className={`px-2 py-1 rounded-full ${filterRating === star ? 'bg-gray-300 text-white' : 'border text-gray-700'
+                    }`}
+                >
+                  {Array(star)
+                    .fill(null)
+                    .map((_, i) => (
+                      <StarFilled key={i} className="text-yellow-500 text-sm" />
+                    ))}
+                </button>
+              ))}
+              <button
+                onClick={() => setFilterRating(null)}
+                className="text-sm text-blue-500"
+              >
+                Tất cả đánh giá
+              </button>
+            </div>
+
+            {filteredRatings.length === 0 ? (
+              <p className="text-gray-600 text-center">Chưa có đánh giá nào.</p>
+            ) : (
+              filteredRatings.map((rating) => (
+                <div
+                  key={rating.id}
+                  className="bg-gray-100 p-4 rounded-lg shadow-md border border-gray-300"
+                >
+                  {/* Header đánh giá */}
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-gray-800">
+                      {rating.user.name}
+                    </span>
+                    <span className="text-gray-500 text-sm">
+                      {new Date(rating.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  {/* Số sao */}
+                  <div className="mt-1 flex items-center text-yellow-500">
+                    {Array(rating.rating)
+                      .fill(null)
+                      .map((_, i) => (
+                        <StarFilled key={i} />
+                      ))}
+                    <span className="text-gray-500 text-sm ml-2">
+                      ({rating.rating} sao)
+                    </span>
+                  </div>
+                  {/* Nội dung đánh giá */}
+                  <p className="mt-2 text-gray-600">{rating.content}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </Modal>
+      </div>
+
+      <form onSubmit={handleSubmit}>
         {message && (
           <div className="bg-red-100 text-red-600 px-4 py-2 rounded-md mb-4">
             {message}
@@ -336,9 +445,6 @@ const Detail = () => {
         )}
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           <div className="space-y-6">
-            <h1 className="text-3xl font-bold">{room?.size_name}</h1>
-            <p className="text-green-500">{room?.statusroom}</p>
-
             <div>
               <h3 className="text-xl font-semibold">Dịch vụ kèm theo</h3>
               <div className="space-y-2">
@@ -419,7 +525,7 @@ const Detail = () => {
                   disabledDate={(current) =>
                     (current && current < moment().endOf("day")) ||
                     (current && current < moment(start_date).endOf("day")) ||
-                    (current && current >= maxEndDate )
+                    (current && current >= maxEndDate)
                   }
                 />
               </div>
@@ -482,61 +588,6 @@ const Detail = () => {
             Thêm Bình luận
           </Button>
         </div>
-      </div>
-      <div className="mt-8 max-w-md">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Đánh giá</h3>
-        <div className="mb-4 flex items-center space-x-4">
-
-          <button
-            onClick={() => handleFilterChange(5)}
-            className={`px-4 py-2 rounded-lg border ${filterRating === 5 ? "bg-yellow-500 text-white" : "bg-white text-gray-700"}`}
-          >
-            5 Sao
-          </button>
-          <button
-            onClick={() => handleFilterChange(4)}
-            className={`px-4 py-2 rounded-lg border ${filterRating === 4 ? "bg-yellow-500 text-white" : "bg-white text-gray-700"}`}
-          >
-            4 Sao
-          </button>
-          <button
-            onClick={() => handleFilterChange(3)}
-            className={`px-4 py-2 rounded-lg border ${filterRating === 3 ? "bg-yellow-500 text-white" : "bg-white text-gray-700"}`}
-          >
-            3 Sao
-          </button>
-          <button
-            onClick={() => handleFilterChange(2)}
-            className={`px-4 py-2 rounded-lg border ${filterRating === 2 ? "bg-yellow-500 text-white" : "bg-white text-gray-700"}`}
-          >
-            2 Sao
-          </button>
-          <button
-            onClick={() => handleFilterChange(1)}
-            className={`px-4 py-2 rounded-lg border ${filterRating === 1 ? "bg-yellow-500 text-white" : "bg-white text-gray-700"}`}
-          >
-            1 Sao
-          </button>
-        </div>
-        {filteredRatings.length === 0 ? (
-          <p className="text-gray-600">Chưa có đánh giá nào.</p>
-        ) : (
-          filteredRatings.map((rating) => (
-            <div key={rating.id} className="border-b border-gray-300 py-4">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-gray-800">{rating.user.name}</span>
-                <span className="text-gray-500 text-sm">
-                  {new Date(rating.created_at).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="mt-2 text-gray-600">{rating.content}</div>
-              <div className="mt-2 text-yellow-500">
-                {"★".repeat(rating.rating)}{" "}
-                <span className="text-gray-500 text-sm">({rating.rating} sao)</span>
-              </div>
-            </div>
-          ))
-        )}
       </div>
     </div>
   );
