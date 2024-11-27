@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Input, Row, Col, Spin, Typography, Card } from "antd";
-import { SearchOutlined } from '@ant-design/icons';
+import React, { useState } from "react";
+import { Input, Row, Col, Modal, Typography, Card } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import useFetchBlogs from "../../api/useFetchBlogs";
 
 const { Title, Text } = Typography;
 
 const Blog = () => {
-  const { blog } = useFetchBlogs(); // Xóa loading từ hook
+  const { blog } = useFetchBlogs(); 
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [visible, setVisible] = useState(false); 
+  const [selectedBlog, setSelectedBlog] = useState<any>(null); 
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -19,21 +20,15 @@ const Blog = () => {
     blog.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    window.scrollTo(0, 0);
-  }, []);
+  const showBlogModal = (blog: any) => {
+    setSelectedBlog(blog); 
+    setVisible(true);
+  };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
-        <Spin size="large" />
-      </div>
-    );
-  }
+  const closeModal = () => {
+    setVisible(false);  
+    setSelectedBlog(null); 
+  };
 
   return (
     <div className="flex flex-col items-center mb-10 mt-24">
@@ -63,13 +58,22 @@ const Blog = () => {
             <Col key={blog.id} xs={24} sm={12} md={8} lg={6}>
               <Card
                 hoverable
-                cover={<img alt={blog.title} src={blog.image} className="h-[200px] object-cover" />}
+                cover={
+                  <img
+                    alt={blog.title}
+                    src={blog.image}
+                    className="h-[200px] object-cover"
+                  />
+                }
                 className="bg-[#F2F0F2] shadow-lg"
+                onClick={() => showBlogModal(blog)} // Gọi Modal khi click
               >
                 <div className="p-4">
                   <Title level={4}>{blog.title}</Title>
                   <Text className="text-sm text-center">{blog.description}</Text>
-                  <Text className="text-sm text-center block mt-2">Mô tả thêm về dịch vụ này.</Text>
+                  <Text className="text-sm text-center block mt-2">
+                    Mô tả thêm về dịch vụ này.
+                  </Text>
                 </div>
               </Card>
             </Col>
@@ -79,6 +83,31 @@ const Blog = () => {
           )}
         </Row>
       </div>
+
+      <Modal
+        open={visible}
+        footer={null}
+        onCancel={closeModal} 
+        centered
+        bodyStyle={{ padding: 0 }}
+      >
+        {selectedBlog && (
+          <div className="p-4">
+            <img
+              src={selectedBlog.image}
+              alt={selectedBlog.title}
+              className="w-full h-auto object-cover"
+            />
+            <div className="p-4">
+              <Title level={2}>{selectedBlog.title}</Title>
+              <Text>{selectedBlog.description}</Text>
+              <div className="mt-4">
+                <Text>Mô tả chi tiết: {selectedBlog.content || "Đang cập nhật..."}</Text>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
