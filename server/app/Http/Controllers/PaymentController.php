@@ -309,19 +309,72 @@ class PaymentController extends Controller
                 $paymethod = $payment->paymethod_id;
 
                 DB::commit();
-                $data = [
-                    'name' => $payment->user->name,
-                    'start_date' => $payment->booking->start_date,
-                    'end_date' => $payment->booking->end_date,
-                    'total_amount' => $payment->total_amount,
-                ];
+
+                $data = "
+                Khach hang: {$payment->user_name}
+                Email: {$payment->user_email}
+                So dien thoai: {$payment->user_phone}
+                Ma thanh toan: {$payment->id}
+                Ten thu cung: {$payment->pet_name}
+                Chung loai: {$payment->pet_type}
+                Ngay check-in: {$payment->booking->start_date}
+                Ngay check-out: {$payment->booking->end_date}
+                Tong tien: {$payment->total_amount}
+                ";
+
+                function removeVietnameseAccent($str)
+                {
+                    $trans = array(
+                        'a' => 'áàảãạăắằẳẵặâấầẩẫậ',
+                        'e' => 'éèẻẽẹêếềểễệ',
+                        'i' => 'íìỉĩị',
+                        'o' => 'óòỏõọôốồổỗộơớờởỡợ',
+                        'u' => 'úùủũụưứừửữự',
+                        'y' => 'ýỳỷỹỵ',
+                        'd' => 'đ',
+                    );
+
+                    foreach ($trans as $key => $value) {
+                        $str = preg_replace("/[" . $value . "]/u", $key, $str);
+                    }
+                    return $str;
+                }
+
+                $data = "Khách hàng: {$payment->user_name}
+                Email: {$payment->user_email}
+                Số điện thoại: {$payment->user_phone}
+                Mã thanh toán: {$payment->id}
+                Tên thú cưng: {$payment->pet_name}
+                Chủng loại: {$payment->pet_type}
+                Ngày check-in: {$payment->booking->start_date}
+                Ngày check-out: {$payment->booking->end_date}
+                Tổng tiền: {$payment->total_amount}";
+
+                // Chuyển thành không dấu
+                $dataNoAccent = removeVietnameseAccent($data);
+
+                // Cải thiện trình bày bằng cách sử dụng các dấu ngắt dòng, thêm khoảng cách hoặc ký tự đặc biệt nếu cần.
+                $formattedData = "
+                ----------------------------
+                THONG TIN THANH TOAN
+                ----------------------------
+                Khach hang: {$payment->user_name}
+                Email: {$payment->user_email}
+                So dien thoai: {$payment->user_phone}
+                Ma thanh toan: {$payment->id}
+                Ten thu cung: {$payment->pet_name}
+                Chung loai: {$payment->pet_type}
+                Ngay check-in: {$payment->booking->start_date}
+                Ngay check-out: {$payment->booking->end_date}
+                Tong tien: {$payment->total_amount} VND
+                ----------------------------
+                ";
 
                 // Call external API to generate QR code image (in PNG format)
-                $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode(json_encode($data));
+                $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($formattedData);
 
                 // Send email with QR code
                 Mail::to($payment->user->email)->send(new PaymentConfirm($payment, qrCodeUrl: $qrCodeUrl));
-
 
                 return response()->json([
                     'status' => 'Đơn hàng đã thanh toán thành công',
@@ -665,8 +718,71 @@ class PaymentController extends Controller
                                 $Status = 4; // Trạng thái thanh toán thành công
                                 $returnData['RspCode'] = '00';
                                 $returnData['Message'] = 'Thanh toán thành công';
-                                // gửi mail khi đặt hàng thành công
-                                Mail::to($payment->user->email)->send(new PaymentConfirm($payment));
+                                $data = "
+                                Khach hang: {$payment->user_name}
+                                Email: {$payment->user_email}
+                                So dien thoai: {$payment->user_phone}
+                                Ma thanh toan: {$payment->id}
+                                Ten thu cung: {$payment->pet_name}
+                                Chung loai: {$payment->pet_type}
+                                Ngay check-in: {$payment->booking->start_date}
+                                Ngay check-out: {$payment->booking->end_date}
+                                Tong tien: {$payment->total_amount}
+                                ";
+
+                                function removeVietnameseAccent($str)
+                                {
+                                    $trans = array(
+                                        'a' => 'áàảãạăắằẳẵặâấầẩẫậ',
+                                        'e' => 'éèẻẽẹêếềểễệ',
+                                        'i' => 'íìỉĩị',
+                                        'o' => 'óòỏõọôốồổỗộơớờởỡợ',
+                                        'u' => 'úùủũụưứừửữự',
+                                        'y' => 'ýỳỷỹỵ',
+                                        'd' => 'đ',
+                                    );
+
+                                    foreach ($trans as $key => $value) {
+                                        $str = preg_replace("/[" . $value . "]/u", $key, $str);
+                                    }
+                                    return $str;
+                                }
+
+                                $data = "Khách hàng: {$payment->user_name}
+                                Email: {$payment->user_email}
+                                Số điện thoại: {$payment->user_phone}
+                                Mã thanh toán: {$payment->id}
+                                Tên thú cưng: {$payment->pet_name}
+                                Chủng loại: {$payment->pet_type}
+                                Ngày check-in: {$payment->booking->start_date}
+                                Ngày check-out: {$payment->booking->end_date}
+                                Tổng tiền: {$payment->total_amount}";
+
+                                // Chuyển thành không dấu
+                                $dataNoAccent = removeVietnameseAccent($data);
+
+                                // Cải thiện trình bày bằng cách sử dụng các dấu ngắt dòng, thêm khoảng cách hoặc ký tự đặc biệt nếu cần.
+                                $formattedData = "
+                                ----------------------------
+                                THONG TIN THANH TOAN
+                                ----------------------------
+                                Khach hang: {$payment->user_name}
+                                Email: {$payment->user_email}
+                                So dien thoai: {$payment->user_phone}
+                                Ma thanh toan: {$payment->id}
+                                Ten thu cung: {$payment->pet_name}
+                                Chung loai: {$payment->pet_type}
+                                Ngay check-in: {$payment->booking->start_date}
+                                Ngay check-out: {$payment->booking->end_date}
+                                Tong tien: {$payment->total_amount} VND
+                                ----------------------------
+                                ";
+
+                                // Call external API to generate QR code image (in PNG format)
+                                $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($formattedData);
+
+                                // Send email with QR code
+                                Mail::to($payment->user->email)->send(new PaymentConfirm($payment, qrCodeUrl: $qrCodeUrl));
                             } else {
                                 $Status = 6; // Trạng thái thanh toán thất bại / lỗi
                                 $returnData['RspCode'] = '99';
