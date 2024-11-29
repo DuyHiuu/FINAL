@@ -15,18 +15,24 @@ class PaymentConfirm extends Mailable
     use Queueable, SerializesModels;
 
     public $payment;
+    public $qrCodeUrl;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Payment $payment)
+    public function __construct(Payment $payment, $qrCodeUrl)
     {
         $this->payment = $payment;
+        $this->qrCodeUrl = $qrCodeUrl;
     }
 
-    public function build(){
+    public function build()
+    {
         return $this->subject('Xác nhận thanh toán')
-        ->markdown('emails.order_confirmation')
-        ->with('payment', $this->payment);
+            ->markdown('emails.order_confirmation')
+            ->with([
+                'payment' => $this->payment,
+                'qrCodeUrl' => $this->qrCodeUrl,
+            ]);
     }
 }

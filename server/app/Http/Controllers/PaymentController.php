@@ -309,10 +309,19 @@ class PaymentController extends Controller
                 $paymethod = $payment->paymethod_id;
 
                 DB::commit();
+                $data = [
+                    'name' => $payment->user->name,
+                    'start_date' => $payment->booking->start_date,
+                    'end_date' => $payment->booking->end_date,
+                    'total_amount' => $payment->total_amount,
+                ];
 
+                // Call external API to generate QR code image (in PNG format)
+                $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode(json_encode($data));
 
-                // gửi mail khi đặt hàng thành công
-                Mail::to($payment->user->email)->send(new PaymentConfirm($payment));
+                // Send email with QR code
+                Mail::to($payment->user->email)->send(new PaymentConfirm($payment, qrCodeUrl: $qrCodeUrl));
+
 
                 return response()->json([
                     'status' => 'Đơn hàng đã thanh toán thành công',
