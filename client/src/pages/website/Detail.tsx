@@ -121,15 +121,6 @@ const Detail = () => {
     });
   };
 
-  const openNotification = (message) => {
-    notification.open({
-      message: 'Thông báo',
-      description: message,
-      type: 'error',
-      duration: 3,
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
