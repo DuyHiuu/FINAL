@@ -38,23 +38,19 @@ const DetailPay = () => {
         fetchData();
     }, [id]);
 
-    const handleStatusChange = (event) => {
-        setSelectedStatus(event.target.value);
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleStatusUpdate = async (statusId) => {
         try {
             const res = await fetch(`${updateUrl}/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ status_id: selectedStatus }),
+                body: JSON.stringify({ status_id: statusId }),
             });
             if (!res.ok) {
                 throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
             }
+            setSelectedStatus(statusId);
             navigate('/admin/payments');
         } catch (error) {
             console.log(error);
@@ -73,31 +69,20 @@ const DetailPay = () => {
     const sizeData = paymentData.size;
     const status_pay = paymentData.status_pay;
     const voucherData = paymentData.voucher;
-    const filteredStatus = status_pay.filter((item) => {
-        const currentStatus = paymentData.payment.status_id;
 
-        if (item.id === 7 || item.id === 3 || item.id === 4) {
-            return false;
-        }
+    console.log(paymentData.payment?.status_id);
 
-        if (currentStatus === 7) {
-            return false;
-        }
 
-        if (currentStatus === 2) {
-            return item.id !== 1;
-        } else if (currentStatus === 3) {
-            return item.id !== 1 && item.id !== 2;
-        } else if (currentStatus === 4) {
-            return item.id !== 1 && item.id !== 2 && item.id !== 3;
-        } else if (currentStatus === 5) {
-            return item.id !== 1 && item.id !== 2 && item.id !== 3 && item.id !== 4;
-        } else if (currentStatus === 6) {
-            return item.id !== 1 && item.id !== 2 && item.id !== 3 && item.id !== 4 && item.id !== 5;
-        }
+    const status_id = paymentData.payment?.status_id;
 
-        return true;
-    });
+    let availableStatuses = [];
+    if (status_id === 1) {
+        availableStatuses = [2];
+    } else if (status_id === 2 || status_id === 4) {
+        availableStatuses = [5];
+    } else if (status_id === 5) {
+        availableStatuses = [6];
+    }
 
     return (
         <div className="flex flex-col lg:flex-row">
@@ -258,39 +243,27 @@ const DetailPay = () => {
 
                 <Divider />
 
-                <div className="flex justify-between mt-4">
+                <div className=" mt-4">
                     <div>
                         <p className="text-left font-bold mt-2">Trạng thái:</p>
+                        <input readOnly value={paymentData?.status} className="block mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300" />
                     </div>
-                    <div className="text-right">
-                        <form onSubmit={handleSubmit} className="flex items-center">
-                            <select
-                                name="status_id"
-                                id="status_id"
-                                value={selectedStatus || paymentData?.payment?.status_id}
-                                onChange={handleStatusChange}
-                                className="block appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-                            >
-                                {filteredStatus?.map((item) => (
-                                    <option
-                                        key={item.id}
-                                        value={item.id}
-                                        disabled={
-                                            (item.id === 7 || item.id === 3 || item.id === 4) || // Lọc các trạng thái không muốn hiển thị trong dropdown
-                                            item.id === paymentData.payment.status_id // Disable trạng thái hiện tại
-                                        }
-                                    >
-                                        {item.status_name}
-                                    </option>
-                                ))}
-                            </select>
-                            <button
-                                type="submit"
-                                className="ml-2 bg-[#064749] hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                            >
-                                Cập nhật
-                            </button>
-                        </form>
+                    <div className="mt-4">
+                        {availableStatuses.length > 0 ? (
+                            availableStatuses.map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => handleStatusUpdate(status)}
+                                    className="bg-[#064749] text-white font-bold py-2 px-4 rounded mr-2"
+                                >
+                                    {status_id === 1 ? "Xác nhận" :
+                                        status_id === 2 || status_id === 4 ? "Check-in" :
+                                            status_id === 5 ? "Check-out" : "Cập nhật"}
+                                </button>
+                            ))
+                        ) : (
+                            <p className="text-gray-500">Không thể cập nhật trạng thái.</p>
+                        )}
                     </div>
                 </div>
 
