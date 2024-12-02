@@ -2,6 +2,7 @@ import { Divider } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Text } from 'recharts';
 
 const DetailPay = () => {
 
