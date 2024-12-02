@@ -36,7 +36,7 @@ const ResetPassword = () => {
 
       if (response.ok) {
         message.success("Mật khẩu của bạn đã được đặt lại thành công.");
-        navigate("/login");
+        navigate("/");
       } else {
         const data = await response.json();
         message.error(data.message || "Không thể đặt lại mật khẩu.");

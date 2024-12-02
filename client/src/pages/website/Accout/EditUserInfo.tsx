@@ -1,33 +1,101 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Modal, message } from "antd";
 
 const EditUserInfo = () => {
+  const apiUrl = "http://localhost:8000/api/users";
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
+  const [user_id, setUser_id] = useState("");
+
+  const [originalUserName, setOriginalUserName] = useState("");
+  const [originalUserEmail, setOriginalUserEmail] = useState("");
+  const [originalUserPhone, setOriginalUserPhone] = useState("");
+
   const navigate = useNavigate();
 
-  // Lấy thông tin từ localStorage để hiển thị trong form
   useEffect(() => {
     const nameFromStorage = localStorage.getItem("name");
     const emailFromStorage = localStorage.getItem("email");
     const phoneFromStorage = localStorage.getItem("phone");
+    const idFromStorage = localStorage.getItem("user_id");
 
     setUserName(nameFromStorage || "");
     setUserEmail(emailFromStorage || "");
     setUserPhone(phoneFromStorage || "");
+    setUser_id(idFromStorage || "");
+
+    setOriginalUserName(nameFromStorage || "");
+    setOriginalUserEmail(emailFromStorage || "");
+    setOriginalUserPhone(phoneFromStorage || "");
   }, []);
 
-  // Xử lý khi nhấn nút lưu
-  const handleSave = () => {
-    // Lưu thông tin cập nhật vào localStorage
-    localStorage.setItem("name", userName);
-    localStorage.setItem("email", userEmail);
-    localStorage.setItem("phone", userPhone);
+  const showErrorModal = (title, content) => {
+    Modal.error({
+      title: title,
+      content: content,
+      onOk: () => {
+        setUserName(originalUserName);
+        setUserEmail(originalUserEmail);
+        setUserPhone(originalUserPhone);
+      },
+    });
+  };
 
-    // Điều hướng trở lại trang account và load lại trang
-    navigate("/account");
-    window.location.reload(); // Load lại trang để cập nhật thông tin mới
+  const handleSave = async () => {
+    if (!userName.trim() || !userEmail.trim() || !userPhone.trim()) {
+      showErrorModal(
+        "Lỗi xác thực",
+        "Tất cả các trường đều bắt buộc. Vui lòng kiểm tra lại."
+      );
+      return;
+    }
+
+    const updatedUser = {
+      name: userName,
+      email: userEmail,
+      phone: userPhone,
+    };
+
+    try {
+      const response = await axios.put(`${apiUrl}/${user_id}`, updatedUser);
+
+      if (response.status === 200) {
+        message.success("Cập nhật thông tin thành công!");
+
+        localStorage.setItem("name", userName);
+        localStorage.setItem("email", userEmail);
+        localStorage.setItem("phone", userPhone);
+
+        navigate("/account");
+        window.location.reload();
+      }
+    } catch (error) {
+      if (error.response && error.response.data.errors) {
+        const { email, phone } = error.response.data.errors;
+
+        if (email) {
+          showErrorModal(
+            "Lỗi email",
+            "Email này đã tồn tại. Vui lòng sử dụng email khác."
+          );
+        }
+
+        if (phone) {
+          showErrorModal(
+            "Lỗi số điện thoại",
+            "Số điện thoại này đã tồn tại. Vui lòng sử dụng số khác."
+          );
+        }
+      } else {
+        showErrorModal(
+          "Lỗi kết nối",
+          "Không thể kết nối đến server. Vui lòng thử lại sau."
+        );
+      }
+    }
   };
 
   return (
@@ -35,7 +103,6 @@ const EditUserInfo = () => {
       <h2 className="text-2xl font-bold mb-4">Chỉnh sửa thông tin cá nhân</h2>
 
       <form>
-        {/* Trường chỉnh sửa Tên */}
         <div className="mb-4">
           <label htmlFor="name" className="block text-gray-700 mb-2">
             Tên
@@ -49,7 +116,6 @@ const EditUserInfo = () => {
           />
         </div>
 
-        {/* Trường chỉnh sửa Email */}
         <div className="mb-4">
           <label htmlFor="email" className="block text-gray-700 mb-2">
             Email
@@ -63,7 +129,6 @@ const EditUserInfo = () => {
           />
         </div>
 
-        {/* Trường chỉnh sửa Số điện thoại */}
         <div className="mb-4">
           <label htmlFor="phone" className="block text-gray-700 mb-2">
             Số điện thoại
@@ -77,7 +142,6 @@ const EditUserInfo = () => {
           />
         </div>
 
-        {/* Nút lưu */}
         <div className="flex justify-end">
           <button
             type="button"

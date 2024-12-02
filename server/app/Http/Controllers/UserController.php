@@ -102,41 +102,28 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::find($id);
-
+    
         if (!$user) {
             return response()->json(['message' => 'Người dùng không tồn tại'], 404);
         }
-
+    
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $id . ',id,deleted_at,NULL',
-            'phone' => 'nullable|string|max:20',
-            'password' => 'nullable|string|min:6',
-            'address' => 'nullable|string|max:255',
-            'role_id' => 'required|exists:roles,id',
+            'phone' => 'nullable|string|max:20|unique:users,phone,' . $id . ',id,deleted_at,NULL',
         ]);
-
+    
         $user->name = $validated['name'];
         $user->email = $validated['email'];
         $user->phone = $validated['phone'] ?? $user->phone;
-        $user->address = $validated['address'] ?? $user->address;
-        $user->role_id = $validated['role_id'] ?? $user->role_id;
-
-        if (!empty($validated['password'])) {
-            $user->password = bcrypt($validated['password']);
-        }
-
-
+    
         if ($user->save()) {
             return response()->json(['message' => 'Cập nhật thành công', 'data' => $user->toArray()], 200);
         } else {
             return response()->json(['message' => 'Cập nhật thất bại'], 500);
         }
     }
-
-
-
-
+    
     /**
      * Remove the specified resource from storage.
      */
