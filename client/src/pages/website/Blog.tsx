@@ -7,7 +7,7 @@ import useFetchBlogs from "../../api/useFetchBlogs";
 const { Title, Text } = Typography;
 
 const Blog = () => {
-  const { blog } = useFetchBlogs(); // Custom hook để fetch dữ liệu
+  const { blog } = useFetchBlogs(); 
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
