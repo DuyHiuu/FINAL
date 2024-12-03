@@ -52,6 +52,7 @@ import ContactList from "./components/layouts/admin/contact/ContactList";
 import ForgotPassword from "./pages/website/ForgotPassword";
 import ResetPassword from "./pages/website/ResetPassword";
 import CheckPay from "./pages/website/checkPay";
+import BlogDetail from "./pages/website/BlogDetail";
 export const router = createBrowserRouter([
   {
     element: <LayoutWebsite />,
@@ -61,6 +62,7 @@ export const router = createBrowserRouter([
       { path: "/about", element: <AboutPage /> },
       { path: "/danhsach", element: <ListRoom /> },
       { path: "/blog", element: <Blog /> },
+      { path: "/blog/:id", element: <BlogDetail /> },
       { path: "/detail/:id", element: <Detail /> },
       { path: "/lienhe", element: <Lienhe /> },
       { path: "/login", element: <Login /> },
