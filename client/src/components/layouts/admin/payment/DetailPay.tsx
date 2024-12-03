@@ -272,7 +272,7 @@ const DetailPay = () => {
                         <p className="text-left font-bold mt-2">Tổng:</p>
                     </div>
                     <div className="text-right">
-                        <p className="font-bold mt-2">{paymentData.payment?.total_amount.toLocaleString("vi-VN")} VNĐ</p>
+                        <p className="font-bold mt-2">{Math.trunc(paymentData.payment.total_amount).toLocaleString("vi-VN")} VNĐ</p>
                     </div>
                 </div>
 

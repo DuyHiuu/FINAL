@@ -256,11 +256,28 @@ const History2 = () => {
               <Text strong>Trạng thái:</Text>
             </Col>
             <Col span={12} className="text-right">
-              <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-yellow-300">
-                <Text className="text-yellow-800 text-sm">
-                  {paymentData.payment.status?.status_name}
+              <div
+                className="inline-flex items-center px-2 py-3 rounded-full"
+                style={{
+                  backgroundColor:
+                    paymentData.payment?.status?.id === 1 ? "#fcd34d" :
+                      paymentData.payment?.status?.id === 2 ? "#10b981" :
+                        paymentData.payment?.status?.id === 4 ? "#10b981" :
+                          paymentData.payment?.status?.id === 5 ? "#5F9EA0" :
+                            paymentData.payment?.status?.id === 6 ? "#0000FF" :
+                              paymentData.payment?.status?.id === 7 ? "#FF0000" : "#e5e7eb",
+                }}
+              >
+                <Text
+                  className="text-sm"
+                  style={{
+                    color: "#fff",
+                  }}
+                >
+                  {paymentData.payment?.status?.status_name}
                 </Text>
               </div>
+
             </Col>
           </Row>
 
@@ -270,7 +287,7 @@ const History2 = () => {
             </Col>
             <Col span={12} className="text-right">
               <Text className="font-bold">
-                {paymentData.payment.total_amount.toLocaleString("vi-VN")} VNĐ
+                {Math.trunc(paymentData.payment.total_amount).toLocaleString("vi-VN")} VNĐ
               </Text>
             </Col>
           </Row>
