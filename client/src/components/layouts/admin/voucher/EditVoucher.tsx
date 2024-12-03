@@ -155,7 +155,7 @@ const EditVoucher = () => {
           <input
             type="number"
             id="giamGia"
-            value={giamGia}
+            value={giamGia ? Math.trunc(giamGia).toLocaleString("vi-VN") : ""}
             onChange={(e) => setGiamGia(e.target.value)}
             required
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -171,7 +171,7 @@ const EditVoucher = () => {
             <input
               type="number"
               id="min_total_amount"
-              value={min_total_amount}
+              value={min_total_amount ? Math.trunc(min_total_amount).toLocaleString("vi-VN") : ""}
               onChange={(e) => setMin_total_amount(e.target.value)}
               required
               placeholder="Nhập số tiền tối thiểu để áp dụng"

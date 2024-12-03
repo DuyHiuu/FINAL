@@ -52,18 +52,32 @@ const History1 = () => {
     const filtered = payment.filter((item) => {
       const bookingStartDate = new Date(item.booking?.start_date);
       const bookingEndDate = new Date(item.booking?.end_date);
-      const isAfterStart = startDate
-        ? bookingStartDate >= new Date(startDate)
-        : true;
-      const isBeforeEnd = endDate ? bookingEndDate <= new Date(endDate) : true;
 
-      const matchesStatus =
-        !selectedStatus || String(item.status?.id) === selectedStatus;
+      const isStartDateEqual = startDate ? bookingStartDate.toDateString() === new Date(startDate).toDateString() : true;
+      const isEndDateEqual = endDate ? bookingEndDate.toDateString() === new Date(endDate).toDateString() : true;
 
-      return isAfterStart && isBeforeEnd && matchesStatus;
+      const matchesStatus = !selectedStatus || String(item.status?.id) === selectedStatus;
+
+      const matchesDate =
+        (startDate && !endDate)
+          ? isStartDateEqual
+          : (endDate && !startDate)
+            ? isEndDateEqual
+            : isStartDateEqual && isEndDateEqual;
+
+      return matchesDate && matchesStatus;
     });
 
     setFilteredPayments(filtered);
+  };
+
+
+  const handleReset = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setSelectedStatus("");
+
+    handleSearch();
   };
 
   const handleRatingChange = (value: number, itemId: string) => {
@@ -166,15 +180,15 @@ const History1 = () => {
                         description={
                           <>
                             <div
-                              className="inline-flex items-center px-3 py-1 rounded-full"
+                              className="inline-flex items-center px-3 py-1 rounded-full mb-3"
                               style={{
                                 backgroundColor:
-                                  item.status?.id === 1 ? "#fcd34d":
-                                  item.status?.id === 2 ? "#10b981":
-                                  item.status?.id === 4 ? "#10b981":
-                                  item.status?.id === 5 ? "#5F9EA0":
-                                  item.status?.id === 6 ? "#0000FF":
-                                  item.status?.id === 7 ? "#FF0000": "#e5e7eb",
+                                  item.status?.id === 1 ? "#fcd34d" :
+                                    item.status?.id === 2 ? "#10b981" :
+                                      item.status?.id === 4 ? "#10b981" :
+                                        item.status?.id === 5 ? "#5F9EA0" :
+                                          item.status?.id === 6 ? "#0000FF" :
+                                            item.status?.id === 7 ? "#FF0000" : "#e5e7eb",
                               }}
                             >
                               <Text
@@ -188,27 +202,40 @@ const History1 = () => {
                             </div>
 
                             <div>
-                              <Text>
-                                Ngày:{" "}
+                              <div className="text-black font-semibold">
+                                Phòng:{" "}
+                                {item.booking?.room?.size?.name}
+                                {" "}
+                              </div>
+                            </div>
+
+                            <div>
+                              <div className="text-black font-semibold">
+                                Ngày Check-in:{" "}
                                 {`${moment(item.booking?.start_date).format("DD-MM-YYYY"
                                 )}`}{" "}
-                                &#8594;{" "}
-                                {`${moment(item.booking?.end_date).format(
-                                  "DD-MM-YYYY"
-                                )}`}
-                              </Text>
+                              </div>
+                            </div>
+
+                            <div>
+                              <div className="text-black font-semibold">
+                                Ngày Check-out:{" "}
+                                {`${moment(item.booking?.end_date).format("DD-MM-YYYY"
+                                )}`}{" "}
+                              </div>
+                            </div>
+
+                            <div className="mt-2 font-semibold text-black">
+                              Tổng tiền:{" "}
+                              {Math.trunc(item.total_amount).toLocaleString("vi-VN")} VNĐ
                             </div>
                             <div className="mt-2">
                               <a
                                 href={`/history2/${item.id}`}
-                                className="text-blue-500"
+                                className="inline-block px-2 py-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300"
                               >
                                 Xem chi tiết
                               </a>
-                            </div>
-                            <div className="mt-2 text-gray-500">
-                              Tổng tiền:{" "}
-                              {item.total_amount.toLocaleString("vi-VN")} VNĐ
                             </div>
                             {item.status?.id === 6 && !hasRated[item.id] && (
                               <div className="mt-2">
@@ -263,15 +290,16 @@ const History1 = () => {
           </div>
           <div className="mb-4">
             <DatePicker
+              className="mb-3"
               value={startDate}
               onChange={handleStartDateChange}
-              placeholder="Ngày bắt đầu"
+              placeholder="Ngày Check-in"
               style={{ width: "100%" }}
             />
             <DatePicker
               value={endDate}
               onChange={handleEndDateChange}
-              placeholder="Ngày kết thúc"
+              placeholder="Ngày Check-out"
               style={{ width: "100%" }}
             />
           </div>
@@ -287,14 +315,25 @@ const History1 = () => {
               <option value="7">Đã hủy</option>
             </select>
           </div>
-          <Button
-            type="primary"
-            onClick={handleSearch}
-            icon={<SearchOutlined />}
-            block
-          >
-            Tìm kiếm
-          </Button>
+
+          <div className="flex gap-2">
+            <Button
+              type="primary"
+              onClick={handleSearch}
+              icon={<SearchOutlined />}
+              block
+            >
+              Tìm kiếm
+            </Button>
+
+            <Button
+              type="default"
+              onClick={handleReset}
+              block
+            >
+              Xóa
+            </Button>
+          </div>
         </div>
       </div>
     </div>

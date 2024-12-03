@@ -83,7 +83,7 @@ const VoucherList = () => {
       title: "Giảm giá",
       dataIndex: "discount",
       key: "discount",
-      render: (text) => `${text.toLocaleString("vi-VN")}`,
+      render: (text) => `${parseInt(text, 10).toLocaleString("vi-VN")}`,
     },
     {
       title: "Số Lượng",
