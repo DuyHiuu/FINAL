@@ -52,7 +52,9 @@ import ContactList from "./components/layouts/admin/contact/ContactList";
 import ForgotPassword from "./pages/website/ForgotPassword";
 import ResetPassword from "./pages/website/ResetPassword";
 import CheckPay from "./pages/website/checkPay";
+import HomeAdmin from "./components/layouts/admin/home/home";
 import BlogDetail from "./pages/website/BlogDetail";
+
 export const router = createBrowserRouter([
   {
     element: <LayoutWebsite />,
@@ -132,6 +134,7 @@ export const router = createBrowserRouter([
       { path: "/admin/comments/add", element: <AddComment /> },
       { path: "/admin/comments/edit/:id", element: <EditComment /> },
       { path: "/admin/chart", element: <Chart /> },
+      { path: "/admin/home", element: <HomeAdmin /> },
       { path: "/admin/contacts", element: <ContactList /> },
       { path: "/admin/payments", element: <ListPay /> },
       { path: "/admin/payments/detail/:id", element: <DetailPay /> },

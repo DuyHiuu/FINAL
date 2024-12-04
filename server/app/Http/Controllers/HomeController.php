@@ -47,11 +47,11 @@ class HomeController extends Controller
         return response()->json($service);
     }
 
-    public function testEmail()
-    {
-        Mail::send('emails.test', ['name' => 'test name for email'], function ($email) {
-            $email->subject('PetHotel');
-            $email->to('nghiadz29112004@gmail.com', 'Henshin');
-        });
-    }
+//    public function testEmail()
+//    {
+//        Mail::send('emails.test', ['name' => 'test name for email'], function ($email) {
+//            $email->subject('PetHotel');
+//            $email->to('nghiadz29112004@gmail.com', 'Henshin');
+//        });
+//    }
 }

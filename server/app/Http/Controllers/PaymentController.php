@@ -948,4 +948,27 @@ class PaymentController extends Controller
             'subTotal' => $subTotal
         ], 201);
     }
+
+    public function donePay(string $id)
+    {
+        $payment = Payment::find($id);
+
+        if (!$payment) {
+            return response()->json(['message' => 'Payment không tồn tại!'], 404);
+        }
+
+
+        $day = Carbon::parse($payment->created_at);
+        $now = Carbon::now();
+
+
+        if ($day->diffInDays($now) > 2) {
+            return response()->json(['message' => 'Không thể hủy thanh toán sau 2 ngày!'], 403);
+        }
+
+
+        $payment->update(['status_id' => 7]);
+
+        return response()->json(['message' => 'Thanh toán đã được hủy!', 'payment' => $payment], 200);
+    }
 }
