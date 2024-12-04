@@ -118,6 +118,7 @@ Route::prefix('admin')->group(function () {
     //thống kê
     Route::post('/total_revenue', [StatisticalController::class, "total_revenue"])->name('total_revenue');
     Route::post('/rtop3', [StatisticalController::class, "get_top3_room"])->name('rtop3');
+    Route::post('/svtop3', [StatisticalController::class, "get_top3_sevice"])->name('svtop3');
 });
 
 Route::prefix('roles')->group(function () {
