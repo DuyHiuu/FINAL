@@ -820,6 +820,7 @@ class PaymentController extends Controller
                         $returnData['Message'] = 'Số tiền không hợp lệ';
                     }
                 } else {
+                    $payment->delete();
                     $returnData['RspCode'] = '01';
                     $returnData['Message'] = 'Không tìm thấy đơn hàng';
                 }
