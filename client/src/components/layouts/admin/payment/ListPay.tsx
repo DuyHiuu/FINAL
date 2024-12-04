@@ -53,7 +53,7 @@ const RoomList = () => {
         { id: 2, name: "Đã xác nhận" },
         { id: 4, name: "Đã check-in" },
         { id: 5, name: "Đã check-out" },
-       
+
     ];
 
     const columns = [
@@ -76,7 +76,7 @@ const RoomList = () => {
             title: "Tổng Tiền (VND)",
             dataIndex: "total_amount",
             key: "total_amount",
-            render: (text) => `${text.toLocaleString("vi-VN")} VND`,
+            render: (text) => `${parseInt(text, 10).toLocaleString("vi-VN")} VND`,
         },
         {
             title: "Ngày Check-In",
@@ -92,11 +92,11 @@ const RoomList = () => {
                 <Badge
                     color={
                         record.status_id === 1 ? "#fcd34d" :
-                        record.status_id === 2 ? "#10b981" :
-                        record.status_id === 4 ? "#10b981" :
-                        record.status_id === 5 ? "#5F9EA0" :
-                        record.status_id === 6 ? "#0000FF" :
-                        record.status_id === 7 ? "#FF0000" : "gray"
+                            record.status_id === 2 ? "#10b981" :
+                                record.status_id === 4 ? "#10b981" :
+                                    record.status_id === 5 ? "#5F9EA0" :
+                                        record.status_id === 6 ? "#0000FF" :
+                                            record.status_id === 7 ? "#FF0000" : "gray"
                     }
                     text={status}
                 />

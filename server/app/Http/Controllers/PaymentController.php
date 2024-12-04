@@ -702,6 +702,8 @@ class PaymentController extends Controller
         $payments = $inputData['vnp_TxnRef'];
 
         try {
+            $payment = Payment::where('id', $payments)->first();
+            $payment_id = $payment->id;
             //Check Orderid
             //Kiểm tra checksum của dữ liệu
             if ($secureHash == $vnp_SecureHash) {
@@ -715,7 +717,7 @@ class PaymentController extends Controller
                     {
                         if ($payment["status_id"] == 3) {
                             if ($inputData['vnp_ResponseCode'] == '00' || $inputData['vnp_TransactionStatus'] == '00') {
-                                $Status = 4; // Trạng thái thanh toán thành công
+                                Payment::where('id', $payment_id)->update(['status_id' => 4]);
                                 $returnData['RspCode'] = '00';
                                 $returnData['Message'] = 'Thanh toán thành công';
                                 $data = "
@@ -784,13 +786,10 @@ class PaymentController extends Controller
                                 // Send email with QR code
                                 Mail::to($payment->user->email)->send(new PaymentConfirm($payment, qrCodeUrl: $qrCodeUrl));
                             } else {
-                                $Status = 6; // Trạng thái thanh toán thất bại / lỗi
+                                $payment->delete();
                                 $returnData['RspCode'] = '99';
                                 $returnData['error'] = 'Thanh toán thất bại / lỗi';
                             }
-
-                            //Cài đặt Code cập nhật kết quả thanh toán, tình trạng đơn hàng vào DB
-                            Payment::where('id', $payment_id)->update(['status_id' => $Status]);
                         } elseif ($payment["status_id"] == 2) {
                             $returnData['RspCode'] = '02';
                             $returnData['Message'] = 'Đơn hàng đã được xác thực';
@@ -802,7 +801,7 @@ class PaymentController extends Controller
                         //                            $returnData['error'] = 'Thanh toán thất bại / lỗi';
                         //                        }
                     } else {
-                        Payment::where('id', $payment_id)->update(['status_id' => 6]);
+                        $payment->delete();
                         $returnData['RspCode'] = '04';
                         $returnData['Message'] = 'Số tiền không hợp lệ';
                     }
@@ -811,10 +810,12 @@ class PaymentController extends Controller
                     $returnData['Message'] = 'Không tìm thấy đơn hàng';
                 }
             } else {
+                $payment->delete();
                 $returnData['RspCode'] = '97';
                 $returnData['Message'] = 'Chữ ký không hợp lệ';
             }
         } catch (\Exception $e) {
+            $payment->delete();
             $returnData['RspCode'] = '99';
             $returnData['Message'] = 'Unknow error';
         }
