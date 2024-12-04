@@ -1,14 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Table, Input, Button, message, Pagination, Popconfirm } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons"; // Import icons
+import { Table, Select } from "antd";
+import { EditOutlined } from "@ant-design/icons"; // Import icons
 import useFetchReturnPay from "../../../../api/useFetchReturnPay";
+
+const { Option } = Select;
 
 const ReturnPayList = () => {
   const { returnPays } = useFetchReturnPay();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchStatus, setSearchStatus] = useState("");
+  const [filteredData, setFilteredData] = useState(returnPays);
 
-  console.log(returnPays);
+  const handleStatusChange = (value) => {
+    setSearchStatus(value);
+    const filtered = returnPays.filter((pay) =>
+      value ? pay.status.toLowerCase() === value.toLowerCase() : true
+    );
+    setFilteredData(filtered);
+  };
+
+  useEffect(() => {
+    setFilteredData(returnPays);
+  }, [returnPays]);
 
   const columns = [
     {
@@ -20,6 +33,11 @@ const ReturnPayList = () => {
       title: "ID Đơn Hàng",
       dataIndex: ["payment", "payment_id"],
       key: ["payment", "payment_id"],
+      render: (text) => (
+        <a href={`/admin/payments/detail/${text}`} target="_blank" rel="noopener noreferrer">
+          {text}
+        </a>
+      ),
     },
     {
       title: "Tên khách hàng",
@@ -56,30 +74,28 @@ const ReturnPayList = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Danh Sách Size</h1>
-        <Link
-          to="/admin/sizes/add"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300"
-        >
-          Thêm Size
-        </Link>
+        <h1 className="text-3xl font-bold text-gray-800">Danh Sách Hoàn Tiền</h1>
       </div>
 
-      {/* Thanh tìm kiếm */}
-      <div className="mb-4">
-        <Input
-          placeholder="Tìm kiếm theo tên hoặc miêu tả"
-          value={searchTerm}
-          className="w-full"
-        />
+      <div className="mb-4 flex space-x-4">
+        <Select
+          defaultValue=""
+          style={{ width: 200 }}
+          onChange={handleStatusChange}
+          placeholder="Chọn trạng thái"
+        >
+          <Option value="">Tất cả</Option>
+          <Option value="Đã hoàn tiền">Đã hoàn tiền</Option>
+          <Option value="Chờ hoàn tiền">Chưa hoàn tiền</Option>
+        </Select>
       </div>
 
       <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
         <Table
           columns={columns}
-          dataSource={returnPays}
+          dataSource={filteredData}
           rowKey="id"
-          pagination={false} // Tắt phân trang trong Table
+          pagination={{ pageSize: 10 }}
         />
       </div>
     </div>
