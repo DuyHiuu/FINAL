@@ -56,6 +56,7 @@ import HomeAdmin from "./components/layouts/admin/home/home";
 import BlogDetail from "./pages/website/BlogDetail";
 
 import ReturnPay from "./components/layouts/admin/refund/ReturnPayList";
+import ReturnPayDetail from "./components/layouts/admin/refund/ReturnPayDetail";
 
 import PayReturn from "./pages/website/PayReturn";
 
@@ -146,6 +147,7 @@ export const router = createBrowserRouter([
       { path: "/admin/payments/detail/:id", element: <DetailPay /> },
       { path: "/admin/chart", element: <Chart /> },
       { path: "/admin/returnPay", element: <ReturnPay /> },
+      { path: "/admin/returnPay/:id", element: <ReturnPayDetail /> },
     ],
   },
 
