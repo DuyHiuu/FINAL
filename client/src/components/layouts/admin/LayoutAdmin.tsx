@@ -23,7 +23,7 @@ const navigation = [
   { name: "Danh sách liên hệ", href: "/admin/contacts", current: false },
   { name: "Quản lí đơn hàng", href: "/admin/payments", current: false },
   { name: "Biểu đồ", href: "/admin/chart", current: false },
-  { name: "Hoàn tiền", href: "/admin/refund", current: false },
+  { name: "Hoàn tiền", href: "/admin/returnPay", current: false },
 ];
 
 const userNavigation = [{ name: "Đăng xuất", href: "#" }];
