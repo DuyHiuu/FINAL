@@ -8,6 +8,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymethodController;
+use App\Http\Controllers\PayReturnController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoomController;
@@ -139,6 +140,11 @@ Route::prefix('payments')->group(function () {
     Route::delete('/{id}', [PaymentController::class, 'destroy']);
     Route::post('/cancel_pay/{id}', [PaymentController::class, 'cancelPay']);
     Route::post('/return_pay', [PaymentController::class, 'returnPay']);
+});
+
+Route::prefix('pay_return')->group(function () {
+    Route::get('/', [PayReturnController::class, 'listReturnPay']);
+    Route::get('/{id}', [PayReturnController::class, 'detailReturnPay']);
 });
 
 Route::prefix('comments')->group(function () {
