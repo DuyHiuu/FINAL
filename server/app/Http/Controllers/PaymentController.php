@@ -1034,4 +1034,24 @@ class PaymentController extends Controller
         }
     }
 
+    public function changeStatus(Request $request, string $id)
+    {
+        $payment = Payment::find($id);
+
+        if (!$payment) {
+            return response()->json(['status' => false, 'message' => 'Payment không tồn tại'], 404);
+        }
+
+        $payment->status_id = $request->status;
+        $payment->save();
+
+        $payReturn = Pay_return::where('payment_id', $payment->id)->first();
+
+        if ($payReturn) {
+            $payReturn->status = 'Đã hoàn tiền';
+            $payReturn->save();
+        }
+
+        return response()->json(['status' => true, 'message' => 'Trạng thái đã được cập nhật thành công']);
+    }
 }

@@ -43,7 +43,7 @@ const ReturnPayList = () => {
       render: (_, record) => (
         <div className="">
           <Link
-            to={`/admin//${record.id}`}
+            to={`/admin/returnPay/${record.pay_return_id}`}
             className="text-yellow-500 hover:text-yellow-600"
           >
             <EditOutlined style={{ fontSize: 20 }} />
