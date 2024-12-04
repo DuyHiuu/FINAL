@@ -54,6 +54,7 @@ import ResetPassword from "./pages/website/ResetPassword";
 import CheckPay from "./pages/website/checkPay";
 import HomeAdmin from "./components/layouts/admin/home/home";
 import BlogDetail from "./pages/website/BlogDetail";
+import PayReturn from "./pages/website/PayReturn";
 
 export const router = createBrowserRouter([
   {
@@ -79,6 +80,7 @@ export const router = createBrowserRouter([
       { path: "/forgot-password", element: <ForgotPassword /> },
       { path: "/reset-password", element: <ResetPassword /> },
       { path: "/check_pay", element: <CheckPay /> },
+      { path: "/pay_return/:id", element: <PayReturn /> },
 
       // Áp dụng UserPrivateRoute cho trang lịch sử mua hàng
       {

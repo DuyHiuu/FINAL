@@ -949,7 +949,7 @@ class PaymentController extends Controller
         ], 201);
     }
 
-    public function donePay(string $id)
+    public function cancelPay(string $id)
     {
         $payment = Payment::find($id);
 
@@ -963,12 +963,20 @@ class PaymentController extends Controller
 
 
         if ($day->diffInDays($now) > 2) {
-            return response()->json(['message' => 'Không thể hủy thanh toán sau 2 ngày!'], 403);
+            return response()->json(['message' => 'Không thể hủy đơn hàng sau 2 ngày!'], 403);
+        }
+
+        if($payment->status_id >= 5) {
+            return response()->json(['message' => 'Không thể hủy đơn hàng!'], status: 403);
         }
 
 
         $payment->update(['status_id' => 7]);
 
         return response()->json(['message' => 'Thanh toán đã được hủy!', 'payment' => $payment], 200);
+    }
+
+    public function returnPay(string $id)
+    {
     }
 }
