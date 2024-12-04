@@ -137,7 +137,8 @@ Route::prefix('payments')->group(function () {
     Route::get('/{id}', [PaymentController::class, 'show']);
     Route::put('/{id}', [PaymentController::class, 'update']);
     Route::delete('/{id}', [PaymentController::class, 'destroy']);
-    Route::post('/done_pay/{id}', [PaymentController::class, 'donePay']);
+    Route::post('/cancel_pay/{id}', [PaymentController::class, 'cancelPay']);
+    Route::post('/return_pay', [PaymentController::class, 'returnPay']);
 });
 
 Route::prefix('comments')->group(function () {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { PulseLoader } from "react-spinners";
 import {
   Row,
@@ -13,9 +13,11 @@ import {
   Space,
   Select,
   Divider,
+  Modal
 } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import moment from "moment";
+import { Color } from "antd/es/color-picker";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -24,6 +26,7 @@ const History2 = () => {
   const showUrl = "http://localhost:8000/api/payments";
   const [data, setData] = useState(null);
   const { id } = useParams();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +49,7 @@ const History2 = () => {
     fetchData();
   }, [id]);
 
+
   if (!data) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-white fixed top-0 left-0 w-full h-full z-50">
@@ -61,6 +65,64 @@ const History2 = () => {
   const payMethodData = paymentData.paymentMethod;
   const sizeData = paymentData.size;
   const voucherData = paymentData.voucher;
+
+  const cancelPay = async () => {
+    try {
+
+      const startDate = moment(bookingData?.start_date);
+      const now = moment();
+
+      if (now.isSameOrAfter(startDate.subtract(2, 'days'))) {
+        Modal.error({
+          title: "Không thể hủy đơn hàng",
+          content: "Phòng chỉ có thể hủy trước ngày check-in 2 ngày!",
+        });
+        return;
+      }
+
+      const response = await fetch(`${showUrl}/cancel_pay/${id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        Modal.error({
+          title: "Lỗi",
+          content: result.message || "Có lỗi xảy ra!",
+        });
+        return;
+      }
+
+      Modal.success({
+        title: "Thành công",
+        content: result.message || "Đơn hàng đã được hủy thành công!",
+        onOk: () => window.location.reload(),
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      Modal.error({
+        title: "Lỗi",
+        content: "Có lỗi xảy ra khi hủy đơn hàng!",
+      });
+    }
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+    cancelPay();
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
 
   return (
     <div className="flex flex-col lg:flex-row pb-20 mt-24">
@@ -291,8 +353,45 @@ const History2 = () => {
               </Text>
             </Col>
           </Row>
+
+          {paymentData?.payment?.status?.id < 5 && (
+            <Row gutter={16} className="mt-4">
+              <Col span={12}>
+                <Text strong style={{ color: "red" }}>
+                  Phòng chỉ có thể hủy trước ngày check-in 2 ngày!
+                </Text>
+              </Col>
+              <Col span={12} className="text-right">
+                <Button onClick={showModal}
+                  style={{ backgroundColor: 'red', color: 'white' }}>
+                  Hủy đơn hàng
+                </Button>
+              </Col>
+            </Row>
+          )}
+
+          {paymentData?.payment?.status?.id == 7 && payMethodData === "Thanh toán online" && (
+            <Button
+              style={{ backgroundColor: '#28a745', color: 'white', marginLeft: '270px', marginTop: '20px' }}
+            >
+              <a href={`/pay_return/${id}`}>Hoàn tiền</a>
+            </Button>
+          )}
+
         </Card>
       </div>
+
+      <Modal
+        title="Xác nhận hủy đơn hàng"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Xác nhận"
+        cancelText="Hủy"
+      >
+        <p>Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác.</p>
+      </Modal>
+
     </div>
   );
 };

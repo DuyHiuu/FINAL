@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderConfirmation;
+use App\Models\Pay_return;
 
 class PaymentController extends Controller
 {
@@ -25,7 +26,7 @@ class PaymentController extends Controller
 
     public function index(String $id)
     {
-        $payments = Payment::with(['status', 'booking.room.size', 'user', 'voucher'])
+        $payments = Payment::with(['status', 'booking.room.size', 'user', 'voucher', 'payMethod'])
             ->where('user_id', $id)
             ->whereNull('deleted_at')
             ->orderBy('id', 'desc')
@@ -36,6 +37,8 @@ class PaymentController extends Controller
         $bookings = [];
         $rooms = [];
         $vouchers = [];
+        $payMethods = [];
+
 
         foreach ($payments as $payment) {
             if ($payment->booking) {
@@ -43,6 +46,16 @@ class PaymentController extends Controller
                 $rooms[] = [
                     'room' => $payment->booking->room,
                     'size_name' => $payment->booking->room->size->name ?? null,
+                ];
+            }
+
+            if ($payment->payMethod) {
+                $payMethods[] = [
+                    'payMethod_name' => $payment->payMethod->name ?? 'No name',
+                ];
+            } else {
+                $payMethods[] = [
+                    'payMethod_name' => 'No pay method',
                 ];
             }
         }
@@ -69,6 +82,7 @@ class PaymentController extends Controller
                 'booking' => $bookings,
                 'room' => $rooms,
                 'voucher' => $vouchers,
+                'payMethod' => $payMethods,
             ]
         ]);
     }
@@ -888,21 +902,6 @@ class PaymentController extends Controller
         }
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        // // Tìm Payment theo id
-        // $payment = Payment::findOrFail($id);
-
-        // // Xóa mềm (soft delete)
-        // $payment->delete();
-
-        // return response()->json(['message' => 'Thanh toán đã xóa thành công.']);
-    }
-
     public function applyVoucher(Request $request)
     {
 
@@ -949,7 +948,7 @@ class PaymentController extends Controller
         ], 201);
     }
 
-    public function donePay(string $id)
+    public function cancelPay(string $id)
     {
         $payment = Payment::find($id);
 
@@ -963,12 +962,75 @@ class PaymentController extends Controller
 
 
         if ($day->diffInDays($now) > 2) {
-            return response()->json(['message' => 'Không thể hủy thanh toán sau 2 ngày!'], 403);
+            return response()->json(['message' => 'Không thể hủy đơn hàng sau 2 ngày!'], 403);
+        }
+
+        if ($payment->status_id >= 5) {
+            return response()->json(['message' => 'Không thể hủy đơn hàng!'], status: 403);
         }
 
 
         $payment->update(['status_id' => 7]);
 
         return response()->json(['message' => 'Thanh toán đã được hủy!', 'payment' => $payment], 200);
+    }
+
+    public function returnPay(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'bank_name' => 'required|max:255',
+                'bank_type_name' => 'required|max:255',
+                'bank_seri' => 'required|numeric|min:0',
+                'payment_id' => 'required',
+                'amount' => 'required',
+            ],
+            [
+                'bank_name.required' => 'Tên dịch vụ không được để trống',
+                'bank_name.max' => 'Tên dịch vụ không được vượt 255 kí tự',
+                'bank_type_name.required' => 'Mô tả không được để trống',
+                'bank_type_name.max' => 'Mô tả không vượt quá 255 kí tự',
+                'bank_seri.required' => 'Giá dịch vụ không được để trống',
+                'bank_seri.numeric' => 'Giá dịch vụ phải là số',
+                'bank_seri.min' => 'Giá dịch vụ phải lớn hơn 0 hoặc bằng 0',
+                'payment_id.required' => 'Payment_id phải được thêm vào',
+                'amount.required' => 'Amount phải được thêm vào',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
+        }
+
+        try {
+            $bank_name = $request->get('bank_name');
+            $bank_type_name = $request->get('bank_type_name');
+            $bank_seri = $request->get('bank_seri');
+            $payment_id = $request->get('payment_id');
+            $amount = $request->get('amount');
+            $status = "Chờ hoàn tiền";
+
+            $data = [
+                'bank_name' => $bank_name,
+                'bank_type_name' => $bank_type_name,
+                'bank_seri' => $bank_seri,
+                'payment_id' => $payment_id,
+                'amount' => $amount,
+                'status' => $status
+            ];
+
+            Pay_return::create($data);
+
+            $payment = Payment::find($payment_id);
+            if ($payment) {
+                $payment->status_id = 8;
+                $payment->save();
+            }
+
+            return response()->json(['status' => 'success', 'message' => 'Gửi thành công', 'data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
     }
 }
