@@ -54,7 +54,11 @@ import ResetPassword from "./pages/website/ResetPassword";
 import CheckPay from "./pages/website/checkPay";
 import HomeAdmin from "./components/layouts/admin/home/home";
 import BlogDetail from "./pages/website/BlogDetail";
+
+import Refund from "./components/layouts/admin/refund/ListRefund";
+
 import PayReturn from "./pages/website/PayReturn";
+
 
 export const router = createBrowserRouter([
   {
@@ -141,6 +145,7 @@ export const router = createBrowserRouter([
       { path: "/admin/payments", element: <ListPay /> },
       { path: "/admin/payments/detail/:id", element: <DetailPay /> },
       { path: "/admin/chart", element: <Chart /> },
+      { path: "/admin/refund", element: <Refund /> },
     ],
   },
 
