@@ -14,7 +14,15 @@ const statisticsApi = createApi({
       }),
       invalidatesTags: ["statistics"],
     }),
+    Top3Room: builder.mutation<any, any>({
+      query: (body) => ({
+        url: `/rtop3/`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["statistics"],
+    }),
   }),
 });
-export const { useRevenueAllAPIMutation } = statisticsApi;
+export const { useRevenueAllAPIMutation, useTop3RoomMutation } = statisticsApi;
 export default statisticsApi;

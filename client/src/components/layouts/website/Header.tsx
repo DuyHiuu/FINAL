@@ -54,7 +54,7 @@ const AppHeader = () => {
   };
 
   const handleGoToAdmin = () => {
-    navigate("/admin");
+    navigate("/admin/home");
   };
 
   const handleGoToHistory = () => {
@@ -82,10 +82,8 @@ const AppHeader = () => {
       style={{ height: "100px" }}
     >
       <div className="container mx-auto flex items-center justify-between p-6">
-
         <Link to="/">
           <img src="/images/logo.png" alt="Logo" className="h-12" />{" "}
-
         </Link>
 
         <Menu mode="horizontal" className="hidden lg:flex w-[470px]">

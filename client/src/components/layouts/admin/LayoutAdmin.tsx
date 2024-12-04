@@ -12,6 +12,7 @@ const user = {
 
 const navigation = [
   { name: "PestSpa", href: "/", current: true },
+  { name: "Dashboard", href: "/admin/home", current: false },
   { name: "Danh sách phòng", href: "/admin/rooms", current: false },
   { name: "Danh sách size", href: "/admin/sizes", current: false },
   { name: "Danh sách voucher", href: "/admin/vouchers", current: false },
@@ -24,9 +25,7 @@ const navigation = [
   { name: "Biểu đồ", href: "/admin/chart", current: false },
 ];
 
-const userNavigation = [
-  { name: "Đăng xuất", href: "#" },
-];
+const userNavigation = [{ name: "Đăng xuất", href: "#" }];
 
 const LayoutAdmin = () => {
   // Menu dropdown for user
@@ -34,7 +33,9 @@ const LayoutAdmin = () => {
     <Menu>
       {userNavigation.map((item) => (
         <Menu.Item key={item.name}>
-          <a href={item.href} className="text-gray-700">{item.name}</a>
+          <a href={item.href} className="text-gray-700">
+            {item.name}
+          </a>
         </Menu.Item>
       ))}
     </Menu>
@@ -43,12 +44,16 @@ const LayoutAdmin = () => {
   return (
     <Layout style={{ minHeight: "100vh", backgroundColor: "#fff" }}>
       {/* Sidebar */}
-      <Sider width={250} className="site-layout-background" style={{ backgroundColor: "#fff" }}>
+      <Sider
+        width={250}
+        className="site-layout-background"
+        style={{ backgroundColor: "#fff" }}
+      >
         <div className="flex items-center justify-center py-6">
           <img className="h-12 w-auto" src="/images/logo.png" alt="Logo" />
         </div>
         <Menu
-          theme="light"  // Changed theme to light to match the white background
+          theme="light" // Changed theme to light to match the white background
           mode="inline"
           defaultSelectedKeys={["1"]}
           className="h-full"
@@ -56,7 +61,10 @@ const LayoutAdmin = () => {
         >
           {navigation.map((item, index) => (
             <Menu.Item key={index} icon={null}>
-              <a href={item.href} className={item.current ? "text-gray-900" : "text-gray-400"}>
+              <a
+                href={item.href}
+                className={item.current ? "text-gray-900" : "text-gray-400"}
+              >
                 {item.name}
               </a>
             </Menu.Item>
@@ -67,12 +75,19 @@ const LayoutAdmin = () => {
       {/* Main content */}
       <Layout className="site-layout">
         {/* Header */}
-        <Header className="site-layout-background" style={{ padding: 0, backgroundColor: "#fff" }}>
+        <Header
+          className="site-layout-background"
+          style={{ padding: 0, backgroundColor: "#fff" }}
+        >
           <div className="flex justify-between items-center px-6 py-4">
-            <h1 className="text-2xl text-gray-900 font-bold"><UserOutlined /> Admin {user.name}</h1>
+            <h1 className="text-2xl text-gray-900 font-bold">
+              <UserOutlined /> Admin {user.name}
+            </h1>
             <Space size="middle">
-              <Dropdown overlay={menu} trigger={['click']}>
-                <Avatar className="flex items-center space-x-2 bg-[#064749]">{user.name[0]}</Avatar>
+              <Dropdown overlay={menu} trigger={["click"]}>
+                <Avatar className="flex items-center space-x-2 bg-[#064749]">
+                  {user.name[0]}
+                </Avatar>
               </Dropdown>
             </Space>
           </div>
