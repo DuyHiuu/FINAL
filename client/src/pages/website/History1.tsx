@@ -33,6 +33,9 @@ const History1 = () => {
 
   const userID = localStorage.getItem("user_id");
 
+  console.log(payment);
+
+
   useEffect(() => {
     const storedRatings = JSON.parse(localStorage.getItem("ratings") || "{}");
     setHasRated(storedRatings);
@@ -225,10 +228,19 @@ const History1 = () => {
                               </div>
                             </div>
 
+                            <div>
+                              <div className="text-black font-semibold">
+                                Phương thức thanh toán:{" "}
+                                {item.pay_method?.name}
+                                {" "}
+                              </div>
+                            </div>
+
                             <div className="mt-2 font-semibold text-black">
                               Tổng tiền:{" "}
                               {Math.trunc(item.total_amount).toLocaleString("vi-VN")} VNĐ
                             </div>
+
                             <div className="mt-2">
                               <a
                                 href={`/history2/${item.id}`}

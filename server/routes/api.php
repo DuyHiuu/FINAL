@@ -138,6 +138,7 @@ Route::prefix('payments')->group(function () {
     Route::put('/{id}', [PaymentController::class, 'update']);
     Route::delete('/{id}', [PaymentController::class, 'destroy']);
     Route::post('/cancel_pay/{id}', [PaymentController::class, 'cancelPay']);
+    Route::post('/return_pay', [PaymentController::class, 'returnPay']);
 });
 
 Route::prefix('comments')->group(function () {
