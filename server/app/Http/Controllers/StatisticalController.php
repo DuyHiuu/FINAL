@@ -200,5 +200,40 @@ class StatisticalController extends Controller
             return response()->json($result);
         }
     }
+    public function get_top3_sevice(Request $request)
+    {
+        $data = $request->all();
+        $year = $data['year'];
+        $timeline = $data['timeline'];
 
+        $sevices = Service::leftjoin("booking_services", "booking_services.service_id", "=", "services.id")
+            ->join("bookings", "booking_services.booking_id", "=", "bookings.id")
+            ->leftjoin("payments", "payments.booking_id", "=", "bookings.id")
+            ->where("payments.status_id", 4);
+        if ($timeline == 'month') {
+            $month = $data['month'];
+            $sevices->whereMonth("payments.created_at", $month)
+                ->whereYear("payments.created_at", $year);
+        } elseif ($timeline == 'year') {
+            $sevices->whereYear("payments.created_at", $year);
+        }
+        $result = $sevices->select(
+            "services.name",
+            DB::raw("COUNT(booking_services.id) as total_quantity_sold"),
+            DB::raw("SUM(services.price) as total_revenue")
+        )
+            ->groupBy("services.name")
+            ->orderByDesc("total_revenue")
+            ->take(3)
+            ->get();
+        if (count($result) == 0) {
+            if ($data['timeline'] == 'year') {
+                return response()->json(["message" => "Không có dữ liệu thống kê top 3 dịch vụ  có doanh thu cao nhất năm " . $data['year']]);
+            } else {
+                return response()->json(["message" => "Không có dữ liệu thống kê top 3 dịch vụ có doanh thu cao nhất tháng " . $data['month'] . " năm " . $data['year']]);
+            }
+        } else {
+            return response()->json($result);
+        }
+    }
 }

@@ -22,7 +22,19 @@ const statisticsApi = createApi({
       }),
       invalidatesTags: ["statistics"],
     }),
+    Top3Service: builder.mutation<any, any>({
+      query: (body) => ({
+        url: `/svtop3/`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["statistics"],
+    }),
   }),
 });
-export const { useRevenueAllAPIMutation, useTop3RoomMutation } = statisticsApi;
+export const {
+  useRevenueAllAPIMutation,
+  useTop3RoomMutation,
+  useTop3ServiceMutation,
+} = statisticsApi;
 export default statisticsApi;
