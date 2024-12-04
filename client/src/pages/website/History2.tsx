@@ -370,7 +370,7 @@ const History2 = () => {
             </Row>
           )}
 
-          {paymentData?.payment?.status?.id == 7 && (
+          {paymentData?.payment?.status?.id == 7 && payMethodData === "Thanh toán online" && (
             <Button
               style={{ backgroundColor: '#28a745', color: 'white', marginLeft: '270px', marginTop: '20px' }}
             >
