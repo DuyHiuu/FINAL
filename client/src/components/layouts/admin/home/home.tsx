@@ -171,6 +171,7 @@ const HomeAdmin = () => {
     setTypeSearchService(type);
     setValueDateService(null);
   };
+
   return (
     <>
       <div>
@@ -198,9 +199,8 @@ const HomeAdmin = () => {
                         `${valueDateRoom}`,
                         `${typeSearchRoom === "month" ? "MM / YYYY" : "YYYY"}`
                       )}
-                      format={`${
-                        typeSearchRoom === "month" ? "MM / YYYY" : "YYYY"
-                      }`}
+                      format={`${typeSearchRoom === "month" ? "MM / YYYY" : "YYYY"
+                        }`}
                       className="w-[100px]"
                     />
                     <Button onClick={() => handleSelectRooms()}>Tra cứu</Button>
@@ -269,13 +269,11 @@ const HomeAdmin = () => {
                       onChange={onChangeService}
                       defaultValue={dayjs(
                         `${valueDateService}`,
-                        `${
-                          typeSearchService === "month" ? "MM / YYYY" : "YYYY"
+                        `${typeSearchService === "month" ? "MM / YYYY" : "YYYY"
                         }`
                       )}
-                      format={`${
-                        typeSearchService === "month" ? "MM / YYYY" : "YYYY"
-                      }`}
+                      format={`${typeSearchService === "month" ? "MM / YYYY" : "YYYY"
+                        }`}
                       className="w-[100px]"
                     />
                     <Button onClick={() => handleSelectServices()}>
@@ -359,7 +357,7 @@ const HomeAdmin = () => {
                           {index + 1}
                         </td>
                         <td className="whitespace-nowrap px-4 py-2 text-gray-900">
-                          {value?.description}
+                          {value?.description?.length > 20 ? value.description.substring(0, 30) + '...' : value.description}
                         </td>
                         <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                           {value?.total_payments_sold}

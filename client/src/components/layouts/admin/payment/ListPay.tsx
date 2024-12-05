@@ -1,18 +1,15 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Table, Typography, Button, Badge, Spin, Input, Select, DatePicker, Row, Col } from "antd";
-import useFetchPayments from "../../../../api/useFetchPayments";
 import moment from "moment";
+import useFetchPay from "../../../../api/admin/useFetchPay";
 
 const { Title } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 const ListPay = () => {
-    const { payment, loading } = useFetchPayments();
-
-    console.log(payment);
-
+    const { payment, loading } = useFetchPay();
 
     const [searchSize, setSearchSize] = useState("");
     const [searchDate, setSearchDate] = useState([]);
