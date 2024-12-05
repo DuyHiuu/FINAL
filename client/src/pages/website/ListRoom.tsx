@@ -139,7 +139,7 @@ const ListRoom = () => {
                           </div>
                           <div className="flex-1 p-3">
                             <h1 className="text-lg font-semibold text-gray-800 hover:text-[#064749] transition-colors">
-                              {room.description}
+                              {room.size_name}
                             </h1>
 
                             <p className="text-sm font-semibold text-[#064749] mt-2">
@@ -147,7 +147,8 @@ const ListRoom = () => {
                             </p>
 
                             <p className="text-sm text-gray-600 mt-2">
-                              <span className="font-semibold text-gray-800">Mô tả:</span> {room.description}
+                              <span className="font-semibold text-gray-800">Mô tả:</span>
+                              {room.description.length > 100 ? room.description.substring(0, 100) + '...' : room.description}
                             </p>
 
                             <div

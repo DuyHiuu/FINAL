@@ -210,8 +210,8 @@ const Pay2 = () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
                     setIsLoading(false);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const result = await response.json();
@@ -248,10 +248,10 @@ const Pay2 = () => {
     let finalAmount = total_amount;
 
     if (selectedVoucher) {
-        if (selectedVoucher.type === 'amount') {
-            finalAmount -= selectedVoucher.discount;
-        } else if (selectedVoucher.type === '%') {
+        if (selectedVoucher.type === '%') {
             finalAmount -= (total_amount * selectedVoucher.discount) / 100;
+        } else {
+            finalAmount -= selectedVoucher.discount;
         }
     }
 
@@ -478,7 +478,7 @@ const Pay2 = () => {
                     </form>
 
 
-                    <div className="lg:w-1/3 p-4 mt-8 border rounded-lg shadow-md mx-auto bg-white h-[700px]">
+                    <div className="lg:w-1/3 p-4 mt-8 border rounded-lg shadow-md mx-auto bg-white h-full">
                         <Card
                             cover={
                                 <img
