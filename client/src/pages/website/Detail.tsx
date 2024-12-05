@@ -37,25 +37,15 @@ const Detail = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const smallImageSrcs = [
-    "/images/anh9.webp",
-    "/images/anh10.webp",
-    "/images/anh2.webp",
-    "/images/anh11.webp",
-  ];
-
   const [room, setRoom] = useState<any>(null);
   const [room_id, setRoom_id] = useState(id);
   const [service_ids, setService_ids] = useState<number[]>([]);
   const [start_date, setStart_date] = useState<string>("");
   const [end_date, setEnd_date] = useState<string>("");
-  const [comments, setComments] = useState<any[]>([]);
   const [voucher_id, setVoucher_id] = useState<number[]>([]);
-  const [newComment, setNewComment] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [ratings, setRatings] = useState<any[]>([]);
   const [filterRating, setFilterRating] = useState<number | null>(null);
-  const [visibleCommentsCount, setVisibleCommentsCount] = useState(4);
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -88,29 +78,11 @@ const Detail = () => {
         console.error("Error fetching data:", error);
       }
     };
-    const fetchComments = async () => {
-      try {
-        const res = await fetch(`${API_URL}/comments/${id}`);
-        if (!res.ok) {
-          throw new Error("Lỗi khi lấy bình luận");
-        }
-        const data = await res.json();
-        setComments(data.comments || []);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-        setComments([]);
-      }
-      const res = await fetch(`${API_URL}/comments/${id}`);
-      const data = await res.json();
-      setComments(data.comments || []);
-    };
+
     fetchRating();
     fetchRoom();
-    fetchComments();
   }, [id]);
-  const handleShowMoreComments = () => {
-    setVisibleCommentsCount((prev) => prev + 4); 
-  };
+
   const changeService = (serviceId: number) => {
     setService_ids((prevState) => {
       if (prevState.includes(serviceId)) {
@@ -162,50 +134,6 @@ const Detail = () => {
     } catch (error) {
       console.error("Lỗi kết nối API:", error);
       setMessage("Đã xảy ra lỗi khi kết nối đến máy chủ.");
-    }
-  };
-
-  const handleAddComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    const commentData = {
-      content: newComment,
-      room_id: room_id,
-      user_id: localStorage.getItem("user_id"),
-    };
-
-    try {
-      const response = await fetch(`${API_URL}/comments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(commentData),
-      });
-
-      if (response.ok) {
-        const newCommentData = await response.json();
-        setComments((prev) => [...prev, newCommentData.comment]);
-        setNewComment("");
-        alert("Thêm bình luận thành công!");
-      } else {
-        const errorResponse = await response.json();
-        console.error("Error posting comment:", errorResponse);
-        setMessage(
-          `Thêm bình luận thất bại: ${errorResponse.message || response.statusText
-          }`
-        );
-      }
-    } catch (error) {
-      console.error("Error posting comment:", error);
-      setMessage("Đã xảy ra lỗi khi thêm bình luận.");
     }
   };
 
@@ -530,54 +458,6 @@ const Detail = () => {
           </div>
         </div>
       </form>
-
-      <div className="mt-8 max-w-md">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Bình luận</h3>
-        <div className="space-y-4">
-          {comments.slice(0, visibleCommentsCount).map((comment) => (
-            <div
-              key={comment.id}
-              className="bg-white p-4 rounded-md border border-gray-200 w-full"
-            >
-              <p className="text-gray-700 text-sm">{comment.content}</p>
-              <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
-                <div className="font-medium">{comment.user?.name}</div>
-                <span>{new Date(comment.created_at).toLocaleDateString("vi-VN")}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {comments.length > visibleCommentsCount && (
-          <div className="mt-4 text-center">
-            <Button
-              type="link"
-              onClick={handleShowMoreComments}
-              className="text-blue-500"
-            >
-              Xem thêm
-            </Button>
-          </div>
-        )}
-
-        <div className="mt-6 max-w-md w-full">
-          <TextArea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Thêm bình luận..."
-            rows={3}
-            className="p-3 text-sm rounded-md border border-gray-300 w-full"
-          />
-          <Button
-            type="primary"
-            onClick={handleAddComment}
-            className="mt-4 py-2 text-sm font-medium rounded-md bg-blue-500 w-full text-white hover:bg-blue-600 disabled:bg-gray-300"
-            disabled={!newComment.trim()}
-          >
-            Thêm Bình luận
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };
