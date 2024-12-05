@@ -25,7 +25,6 @@ class RatingController extends Controller
 
     public function store(Request $request)
     {
-        // Validate input
         $validator = Validator::make($request->all(), [
             'rating' => 'required|integer|min:1|max:5',
             'content' => 'required|string|max:1000',
@@ -41,10 +40,8 @@ class RatingController extends Controller
             DB::beginTransaction();
 
             try {
-                // Lấy thông tin từ request
                 $params = $request->all();
 
-                // Kiểm tra xem user_id có tồn tại trong request không
                 if (!isset($params['user_id'])) {
                     return response()->json([
                         'status' => 'error',
@@ -52,10 +49,8 @@ class RatingController extends Controller
                     ], 400);
                 }
 
-                // Lấy thông tin người dùng từ user_id
                 $user = User::find($params['user_id']);
 
-                // Kiểm tra người dùng có hợp lệ không
                 if (!$user) {
                     return response()->json([
                         'status' => 'error',
@@ -63,14 +58,12 @@ class RatingController extends Controller
                     ], 404);
                 }
 
-                // Lưu thông tin đánh giá
                 $rating = new Rating();
                 $rating->rating = $params['rating'];
                 $rating->content = $params['content'];
                 $rating->room_id = $params['room_id'];
                 $rating->user_id = $user->id;
 
-                // Lưu đánh giá
                 $rating->save();
 
                 DB::commit();
@@ -96,12 +89,10 @@ class RatingController extends Controller
 
     public function show(string $id)
     {
-        // Lấy tất cả đánh giá của phòng
         $ratings = Rating::where('room_id', $id)
-            ->with('room', 'user') // Thêm 'user' để lấy thông tin người dùng đã đánh giá
+            ->with('room', 'user')
             ->get();
 
-        // Kiểm tra nếu không có đánh giá nào
         if ($ratings->isEmpty()) {
             return response()->json([
                 'success' => false,

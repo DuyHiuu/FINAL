@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Validator;
 
 class ContactController extends Controller
 {
-    //
     public function index()
     {
         $contacts = Contact::all();

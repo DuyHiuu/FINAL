@@ -29,7 +29,7 @@ class RoomImageController extends Controller
      */
     public function create()
     {
-        // Logic nếu cần thiết
+        //
     }
 
     /**
@@ -118,7 +118,7 @@ class RoomImageController extends Controller
      */
     public function edit(string $id)
     {
-        // Logic nếu cần thiết
+        //
     }
 
     /**
