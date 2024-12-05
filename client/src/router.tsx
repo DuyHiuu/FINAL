@@ -38,9 +38,7 @@ import EditBlog from "./components/layouts/admin/blog/EditBlog";
 import UserList from "./components/layouts/admin/user/UserList";
 import AddUser from "./components/layouts/admin/user/AddUser";
 import EditUser from "./components/layouts/admin/user/EditUser";
-import CommentList from "./components/layouts/admin/comment/CommentList";
-import AddComment from "./components/layouts/admin/comment/AddComment";
-import EditComment from "./components/layouts/admin/comment/EditComment";
+import RatingList from "./components/layouts/admin/rating/RatingList";
 import ListPay from "./components/layouts/admin/payment/ListPay";
 import DetailPay from "./components/layouts/admin/payment/DetailPay";
 import Loi404 from "./pages/website/Loi404"; // Import trang lỗi 404
@@ -55,10 +53,6 @@ import CheckPay from "./pages/website/checkPay";
 import HomeAdmin from "./components/layouts/admin/home/home";
 import BlogDetail from "./pages/website/BlogDetail";
 
-import ReturnPay from "./components/layouts/admin/refund/ReturnPayList";
-import ReturnPayDetail from "./components/layouts/admin/refund/ReturnPayDetail";
-
-import PayReturn from "./pages/website/PayReturn";
 
 
 export const router = createBrowserRouter([
@@ -85,7 +79,6 @@ export const router = createBrowserRouter([
       { path: "/forgot-password", element: <ForgotPassword /> },
       { path: "/reset-password", element: <ResetPassword /> },
       { path: "/check_pay", element: <CheckPay /> },
-      { path: "/pay_return/:id", element: <PayReturn /> },
 
       // Áp dụng UserPrivateRoute cho trang lịch sử mua hàng
       {
@@ -137,17 +130,13 @@ export const router = createBrowserRouter([
       { path: "/admin/users", element: <UserList /> },
       { path: "/admin/users/add", element: <AddUser /> },
       { path: "/admin/users/edit/:id", element: <EditUser /> },
-      { path: "/admin/comments", element: <CommentList /> },
-      { path: "/admin/comments/add", element: <AddComment /> },
-      { path: "/admin/comments/edit/:id", element: <EditComment /> },
+      { path: "/admin/ratings", element: <RatingList /> },
       { path: "/admin/chart", element: <Chart /> },
       { path: "/admin/home", element: <HomeAdmin /> },
       { path: "/admin/contacts", element: <ContactList /> },
       { path: "/admin/payments", element: <ListPay /> },
       { path: "/admin/payments/detail/:id", element: <DetailPay /> },
       { path: "/admin/chart", element: <Chart /> },
-      { path: "/admin/returnPay", element: <ReturnPay /> },
-      { path: "/admin/returnPay/:id", element: <ReturnPayDetail /> },
     ],
   },
 

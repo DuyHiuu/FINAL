@@ -354,7 +354,7 @@ const History2 = () => {
             </Col>
           </Row>
 
-          {paymentData?.payment?.status?.id < 5 && (
+          {paymentData?.payment?.status?.id == 1 && (
             <Row gutter={16} className="mt-4">
               <Col span={12}>
                 <Text strong style={{ color: "red" }}>
@@ -368,14 +368,6 @@ const History2 = () => {
                 </Button>
               </Col>
             </Row>
-          )}
-
-          {paymentData?.payment?.status?.id == 7 && payMethodData === "Thanh toán online" && (
-            <Button
-              style={{ backgroundColor: '#28a745', color: 'white', marginLeft: '270px', marginTop: '20px' }}
-            >
-              <a href={`/pay_return/${id}`}>Hoàn tiền</a>
-            </Button>
           )}
 
         </Card>

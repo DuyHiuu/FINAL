@@ -8,52 +8,96 @@ const { Title } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const RoomList = () => {
+const ListPay = () => {
     const { payment, loading } = useFetchPayments();
 
-    // State lưu trữ giá trị tìm kiếm
+    console.log(payment);
+
+
     const [searchSize, setSearchSize] = useState("");
     const [searchDate, setSearchDate] = useState([]);
     const [searchStatus, setSearchStatus] = useState("");
+    const [searchOrderId, setSearchOrderId] = useState("");
+    const [searchPaymentMethod, setSearchPaymentMethod] = useState("");
+    const [searchUser, setSearchUser] = useState("");
 
-    // Lọc dữ liệu
     const filteredPayments = payment?.filter((item) => {
-        // Lọc theo size
+        const matchesOrderId = searchOrderId
+            ? item?.id.toString().includes(searchOrderId)
+            : true;
+
         const matchesSize = searchSize
-            ? item.booking.room.size.name?.toLowerCase().includes(searchSize.toLowerCase())
+            ? item?.booking.room.size.id === parseInt(searchSize)
             : true;
 
-        // Lọc theo ngày check-in
-        const matchesDate = searchDate.length
-            ? moment(item.booking.start_date).isBetween(searchDate[0], searchDate[1], "day", "[]")
+        const matchesDate = searchDate[0] && searchDate[1]
+            ? moment(item?.booking.start_date).isSame(moment(searchDate[0]), "day")
+            || moment(item?.booking.end_date).isSame(moment(searchDate[1]), "day")
             : true;
 
-        // Lọc theo trạng thái
         const matchesStatus = searchStatus
-            ? item.status.status_name === searchStatus
+            ? item?.status_id === parseInt(searchStatus)
             : true;
 
-        return matchesSize && matchesDate && matchesStatus;
+        const matchesPaymentMethod = searchPaymentMethod
+            ? item?.paymethod_id === parseInt(searchPaymentMethod)
+            : true;
+
+        const matchesUser = searchUser
+            ? item?.user_name.toLowerCase().includes(searchUser.toLowerCase())
+            : true;
+
+        return matchesOrderId && matchesSize && matchesDate && matchesStatus && matchesPaymentMethod && matchesUser;
     });
 
-    const handleSizeChange = (e) => {
-        setSearchSize(e.target.value);
+    const handleOrderIdChange = (e) => {
+        setSearchOrderId(e.target.value);
     };
 
-    const handleDateChange = (dates) => {
-        setSearchDate(dates ? [dates[0].startOf("day"), dates[1].endOf("day")] : []);
+    const handleSizeChange = (value) => {
+        setSearchSize(value);
+    };
+
+    const handleStartDateChange = (date) => {
+        if (date) {
+            setSearchDate([date.format("YYYY-MM-DD"), searchDate[1]]);
+        } else {
+            setSearchDate([null, searchDate[1]]);
+        }
+    };
+
+    const handleEndDateChange = (date) => {
+        if (date) {
+            setSearchDate([searchDate[0], date.format("YYYY-MM-DD")]);
+        } else {
+            setSearchDate([searchDate[0], null]);
+        }
     };
 
     const handleStatusChange = (value) => {
         setSearchStatus(value);
     };
 
+    const handlePaymentMethodChange = (value) => {
+        setSearchPaymentMethod(value);
+    };
+
+    const handleUserChange = (e) => {
+        setSearchUser(e.target.value);
+    };
+
     const statusOptions = [
         { id: 1, name: "Chờ xác nhận" },
         { id: 2, name: "Đã xác nhận" },
-        { id: 4, name: "Đã check-in" },
-        { id: 5, name: "Đã check-out" },
+        { id: 4, name: "Thanh toán thành công" },
+        { id: 5, name: "Đã check-in" },
+        { id: 6, name: "Đã check-out" },
+        { id: 7, name: "Đã hủy" },
+    ];
 
+    const paymentMethodOptions = [
+        { id: 1, name: "Thanh toán tại cửa hàng" },
+        { id: 2, name: "Thanh toán online" },
     ];
 
     const columns = [
@@ -61,6 +105,7 @@ const RoomList = () => {
             title: "ID Đơn Hàng",
             dataIndex: "id",
             key: "id",
+            render: (text) => `Order-${text.toString()}`,
         },
         {
             title: "Tên Khách Hàng",
@@ -91,12 +136,19 @@ const RoomList = () => {
             render: (status, record) => (
                 <Badge
                     color={
-                        record.status_id === 1 ? "#fcd34d" :
-                            record.status_id === 2 ? "#10b981" :
-                                record.status_id === 4 ? "#10b981" :
-                                    record.status_id === 5 ? "#5F9EA0" :
-                                        record.status_id === 6 ? "#0000FF" :
-                                            record.status_id === 7 ? "#FF0000" : "gray"
+                        record.status_id === 1
+                            ? "#fcd34d"
+                            : record.status_id === 2
+                                ? "#10b981"
+                                : record.status_id === 4
+                                    ? "#10b981"
+                                    : record.status_id === 5
+                                        ? "#5F9EA0"
+                                        : record.status_id === 6
+                                            ? "#0000FF"
+                                            : record.status_id === 7
+                                                ? "#FF0000"
+                                                : "gray"
                     }
                     text={status}
                 />
@@ -119,27 +171,49 @@ const RoomList = () => {
                 Danh Sách Đơn Hàng
             </Title>
 
-            {/* Thanh tìm kiếm */}
             <Row gutter={[16, 16]} style={{ marginBottom: "1.5rem" }}>
-                {/* Tìm kiếm theo Size */}
                 <Col xs={24} sm={12} lg={6}>
                     <Input
-                        placeholder="Tìm kiếm theo size phòng"
-                        value={searchSize}
-                        onChange={handleSizeChange}
+                        placeholder="Tìm kiếm theo ID đơn hàng"
+                        value={searchOrderId}
+                        onChange={handleOrderIdChange}
                     />
                 </Col>
 
-                {/* Tìm kiếm theo ngày check-in */}
+                <Col xs={24} sm={12} lg={6}>
+                    <Select
+                        placeholder="Tìm kiếm theo size phòng"
+                        style={{ width: "100%" }}
+                        onChange={handleSizeChange}
+                        allowClear
+                    >
+                        <Option value="1">Size S</Option>
+                        <Option value="2">Size M</Option>
+                        <Option value="3">Size L</Option>
+                        <Option value="4">Size XL</Option>
+                    </Select>
+                </Col>
+
                 <Col xs={24} sm={12} lg={8}>
-                    <RangePicker
+                    <DatePicker
                         style={{ width: "100%" }}
                         format="YYYY-MM-DD"
-                        onChange={handleDateChange}
+                        value={searchDate[0] ? moment(searchDate[0]) : null}
+                        onChange={handleStartDateChange}
+                        placeholder="Chọn ngày bắt đầu"
                     />
                 </Col>
 
-                {/* Tìm kiếm theo trạng thái */}
+                <Col xs={24} sm={12} lg={8}>
+                    <DatePicker
+                        style={{ width: "100%" }}
+                        format="YYYY-MM-DD"
+                        value={searchDate[1] ? moment(searchDate[1]) : null}
+                        onChange={handleEndDateChange}
+                        placeholder="Chọn ngày kết thúc"
+                    />
+                </Col>
+
                 <Col xs={24} sm={12} lg={6}>
                     <Select
                         placeholder="Lọc theo trạng thái"
@@ -148,15 +222,37 @@ const RoomList = () => {
                         allowClear
                     >
                         {statusOptions.map((status) => (
-                            <Option key={status.id} value={status.name}>
+                            <Option key={status.id} value={status.id}>
                                 {status.name}
                             </Option>
                         ))}
                     </Select>
                 </Col>
+
+                <Col xs={24} sm={12} lg={6}>
+                    <Select
+                        placeholder="Tìm kiếm theo phương thức thanh toán"
+                        style={{ width: "100%" }}
+                        onChange={handlePaymentMethodChange}
+                        allowClear
+                    >
+                        {paymentMethodOptions.map((method) => (
+                            <Option key={method.id} value={method.id}>
+                                {method.name}
+                            </Option>
+                        ))}
+                    </Select>
+                </Col>
+
+                <Col xs={24} sm={12} lg={6}>
+                    <Input
+                        placeholder="Tìm kiếm theo tên người dùng"
+                        value={searchUser}
+                        onChange={handleUserChange}
+                    />
+                </Col>
             </Row>
 
-            {/* Bảng hiển thị */}
             {loading ? (
                 <div style={{ display: "flex", justifyContent: "center", minHeight: "70vh", alignItems: "center" }}>
                     <Spin size="large" />
@@ -175,4 +271,4 @@ const RoomList = () => {
     );
 };
 
-export default RoomList;
+export default ListPay;

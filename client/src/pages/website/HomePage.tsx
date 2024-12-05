@@ -4,7 +4,6 @@ import { Card, Button, Row, Col, Input, Spin, Avatar, Modal, Divider } from "ant
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchServices from "../../api/useFetchServices";
 import useFetchBlogs from "../../api/useFetchBlogs";
-import useFetchComments from "../../api/useFetchComments";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -12,6 +11,8 @@ import "swiper/css/autoplay";
 import { Autoplay, Pagination } from "swiper/modules";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import axios from "axios";
+import { FaStar, FaRegStar } from "react-icons/fa";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -118,9 +119,36 @@ const HomePage = () => {
   const { service } = useFetchServices();
   const { blog } = useFetchBlogs();
 
-  const ReviewsSection = () => {
-    const { comments, loading, error } = useFetchComments();
-    console.log(comments);
+  const RatingsTop3 = () => {
+    const [ratingsHome, setRatingsHome] = useState([]);
+
+    useEffect(() => {
+      axios.get("http://localhost:8000/api/ratings/list")
+        .then((response) => {
+          if (response.data && Array.isArray(response.data.ratings)) {
+            setRatingsHome(response.data.ratings);
+          } else {
+            console.error("Unexpected API response:", response.data);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching ratings:", error);
+        });
+    }, []);
+
+    const top3Ratings = ratingsHome.slice(0, 3);
+
+    const renderStars = (rating) => {
+      const stars = [];
+      for (let i = 1; i <= 5; i++) {
+        stars.push(
+          <span key={i} className="text-yellow-400">
+            {i <= rating ? <FaStar /> : <FaRegStar />}
+          </span>
+        );
+      }
+      return stars;
+    };
 
     return (
       <div className="py-12 px-6">
@@ -132,27 +160,27 @@ const HomePage = () => {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {loading}
-          {error && <p>Error: {error}</p>}
-          {comments?.slice(0, 3).map((comment) => (
+          {top3Ratings?.map((rating) => (
             <div
-              key={comment?.id}
+              key={rating?.id}
               className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
               data-aos="fade-up"
             >
               <div className="flex items-start mb-4">
-                <Avatar className="me-3 bg-[#064749]">{comment?.user?.name[0]}</Avatar>
+                <Avatar className="me-3 bg-[#064749]">{rating?.user?.name[0]}</Avatar>
                 <div className="flex flex-col">
-                  <h4 className="text-lg font-semibold">{comment?.user?.name}</h4>
-                  <p className="text-sm text-gray-600">{comment?.content}</p>
+                  <h4 className="text-lg font-semibold">{rating?.user?.name}</h4>
+                  <h4 className="text-lg font-semibold">{rating?.room?.size?.name}</h4>
+                  <div className="flex">
+                    {renderStars(rating?.rating)}
+                  </div>
+                  <p className="text-sm text-gray-600">{rating?.content}</p>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
-
-
     );
   };
 
@@ -398,7 +426,7 @@ const HomePage = () => {
         </Button>
       </div>
 
-      <ReviewsSection />
+      <RatingsTop3 />
     </div>
   );
 };

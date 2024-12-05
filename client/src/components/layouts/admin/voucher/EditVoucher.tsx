@@ -49,6 +49,41 @@ const EditVoucher = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!tenVoucher || !Code || !type || !giamGia || !min_total_amount || !soLuong || !ngayBatDau || !ngayKetThuc) {
+      setError("Tất cả các trường đều phải được điền đầy đủ.");
+      return;
+    }
+
+    if (isNaN(giamGia) || giamGia <= 0) {
+      setError("Giảm giá phải là số lớn hơn 0.");
+      return;
+    }
+    if (isNaN(min_total_amount) || min_total_amount < 0) {
+      setError("Số tiền tối thiểu phải là số lớn hơn 0.");
+      return;
+    }
+    if (isNaN(soLuong) || soLuong < 0) {
+      setError("Số lượng voucher phải là số lớn hơn 0.");
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startDate = new Date(ngayBatDau);
+    const endDate = new Date(ngayKetThuc);
+
+    if (startDate < today) {
+      setError("Ngày bắt đầu không được là ngày trong quá khứ.");
+      return;
+    }
+
+    const maxEndDate = new Date(today);
+    maxEndDate.setMonth(today.getMonth() + 3);
+    if (endDate > maxEndDate) {
+      setError("Ngày kết thúc không được vượt quá 3 tháng từ hôm nay.");
+      return;
+    }
     setLoading(true);
     setError("");
     setSuccessMessage("");
@@ -114,7 +149,6 @@ const EditVoucher = () => {
             id="tenVoucher"
             value={tenVoucher}
             onChange={(e) => setVoucher(e.target.value)}
-            required
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Nhập tên voucher"
           />
@@ -128,7 +162,6 @@ const EditVoucher = () => {
             id="Code"
             value={Code}
             onChange={(e) => setCode(e.target.value)}
-            required
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Nhập mã voucher"
           />
@@ -150,14 +183,13 @@ const EditVoucher = () => {
 
         <div className="mb-4">
           <label htmlFor="giamGia" className="block text-sm font-medium text-gray-700">
-            Giảm giá (VND):
+            Giảm giá (VND/%):
           </label>
           <input
             type="number"
             id="giamGia"
             value={giamGia ? Math.trunc(giamGia).toLocaleString("vi-VN") : ""}
             onChange={(e) => setGiamGia(e.target.value)}
-            required
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Nhập phần trăm giảm giá"
           />
@@ -171,14 +203,20 @@ const EditVoucher = () => {
             <input
               type="number"
               id="min_total_amount"
-              value={min_total_amount ? Math.trunc(min_total_amount).toLocaleString("vi-VN") : ""}
+              value={min_total_amount || ""}
               onChange={(e) => setMin_total_amount(e.target.value)}
-              required
+
               placeholder="Nhập số tiền tối thiểu để áp dụng"
               className="pl-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {min_total_amount && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                {parseInt(min_total_amount).toLocaleString("vi-VN")} VND
+              </div>
+            )}
           </div>
         </div>
+
 
         <div className="mb-4">
           <label htmlFor="soLuong" className="block text-sm font-medium text-gray-700">
@@ -189,7 +227,6 @@ const EditVoucher = () => {
             id="soLuong"
             value={soLuong}
             onChange={(e) => setSoLuong(e.target.value)}
-            required
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Nhập số lượng voucher"
           />
@@ -204,7 +241,6 @@ const EditVoucher = () => {
             id="ngayBatDau"
             value={ngayBatDau}
             onChange={(e) => setNgayBatDau(e.target.value)}
-            required
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -218,7 +254,6 @@ const EditVoucher = () => {
             id="ngayKetThuc"
             value={ngayKetThuc}
             onChange={(e) => setNgayKetThuc(e.target.value)}
-            required
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>

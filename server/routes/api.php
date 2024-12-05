@@ -144,19 +144,6 @@ Route::prefix('payments')->group(function () {
     Route::put('/{id}/changeStatus', [PaymentController::class, 'changeStatus']);
 });
 
-Route::prefix('pay_return')->group(function () {
-    Route::get('/', [PayReturnController::class, 'listReturnPay']);
-    Route::get('/{id}', [PayReturnController::class, 'detailReturnPay']);
-});
-
-Route::prefix('comments')->group(function () {
-    Route::get('/', [CommentController::class, 'index']);
-    Route::post('/', [CommentController::class, 'store']);
-    Route::get('/{id}', [CommentController::class, 'show']);
-    Route::put('/{id}', [CommentController::class, 'update']);
-    Route::delete('/{id}', [CommentController::class, 'destroy']);
-});
-
 Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index']);
     Route::get('/{id}', [UserController::class, 'show']);
@@ -177,13 +164,13 @@ Route::prefix('roomImages')->group(function () {
     Route::delete('/{id}', [RoomImageController::class, 'destroy']);
 });
 
-// Route::middleware('auth:sanctum')->group(function () {
-Route::post('/ratings', [RatingController::class, 'store']);
-Route::put('/ratings/{id}', [RatingController::class, 'update']);
-Route::delete('/ratings/{id}', [RatingController::class, 'destroy']);
-// });
-Route::get('/ratings', [RatingController::class, 'index']);
-Route::get('/ratings/{id}', [RatingController::class, 'show']);
-
+Route::prefix('ratings')->group(function () {
+    Route::post('/', [RatingController::class, 'store']);
+    Route::put('/{id}', [RatingController::class, 'update']);
+    Route::delete('/{id}', [RatingController::class, 'destroy']);
+    Route::get('/', [RatingController::class, 'index']);
+    Route::get('/list', [RatingController::class, 'getAll']);
+    Route::get('/{id}', [RatingController::class, 'show']);
+});
 
 Route::get('/activate/{token}', [UserController::class, 'activate'])->name('user.active');
