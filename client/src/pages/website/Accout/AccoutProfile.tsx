@@ -7,12 +7,12 @@ import {
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserInfo from "./UserInfo";
-import EditUserInfo from "./EditUserInfo"; // Import form chỉnh sửa thông tin người dùng
+import EditUserInfo from "./EditUserInfo"; 
 
 const AccountProfile = () => {
   const [currentUser, setCurrentUser] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState("greeting"); // Tab mặc định là "Xin chào"
-  const [isEditing, setIsEditing] = useState(false); // State để điều khiển hiển thị form EditUserInfo
+  const [activeTab, setActiveTab] = useState("greeting"); 
+  const [isEditing, setIsEditing] = useState(false); 
   const token = localStorage.getItem("token");
   const [userName, setUserName] = useState("");
 
@@ -46,11 +46,11 @@ const AccountProfile = () => {
   }, [token]);
 
   const handleEdit = () => {
-    setIsEditing(true); // Kích hoạt form chỉnh sửa khi nhấn "Sửa"
+    setIsEditing(true); 
   };
 
   const handleSave = () => {
-    setIsEditing(false); // Sau khi lưu, trở lại chế độ xem thông tin
+    setIsEditing(false); 
   };
 
   const renderContent = () => {
@@ -59,7 +59,7 @@ const AccountProfile = () => {
         <div className="flex justify-center items-center min-h-[400px]">
           <EditUserInfo onSave={handleSave} />
         </div>
-      ); // Hiển thị form chỉnh sửa, căn giữa
+      ); 
     }
 
     switch (activeTab) {
@@ -119,7 +119,6 @@ const AccountProfile = () => {
       <h2 className="text-2xl font-bold mb-6">Thông tin người dùng</h2>
 
       <div className="flex">
-        {/* Navigation Menu */}
         <div className="w-1/3 border-r pr-4">
           <h3 className="text-lg font-semibold mb-4 flex items-center">
             <UserIcon className="h-5 w-5 mr-2" />
@@ -132,7 +131,7 @@ const AccountProfile = () => {
                 : "text-gray-700 hover:bg-gray-100"
             }`}
             onClick={() => {
-              setActiveTab("infor"); // Cập nhật tab hoạt động
+              setActiveTab("infor"); 
             }}
           >
             <LockClosedIcon className="h-5 w-5 mr-2" />
@@ -145,8 +144,8 @@ const AccountProfile = () => {
                 : "text-gray-700 hover:bg-gray-100"
             }`}
             onClick={() => {
-              setActiveTab("orders"); // Cập nhật tab hoạt động
-              navigate("/history1"); // Chuyển hướng đến trang /history1
+              setActiveTab("orders"); 
+              navigate("/history1"); 
             }}
           >
             <ShoppingCartIcon className="h-5 w-5 mr-2" />
@@ -173,10 +172,9 @@ const AccountProfile = () => {
         </div>
         
 
-        {/* Content Area */}
         <div className="flex-1 pl-4">
           <div className="border-t pt-4">
-            {renderContent()} {/* Hiển thị nội dung dựa trên activeTab */}
+            {renderContent()} 
           </div>
         </div>
       </div>

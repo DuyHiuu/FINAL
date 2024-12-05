@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Nếu sử dụng link chuyển trang
+import { Link } from "react-router-dom"; 
 
 const UserInfo = ({ onEdit }) => {
     const [userName, setUserName] = useState("");
@@ -18,7 +18,6 @@ const UserInfo = ({ onEdit }) => {
 
     return (
         <div className="p-4 border rounded-md shadow-md space-y-6">
-            {/* Thông tin cá nhân */}
             <div className="flex justify-between items-center">
                 <div>
                     <h3 className="text-xl font-bold mb-2">Thông tin cá nhân</h3>

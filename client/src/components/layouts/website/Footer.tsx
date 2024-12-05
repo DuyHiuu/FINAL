@@ -12,7 +12,6 @@ const Footer = () => {
         <footer className="footer">
           <div className="container mx-auto px-6 py-24">
             <Row gutter={[16, 16]}>
-              {/* Logo Section */}
               <Col xs={24} sm={12} md={6}>
                 <div className="text-center md:text-left">
                   <img className="h-20 w-auto" src="/images/logo.png" alt="Logo" />
@@ -50,7 +49,6 @@ const Footer = () => {
                 </div>
               </Col>
 
-              {/* PetSpa Section */}
               <Col xs={24} sm={12} md={6}>
                 <Title level={4}>PetSpa</Title>
                 <ul>
@@ -60,7 +58,6 @@ const Footer = () => {
                 </ul>
               </Col>
 
-              {/* User Section */}
               <Col xs={24} sm={12} md={6}>
                 <Title level={4}>Người dùng</Title>
                 <ul>
@@ -69,7 +66,6 @@ const Footer = () => {
                 </ul>
               </Col>
 
-              {/* Privacy Section */}
               <Col xs={24} sm={12} md={6}>
                 <Title level={4}>Sự riêng tư</Title>
                 <ul>

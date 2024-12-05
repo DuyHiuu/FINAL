@@ -236,7 +236,6 @@ const AboutPage = () => {
 
   return (
     <div className="flex flex-col items-center mt-24">
-      {/* Banner Image */}
       <img
         className="w-full h-auto max-h-[450px] sm:max-h-[350px] md:max-h-[450px] lg:max-h-[600px] object-cover"
         src="/images/img.webp"
@@ -265,7 +264,6 @@ const AboutPage = () => {
         </div>
       </div>
 
-      {/* Content */}
       <h1 className="text-3xl font-bold mt-4 text-center">
         PetSpa xin chào bạn
       </h1>
@@ -274,7 +272,6 @@ const AboutPage = () => {
       </p>
       <p>Liên hệ hotline : 0868403204</p>
 
-      {/* Tạo 4 khuôn chữ nhật bo tròn */}
       <div className="flex flex-wrap justify-center mt-10 gap-4">
         {cards.map((card, index) => (
           <div
@@ -296,7 +293,6 @@ const AboutPage = () => {
       </p>
       <div className="flex flex-col items-center">
         <div className="flex justify-center mt-6">
-          {/* Hàng khuôn ảnh với tiêu đề và mô tảa */}
           <div className="flex flex-wrap justify-center mt-6 gap-4">
             {khuonItems.map((khuon, index) => (
               <div

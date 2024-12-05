@@ -83,7 +83,6 @@ const Detail = () => {
         }
         const ratingsData = await ratingsRes.json();
 
-        // Gán dữ liệu đánh giá vào state
         setRatings(ratingsData.data || []);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -110,7 +109,7 @@ const Detail = () => {
     fetchComments();
   }, [id]);
   const handleShowMoreComments = () => {
-    setVisibleCommentsCount((prev) => prev + 4); // Tăng thêm 4 bình luận
+    setVisibleCommentsCount((prev) => prev + 4); 
   };
   const changeService = (serviceId: number) => {
     setService_ids((prevState) => {
@@ -124,7 +123,6 @@ const Detail = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Kiểm tra nếu ngày chưa được chọn
     if (!start_date || !end_date) {
       setMessage("Vui lòng chọn ngày check-in và check-out trước khi đặt phòng.");
       return;
