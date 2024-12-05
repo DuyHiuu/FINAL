@@ -1,4 +1,3 @@
-// useFetchRatings.ts
 import { useState, useEffect } from 'react';
 
 const useFetchRatings = (roomId: string) => {
@@ -11,7 +10,7 @@ const useFetchRatings = (roomId: string) => {
       try {
         const response = await fetch(`/api/ratings?roomId=${roomId}`);
         const data = await response.json();
-        setRatings(data); // Giả sử API trả về một mảng các đánh giá
+        setRatings(data);
         setLoading(false);
       } catch (error) {
         setError('Failed to load ratings');

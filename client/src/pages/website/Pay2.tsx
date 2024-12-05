@@ -18,6 +18,7 @@ const Pay2 = () => {
     const [booking, setBooking] = useState<any>();
     const [room, setRoom] = useState<any>();
 
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetBooking = async () => {
@@ -179,6 +180,8 @@ const Pay2 = () => {
             return;
         }
 
+        setIsLoading(true);
+
         const formData = new FormData();
         formData.append("booking_id", id);
         formData.append("pet_name", pet_name);
@@ -208,15 +211,18 @@ const Pay2 = () => {
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
+                    setIsLoading(false);
                 }
 
                 const result = await response.json();
 
                 if (result.status === "success") {
                     const vnpUrl = result.vnp_Url;
+                    setIsLoading(false);
                     window.location.href = vnpUrl;
                 } else {
                     alert("Thanh toán không thành công, vui lòng thử lại.");
+                    setIsLoading(false);
                 }
             } else {
                 const response = await fetch(`${addPay}`, {
@@ -224,14 +230,17 @@ const Pay2 = () => {
                     body: formData,
                 });
                 if (response.ok) {
+                    setIsLoading(false);
                     navigate("/history1");
                 } else {
                     console.error("Error:", response.statusText);
+                    setIsLoading(false);
                 }
             }
 
         } catch (error) {
             console.error("API connection error:", error);
+            setIsLoading(false);
         }
     };
 
@@ -271,282 +280,289 @@ const Pay2 = () => {
     return (
         <div className="flex flex-col lg:flex-row pb-20 mt-24">
 
-            <form onSubmitCapture={handleSubmit} className="lg:w-1/2 p-4 mx-auto">
-                <Title level={2}>Thông tin khách hàng</Title>
+            {isLoading ? (
+                <div className="loading-overlay fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+                    <Spin size="large" />
+                </div>
+            ) : (
+                <>
+                    <form onSubmitCapture={handleSubmit} className="lg:w-1/2 p-4 mx-auto">
+                        <Title level={2}>Thông tin khách hàng</Title>
 
-                <Card>
-                    <Row gutter={16}>
-                        <Col span={24} className="mb-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Tên khách hàng</label>
-                            <Input
-                                value={user_name}
-                                onChange={(e) => {
-                                    setUser_name(e.target.value);
-                                    setUser_nameError("");
-                                }}
-                            />
-                            {user_nameError && <p className="text-red-500 text-sm mt-1">{user_nameError}</p>}
-                        </Col>
-
-                        <Col span={24} className="mb-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                            <Input
-                                value={user_email}
-                                onChange={(e) => {
-                                    setUser_email(e.target.value);
-                                    setUser_emailError("");
-                                }}
-                            />
-                            {user_emailError && <p className="text-red-500 text-sm mt-1">{user_emailError}</p>}
-                        </Col>
-
-                        <Col span={24} className="mb-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
-                            <Input
-                                value={user_phone}
-                                onChange={(e) => {
-                                    setUser_phone(e.target.value);
-                                    setUser_phoneError("");
-                                }}
-                            />
-                            {user_phoneError && <p className="text-red-500 text-sm mt-1">{user_phoneError}</p>}
-                        </Col>
-
-                        <Col span={24} className="mb-3">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Địa chỉ</label>
-                            <Input
-                                value={user_address}
-                                onChange={(e) => {
-                                    setUser_address(e.target.value);
-                                    setUser_addressError("");
-                                }}
-                            />
-                            {user_addressError && <p className="text-red-500 text-sm mt-1">{user_addressError}</p>}
-                        </Col>
-                    </Row>
-                </Card>
-
-                <div className="mt-5">
-                    <Title level={2}>Thông tin thú cưng</Title>
-                    <Card>
-                        <Row gutter={16}>
-                            <Col span={24} className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Tên thú cưng</label>
-                                <Input
-                                    value={pet_name}
-                                    onChange={(e) => {
-                                        setPet_name(e.target.value);
-                                        setPet_nameError("");
-                                    }}
-                                />
-                                {pet_nameError && <p className="text-red-500 text-sm mt-1">{pet_nameError}</p>}
-                            </Col>
-
-                            <Col span={24} className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Loại thú cưng</label>
-                                <Select
-                                    value={pet_type}
-                                    onChange={(value) => setPet_type(value)}
-                                >
-                                    <Select.Option value="Chó">Chó</Select.Option>
-                                    <Select.Option value="Mèo">Mèo</Select.Option>
-                                </Select>
-                            </Col>
-
-                            <Col span={24} className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả chi tiết thú cưng (Màu, giống, ...)</label>
-                                <Input.TextArea
-                                    value={pet_description}
-                                    onChange={(e) => {
-                                        setPet_description(e.target.value);
-                                        setPet_descriptionError("");
-                                    }}
-                                    rows={3}
-                                />
-                                {pet_descriptionError && <p className="text-red-500 text-sm mt-1">{pet_descriptionError}</p>}
-                            </Col>
-
-                            <Col span={24} className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Tình trạng sức khỏe</label>
-                                <Select
-                                    value={pet_health}
-                                    onChange={(value) => setPet_health(value)}
-                                >
-                                    <Select.Option value="Khỏe mạnh">Khỏe mạnh</Select.Option>
-                                    <Select.Option value="Có vấn đề về sức khỏe">Có vấn đề về sức khỏe</Select.Option>
-                                </Select>
-                            </Col>
-                            {pet_health === "Có vấn đề về sức khỏe" && (
+                        <Card>
+                            <Row gutter={16}>
                                 <Col span={24} className="mb-3">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Mô tả vấn đề sức khỏe
-                                    </label>
-                                    <Input.TextArea
-                                        value={healthIssue}
-                                        onChange={(e) => setHealthIssue(e.target.value)}
-                                        placeholder="Nhập mô tả vấn đề sức khỏe của thú cưng..."
-                                        rows={4}
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Tên khách hàng</label>
+                                    <Input
+                                        value={user_name}
+                                        onChange={(e) => {
+                                            setUser_name(e.target.value);
+                                            setUser_nameError("");
+                                        }}
+                                    />
+                                    {user_nameError && <p className="text-red-500 text-sm mt-1">{user_nameError}</p>}
+                                </Col>
+
+                                <Col span={24} className="mb-3">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                    <Input
+                                        value={user_email}
+                                        onChange={(e) => {
+                                            setUser_email(e.target.value);
+                                            setUser_emailError("");
+                                        }}
+                                    />
+                                    {user_emailError && <p className="text-red-500 text-sm mt-1">{user_emailError}</p>}
+                                </Col>
+
+                                <Col span={24} className="mb-3">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
+                                    <Input
+                                        value={user_phone}
+                                        onChange={(e) => {
+                                            setUser_phone(e.target.value);
+                                            setUser_phoneError("");
+                                        }}
+                                    />
+                                    {user_phoneError && <p className="text-red-500 text-sm mt-1">{user_phoneError}</p>}
+                                </Col>
+
+                                <Col span={24} className="mb-3">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Địa chỉ</label>
+                                    <Input
+                                        value={user_address}
+                                        onChange={(e) => {
+                                            setUser_address(e.target.value);
+                                            setUser_addressError("");
+                                        }}
+                                    />
+                                    {user_addressError && <p className="text-red-500 text-sm mt-1">{user_addressError}</p>}
+                                </Col>
+                            </Row>
+                        </Card>
+
+                        <div className="mt-5">
+                            <Title level={2}>Thông tin thú cưng</Title>
+                            <Card>
+                                <Row gutter={16}>
+                                    <Col span={24} className="mb-3">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Tên thú cưng</label>
+                                        <Input
+                                            value={pet_name}
+                                            onChange={(e) => {
+                                                setPet_name(e.target.value);
+                                                setPet_nameError("");
+                                            }}
+                                        />
+                                        {pet_nameError && <p className="text-red-500 text-sm mt-1">{pet_nameError}</p>}
+                                    </Col>
+
+                                    <Col span={24} className="mb-3">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Loại thú cưng</label>
+                                        <Select
+                                            value={pet_type}
+                                            onChange={(value) => setPet_type(value)}
+                                        >
+                                            <Select.Option value="Chó">Chó</Select.Option>
+                                            <Select.Option value="Mèo">Mèo</Select.Option>
+                                        </Select>
+                                    </Col>
+
+                                    <Col span={24} className="mb-3">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả chi tiết thú cưng (Màu, giống, ...)</label>
+                                        <Input.TextArea
+                                            value={pet_description}
+                                            onChange={(e) => {
+                                                setPet_description(e.target.value);
+                                                setPet_descriptionError("");
+                                            }}
+                                            rows={3}
+                                        />
+                                        {pet_descriptionError && <p className="text-red-500 text-sm mt-1">{pet_descriptionError}</p>}
+                                    </Col>
+
+                                    <Col span={24} className="mb-3">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Tình trạng sức khỏe</label>
+                                        <Select
+                                            value={pet_health}
+                                            onChange={(value) => setPet_health(value)}
+                                        >
+                                            <Select.Option value="Khỏe mạnh">Khỏe mạnh</Select.Option>
+                                            <Select.Option value="Có vấn đề về sức khỏe">Có vấn đề về sức khỏe</Select.Option>
+                                        </Select>
+                                    </Col>
+                                    {pet_health === "Có vấn đề về sức khỏe" && (
+                                        <Col span={24} className="mb-3">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Mô tả vấn đề sức khỏe
+                                            </label>
+                                            <Input.TextArea
+                                                value={healthIssue}
+                                                onChange={(e) => setHealthIssue(e.target.value)}
+                                                placeholder="Nhập mô tả vấn đề sức khỏe của thú cưng..."
+                                                rows={4}
+                                            />
+                                        </Col>
+                                    )}
+                                </Row>
+                            </Card>
+                        </div>
+
+                        <div className="mt-4">
+                            <label className="block text-black text-sm font-bold">Chọn voucher</label>
+                            <Button onClick={openVoucherPopUp} className="w-full mt-1 text-sm">
+                                <TagOutlined />
+                                <span>{selectedVoucher ? selectedVoucher.code : "Voucher"}</span>
+                            </Button>
+                        </div>
+
+                        <Modal
+                            title="Các voucher dành cho bạn"
+                            open={voucherPopUp}
+                            onCancel={closeVoucherPopUp}
+                            footer={null}
+                        >
+                            <div className="space-y-2">
+                                {vouchers
+                                    .filter((voucher) => {
+                                        const checkEnd_date = new Date(voucher.end_date) < new Date();
+                                        const checkStart_date = new Date(voucher.start_date) > new Date();
+                                        const checkQuantity = voucher.quantity <= 0;
+
+                                        return !checkEnd_date && !checkStart_date && !checkQuantity;
+                                    })
+                                    .map((voucher) => {
+                                        const checkMin = total_amount < voucher.min_total_amount;
+
+                                        return (
+                                            <div key={voucher.id} className="flex items-center">
+                                                <Checkbox
+                                                    checked={selectedVoucher?.id === voucher.id}
+                                                    onChange={() => !checkMin && handleVoucherSelect(voucher)}
+                                                    disabled={checkMin}
+                                                >
+                                                    {voucher.name}
+                                                </Checkbox>
+                                                {checkMin && (
+                                                    <span className="text-red-500 text-sm ml-2">
+                                                        Không đủ điều kiện (Yêu cầu tối thiểu: {voucher.min_total_amount.toLocaleString()} VNĐ)
+                                                    </span>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                            </div>
+                        </Modal>
+
+                        <div className="mt-10">
+                            <p className="block text-black text-sm font-bold">Phương thức thanh toán</p>
+                            <Form.Item>
+                                <Select
+                                    value={paymethod_id}
+                                    onChange={(value) => setPaymethod_id(value)}
+                                >
+                                    {paymethod?.map((item) => (
+                                        <Select.Option key={item.id} value={item.id}>
+                                            {item.name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </div>
+
+                        <div className="text-center">
+                            <Button type="primary" htmlType="submit" className="mt-20 bg-[#064749]">
+                                Xác nhận
+                            </Button>
+                        </div>
+                    </form>
+
+
+                    <div className="lg:w-1/3 p-4 mt-8 border rounded-lg shadow-md mx-auto bg-white h-[700px]">
+                        <Card
+                            cover={
+                                <img
+                                    src={room?.img_thumbnail}
+                                    alt={room?.size_name}
+                                    className="w-full object-cover rounded-lg shadow-sm"
+                                    style={{ height: '250px' }}
+                                />
+                            }
+                        >
+                            <Title level={4} className="text-center text-[#333]">{room?.size_name}</Title>
+                            <div className="flex items-center mt-3 mb-3">
+                                <p className="text-gray-700">{room?.description}</p>
+                            </div>
+
+                            <Row gutter={16} className="mb-8">
+                                <Col span={12}>
+                                    <strong>Ngày check-in</strong>
+                                    <DatePicker
+                                        value={booking?.start_date ? moment(booking?.start_date) : null}
+                                        disabled
+                                        style={{ width: '100%' }}
                                     />
                                 </Col>
-                            )}
-                        </Row>
-                    </Card>
-                </div>
+                                <Col span={12}>
+                                    <strong>Ngày check-out</strong>
+                                    <DatePicker
+                                        value={booking?.end_date ? moment(booking?.end_date) : null}
+                                        disabled
+                                        style={{ width: '100%' }}
+                                    />
+                                </Col>
+                            </Row>
 
-                <div className="mt-4">
-                    <label className="block text-black text-sm font-bold">Chọn voucher</label>
-                    <Button onClick={openVoucherPopUp} className="w-full mt-1 text-sm">
-                        <TagOutlined />
-                        <span>{selectedVoucher ? selectedVoucher.code : "Voucher"}</span>
-                    </Button>
-                </div>
+                            <h3 className="text-left text-2xl font-semibold mt-10">
+                                Dịch vụ kèm thêm
+                            </h3>
 
-                <Modal
-                    title="Các voucher dành cho bạn"
-                    open={voucherPopUp}
-                    onCancel={closeVoucherPopUp}
-                    footer={null}
-                >
-                    <div className="space-y-2">
-                        {vouchers
-                            .filter((voucher) => {
-                                const checkEnd_date = new Date(voucher.end_date) < new Date();
-                                const checkStart_date = new Date(voucher.start_date) > new Date();
-                                const checkQuantity = voucher.quantity <= 0;
-
-                                return !checkEnd_date && !checkStart_date && !checkQuantity;
-                            })
-                            .map((voucher) => {
-                                const checkMin = total_amount < voucher.min_total_amount;
-
-                                return (
-                                    <div key={voucher.id} className="flex items-center">
-                                        <Checkbox
-                                            checked={selectedVoucher?.id === voucher.id}
-                                            onChange={() => !checkMin && handleVoucherSelect(voucher)}
-                                            disabled={checkMin}
+                            <div className="mt-2">
+                                {Array.isArray(servicesData) && servicesData.length > 0 ? (
+                                    servicesData?.map((item) => (
+                                        <div
+                                            key={item?.id}
                                         >
-                                            {voucher.name}
-                                        </Checkbox>
-                                        {checkMin && (
-                                            <span className="text-red-500 text-sm ml-2">
-                                                Không đủ điều kiện (Yêu cầu tối thiểu: {voucher.min_total_amount.toLocaleString()} VNĐ)
-                                            </span>
-                                        )}
-                                    </div>
-                                );
-                            })}
+                                            <label className="flex items-center mb-2">
+                                                <input readOnly
+                                                    type="checkbox"
+                                                    className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
+                                                />
+                                                <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ)
+                                                    {item.id === 2 && moment(booking?.booking?.end_date).diff(moment(booking?.booking?.start_date), 'days') >= 3
+                                                        ? `x ${Math.floor(
+                                                            moment(booking?.booking?.end_date).diff(
+                                                                moment(booking?.booking?.start_date),
+                                                                'days'
+                                                            ) / 3
+                                                        )}`
+                                                        : ""}
+
+                                                </span>
+                                            </label>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <Text className="text-gray-500">Không sử dụng dịch vụ.</Text>
+                                )}
+                            </div>
+
+                            <Divider />
+
+                            <Text className="text-gray-600 mb-4">Mọi chi phí đã được tính tổng</Text>
+
+                            <Row justify="space-between" className="mt-4">
+                                <Col span={12}>
+                                    <Text className="font-semibold text-[#064749]">Tổng:</Text>
+                                </Col>
+                                <Col span={12} style={{ textAlign: 'right' }}>
+                                    <Text className="font-semibold text-[#064749]">{finalAmount.toLocaleString("vi-VN")} VNĐ</Text>
+                                </Col>
+                            </Row>
+                        </Card>
                     </div>
-                </Modal>
-
-                <div className="mt-10">
-                    <p className="block text-black text-sm font-bold">Phương thức thanh toán</p>
-                    <Form.Item>
-                        <Select
-                            value={paymethod_id}
-                            onChange={(value) => setPaymethod_id(value)}
-                        >
-                            {paymethod?.map((item) => (
-                                <Select.Option key={item.id} value={item.id}>
-                                    {item.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                </div>
-
-                {/* Submit Button */}
-                <div className="text-center">
-                    <Button type="primary" htmlType="submit" className="mt-20 bg-[#064749]">
-                        Xác nhận
-                    </Button>
-                </div>
-            </form>
-
-
-            <div className="lg:w-1/3 p-4 mt-8 border rounded-lg shadow-md mx-auto bg-white h-[700px]">
-                <Card
-                    cover={
-                        <img
-                            src={room?.img_thumbnail}
-                            alt={room?.size_name}
-                            className="w-full object-cover rounded-lg shadow-sm"
-                            style={{ height: '250px' }}
-                        />
-                    }
-                >
-                    <Title level={4} className="text-center text-[#333]">{room?.size_name}</Title>
-                    <div className="flex items-center mt-3 mb-3">
-                        <p className="text-gray-700">{room?.description}</p>
-                    </div>
-
-                    <Row gutter={16} className="mb-8">
-                        <Col span={12}>
-                            <strong>Ngày check-in</strong>
-                            <DatePicker
-                                value={booking?.start_date ? moment(booking?.start_date) : null}
-                                disabled
-                                style={{ width: '100%' }}
-                            />
-                        </Col>
-                        <Col span={12}>
-                            <strong>Ngày check-out</strong>
-                            <DatePicker
-                                value={booking?.end_date ? moment(booking?.end_date) : null}
-                                disabled
-                                style={{ width: '100%' }}
-                            />
-                        </Col>
-                    </Row>
-
-                    <h3 className="text-left text-2xl font-semibold mt-10">
-                        Dịch vụ kèm thêm
-                    </h3>
-
-                    <div className="mt-2">
-                        {Array.isArray(servicesData) && servicesData.length > 0 ? (
-                            servicesData?.map((item) => (
-                                <div
-                                    key={item?.id}
-                                >
-                                    <label className="flex items-center mb-2">
-                                        <input readOnly
-                                            type="checkbox"
-                                            className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
-                                        />
-                                        <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ)
-                                            {item.id === 2 && moment(booking?.booking?.end_date).diff(moment(booking?.booking?.start_date), 'days') >= 3
-                                                ? `x ${Math.floor(
-                                                    moment(booking?.booking?.end_date).diff(
-                                                        moment(booking?.booking?.start_date),
-                                                        'days'
-                                                    ) / 3
-                                                )}`
-                                                : ""}
-
-                                        </span>
-                                    </label>
-                                </div>
-                            ))
-                        ) : (
-                            <Text className="text-gray-500">Không sử dụng dịch vụ.</Text>
-                        )}
-                    </div>
-
-                    <Divider />
-
-                    <Text className="text-gray-600 mb-4">Mọi chi phí đã được tính tổng</Text>
-
-                    <Row justify="space-between" className="mt-4">
-                        <Col span={12}>
-                            <Text className="font-semibold text-[#064749]">Tổng:</Text>
-                        </Col>
-                        <Col span={12} style={{ textAlign: 'right' }}>
-                            <Text className="font-semibold text-[#064749]">{finalAmount.toLocaleString("vi-VN")} VNĐ</Text>
-                        </Col>
-                    </Row>
-                </Card>
-            </div>
+                </>
+            )}
         </div>
     );
 };

@@ -966,7 +966,7 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Không thể hủy đơn hàng sau 2 ngày!'], 403);
         }
 
-        if ($payment->status_id >= 5) {
+        if ($payment->status_id > 1) {
             return response()->json(['message' => 'Không thể hủy đơn hàng!'], status: 403);
         }
 
@@ -976,83 +976,4 @@ class PaymentController extends Controller
         return response()->json(['message' => 'Thanh toán đã được hủy!', 'payment' => $payment], 200);
     }
 
-    public function returnPay(Request $request)
-    {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'bank_name' => 'required|max:255',
-                'bank_type_name' => 'required|max:255',
-                'bank_seri' => 'required|numeric|min:0',
-                'payment_id' => 'required',
-                'amount' => 'required',
-            ],
-            [
-                'bank_name.required' => 'Tên dịch vụ không được để trống',
-                'bank_name.max' => 'Tên dịch vụ không được vượt 255 kí tự',
-                'bank_type_name.required' => 'Mô tả không được để trống',
-                'bank_type_name.max' => 'Mô tả không vượt quá 255 kí tự',
-                'bank_seri.required' => 'Giá dịch vụ không được để trống',
-                'bank_seri.numeric' => 'Giá dịch vụ phải là số',
-                'bank_seri.min' => 'Giá dịch vụ phải lớn hơn 0 hoặc bằng 0',
-                'payment_id.required' => 'Payment_id phải được thêm vào',
-                'amount.required' => 'Amount phải được thêm vào',
-            ]
-        );
-
-        if ($validator->fails()) {
-            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
-        }
-
-        try {
-            $bank_name = $request->get('bank_name');
-            $bank_type_name = $request->get('bank_type_name');
-            $bank_seri = $request->get('bank_seri');
-            $payment_id = $request->get('payment_id');
-            $amount = $request->get('amount');
-            $status = "Chờ hoàn tiền";
-
-            $data = [
-                'bank_name' => $bank_name,
-                'bank_type_name' => $bank_type_name,
-                'bank_seri' => $bank_seri,
-                'payment_id' => $payment_id,
-                'amount' => $amount,
-                'status' => $status
-            ];
-
-            Pay_return::create($data);
-
-            $payment = Payment::find($payment_id);
-            if ($payment) {
-                $payment->status_id = 8;
-                $payment->save();
-            }
-
-            return response()->json(['status' => 'success', 'message' => 'Gửi thành công', 'data' => $data], 200);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-        }
-    }
-
-    public function changeStatus(Request $request, string $id)
-    {
-        $payment = Payment::find($id);
-
-        if (!$payment) {
-            return response()->json(['status' => false, 'message' => 'Payment không tồn tại'], 404);
-        }
-
-        $payment->status_id = $request->status;
-        $payment->save();
-
-        $payReturn = Pay_return::where('payment_id', $payment->id)->first();
-
-        if ($payReturn) {
-            $payReturn->status = 'Đã hoàn tiền';
-            $payReturn->save();
-        }
-
-        return response()->json(['status' => true, 'message' => 'Trạng thái đã được cập nhật thành công']);
-    }
 }

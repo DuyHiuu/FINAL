@@ -322,6 +322,9 @@ const History1 = () => {
               className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Tất cả trạng thái</option>
+              <option value="1">Chờ xác nhận</option>
+              <option value="2">Đã xác nhận</option>
+              <option value="4">Thanh toán thành công</option>
               <option value="6">Đã check-out</option>
               <option value="5">Đã check-in</option>
               <option value="7">Đã hủy</option>

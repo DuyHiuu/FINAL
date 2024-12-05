@@ -22,6 +22,13 @@ class RatingController extends Controller
             'data' => $ratings,
         ]);
     }
+    public function getAll()
+    {
+        $ratings = Rating::with(['room','room.size', 'user'])->get();
+        return response()->json([
+            'ratings' => $ratings,
+        ]);
+    }
 
     public function store(Request $request)
     {
