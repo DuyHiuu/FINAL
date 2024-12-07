@@ -43,11 +43,16 @@ const ListRoom = () => {
   return (
     <div className="p-8 mt-32" data-aos="fade-up">
       <div className="w-full max-w-7xl mx-auto">
-        <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
-          <Title level={3} className="text-center mb-4">Tìm phòng</Title>
-          <Row gutter={[16, 16]} justify="center">
-            <Col xs={24} sm={8} md={6}>
-              <label htmlFor="size" className="font-semibold">Chọn kích thước phòng:</label>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div className="col-span-1 bg-white p-6 rounded-lg shadow-lg h-[300px]">
+            <Title level={4} className="mb-4 text-center">
+              Tìm kiếm
+            </Title>
+
+            <div className="mb-6">
+              <label htmlFor="size" className="font-semibold block mb-2">
+                Chọn kích thước phòng:
+              </label>
               <Select
                 id="size"
                 value={sizeFilter}
@@ -64,10 +69,10 @@ const ListRoom = () => {
                   </Option>
                 ))}
               </Select>
-            </Col>
+            </div>
 
-            <Col xs={24} sm={8} md={6}>
-              <label className="font-semibold">Giá (VNĐ):</label>
+            <div className="mb-6">
+              <label className="font-semibold block mb-2">Giá (VNĐ):</label>
               <Slider
                 range
                 min={0}
@@ -76,42 +81,29 @@ const ListRoom = () => {
                 value={priceRange}
                 onChange={handlePriceChange}
                 tipFormatter={(value) => `${value.toLocaleString()} VNĐ`}
-                trackStyle={{
-                  backgroundColor: "#064749",
-                }}
-                railStyle={{
-                  backgroundColor: "#ddd",
-                }}
-                handleStyle={{
-                  borderColor: "#064749",
-                  backgroundColor: "#064749",
-                }}
               />
-            </Col>
-          </Row>
-          <Row justify="center" className="mt-4">
+
+              <div className="flex justify-between mt-2 text-sm text-gray-600">
+                <span>{priceRange[0].toLocaleString()} VNĐ</span>
+                <span>{priceRange[1].toLocaleString()} VNĐ</span>
+              </div>
+            </div>
+
             <Button
               onClick={() => {
                 setSizeFilter("");
                 setPriceRange([0, 500000]);
               }}
               type="default"
-              style={{
-                backgroundColor: "#FF4D4F",
-                color: "#fff",
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                transition: "all 0.3s ease",
-              }}
-              className="hover:bg-red-600 hover:scale-105"
+              className="w-full"
             >
               Xóa
             </Button>
-          </Row>
-        </div>
+          </div>
 
-        <Row gutter={[16, 16]} data-aos="fade-up">
-          <Col span={24}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Cột phải: Danh sách phòng */}
+          <div className="col-span-3">
+            <Row gutter={[16, 16]}>
               {!loadingRooms &&
                 currentRooms
                   ?.filter(
@@ -121,84 +113,50 @@ const ListRoom = () => {
                       r.price <= priceRange[1]
                   )
                   .map((room) => (
-                    <div
-                      key={room.id}
-                      className="flex flex-col items-center bg-white shadow-lg rounded-lg p-4 transition-transform transform hover:scale-105 hover:shadow-xl hover:opacity-90"
-                    >
-                      {room.statusroom === "Còn phòng" ? (
-                        <Link
-                          to={`/detail/${room.id}`}
-                          className="w-full transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
-                        >
-                          <div className="flex-shrink-0 mb-4 mx-auto overflow-hidden rounded-lg">
-                            <img
-                              src={room.img_thumbnail}
-                              alt={`image-${room.id}`}
-                              className="w-full h-[200px] object-cover transform transition-transform duration-300 hover:scale-105"
-                            />
-                          </div>
-                          <div className="flex-1 p-3">
-                            <h1 className="text-lg font-semibold text-gray-800 hover:text-[#064749] transition-colors">
-                              {room.size_name}
-                            </h1>
-
-                            <p className="text-sm font-semibold text-[#064749] mt-2">
-                              <span className="text-sm font-semibold text-gray-800">Kích thước:</span> {room.size_name}
+                    <Col key={room.id} xs={24} sm={12} md={8}>
+                      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+                        <Link to={`/detail/${room.id}`}>
+                          <img
+                            src={room.img_thumbnail}
+                            alt={`room-${room.id}`}
+                            className="w-full h-[200px] object-cover"
+                          />
+                          <div className="p-4">
+                            <h2 className="text-lg font-semibold">{room.size_name}</h2>
+                            <p className="text-gray-600">
+                              Giá: {room.price.toLocaleString("vi-VN")} VNĐ
                             </p>
-
-                            <p className="text-sm text-gray-600 mt-2">
-                              <span className="font-semibold text-gray-800">Mô tả:</span>
-                              {room.description.length > 100 ? room.description.substring(0, 100) + '...' : room.description}
+                            <p className="text-gray-600">
+                              {room.description.length > 100
+                                ? room.description.substring(0, 100) + "..."
+                                : room.description}
                             </p>
-
                             <div
-                              className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${room.statusroom === "Còn phòng" ? "bg-[#064749] text-white" : "bg-red-500 text-white"
+                              className={`mt-2 px-3 py-1 inline-block text-sm rounded ${room.statusroom === "Còn phòng"
+                                ? "bg-green-500 text-white"
+                                : "bg-red-500 text-white"
                                 }`}
                             >
                               {room.statusroom}
                             </div>
-                            <div className="mt-4 text-lg font-semibold text-gray-800">
-                              Giá: {room.price.toLocaleString("vi-VN")} VNĐ
-                            </div>
                           </div>
                         </Link>
-                      ) : (
-                        <div className="w-full cursor-not-allowed opacity-50">
-                          <div className="flex-shrink-0 mb-4 mx-auto overflow-hidden rounded-lg opacity-50">
-                            <img
-                              src={room.img_thumbnail}
-                              alt={`image-${room.id}`}
-                              className="w-full h-[200px] object-cover"
-                            />
-                          </div>
-                          <div className="flex-1 p-3 opacity-50">
-                            <h1 className="text-lg font-semibold text-gray-800">{room.description}</h1>
-                            <p className="text-sm font-semibold text-[#FF4D4F] mt-2">Kích thước: {room.size_name}</p>
-                            <p className="text-sm text-gray-600 mt-2">{room.description}</p>
-                            <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-500 text-white">
-                              {room.statusroom}
-                            </div>
-                            <div className="mt-4 text-lg font-semibold text-gray-800">
-                              Giá: {room.price.toLocaleString("vi-VN")} VNĐ
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                      </div>
+                    </Col>
                   ))}
-            </div>
-          </Col>
-        </Row>
+            </Row>
 
-        <Row justify="center" className="mt-6">
-          <Pagination
-            current={currentPage}
-            pageSize={itemsPerPage}
-            total={room?.length || 0}
-            onChange={handlePageChange}
-            className="transition-all duration-300 transform hover:scale-105"
-          />
-        </Row>
+            {/* Phân trang */}
+            <Row justify="center" className="mt-6">
+              <Pagination
+                current={currentPage}
+                pageSize={itemsPerPage}
+                total={room?.length || 0}
+                onChange={handlePageChange}
+              />
+            </Row>
+          </div>
+        </div>
       </div>
     </div>
   );
