@@ -432,25 +432,51 @@ const Pay2 = () => {
                                         return !checkEnd_date && !checkStart_date && !checkQuantity;
                                     })
                                     .map((voucher) => {
-                                        const checkMin = total_amount < voucher.min_total_amount;
+                                        const minAmount = voucher.min_total_amount ?? 0; // Gán giá trị mặc định nếu null hoặc undefined
+                                        const maxAmount = voucher.max_total_amount ?? Infinity; // Infinity nếu không có giới hạn tối đa
+                                        const checkMin = total_amount < minAmount;
+                                        const checkMax = total_amount > maxAmount;
 
                                         return (
-                                            <div key={voucher.id} className="flex items-center">
+                                            <div key={voucher.id} className="flex items-center space-x-3">
                                                 <Checkbox
                                                     checked={selectedVoucher?.id === voucher.id}
-                                                    onChange={() => !checkMin && handleVoucherSelect(voucher)}
-                                                    disabled={checkMin}
+                                                    onChange={() => !checkMin && !checkMax && handleVoucherSelect(voucher)}
+                                                    disabled={checkMin || checkMax}
                                                 >
                                                     {voucher.name}
                                                 </Checkbox>
-                                                {checkMin && (
-                                                    <span className="text-red-500 text-sm ml-2">
-                                                        Không đủ điều kiện (Yêu cầu tối thiểu: {voucher.min_total_amount.toLocaleString()} VNĐ)
-                                                    </span>
+                                                {(checkMin || checkMax) && (
+                                                    <div className="flex flex-col text-red-500 text-sm ml-2">
+                                                        {checkMin && (
+                                                            <div className="flex items-center space-x-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
+                                                                    <path d="M8 1a7 7 0 1 0 7 7 7 7 0 0 0-7-7zm0 13a6 6 0 1 1 6-6 6 6 0 0 1-6 6zM7.646 5.646a.5.5 0 0 1 .708 0L8 6.293l.646-.647a.5.5 0 0 1 .708.708L8.707 7l.647.646a.5.5 0 0 1-.708.708L8 7.707l-.646.647a.5.5 0 0 1-.708-.708L7.293 7 6.646 6.354a.5.5 0 0 1 0-.708z" />
+                                                                </svg>
+                                                                <span>
+                                                                    Yêu cầu tối thiểu: {minAmount.toLocaleString()} VNĐ
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                        {checkMax && (
+                                                            <div className="flex items-center space-x-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
+                                                                    <path d="M8 1a7 7 0 1 0 7 7 7 7 0 0 0-7-7zm0 13a6 6 0 1 1 6-6 6 6 0 0 1-6 6zM7.646 5.646a.5.5 0 0 1 .708 0L8 6.293l.646-.647a.5.5 0 0 1 .708.708L8.707 7l.647.646a.5.5 0 0 1-.708.708L8 7.707l-.646.647a.5.5 0 0 1-.708-.708L7.293 7 6.646 6.354a.5.5 0 0 1 0-.708z" />
+                                                                </svg>
+                                                                <span>
+                                                                    Yêu cầu tối đa: {maxAmount.toLocaleString()} VNĐ
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 )}
                                             </div>
                                         );
-                                    })}
+                                    })
+
+
+
+                                }
                             </div>
                         </Modal>
 

@@ -8,6 +8,7 @@ const AddVoucher = () => {
   const [Code, setCode] = useState("");
   const [type, setType] = useState("%");
   const [min_total_amount, setMin_total_amount] = useState("");
+  const [max_total_amount, setMax_total_amount] = useState("");
   const [giamGia, setGiamGia] = useState("");
   const [soLuong, setSoLuong] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState("");
@@ -24,19 +25,46 @@ const AddVoucher = () => {
       newErrors.tenVoucher = "Tên voucher không được để trống.";
     if (!Code.trim()) newErrors.Code = "Mã code không được để trống.";
     if (!type) newErrors.type = "Vui lòng chọn loại.";
+
     if (!giamGia || isNaN(giamGia) || parseFloat(giamGia) <= 0)
       newErrors.giamGia = "Giảm giá phải là số lớn hơn 0.";
-    if (
-      !min_total_amount ||
-      isNaN(min_total_amount) ||
-      parseFloat(min_total_amount) < 0
-    )
+
+    if (!min_total_amount || isNaN(min_total_amount) || parseFloat(min_total_amount) < 0)
       newErrors.min_total_amount = "Số tiền tối thiểu phải là số không âm.";
+
+    if (!max_total_amount || isNaN(max_total_amount) || parseFloat(max_total_amount) < 0)
+      newErrors.max_total_amount = "Số tiền tối đa phải là số không âm.";
+
+    if (
+      min_total_amount &&
+      max_total_amount &&
+      parseFloat(max_total_amount) < parseFloat(min_total_amount)
+    )
+      newErrors.max_total_amount = "Số tiền tối đa phải lớn hơn số tiền tối thiểu.";
+
+    // Kiểm tra giảm giá với loại "amount"
+    if (type === "amount") {
+      if (min_total_amount && parseFloat(giamGia) > parseFloat(min_total_amount)) {
+        newErrors.giamGia = "Mức giảm giá phải nhỏ hơn số tiền tối thiểu.";
+      }
+      if (max_total_amount && parseFloat(giamGia) > parseFloat(max_total_amount)) {
+        newErrors.giamGia = "Mức giảm giá phải nhỏ hơn số tiền tối đa.";
+      }
+    }
+
+    // Kiểm tra giảm giá với loại "%"
+    if (type === "%") {
+      if (giamGia < 1 || giamGia > 100) {
+        newErrors.giamGia = "Mức giảm giá chỉ từ 1% - 100%.";
+      }
+    }
+
     if (!soLuong || isNaN(soLuong) || parseInt(soLuong, 10) <= 0)
       newErrors.soLuong = "Số lượng phải là số nguyên lớn hơn 0.";
+
     if (!ngayBatDau) newErrors.ngayBatDau = "Ngày bắt đầu không được để trống.";
-    if (!ngayKetThuc)
-      newErrors.ngayKetThuc = "Ngày kết thúc không được để trống.";
+    if (!ngayKetThuc) newErrors.ngayKetThuc = "Ngày kết thúc không được để trống.";
+
     if (
       ngayBatDau &&
       ngayKetThuc &&
@@ -47,6 +75,8 @@ const AddVoucher = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,13 +89,14 @@ const AddVoucher = () => {
       name: tenVoucher.trim(),
       code: Code.trim(),
       type: type.trim(),
-      min_total_amount: parseInt(min_total_amount),
+      min_total_amount: parseInt(min_total_amount, 10),
+      max_total_amount: parseInt(max_total_amount, 10),
       discount: parseInt(giamGia, 10),
       quantity: parseInt(soLuong, 10),
       start_date: ngayBatDau,
       end_date: ngayKetThuc,
     };
-
+    console.log(newVoucher);
     try {
       const response = await fetch("http://localhost:8000/api/vouchers", {
         method: "POST",
@@ -77,16 +108,16 @@ const AddVoucher = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        setErrors(
-          errorData.message || { general: "Đã xảy ra lỗi không xác định." }
-        );
-      } else {
+        console.log("Chi tiết lỗi:", errorData);
+      }
+      else {
         setSuccessMessage("Thêm voucher thành công!");
         setTimeout(() => navigate("/admin/vouchers"), 1500);
       }
     } catch (error) {
-      setErrors({ general: "Đã xảy ra lỗi khi kết nối với server." });
+      setErrors({ general: "Lỗi kết nối với server." });
     }
+
   };
 
   return (
@@ -118,11 +149,9 @@ const AddVoucher = () => {
           value={tenVoucher}
           onChange={(e) => setVoucher(e.target.value)}
           placeholder="Nhập tên voucher"
-          className={`mt-1 block w-full border ${
-            errors.tenVoucher ? "border-red-500" : "border-gray-300"
-          } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${
-            errors.tenVoucher ? "focus:ring-red-500" : "focus:ring-blue-500"
-          }`}
+          className={`mt-1 block w-full border ${errors.tenVoucher ? "border-red-500" : "border-gray-300"
+            } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.tenVoucher ? "focus:ring-red-500" : "focus:ring-blue-500"
+            }`}
         />
         {errors.tenVoucher && (
           <p className="text-red-500 text-sm mt-1">{errors.tenVoucher}</p>
@@ -142,11 +171,9 @@ const AddVoucher = () => {
           value={Code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Nhập mã code"
-          className={`mt-1 block w-full border ${
-            errors.Code ? "border-red-500" : "border-gray-300"
-          } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${
-            errors.Code ? "focus:ring-red-500" : "focus:ring-blue-500"
-          }`}
+          className={`mt-1 block w-full border ${errors.Code ? "border-red-500" : "border-gray-300"
+            } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.Code ? "focus:ring-red-500" : "focus:ring-blue-500"
+            }`}
         />
         {errors.Code && (
           <p className="text-red-500 text-sm mt-1">{errors.Code}</p>
@@ -164,11 +191,9 @@ const AddVoucher = () => {
           id="type"
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className={`mt-1 block w-full border ${
-            errors.type ? "border-red-500" : "border-gray-300"
-          } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${
-            errors.type ? "focus:ring-red-500" : "focus:ring-blue-500"
-          }`}
+          className={`mt-1 block w-full border ${errors.type ? "border-red-500" : "border-gray-300"
+            } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.type ? "focus:ring-red-500" : "focus:ring-blue-500"
+            }`}
         >
           <option value="%">%</option>
           <option value="amount">Amount</option>
@@ -191,11 +216,9 @@ const AddVoucher = () => {
           value={giamGia}
           onChange={(e) => setGiamGia(e.target.value)}
           placeholder="Nhập số tiền/phần trăm giảm giá"
-          className={`mt-1 block w-full border ${
-            errors.giamGia ? "border-red-500" : "border-gray-300"
-          } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${
-            errors.giamGia ? "focus:ring-red-500" : "focus:ring-blue-500"
-          }`}
+          className={`mt-1 block w-full border ${errors.giamGia ? "border-red-500" : "border-gray-300"
+            } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.giamGia ? "focus:ring-red-500" : "focus:ring-blue-500"
+            }`}
         />
         {errors.giamGia && (
           <p className="text-red-500 text-sm mt-1">{errors.giamGia}</p>
@@ -215,18 +238,38 @@ const AddVoucher = () => {
           value={min_total_amount}
           onChange={(e) => setMin_total_amount(e.target.value)}
           placeholder="Nhập số tiền tối thiểu để áp dụng"
-          className={`mt-1 block w-full border ${
-            errors.min_total_amount ? "border-red-500" : "border-gray-300"
-          } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${
-            errors.min_total_amount
+          className={`mt-1 block w-full border ${errors.min_total_amount ? "border-red-500" : "border-gray-300"
+            } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.min_total_amount
               ? "focus:ring-red-500"
               : "focus:ring-blue-500"
-          }`}
+            }`}
         />
         {errors.min_total_amount && (
           <p className="text-red-500 text-sm mt-1">{errors.min_total_amount}</p>
         )}
       </div>
+      <div className="mb-4 relative">
+        <label
+          htmlFor="max_total_amount"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Số tiền tối đa để áp dụng:
+        </label>
+        <input
+          type="number"
+          id="max_total_amount"
+          value={max_total_amount}
+          onChange={(e) => setMax_total_amount(e.target.value)}
+          placeholder="Nhập số tiền tối đa để áp dụng"
+          className={`mt-1 block w-full border ${errors.max_total_amount ? "border-red-500" : "border-gray-300"
+            } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.max_total_amount ? "focus:ring-red-500" : "focus:ring-blue-500"
+            }`}
+        />
+        {errors.max_total_amount && (
+          <p className="text-red-500 text-sm mt-1">{errors.max_total_amount}</p>
+        )}
+      </div>
+
 
       <div className="mb-4 relative">
         <label
@@ -241,11 +284,9 @@ const AddVoucher = () => {
           value={soLuong}
           onChange={(e) => setSoLuong(e.target.value)}
           placeholder="Nhập số lượng voucher"
-          className={`mt-1 block w-full border ${
-            errors.soLuong ? "border-red-500" : "border-gray-300"
-          } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${
-            errors.soLuong ? "focus:ring-red-500" : "focus:ring-blue-500"
-          }`}
+          className={`mt-1 block w-full border ${errors.soLuong ? "border-red-500" : "border-gray-300"
+            } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.soLuong ? "focus:ring-red-500" : "focus:ring-blue-500"
+            }`}
         />
         {errors.soLuong && (
           <p className="text-red-500 text-sm mt-1">{errors.soLuong}</p>
@@ -265,11 +306,9 @@ const AddVoucher = () => {
           value={ngayBatDau}
           onChange={(e) => setNgayBatDau(e.target.value)}
           min={new Date().toISOString().split("T")[0]} // Giới hạn ngày bắt đầu không được nhỏ hơn hôm nay
-          className={`mt-1 block w-full border ${
-            errors.ngayBatDau ? "border-red-500" : "border-gray-300"
-          } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${
-            errors.ngayBatDau ? "focus:ring-red-500" : "focus:ring-blue-500"
-          }`}
+          className={`mt-1 block w-full border ${errors.ngayBatDau ? "border-red-500" : "border-gray-300"
+            } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.ngayBatDau ? "focus:ring-red-500" : "focus:ring-blue-500"
+            }`}
         />
         {errors.ngayBatDau && (
           <p className="text-red-500 text-sm mt-1">{errors.ngayBatDau}</p>
@@ -289,11 +328,9 @@ const AddVoucher = () => {
           value={ngayKetThuc}
           onChange={(e) => setNgayKetThuc(e.target.value)}
           min={ngayBatDau || new Date().toISOString().split("T")[0]} // Ngày kết thúc không được nhỏ hơn ngày bắt đầu
-          className={`mt-1 block w-full border ${
-            errors.ngayKetThuc ? "border-red-500" : "border-gray-300"
-          } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${
-            errors.ngayKetThuc ? "focus:ring-red-500" : "focus:ring-blue-500"
-          }`}
+          className={`mt-1 block w-full border ${errors.ngayKetThuc ? "border-red-500" : "border-gray-300"
+            } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.ngayKetThuc ? "focus:ring-red-500" : "focus:ring-blue-500"
+            }`}
         />
         {errors.ngayKetThuc && (
           <p className="text-red-500 text-sm mt-1">{errors.ngayKetThuc}</p>

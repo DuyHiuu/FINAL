@@ -96,11 +96,9 @@ Route::prefix('vouchers')->group(function () {
     Route::get('/', [VoucherController::class, 'index']);
     Route::get('/listVoucher', [VoucherController::class, 'paymentVoucher']);
     Route::get('/{id}', [VoucherController::class, 'show']);
-    route::middleware('checkrole')->group(function () {
-        Route::post('/', [VoucherController::class, 'store']);
-        Route::put('/{id}', [VoucherController::class, 'update']);
-        Route::delete('/{id}', [VoucherController::class, 'destroy']);
-    });
+    Route::post('/', [VoucherController::class, 'store']);
+    Route::put('/{id}', [VoucherController::class, 'update']);
+    Route::delete('/{id}', [VoucherController::class, 'destroy']);
 });
 
 
