@@ -14,7 +14,7 @@ import {
   Select,
   Tooltip,
   Modal,
-  notification
+  notification,
 } from "antd";
 import moment from "moment";
 import TextArea from "antd/es/input/TextArea";
@@ -46,6 +46,7 @@ const Detail = () => {
   const [message, setMessage] = useState<string>("");
   const [ratings, setRatings] = useState<any[]>([]);
   const [filterRating, setFilterRating] = useState<number | null>(null);
+  console.log(room);
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -96,7 +97,9 @@ const Detail = () => {
     e.preventDefault();
 
     if (!start_date || !end_date) {
-      setMessage("Vui lòng chọn ngày check-in và check-out trước khi đặt phòng.");
+      setMessage(
+        "Vui lòng chọn ngày check-in và check-out trước khi đặt phòng."
+      );
       return;
     }
 
@@ -192,7 +195,7 @@ const Detail = () => {
   const closePopup1 = () => setShowPopup(false);
 
   const filteredRatings = filterRating
-    ? ratings.filter(rating => rating.rating === filterRating)
+    ? ratings.filter((rating) => rating.rating === filterRating)
     : ratings;
 
   if (loading) {
@@ -265,25 +268,12 @@ const Detail = () => {
 
       <div className="mt-8 max-w-md">
         <h1 className="text-3xl font-bold">{room?.size_name}</h1>
-        <p className="text-green-500">{room?.statusroom}</p>
-
-        <div className="flex items-center justify-between mt-3">
-          <div className="flex items-center gap-2 text-yellow-500">
-            <StarFilled className="text-2xl" />
-            <span className="text-xl font-semibold text-gray-800">
-              {averageRating.toFixed(1)} / 5
-            </span>
-            <span className="text-gray-500 text-sm">
-              ({ratings.length} lượt đánh giá)
-            </span>
-          </div>
-          <button
-            onClick={openPopup1}
-            className="px-4 py-2 text-sm rounded-lg border bg-yellow-500 text-white hover:bg-yellow-600"
-          >
-            Xem đánh giá
-          </button>
-        </div>
+        <p className="text-green-500">
+          {room?.statusroom === "Còn phòng"
+            ? `Còn ${room?.quantity - room?.is_booked} phòng`
+            : "Không còn phòng"}
+        </p>
+       
 
         <Modal
           title="Chi tiết đánh giá"
@@ -299,8 +289,11 @@ const Detail = () => {
                 <button
                   key={star}
                   onClick={() => setFilterRating(star)}
-                  className={`px-2 py-1 rounded-full ${filterRating === star ? 'bg-gray-300 text-white' : 'border text-gray-700'
-                    }`}
+                  className={`px-2 py-1 rounded-full ${
+                    filterRating === star
+                      ? "bg-gray-300 text-white"
+                      : "border text-gray-700"
+                  }`}
                 >
                   {Array(star)
                     .fill(null)
@@ -404,7 +397,25 @@ const Detail = () => {
               <h3 className="text-xl font-semibold">Mô tả</h3>
               <p className="text-gray-700">{room?.description}</p>
             </div>
+            <div className="flex items-center justify-between mt-3">
+          <div className="flex items-center gap-2 text-yellow-500">
+            <StarFilled className="text-2xl" />
+            <span className="text-xl font-semibold text-gray-800">
+              {averageRating.toFixed(1)} / 5
+            </span>
+            <span className="text-gray-500 text-sm">
+              ({ratings.length} lượt đánh giá)
+            </span>
           </div>
+          <button
+            onClick={openPopup1}
+            className="px-4 py-2 text-sm rounded-lg border bg-yellow-500 text-white hover:bg-yellow-600"
+          >
+            Xem đánh giá
+          </button>
+        </div>
+          </div>
+          
 
           <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-[200px]">
             <h2 className="text-xl font-semibold text-gray-800">

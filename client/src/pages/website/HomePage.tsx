@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, Button, Row, Col, Input, Spin, Avatar, Modal, Divider } from "antd";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Card,
+  Button,
+  Row,
+  Col,
+  Input,
+  Spin,
+  Avatar,
+  Modal,
+  Divider,
+} from "antd";
 import useFetchRooms from "../../api/useFetchRooms";
 import useFetchServices from "../../api/useFetchServices";
 import useFetchBlogs from "../../api/useFetchBlogs";
@@ -13,6 +23,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import axios from "axios";
 import { FaStar, FaRegStar } from "react-icons/fa";
+import Title from "antd/es/skeleton/Title";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -118,12 +129,14 @@ const HomePage = () => {
   const { room } = useFetchRooms();
   const { service } = useFetchServices();
   const { blog } = useFetchBlogs();
+  console.log(room);
 
   const RatingsTop3 = () => {
     const [ratingsHome, setRatingsHome] = useState([]);
 
     useEffect(() => {
-      axios.get("http://localhost:8000/api/ratings/list")
+      axios
+        .get("http://localhost:8000/api/ratings/list")
         .then((response) => {
           if (response.data && Array.isArray(response.data.ratings)) {
             setRatingsHome(response.data.ratings);
@@ -167,13 +180,17 @@ const HomePage = () => {
               data-aos="fade-up"
             >
               <div className="flex items-start mb-4">
-                <Avatar className="me-3 bg-[#064749]">{rating?.user?.name[0]}</Avatar>
+                <Avatar className="me-3 bg-[#064749]">
+                  {rating?.user?.name[0]}
+                </Avatar>
                 <div className="flex flex-col">
-                  <h4 className="text-lg font-semibold">{rating?.user?.name}</h4>
-                  <h4 className="text-lg font-semibold">{rating?.room?.size?.name}</h4>
-                  <div className="flex">
-                    {renderStars(rating?.rating)}
-                  </div>
+                  <h4 className="text-lg font-semibold">
+                    {rating?.user?.name}
+                  </h4>
+                  <h4 className="text-lg font-semibold">
+                    {rating?.room?.size?.name}
+                  </h4>
+                  <div className="flex">{renderStars(rating?.rating)}</div>
                   <p className="text-sm text-gray-600">{rating?.content}</p>
                 </div>
               </div>
@@ -235,7 +252,6 @@ const HomePage = () => {
         ))}
       </Swiper>
 
-
       <h1 className="text-3xl font-bold mt-12 text-center">
         PetSpa xin chào bạn
       </h1>
@@ -285,41 +301,97 @@ const HomePage = () => {
         ))}
       </Row>
 
-      <h2 className="text-2xl font-semibold mt-12">
-        Một số hình ảnh của PetHouse
-      </h2>
-      <Row gutter={[16, 16]} justify="center" className="mt-6" data-aos="fade-up">
-        {room?.slice(0, 5).map((item: any) => (
-          <Col key={item.id} xs={24} sm={6} md={4} lg={4} className="flex justify-center">
-            <img
-              alt={item.size_name}
-              src={item.img_thumbnail}
-              style={{
-                height: "300px",
-                width: "300px",
-                objectFit: "cover",
-                borderRadius: "12px",
-                margin: "0 8px",
-              }}
-            />
-          </Col>
-        ))}
-      </Row>
+      <div className="p-8 mt-32" data-aos="fade-up">
+        <h2 className="text-2xl font-semibold mt-12 text-center">
+          Một số hình ảnh của PetHouse
+        </h2>
 
-      <div className="mt-12 w-full text-center">
-        <Button
-          type="primary"
-          onClick={handleClickDanhsachphong}
-          className="mr-4 bg-[#064749]"
-        >
-          Xem danh sách phòng
-        </Button>
+        <Title level={2} className="text-center mb-8">
+          Danh sách phòng
+        </Title>
+
+        <Row gutter={[16, 16]} justify="center" align="stretch">
+          {room?.map((item: any) => (
+            <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
+              {item.statusroom === "Còn phòng" ? (
+                <Link to={`/detail/${item.id}`}>
+                  <div className="room-card flex flex-col justify-between bg-white shadow-lg rounded-lg p-4 transition-transform transform hover:scale-105 hover:shadow-xl hover:opacity-90">
+                    <img
+                      alt={item.size_name}
+                      src={item.img_thumbnail}
+                      style={{
+                        height: "200px",
+                        width: "100%",
+                        objectFit: "cover",
+                        borderRadius: "12px",
+                      }}
+                    />
+                    <div className="content mt-4">
+                      <h3 className="text-lg font-semibold">
+                        {item.size_name}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {item.description}
+                      </p>
+                      <p className="text-md font-semibold text-[#064749]">
+                        Giá: {item.price.toLocaleString("vi-VN")} VNĐ
+                      </p>
+                      <div className="inline-block px-4 py-2 rounded-full text-sm font-medium bg-[#064749] text-white">
+                        {item.statusroom}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ) : (
+                <div className="room-card flex flex-col justify-between bg-gray-200 shadow-lg rounded-lg p-4">
+                  <img
+                    alt={item.size_name}
+                    src={item.img_thumbnail}
+                    style={{
+                      height: "200px",
+                      width: "100%",
+                      objectFit: "cover",
+                      borderRadius: "12px",
+                      opacity: 0.5, // Mờ đi nếu hết phòng
+                    }}
+                  />
+                  <div className="content mt-4">
+                    <h3 className="text-lg font-semibold text-gray-500">
+                      {item.size_name}
+                    </h3>
+                    <p className="text-sm text-gray-500">{item.description}</p>
+                    <p className="text-md font-semibold text-gray-500">
+                      Giá: {item.price.toLocaleString("vi-VN")} VNĐ
+                    </p>
+                    <div className="inline-block px-4 py-2 rounded-full text-sm font-medium bg-red-500 text-white">
+                      {item.statusroom}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Col>
+          ))}
+        </Row>
+
+        <div className="mt-12 w-full text-center">
+          <Button type="primary" href="/danhsach" className="mr-4 bg-[#064749]">
+            Xem chi tiết
+          </Button>
+        </div>
       </div>
 
       <h2 className="mt-12 text-2xl font-semibold">Các dịch vụ chăm sóc</h2>
-      <p className="text-center mt-4">Các dịch vụ thực hiện bởi các nhân viên được đào tạo bài bản, có chứng chỉ hành nghề.</p>
+      <p className="text-center mt-4">
+        Các dịch vụ thực hiện bởi các nhân viên được đào tạo bài bản, có chứng
+        chỉ hành nghề.
+      </p>
 
-      <Row gutter={[16, 16]} justify="center" className="mt-6 mb-20" data-aos="fade-up">
+      <Row
+        gutter={[16, 16]}
+        justify="center"
+        className="mt-6 mb-20"
+        data-aos="fade-up"
+      >
         {service?.slice(0, 3).map((service) => (
           <Col key={service.id} xs={24} sm={12} md={8} lg={6}>
             <Card
@@ -342,9 +414,7 @@ const HomePage = () => {
                 justifyContent: "space-between",
               }}
             >
-              <Card.Meta
-                title={service.name}
-              />
+              <Card.Meta title={service.name} />
               <Button
                 type="link"
                 onClick={() => showModal(service)}
