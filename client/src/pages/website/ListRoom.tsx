@@ -101,7 +101,6 @@ const ListRoom = () => {
             </Button>
           </div>
 
-          {/* Cột phải: Danh sách phòng */}
           <div className="col-span-3">
             <Row gutter={[16, 16]}>
               {!loadingRooms &&
@@ -123,13 +122,11 @@ const ListRoom = () => {
                           />
                           <div className="p-4">
                             <h2 className="text-lg font-semibold">{room.size_name}</h2>
-                            <p className="text-gray-600">
+                            <p className="text-black font-semibold">
                               Giá: {room.price.toLocaleString("vi-VN")} VNĐ
                             </p>
-                            <p className="text-gray-600">
-                              {room.description.length > 100
-                                ? room.description.substring(0, 100) + "..."
-                                : room.description}
+                            <p className="text-black font-semibold">
+                              Còn {(room.quantity) - (room.is_booked)} phòng
                             </p>
                             <div
                               className={`mt-2 px-3 py-1 inline-block text-sm rounded ${room.statusroom === "Còn phòng"
@@ -146,7 +143,6 @@ const ListRoom = () => {
                   ))}
             </Row>
 
-            {/* Phân trang */}
             <Row justify="center" className="mt-6">
               <Pagination
                 current={currentPage}

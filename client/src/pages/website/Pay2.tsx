@@ -515,10 +515,40 @@ const Pay2 = () => {
                                 />
                             }
                         >
+                            <Divider />
                             <Title level={4} className="text-center text-[#333]">{room?.size_name}</Title>
-                            <div className="flex items-center mt-3 mb-3">
-                                <p className="text-gray-700">{room?.description}</p>
-                            </div>
+
+                            <Row justify="space-between" className="mt-3 w-full">
+                                <Col span={12}>
+                                    <Text className='font-semibold'>Giá phòng:</Text>
+                                </Col>
+                                <Col span={12} className="text-right">
+                                    <Text className='font-semibold'>{room?.price.toLocaleString("vi-VN")} VNĐ</Text>
+                                </Col>
+                            </Row>
+
+                            <Row justify="space-between" className="w-full">
+                                <Col span={12}>
+                                    <Text className='font-semibold'>Số ngày thuê:</Text>
+                                    <div className="my-2" />
+                                </Col>
+                                <Col span={12} className="text-right">
+                                    <Text className='font-semibold'>{moment(booking?.booking?.end_date).diff(moment(booking?.booking?.start_date), 'days')} ngày</Text>
+                                    <div className="my-2" />
+                                </Col>
+                            </Row>
+
+                            <Row justify="space-between" className="w-full">
+                                <Col span={12}>
+                                    <Text className='font-semibold'>Tổng giá phòng:</Text>
+                                </Col>
+                                <Col span={12} className="text-right">
+                                    <Text className='font-semibold'>{booking?.subTotal_room?.toLocaleString("vi-VN")} VNĐ</Text>
+                                    <div className="my-2" />
+                                </Col>
+                            </Row>
+
+                            <Divider />
 
                             <Row gutter={16} className="mb-8">
                                 <Col span={12}>
@@ -538,6 +568,8 @@ const Pay2 = () => {
                                     />
                                 </Col>
                             </Row>
+
+                            <Divider />
 
                             <h3 className="text-left text-2xl font-semibold mt-10">
                                 Dịch vụ kèm thêm
@@ -572,6 +604,15 @@ const Pay2 = () => {
                                     <Text className="text-gray-500">Không sử dụng dịch vụ.</Text>
                                 )}
                             </div>
+
+                            <Row justify="space-between" className="mt-4 w-full">
+                                <Col span={12} className="text-left">
+                                    <Text className='font-semibold'>Tổng phí dịch vụ:</Text>
+                                </Col>
+                                <Col span={12} className="text-right">
+                                    <Text className='font-semibold'>{booking?.subTotal_service === 0 ? "0" : booking?.subTotal_service.toLocaleString("vi-VN")} VNĐ</Text>
+                                </Col>
+                            </Row>
 
                             <Divider />
 
