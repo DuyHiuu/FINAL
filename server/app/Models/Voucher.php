@@ -21,6 +21,7 @@ class Voucher extends Model
         'start_date',
         'end_date',
         'min_total_amount',
+        'max_total_amount',
         'is_active'
     ];
 }
