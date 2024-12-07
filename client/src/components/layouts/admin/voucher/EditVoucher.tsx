@@ -6,7 +6,7 @@ const EditVoucher = () => {
   const [tenVoucher, setVoucher] = useState("");
   const [Code, setCode] = useState("");
   const [type, setType] = useState('%');
-  const [min_total_amount, setMin_total_amount] = useState("");
+  const [min_total_amount, setMinTotalAmount] = useState("");
   const [giamGia, setGiamGia] = useState("");
   const [soLuong, setSoLuong] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState("");
@@ -14,6 +14,7 @@ const EditVoucher = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [maxTotalAmount, setMaxTotalAmount] = useState("");
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -22,19 +23,21 @@ const EditVoucher = () => {
   const fetchVoucher = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/vouchers/${id}`);
-      if (!response.ok) {
+      const response = await authClient.get(`/vouchers/${id}`);
+      if (response.status === 200) {
+        const data = response.data;
+        setVoucher(data.name);
+        setCode(data.code);
+        setType(data.type);
+        setMinTotalAmount(data.min_total_amount);
+        setMaxTotalAmount(data.max_total_amount);
+        setGiamGia(data.discount);
+        setSoLuong(data.quantity);
+        setNgayBatDau(data.start_date);
+        setNgayKetThuc(data.end_date);
+      } else {
         throw new Error("Failed to fetch voucher details");
       }
-      const data = await response.json();
-      setVoucher(data.name);
-      setCode(data.code);
-      setType(data.type);
-      setMin_total_amount(data.min_total_amount);
-      setGiamGia(data.discount);
-      setSoLuong(data.quantity);
-      setNgayBatDau(data.start_date);
-      setNgayKetThuc(data.end_date);
     } catch (error) {
       setError("Không thể tải dữ liệu voucher");
       console.error(error);
@@ -50,6 +53,7 @@ const EditVoucher = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validation
     if (!tenVoucher || !Code || !type || !giamGia || !min_total_amount || !soLuong || !ngayBatDau || !ngayKetThuc) {
       setError("Tất cả các trường đều phải được điền đầy đủ.");
       return;
@@ -59,63 +63,89 @@ const EditVoucher = () => {
       setError("Giảm giá phải là số lớn hơn 0.");
       return;
     }
+
     if (isNaN(min_total_amount) || min_total_amount < 0) {
-      setError("Số tiền tối thiểu phải là số lớn hơn 0.");
+      setError("Số tiền tối thiểu phải là số lớn hơn hoặc bằng 0.");
       return;
     }
-    if (isNaN(soLuong) || soLuong < 0) {
+
+    if (isNaN(maxTotalAmount) || maxTotalAmount < 0) {
+      setError("Số tiền tối đa phải là số lớn hơn hoặc bằng 0.");
+      return;
+    }
+
+    if (type === "amount") {
+      if (giamGia > min_total_amount) {
+        setError("Mức giảm không được lớn hơn số tiền tối thiểu.");
+        return;
+      }
+
+      if (giamGia > maxTotalAmount) {
+        setError("Mức giảm không được lớn hơn số tiền tối đa.");
+        return;
+      }
+    }
+
+    if (min_total_amount > maxTotalAmount) {
+      setError("Số tiền tối thiểu không được lớn hơn số tiền tối đa.");
+      return;
+    }
+
+    if (isNaN(soLuong) || soLuong <= 0) {
       setError("Số lượng voucher phải là số lớn hơn 0.");
       return;
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    if (type === '%') {
+      if (giamGia < 1 || giamGia > 100) {
+        setError("Mức giảm phải từ 1% - 100%");
+        return;
+      }
+    }
+
     const startDate = new Date(ngayBatDau);
     const endDate = new Date(ngayKetThuc);
-
-    if (startDate < today) {
-      setError("Ngày bắt đầu không được là ngày trong quá khứ.");
+    if (startDate > endDate) {
+      setError("Ngày kết thúc phải sau ngày bắt đầu.");
       return;
     }
 
-    const maxEndDate = new Date(today);
-    maxEndDate.setMonth(today.getMonth() + 3);
-    if (endDate > maxEndDate) {
-      setError("Ngày kết thúc không được vượt quá 3 tháng từ hôm nay.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    setSuccessMessage("");
-
+    // Create voucher object
     const updatedVoucher = {
       name: tenVoucher.trim(),
       code: Code.trim(),
       type: type.trim(),
-      min_total_amount: parseInt(min_total_amount),
+      min_total_amount: parseInt(min_total_amount, 10),
+      max_total_amount: parseInt(maxTotalAmount, 10), // Thêm vào đây
       discount: parseInt(giamGia, 10),
       quantity: parseInt(soLuong, 10),
       start_date: ngayBatDau,
       end_date: ngayKetThuc,
     };
 
-    try {
-      const response = await authClient.put(`http://127.0.0.1:8000/api/vouchers/${id}`, updatedVoucher);
 
-      if (response.status !== 200) {
-        const errorData = await response.json();
-        setError(`Cập nhật thất bại: ${errorData.message}`);
-      } else {
+    setLoading(true);
+    setError("");
+    setSuccessMessage("");
+
+    try {
+      const response = await authClient.put(`/vouchers/${id}`, updatedVoucher);
+      if (response.status === 200) {
         setSuccessMessage("Cập nhật voucher thành công!");
-        setTimeout(() => {
-          navigate("/admin/vouchers");
-        }, 2000);
+        setTimeout(() => navigate("/admin/vouchers"), 2000);
+      } else {
+        throw new Error("Failed to update voucher");
       }
     } catch (error) {
       setError("Đã xảy ra lỗi khi cập nhật voucher");
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatCurrency = (value) => {
+    if (!value) return "";
+    return parseInt(value, 10).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
   };
 
   return (
@@ -149,8 +179,7 @@ const EditVoucher = () => {
             id="tenVoucher"
             value={tenVoucher}
             onChange={(e) => setVoucher(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Nhập tên voucher"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
           />
         </div>
 
@@ -162,73 +191,74 @@ const EditVoucher = () => {
             id="Code"
             value={Code}
             onChange={(e) => setCode(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Nhập mã voucher"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
           />
         </div>
 
-        <div className="mb-4 relative">
-          <label htmlFor="Type" className="block text-sm font-medium text-gray-700">
+        <div className="mb-4">
+          <label htmlFor="type" className="block text-sm font-medium text-gray-700">
             Loại:
           </label>
-          <div className="flex items-center">
-            <select name="type" id="" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={type}
-              onChange={(e) => setType(e.target.value)}>
-              <option value="%">%</option>
-              <option value="amount">Amount</option>
-            </select>
-          </div>
+          <select
+            id="type"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
+          >
+            <option value="%">Phần trăm (%)</option>
+            <option value="amount">Số tiền (VND)</option>
+          </select>
         </div>
 
         <div className="mb-4">
           <label htmlFor="giamGia" className="block text-sm font-medium text-gray-700">
-            Giảm giá (VND/%):
+            Giảm giá:
           </label>
           <input
             type="number"
             id="giamGia"
-            value={giamGia ? Math.trunc(giamGia).toLocaleString("vi-VN") : ""}
+            value={giamGia}
             onChange={(e) => setGiamGia(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Nhập phần trăm giảm giá"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
           />
         </div>
 
-        <div className="mb-4 relative">
+        <div className="mb-4">
           <label htmlFor="min_total_amount" className="block text-sm font-medium text-gray-700">
-            Số tiền tối thiểu để áp dụng:
+            Số tiền tối thiểu:
           </label>
-          <div className="flex items-center">
-            <input
-              type="number"
-              id="min_total_amount"
-              value={min_total_amount || ""}
-              onChange={(e) => setMin_total_amount(e.target.value)}
-
-              placeholder="Nhập số tiền tối thiểu để áp dụng"
-              className="pl-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {min_total_amount && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                {parseInt(min_total_amount).toLocaleString("vi-VN")} VND
-              </div>
-            )}
-          </div>
+          <input
+            type="number"
+            id="min_total_amount"
+            value={min_total_amount}
+            onChange={(e) => setMinTotalAmount(e.target.value)}
+            className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="max_total_amount" className="block text-sm font-medium text-gray-700">
+            Số tiền tối đa:
+          </label>
+          <input
+            type="number"
+            id="max_total_amount"
+            value={maxTotalAmount}
+            onChange={(e) => setMaxTotalAmount(e.target.value)}
+            className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
+          />
         </div>
 
 
         <div className="mb-4">
           <label htmlFor="soLuong" className="block text-sm font-medium text-gray-700">
-            Số lượng Voucher:
+            Số lượng:
           </label>
           <input
             type="number"
             id="soLuong"
             value={soLuong}
             onChange={(e) => setSoLuong(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Nhập số lượng voucher"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
           />
         </div>
 
@@ -241,7 +271,7 @@ const EditVoucher = () => {
             id="ngayBatDau"
             value={ngayBatDau}
             onChange={(e) => setNgayBatDau(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
           />
         </div>
 
@@ -254,14 +284,14 @@ const EditVoucher = () => {
             id="ngayKetThuc"
             value={ngayKetThuc}
             onChange={(e) => setNgayKetThuc(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
           />
         </div>
 
         <button
           type="submit"
+          className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700"
           disabled={loading}
-          className={`w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition duration-200 ${loading ? 'bg-gray-400 cursor-not-allowed' : ''}`}
         >
           {loading ? "Đang cập nhật..." : "Cập nhật Voucher"}
         </button>
