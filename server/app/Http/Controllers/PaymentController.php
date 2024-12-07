@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
 use App\Models\Booking;
+use App\Models\Room;
 use App\Models\Status;
 use App\Models\Voucher;
 use Carbon\Carbon;
@@ -405,6 +406,140 @@ class PaymentController extends Controller
             }
         }
     }
+
+
+    public function updatePaymentDetails(Request $request, $id)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'pet_name' => 'string|max:255',
+                'pet_type' => 'string|max:255',
+                'pet_description' => 'string',
+                'pet_health' => 'string',
+                'room_id' => 'exists:rooms,id', // Kiểm tra room_id hợp lệ
+            ],
+            [
+                'room_id.exists' => 'Phòng được chọn không hợp lệ.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Lấy thông tin thanh toán
+            $payment = Payment::findOrFail($id);
+
+
+            $booking = Booking::find($payment->booking_id);
+            if (!$booking) {
+                return response()->json(['status' => 'error', 'message' => 'Không tìm thấy thông tin booking.'], 404);
+            }
+
+            $fieldsToUpdate = [];
+            $totalAmountOld = $payment->total_amount; // Lưu lại tổng tiền cũ
+
+            // Nếu có yêu cầu thay đổi thông tin
+            if ($request->has('pet_name')) {
+                $fieldsToUpdate['pet_name'] = $request->input('pet_name');
+            }
+            if ($request->has('pet_type')) {
+                $fieldsToUpdate['pet_type'] = $request->input('pet_type');
+            }
+            if ($request->has('pet_description')) {
+                $fieldsToUpdate['pet_description'] = $request->input('pet_description');
+            }
+            if ($request->has('pet_health')) {
+                $fieldsToUpdate['pet_health'] = $request->input('pet_health');
+            }
+
+
+            if ($request->has('room_id')) {
+                $newRoomId = $request->input('room_id');
+                $oldRoomId = $booking->room_id;
+
+                // Kiểm tra phòng mới có sẵn không
+                $newRoom = Room::find($newRoomId);
+                if ($newRoom->quantity <= $newRoom->is_booked) {
+                    return response()->json(['status' => 'error', 'message' => 'Phòng đã đầy, vui lòng chọn phòng khác.'], 400);
+                }
+
+                // Cập nhật số lượng phòng
+                $oldRoom = Room::find($oldRoomId);
+                if ($oldRoom) {
+                    $oldRoom->decrement('is_booked', 1);
+                    if ($oldRoom->is_booked < $oldRoom->quantity) {
+                        $oldRoom->update(['statusroom' => 'Còn phòng']);
+                    }
+                }
+
+                $newRoom->increment('is_booked', 1);
+                if ($newRoom->is_booked === $newRoom->quantity) {
+                    $newRoom->update(['statusroom' => 'Hết phòng']);
+                }
+
+
+                $booking->update(['room_id' => $newRoomId]);
+                $fieldsToUpdate['room_id'] = $newRoomId;
+            }
+
+            // Tính lại tổng tiền mới
+            $startDate = Carbon::parse($booking->start_date);
+            $endDate = Carbon::parse($booking->end_date);
+            $days = max(1, $startDate->diffInDays($endDate));
+
+            $subTotalRoom = $booking->room->price * $days;
+            $subTotalService = 0;
+
+            if ($booking->services && $booking->services->isNotEmpty()) {
+                foreach ($booking->services as $item) {
+                    if ($item->id === 2) {
+                        $quantity = max(1, floor($days / 3));
+                        $subTotalService += $item->price * $quantity;
+                    } else {
+                        $subTotalService += $item->price;
+                    }
+                }
+            }
+
+            $totalAmountNew = $subTotalRoom + $subTotalService;
+            $fieldsToUpdate['total_amount'] = $totalAmountNew;
+
+
+            $difference = $totalAmountNew - $totalAmountOld;
+
+
+            if ($difference <= 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Số tiền thanh toán mới phải lớn hơn số tiền cũ.',
+                    'difference' => $difference,
+                ], 400);
+            }
+
+            $payment->update($fieldsToUpdate);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Cập nhật thông tin thanh toán thành công.',
+                'data' => [
+                    'payment_id' => $payment->id,
+                    'updated_fields' => $fieldsToUpdate,
+                    'difference' => $difference,
+                ],
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['status' => 'error', 'message' => 'Xảy ra lỗi trong quá trình cập nhật.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
 
 
     /**
