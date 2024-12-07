@@ -94,26 +94,73 @@ const Pay1 = () => {
       <div className="lg:w-1/2 p-4 mx-auto">
         <div className="text-left">
           <Title level={1}>Xác nhận thanh toán</Title>
-          <Row justify="space-between" className="mt-20 w-auto">
+          <Row justify="space-between" className="mt-8 w-full">
             <Col span={12}>
-              <Text>Giá phòng:</Text>
-              <div style={{ marginTop: '10px' }} />
-              <Text className="d-block mt-2">Phí dịch vụ:</Text>
-              <div style={{ marginTop: '10px' }} />
-              <Text className="d-block mt-2 font-bold">Tổng:</Text>
+              <Text className='font-semibold'>Giá phòng:</Text>
+              <div className="my-2" />
             </Col>
-            <Col span={12} style={{ textAlign: 'right' }}>
-              <Text>{booking?.subTotal_room?.toLocaleString("vi-VN")} VNĐ</Text>
-              <div style={{ marginTop: '10px' }} />
-              <Text className="d-block mt-2 mb-10">
-                {booking?.subTotal_service === 0 ? "0" : booking?.subTotal_service.toLocaleString("vi-VN")} VNĐ
-              </Text>
-              <div style={{ marginTop: '10px' }} />
-              <Text className="font-bold">{booking?.total_amount?.toLocaleString("vi-VN")} VNĐ</Text>
+            <Col span={12} className="text-right">
+              <Text className='font-semibold'>{booking?.subTotal_room?.toLocaleString("vi-VN")} VNĐ</Text>
+              <div className="my-2" />
+            </Col>
+          </Row>
+
+          <Row justify="space-between" className="w-full">
+            <Col span={12}>
+              <Text className='font-semibold'>Số ngày thuê:</Text>
+              <div className="my-2" />
+            </Col>
+            <Col span={12} className="text-right">
+              <Text className='font-semibold'>{moment(booking?.booking?.end_date).diff(moment(booking?.booking?.start_date), 'days')} ngày</Text>
+              <div className="my-2" />
+            </Col>
+          </Row>
+
+          <Row justify="space-between" className="mt-4 w-full">
+            <Col span={12} className="text-left">
+              <Text className='font-semibold'>Dịch vụ sử dụng:</Text>
+            </Col>
+            <Col span={12} className="text-right">
+              {Array.isArray(servicesData) && servicesData.length > 0 ? (
+                servicesData.map((item) => (
+                  <div key={item?.id} className='font-semibold'>
+                    <label>
+                      <span>- {item.name} ({item.price.toLocaleString("vi-VN")} VNĐ)
+                        {item.id === 2 && moment(booking?.booking?.end_date).diff(moment(booking?.booking?.start_date), 'days') >= 3
+                          ? `x ${Math.floor(
+                            moment(booking?.booking?.end_date).diff(
+                              moment(booking?.booking?.start_date),
+                              'days'
+                            ) / 3
+                          )}` : ""}
+                      </span>
+                    </label>
+                  </div>
+                ))
+              ) : (
+                <Text className='font-semibold'>Không sử dụng dịch vụ.</Text>
+              )}
+            </Col>
+          </Row>
+
+          <Row justify="space-between" className="mt-4 w-full">
+            <Col span={12} className="text-left">
+              <Text className='font-semibold'>Tổng phí dịch vụ:</Text>
+            </Col>
+            <Col span={12} className="text-right">
+              <Text className='font-semibold'>{booking?.subTotal_service === 0 ? "0" : booking?.subTotal_service.toLocaleString("vi-VN")} VNĐ</Text>
+            </Col>
+          </Row>
+
+          <Row justify="space-between" className="mt-4 w-full">
+            <Col span={12}>
+              <Text className="font-bold">Tổng:</Text>
+            </Col>
+            <Col span={12} className="text-right">
+              <Text className="font-bold text-xl">{booking?.total_amount?.toLocaleString("vi-VN")} VNĐ</Text>
             </Col>
           </Row>
         </div>
-
         <Button
           type="primary"
           size="large"
@@ -136,9 +183,6 @@ const Pay1 = () => {
           }
         >
           <Title level={4} className="text-center text-[#333]">{room?.size_name}</Title>
-          <div className="flex items-center mt-3 mb-3">
-            <p className="text-gray-700">{room?.description}</p>
-          </div>
 
           <Row gutter={16} className="mb-8">
             <Col span={12}>

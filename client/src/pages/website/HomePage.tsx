@@ -301,9 +301,9 @@ const HomePage = () => {
         ))}
       </Row>
 
-      <div className="p-8 mt-32" data-aos="fade-up">
+      <div className="p-8 mt-10" data-aos="fade-up">
         <h2 className="text-2xl font-semibold mt-12 text-center">
-          Một số hình ảnh của PetHouse
+          PetHouse của chúng tôi
         </h2>
 
         <Title level={2} className="text-center mb-8">
@@ -312,70 +312,43 @@ const HomePage = () => {
 
         <Row gutter={[16, 16]} justify="center" align="stretch">
           {room?.map((item: any) => (
-            <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
-              {item.statusroom === "Còn phòng" ? (
-                <Link to={`/detail/${item.id}`}>
-                  <div className="room-card flex flex-col justify-between bg-white shadow-lg rounded-lg p-4 transition-transform transform hover:scale-105 hover:shadow-xl hover:opacity-90">
-                    <img
-                      alt={item.size_name}
-                      src={item.img_thumbnail}
-                      style={{
-                        height: "200px",
-                        width: "100%",
-                        objectFit: "cover",
-                        borderRadius: "12px",
-                      }}
-                    />
-                    <div className="content mt-4">
-                      <h3 className="text-lg font-semibold">
-                        {item.size_name}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {item.description}
-                      </p>
-                      <p className="text-md font-semibold text-[#064749]">
-                        Giá: {item.price.toLocaleString("vi-VN")} VNĐ
-                      </p>
-                      <div className="inline-block px-4 py-2 rounded-full text-sm font-medium bg-[#064749] text-white">
-                        {item.statusroom}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ) : (
-                <div className="room-card flex flex-col justify-between bg-gray-200 shadow-lg rounded-lg p-4">
+            <Col
+              key={item.id}
+              xs={24}
+              sm={12}
+              md={8}
+              lg={6}
+              className="flex justify-center mb-6"
+            >
+              <div className="bg-white shadow-md rounded-lg overflow-hidden max-w-xs transform transition duration-300 hover:scale-105 hover:shadow-lg">
+                <a href={`/detail/${item.id}`}>
                   <img
                     alt={item.size_name}
                     src={item.img_thumbnail}
-                    style={{
-                      height: "200px",
-                      width: "100%",
-                      objectFit: "cover",
-                      borderRadius: "12px",
-                      opacity: 0.5, // Mờ đi nếu hết phòng
-                    }}
+                    className="w-full h-64 object-cover"
                   />
-                  <div className="content mt-4">
-                    <h3 className="text-lg font-semibold text-gray-500">
-                      {item.size_name}
-                    </h3>
-                    <p className="text-sm text-gray-500">{item.description}</p>
-                    <p className="text-md font-semibold text-gray-500">
-                      Giá: {item.price.toLocaleString("vi-VN")} VNĐ
-                    </p>
-                    <div className="inline-block px-4 py-2 rounded-full text-sm font-medium bg-red-500 text-white">
-                      {item.statusroom}
-                    </div>
-                  </div>
+                </a>
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 truncate">
+                    {item.size_name}
+                  </h3>
+                  <p className="text-gray-600 mt-1">Giá: <span className="font-medium text-green-500">{item.price.toLocaleString("vi-VN")} VNĐ</span></p>
+                  <p className="text-gray-600">Còn <span className="font-medium">{(item.quantity) - (item.is_booked)} phòng</span></p>
+                  <a
+                    href={`/detail/${item.id}`}
+                    className="block mt-4 bg-blue-500 text-white text-center py-2 rounded-md hover:bg-blue-600"
+                  >
+                    Xem chi tiết
+                  </a>
                 </div>
-              )}
+              </div>
             </Col>
           ))}
         </Row>
 
         <div className="mt-12 w-full text-center">
           <Button type="primary" href="/danhsach" className="mr-4 bg-[#064749]">
-            Xem chi tiết
+            Danh sách phòng
           </Button>
         </div>
       </div>
@@ -389,10 +362,11 @@ const HomePage = () => {
       <Row
         gutter={[16, 16]}
         justify="center"
-        className="mt-6 mb-20"
+        align="middle"
+        className="mt-6 mb-10 w-[85%]"
         data-aos="fade-up"
       >
-        {service?.slice(0, 3).map((service) => (
+        {service?.map((service) => (
           <Col key={service.id} xs={24} sm={12} md={8} lg={6}>
             <Card
               hoverable
@@ -401,9 +375,10 @@ const HomePage = () => {
                   alt={service.name}
                   src={service.image}
                   style={{
-                    height: "350px",
+                    height: "250px",
                     objectFit: "cover",
-                    width: "100%",
+                    maxWidth: "100%",
+                    margin: "0 auto",
                   }}
                 />
               }
@@ -412,6 +387,7 @@ const HomePage = () => {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
+                textAlign: "center",
               }}
             >
               <Card.Meta title={service.name} />
@@ -426,6 +402,7 @@ const HomePage = () => {
           </Col>
         ))}
       </Row>
+
 
       <Modal
         title={currentService?.name}

@@ -273,7 +273,7 @@ const Detail = () => {
             ? `Còn ${room?.quantity - room?.is_booked} phòng`
             : "Không còn phòng"}
         </p>
-       
+
 
         <Modal
           title="Chi tiết đánh giá"
@@ -289,11 +289,10 @@ const Detail = () => {
                 <button
                   key={star}
                   onClick={() => setFilterRating(star)}
-                  className={`px-2 py-1 rounded-full ${
-                    filterRating === star
-                      ? "bg-gray-300 text-white"
-                      : "border text-gray-700"
-                  }`}
+                  className={`px-2 py-1 rounded-full ${filterRating === star
+                    ? "bg-gray-300 text-white"
+                    : "border text-gray-700"
+                    }`}
                 >
                   {Array(star)
                     .fill(null)
@@ -347,6 +346,24 @@ const Detail = () => {
         </Modal>
       </div>
 
+      <div className="flex items-center mt-3">
+        <div className="flex items-center gap-2 text-yellow-500">
+          <StarFilled className="text-2xl" />
+          <span className="text-xl font-semibold text-gray-800">
+            {averageRating.toFixed(1)} / 5
+          </span>
+          <span className="text-gray-500 text-sm">
+            ({ratings.length} lượt đánh giá)
+          </span>
+        </div>
+        <button
+          onClick={openPopup1}
+          className="px-4 py-2 ms-10 text-sm rounded-lg border bg-yellow-500 text-white hover:bg-yellow-600"
+        >
+          Xem đánh giá
+        </button>
+      </div>
+
       <form onSubmit={handleSubmit}>
         {message && (
           <div className="bg-red-100 text-red-600 px-4 py-2 rounded-md mb-4">
@@ -397,25 +414,8 @@ const Detail = () => {
               <h3 className="text-xl font-semibold">Mô tả</h3>
               <p className="text-gray-700">{room?.description}</p>
             </div>
-            <div className="flex items-center justify-between mt-3">
-          <div className="flex items-center gap-2 text-yellow-500">
-            <StarFilled className="text-2xl" />
-            <span className="text-xl font-semibold text-gray-800">
-              {averageRating.toFixed(1)} / 5
-            </span>
-            <span className="text-gray-500 text-sm">
-              ({ratings.length} lượt đánh giá)
-            </span>
           </div>
-          <button
-            onClick={openPopup1}
-            className="px-4 py-2 text-sm rounded-lg border bg-yellow-500 text-white hover:bg-yellow-600"
-          >
-            Xem đánh giá
-          </button>
-        </div>
-          </div>
-          
+
 
           <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-[200px]">
             <h2 className="text-xl font-semibold text-gray-800">
