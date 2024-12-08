@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Models\Rating;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -37,6 +38,7 @@ class RatingController extends Controller
             'content' => 'required|string|max:1000',
             'room_id' => 'required|integer|exists:rooms,id',
             'user_id' => 'required|integer|exists:users,id',
+            'payment_id' => 'required|integer|exists:payments,id',
         ]);
 
         if ($validator->fails()) {
@@ -49,20 +51,32 @@ class RatingController extends Controller
             try {
                 $params = $request->all();
 
-                if (!isset($params['user_id'])) {
+                if (!isset($params['user_id']) || !isset($params['payment_id'])) {
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'user_id không tồn tại trong request.'
+                        'message' => 'user_id hoặc payment_id không tồn tại trong request.'
                     ], 400);
                 }
 
                 $user = User::find($params['user_id']);
+                $payment = Payment::find($params['payment_id']);
 
-                if (!$user) {
+                if (!$user || !$payment) {
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'Người dùng không hợp lệ.'
+                        'message' => 'Người dùng hoặc thanh toán không hợp lệ.'
                     ], 404);
+                }
+
+                $existRating=Rating::where('user_id',$params['user_id'])
+                    ->where('payment_id', $params['payment_id'])
+                    ->first();
+
+                if ($existRating) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Bạn đã đánh giá rồi!'
+                    ], 400);
                 }
 
                 $rating = new Rating();
@@ -70,6 +84,7 @@ class RatingController extends Controller
                 $rating->content = $params['content'];
                 $rating->room_id = $params['room_id'];
                 $rating->user_id = $user->id;
+                $rating->payment_id=$payment->id;
 
                 $rating->save();
 
