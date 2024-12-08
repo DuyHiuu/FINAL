@@ -50,12 +50,17 @@ const DetailPay = () => {
             if (!res.ok) {
                 throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
             }
+    
             setSelectedStatus(statusId);
-            navigate('/admin/payments');
+    
+            // Tải lại trang
+            window.location.reload();
         } catch (error) {
-            console.log(error);
+            console.error("Lỗi khi cập nhật trạng thái:", error);
+            alert("Có lỗi xảy ra. Vui lòng thử lại.");
         }
     };
+    
 
     if (!data) {
         return <p>Đang tải dữ liệu...</p>;
