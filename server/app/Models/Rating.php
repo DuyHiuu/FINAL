@@ -10,7 +10,7 @@ class Rating extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['room_id', 'user_id', 'rating', 'content'];
+    protected $fillable = ['room_id', 'user_id','payment_id', 'rating', 'content'];
 
     public function room()
     {
@@ -21,4 +21,9 @@ class Rating extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class,'payment_id');
+    }
+
 }

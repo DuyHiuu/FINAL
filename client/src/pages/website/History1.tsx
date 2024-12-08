@@ -24,7 +24,9 @@ const History1 = () => {
   const [endDate, setEndDate] = useState<moment.Moment | null>(null);
   const [filteredPayments, setFilteredPayments] = useState(payment || []);
   const [rating, setRating] = useState<{ [key: string]: number }>({});
-  const [ratingContent, setRatingContent] = useState<{ [key: string]: string }>({});
+  const [ratingContent, setRatingContent] = useState<{ [key: string]: string }>(
+    {}
+  );
   const [hasRated, setHasRated] = useState<{ [key: string]: boolean }>({});
   const [selectedStatus, setSelectedStatus] = useState("");
   const totalRoomsBooked = Array.isArray(filteredPayments)
@@ -35,7 +37,6 @@ const History1 = () => {
 
   console.log(payment);
 
-
   useEffect(() => {
     const storedRatings = JSON.parse(localStorage.getItem("ratings") || "{}");
     setHasRated(storedRatings);
@@ -43,7 +44,8 @@ const History1 = () => {
     setFilteredPayments(payment);
   }, [payment]);
 
-  const handleStartDateChange = (date: moment.Moment | null) => setStartDate(date);
+  const handleStartDateChange = (date: moment.Moment | null) =>
+    setStartDate(date);
   const handleEndDateChange = (date: moment.Moment | null) => setEndDate(date);
 
   const handleSearch = () => {
@@ -56,24 +58,28 @@ const History1 = () => {
       const bookingStartDate = new Date(item.booking?.start_date);
       const bookingEndDate = new Date(item.booking?.end_date);
 
-      const isStartDateEqual = startDate ? bookingStartDate.toDateString() === new Date(startDate).toDateString() : true;
-      const isEndDateEqual = endDate ? bookingEndDate.toDateString() === new Date(endDate).toDateString() : true;
+      const isStartDateEqual = startDate
+        ? bookingStartDate.toDateString() === new Date(startDate).toDateString()
+        : true;
+      const isEndDateEqual = endDate
+        ? bookingEndDate.toDateString() === new Date(endDate).toDateString()
+        : true;
 
-      const matchesStatus = !selectedStatus || String(item.status?.id) === selectedStatus;
+      const matchesStatus =
+        !selectedStatus || String(item.status?.id) === selectedStatus;
 
       const matchesDate =
-        (startDate && !endDate)
+        startDate && !endDate
           ? isStartDateEqual
-          : (endDate && !startDate)
-            ? isEndDateEqual
-            : isStartDateEqual && isEndDateEqual;
+          : endDate && !startDate
+          ? isEndDateEqual
+          : isStartDateEqual && isEndDateEqual;
 
       return matchesDate && matchesStatus;
     });
 
     setFilteredPayments(filtered);
   };
-
 
   const handleReset = () => {
     setStartDate(null);
@@ -87,11 +93,18 @@ const History1 = () => {
     setRating((prev) => ({ ...prev, [itemId]: value }));
   };
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>, itemId: string) => {
+  const handleContentChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+    itemId: string
+  ) => {
     setRatingContent((prev) => ({ ...prev, [itemId]: e.target.value }));
   };
 
-  const submitRating = async (itemId: string, roomId: number) => {
+  const submitRating = async (
+    itemId: string,
+    roomId: number,
+    paymentId: number
+  ) => {
     const token = `Bearer ${localStorage.getItem("auth_token")}`;
 
     if (!token) {
@@ -112,6 +125,7 @@ const History1 = () => {
           content: ratingContent[itemId],
           room_id: roomId,
           user_id: userID,
+          payment_id: paymentId,
         },
         {
           headers: {
@@ -163,9 +177,11 @@ const History1 = () => {
             filteredPayments.map((item) => {
               const formattedId = convertIdToCustomString(item?.id);
               return (
-                <Card key={item?.id}
+                <Card
+                  key={item?.id}
                   className="mb-6 hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-                  hoverable>
+                  hoverable
+                >
                   <div className="flex items-start">
                     <img
                       alt={`image-${formattedId}`}
@@ -186,61 +202,63 @@ const History1 = () => {
                               className="inline-flex items-center px-3 py-1 rounded-full mb-3"
                               style={{
                                 backgroundColor:
-                                  item.status?.id === 1 ? "#fcd34d" :
-                                    item.status?.id === 2 ? "#10b981" :
-                                      item.status?.id === 4 ? "#10b981" :
-                                        item.status?.id === 5 ? "#5F9EA0" :
-                                          item.status?.id === 6 ? "#0000FF" :
-                                            item.status?.id === 7 ? "#FF0000" : "#e5e7eb",
+                                  item.status?.id === 1
+                                    ? "#fcd34d"
+                                    : item.status?.id === 2
+                                    ? "#10b981"
+                                    : item.status?.id === 4
+                                    ? "#10b981"
+                                    : item.status?.id === 5
+                                    ? "#5F9EA0"
+                                    : item.status?.id === 6
+                                    ? "#0000FF"
+                                    : item.status?.id === 7
+                                    ? "#FF0000"
+                                    : "#e5e7eb",
                               }}
                             >
                               <Text
                                 className="text-sm"
                                 style={{
-                                  color: "#fff"
+                                  color: "#fff",
                                 }}
                               >
                                 {item.status?.status_name}
                               </Text>
                             </div>
-
                             <div>
                               <div className="text-black font-semibold">
-                                Phòng:{" "}
-                                {item.booking?.room?.size?.name}
-                                {" "}
+                                Phòng: {item.booking?.room?.size?.name}{" "}
                               </div>
                             </div>
-
                             <div>
                               <div className="text-black font-semibold">
                                 Ngày Check-in:{" "}
-                                {`${moment(item.booking?.start_date).format("DD-MM-YYYY"
+                                {`${moment(item.booking?.start_date).format(
+                                  "DD-MM-YYYY"
                                 )}`}{" "}
                               </div>
                             </div>
-
                             <div>
                               <div className="text-black font-semibold">
                                 Ngày Check-out:{" "}
-                                {`${moment(item.booking?.end_date).format("DD-MM-YYYY"
+                                {`${moment(item.booking?.end_date).format(
+                                  "DD-MM-YYYY"
                                 )}`}{" "}
                               </div>
                             </div>
-
                             <div>
                               <div className="text-black font-semibold">
-                                Phương thức thanh toán:{" "}
-                                {item.pay_method?.name}
-                                {" "}
+                                Phương thức thanh toán: {item.pay_method?.name}{" "}
                               </div>
                             </div>
-
                             <div className="mt-2 font-semibold text-black">
                               Tổng tiền:{" "}
-                              {Math.trunc(item.total_amount).toLocaleString("vi-VN")} VNĐ
+                              {Math.trunc(item.total_amount).toLocaleString(
+                                "vi-VN"
+                              )}{" "}
+                              VNĐ
                             </div>
-
                             <div className="mt-2">
                               <a
                                 href={`/history2/${item.id}`}
@@ -270,7 +288,11 @@ const History1 = () => {
                                   type="primary"
                                   size="small"
                                   onClick={() =>
-                                    submitRating(item.id, item.booking.room.id)
+                                    submitRating(
+                                      item.id,
+                                      item.booking.room.id,
+                                      item.id
+                                    )
                                   }
                                   disabled={
                                     !rating[item.id] || !ratingContent[item.id]
@@ -282,8 +304,11 @@ const History1 = () => {
                               </div>
                             )}
                             {hasRated[item.id] && (
-                              <div className="mt-2 text-green-500">Bạn đã đánh giá phòng này.</div>
-                            )} </>
+                              <div className="mt-2 text-green-500">
+                                Bạn đã đánh giá phòng này.
+                              </div>
+                            )}{" "}
+                          </>
                         }
                       />
                     </div>
@@ -341,11 +366,7 @@ const History1 = () => {
               Tìm kiếm
             </Button>
 
-            <Button
-              type="default"
-              onClick={handleReset}
-              block
-            >
+            <Button type="default" onClick={handleReset} block>
               Xóa
             </Button>
           </div>
