@@ -124,6 +124,19 @@ const History2 = () => {
     setIsModalVisible(false);
   };
 
+  const totalServicePrice = servicesData?.reduce((total, item) => {
+    if (item.id === 2 && moment(bookingData?.end_date).diff(moment(bookingData?.start_date), 'days') >= 3) {
+      const multiplier = Math.floor(
+        moment(bookingData?.end_date).diff(
+          moment(bookingData?.start_date),
+          'days'
+        ) / 3
+      );
+      return total + item.price * multiplier;
+    }
+    return total + item.price;
+  }, 0);
+
   return (
     <div className="flex flex-col lg:flex-row pb-20 mt-24">
       <div className="lg:w-1/2 p-4 mx-auto">
@@ -237,10 +250,42 @@ const History2 = () => {
           />
 
           <Title level={3}>{sizeData}</Title>
-          <Text>{roomData?.description}</Text>
+
+          <Row justify="space-between" className="mt-3 w-full">
+            <Col span={12}>
+              <Text className='font-semibold'>Giá phòng:</Text>
+            </Col>
+            <Col span={12} className="text-right">
+              <Text className='font-semibold'>{roomData?.price.toLocaleString("vi-VN")} VNĐ</Text>
+            </Col>
+          </Row>
+
+          <Row justify="space-between" className="w-full">
+            <Col span={12}>
+              <Text className='font-semibold'>Số ngày thuê:</Text>
+              <div className="my-2" />
+            </Col>
+            <Col span={12} className="text-right">
+              <Text className='font-semibold'>{moment(bookingData?.end_date).diff(moment(bookingData?.start_date), 'days')} ngày</Text>
+              <div className="my-2" />
+            </Col>
+          </Row>
+
+          <Row justify="space-between" className="w-full">
+            <Col span={12}>
+              <Text className='font-semibold'>Tổng giá phòng:</Text>
+            </Col>
+            <Col span={12} className="text-right">
+              <Text className='font-semibold'>{(roomData?.price * moment(bookingData?.end_date).diff(moment(bookingData?.start_date), 'days')).toLocaleString("vi-VN")} VNĐ</Text>
+              <div className="my-2" />
+            </Col>
+          </Row>
+
+          <Divider />
 
           <Row gutter={16} className="mt-5 mb-10">
             <Col span={12}>
+              <strong>Ngày check-in</strong>
               <DatePicker
                 value={moment(bookingData?.start_date)}
                 disabled
@@ -248,6 +293,7 @@ const History2 = () => {
               />
             </Col>
             <Col span={12}>
+              <strong>Ngày check-out</strong>
               <DatePicker
                 value={moment(bookingData?.end_date)}
                 disabled
@@ -272,14 +318,13 @@ const History2 = () => {
                       className="mr-2 appearance-none bg-[#064749] border-2 rounded-full w-4 h-4 cursor-pointer"
                     />
                     <span>{item.name} ({item.price.toLocaleString("vi-VN")} VNĐ)
-                      {item.id === 2
+                      {item.id === 2 && moment(bookingData?.end_date).diff(moment(bookingData?.start_date), 'days') >= 3
                         ? `x ${Math.floor(
                           moment(bookingData?.end_date).diff(
                             moment(bookingData?.start_date),
                             'days'
                           ) / 3
-                        )}`
-                        : ""}
+                        )}` : ""}
                     </span>
                   </label>
                 </div>
@@ -288,6 +333,17 @@ const History2 = () => {
               <Text className="text-gray-500">Không sử dụng dịch vụ.</Text>
             )}
           </div>
+
+          <Row justify="space-between" className="mt-4 w-full">
+            <Col span={12} className="text-left">
+              <Text className='font-semibold'>Tổng phí dịch vụ:</Text>
+            </Col>
+            <Col span={12} className="text-right">
+              <Text className='font-semibold'> {totalServicePrice.toLocaleString("vi-VN")} VNĐ</Text>
+            </Col>
+          </Row>
+
+          <Divider />
 
           <h3 className="text-left text-2xl font-semibold mt-10">
             Voucher
@@ -310,6 +366,16 @@ const History2 = () => {
               <span>Không sử dụng voucher</span>
             </div>
           )}
+
+          <Row justify="space-between" className="mt-4 w-full">
+            <Col span={12} className="text-left">
+              <Text className='font-semibold'>Giảm giá:</Text>
+            </Col>
+            <Col span={12} className="text-right">
+              <Text className='font-semibold'> {(roomData?.price * moment(bookingData?.end_date).diff(moment(bookingData?.start_date), 'days')
+                + totalServicePrice - (paymentData.payment.total_amount)).toLocaleString("vi-VN")} VNĐ</Text>
+            </Col>
+          </Row>
 
 
           <Divider />
