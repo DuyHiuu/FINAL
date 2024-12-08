@@ -266,14 +266,35 @@ const Detail = () => {
         </div>
       )}
 
-      <div className="mt-8 max-w-md">
-        <h1 className="text-3xl font-bold">{room?.size_name}</h1>
-        <p className="text-green-500">
-          {room?.statusroom === "Còn phòng"
-            ? `Còn ${room?.quantity - room?.is_booked} phòng`
-            : "Không còn phòng"}
-        </p>
-
+<div className="mt-8 max-w-md">
+  <h1 className="text-3xl font-bold">{room?.size_name}</h1>
+  <p
+    className={`${
+      room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
+    }`}
+  >
+    {room?.statusroom === "Còn phòng"
+      ? `Còn ${room?.quantity - room?.is_booked} phòng`
+      : "Không còn phòng"}
+  </p>
+  <div className="flex items-center justify-between mt-3">
+          <div className="flex items-center gap-2 text-yellow-500">
+            <StarFilled className="text-2xl" />
+            <span className="text-xl font-semibold text-gray-800">
+              {averageRating.toFixed(1)} / 5
+            </span>
+            <span className="text-gray-500 text-sm">
+              ({ratings.length} lượt đánh giá)
+            </span>
+          </div>
+          <button
+            onClick={openPopup1}
+            className="px-4 py-2 text-sm rounded-lg border bg-yellow-500 text-white hover:bg-yellow-600"
+          >
+            Xem đánh giá
+          </button>
+        </div>
+       
 
         <Modal
           title="Chi tiết đánh giá"
@@ -289,10 +310,11 @@ const Detail = () => {
                 <button
                   key={star}
                   onClick={() => setFilterRating(star)}
-                  className={`px-2 py-1 rounded-full ${filterRating === star
-                    ? "bg-gray-300 text-white"
-                    : "border text-gray-700"
-                    }`}
+                  className={`px-2 py-1 rounded-full ${
+                    filterRating === star
+                      ? "bg-gray-300 text-white"
+                      : "border text-gray-700"
+                  }`}
                 >
                   {Array(star)
                     .fill(null)
@@ -346,24 +368,6 @@ const Detail = () => {
         </Modal>
       </div>
 
-      <div className="flex items-center mt-3">
-        <div className="flex items-center gap-2 text-yellow-500">
-          <StarFilled className="text-2xl" />
-          <span className="text-xl font-semibold text-gray-800">
-            {averageRating.toFixed(1)} / 5
-          </span>
-          <span className="text-gray-500 text-sm">
-            ({ratings.length} lượt đánh giá)
-          </span>
-        </div>
-        <button
-          onClick={openPopup1}
-          className="px-4 py-2 ms-10 text-sm rounded-lg border bg-yellow-500 text-white hover:bg-yellow-600"
-        >
-          Xem đánh giá
-        </button>
-      </div>
-
       <form onSubmit={handleSubmit}>
         {message && (
           <div className="bg-red-100 text-red-600 px-4 py-2 rounded-md mb-4">
@@ -414,8 +418,9 @@ const Detail = () => {
               <h3 className="text-xl font-semibold">Mô tả</h3>
               <p className="text-gray-700">{room?.description}</p>
             </div>
+           
           </div>
-
+          
 
           <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-[200px]">
             <h2 className="text-xl font-semibold text-gray-800">
@@ -460,12 +465,13 @@ const Detail = () => {
             </div>
 
             <Button
-              type="primary"
-              htmlType="submit"
-              className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
-            >
-              Đặt phòng
-            </Button>
+          type="primary"
+          htmlType="submit"
+          className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
+          disabled={room?.statusroom !== "Còn phòng"}
+        >
+          Đặt phòng
+        </Button>
           </div>
         </div>
       </form>
