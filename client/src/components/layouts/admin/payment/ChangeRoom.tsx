@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Text } from 'recharts';
 
-const DetailPay = () => {
+const ChangeRoom = () => {
 
     const showUrl = "http://localhost:8000/api/payments";
 
@@ -50,8 +50,6 @@ const DetailPay = () => {
             if (!res.ok) {
                 throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
             }
-            setSelectedStatus(statusId);
-            navigate('/admin/payments');
         } catch (error) {
             console.log(error);
         }
@@ -356,4 +354,4 @@ const DetailPay = () => {
     );
 }
 
-export default DetailPay;
+export default ChangeRoom;
