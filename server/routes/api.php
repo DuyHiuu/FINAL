@@ -136,11 +136,10 @@ Route::prefix('payments')->group(function () {
     Route::post('/pay_on_check', [PaymentController::class, 'check_payment']);
     Route::get('/{id}', [PaymentController::class, 'show']);
     Route::put('/{id}', [PaymentController::class, 'update']);
-    Route::put('/{id}/detail', [PaymentController::class, 'updatePaymentDetails']);
     Route::delete('/{id}', [PaymentController::class, 'destroy']);
     Route::post('/cancel_pay/{id}', [PaymentController::class, 'cancelPay']);
     Route::post('/return_pay', [PaymentController::class, 'returnPay']);
-    Route::put('/{id}/changeStatus', [PaymentController::class, 'changeStatus']);
+    Route::put('/{id}/changeStatus', [PaymentController::class, 'updatePaymentDetails']);
 });
 
 Route::prefix('users')->group(function () {
