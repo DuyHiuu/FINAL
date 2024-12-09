@@ -178,7 +178,6 @@ class BookingController extends Controller
                 ],
                 'start_hour' => [
                     'required',
-                    'in:09:00,14:00', // Chỉ cho phép 09:00 hoặc 14:00
                 ],
                 'room_id' => 'required|exists:rooms,id',
             ],
@@ -200,12 +199,19 @@ class BookingController extends Controller
             return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
         }
 
+        $allowedHours = ['09:00', '14:00'];
+        if (!in_array($request->input('start_hour'), $allowedHours)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Giờ bắt đầu chỉ được phép là 09:00 hoặc 14:00.'
+            ], 400);
+        }
+
+        $startHour = $request->input('start_hour'); // Ví dụ: 09:00
+        $endHour = $startHour === '09:00' ? '09:00 ngày hôm sau' : '14:00 ngày hôm sau';
+
         $startHour = $request->input('start_hour');
         $endHour = Carbon::parse($startHour)->addDay()->format('H:i'); // nếu dùng kiểu dl là time
-
-        // $startHour = Carbon::parse($request->start_date . ' ' . $request->start_hour);
-        // $endHour = $startHour->addDay(); // nếu dùng dl datetime
-
 
         $roomID = $request->input('room_id');
         $room = Room::findOrFail($roomID);
@@ -216,7 +222,6 @@ class BookingController extends Controller
             'end_date' => $request->input('end_date'),
             'start_hour' => $startHour, //
             'end_hour' => $endHour, //
-            'voucher_id' => $request->input('voucher_id')
         ]);
 
         // Kiểm tra nếu có dịch vụ (service_ids không null)

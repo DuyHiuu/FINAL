@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker, Modal, Checkbox, Row, Col, Divider } from 'antd';
+import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker, Modal, Checkbox, Row, Col, Divider, TimePicker } from 'antd';
 import useFetchPayMethod from '../../api/useFetchPayMethod';
 import { PulseLoader } from 'react-spinners';
 import moment from 'moment';
@@ -202,8 +202,6 @@ const Pay2 = () => {
         }
 
         try {
-
-            if (paymethod_id == 2) {
                 const response = await fetch(`${addPay}/vn_pay`, {
                     method: "POST",
                     body: formData,
@@ -224,19 +222,6 @@ const Pay2 = () => {
                     alert("Thanh toán không thành công, vui lòng thử lại.");
                     setIsLoading(false);
                 }
-            } else {
-                const response = await fetch(`${addPay}`, {
-                    method: "POST",
-                    body: formData,
-                });
-                if (response.ok) {
-                    setIsLoading(false);
-                    navigate("/history1");
-                } else {
-                    console.error("Error:", response.statusText);
-                    setIsLoading(false);
-                }
-            }
 
         } catch (error) {
             console.error("API connection error:", error);
@@ -549,6 +534,25 @@ const Pay2 = () => {
                             </Row>
 
                             <Divider />
+
+                            <Row gutter={16} className="mb-8">
+                                <Col span={12}>
+                                    <strong>Giờ check-in</strong>
+                                    <TimePicker
+                                        value={booking?.booking?.start_hour ? moment(booking?.booking?.start_hour, "HH:mm:ss") : null}
+                                        disabled
+                                        style={{ width: '100%' }}
+                                    />
+                                </Col>
+                                <Col span={12}>
+                                    <strong>Giờ check-out</strong>
+                                    <TimePicker
+                                        value={booking?.booking?.end_hour ? moment(booking?.booking?.end_hour, "HH:mm:ss") : null}
+                                        disabled
+                                        style={{ width: '100%' }}
+                                    />
+                                </Col>
+                            </Row>
 
                             <Row gutter={16} className="mb-8">
                                 <Col span={12}>
