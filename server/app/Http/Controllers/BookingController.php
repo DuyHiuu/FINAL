@@ -200,11 +200,11 @@ class BookingController extends Controller
             return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
         }
 
-        // $startHour = $request->input('start_hour');
-        // $endHour = Carbon::parse($startHour)->addDay()->format('H:i'); // nếu dùng kiểu dl là time
+        $startHour = $request->input('start_hour');
+        $endHour = Carbon::parse($startHour)->addDay()->format('H:i'); // nếu dùng kiểu dl là time
 
-        $startHour = Carbon::parse($request->start_date . ' ' . $request->start_hour);
-        $endHour = $startHour->addDay(); // nếu dùng dl datetime
+        // $startHour = Carbon::parse($request->start_date . ' ' . $request->start_hour);
+        // $endHour = $startHour->addDay(); // nếu dùng dl datetime
 
 
         $roomID = $request->input('room_id');

@@ -138,7 +138,7 @@ export const router = createBrowserRouter([
       { path: "/admin/payments", element: <ListPay /> },
       { path: "/admin/payments/detail/:id", element: <DetailPay /> },
       { path: "/admin/chart", element: <Chart /> },
-      { path: "/admin/change_room", element: <ChangeRoom /> },
+      { path: "/admin/change_room/:id", element: <ChangeRoom /> },
 
     ],
   },
