@@ -195,19 +195,19 @@ class PaymentController extends Controller
             $fieldsToUpdate = [];
             $totalAmountOld = $payment->total_amount; // Lưu lại tổng tiền cũ
 
-            // Nếu có yêu cầu thay đổi thông tin
-            if ($request->has('pet_name')) {
-                $fieldsToUpdate['pet_name'] = $request->input('pet_name');
-            }
-            if ($request->has('pet_type')) {
-                $fieldsToUpdate['pet_type'] = $request->input('pet_type');
-            }
-            if ($request->has('pet_description')) {
-                $fieldsToUpdate['pet_description'] = $request->input('pet_description');
-            }
-            if ($request->has('pet_health')) {
-                $fieldsToUpdate['pet_health'] = $request->input('pet_health');
-            }
+            // // Nếu có yêu cầu thay đổi thông tin
+            // if ($request->has('pet_name')) {
+            //     $fieldsToUpdate['pet_name'] = $request->input('pet_name');
+            // }
+            // if ($request->has('pet_type')) {
+            //     $fieldsToUpdate['pet_type'] = $request->input('pet_type');
+            // }
+            // if ($request->has('pet_description')) {
+            //     $fieldsToUpdate['pet_description'] = $request->input('pet_description');
+            // }
+            // if ($request->has('pet_health')) {
+            //     $fieldsToUpdate['pet_health'] = $request->input('pet_health');
+            // }
 
 
             if ($request->has('room_id')) {

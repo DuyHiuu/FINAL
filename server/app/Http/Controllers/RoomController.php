@@ -23,12 +23,11 @@ class RoomController extends Controller
                 'rooms.*',
                 'sizes.name as size_name',
                 'sizes.description as size_description',
-                'rooms.size_id'
+                'sizes.id as size_id'
             )
             ->orderBy('rooms.id', 'desc')
             ->whereNull('rooms.deleted_at')
             ->get();
-        $room->makeHidden(['size_id']);
         return response()->json($room);
     }
 
