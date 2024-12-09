@@ -456,7 +456,7 @@ class PaymentController extends Controller
                     }
                 }
 
-                // Mặc định status_id = 1 khi thêm
+                // Mặc định status_id = 3 khi thêm
 
                 $params['status_id'] = $params['status_id'] ?? 3;
 
