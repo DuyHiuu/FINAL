@@ -16,6 +16,7 @@ import {
   Modal,
   notification,
   TimePicker,
+  Alert,
 } from "antd";
 import moment from "moment";
 import TextArea from "antd/es/input/TextArea";
@@ -429,8 +430,34 @@ const Detail = () => {
 
           </div>
 
-
-          <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-[280px]">
+          <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-auto">
+            <div>
+              <Alert
+                message="Quy định Check-in và Check-out"
+                description={
+                  <>
+                    <p className="flex items-center text-red-500">
+                      <span className="mr-2">✔️</span> Giờ check-in: 9:00 hoặc 14:00 (Chọn bên dưới) của ngày check-in
+                    </p>
+                    <p className="flex items-center text-red-500">
+                      <span className="mr-2">✔️</span> Giờ check-out: 9:00 hoặc 14:00 (Chọn theo ngày check-in) của ngày check-out
+                    </p>
+                    <p className="flex items-center text-red-500">
+                      <span className="mr-2">✔️</span> Nếu quá giờ check-in 3 tiếng, chúng tôi sẽ hủy phòng của
+                      bạn và sẽ không được hoàn tiền
+                    </p>
+                    <p className="flex items-center text-red-500">
+                      <span className="mr-2">✔️</span> Nếu quá giờ check-in 3 tiếng, chúng tôi sẽ tự động gia hạn phòng của
+                      bạn thêm 1 ngày và bạn sẽ phải chi trả khoản tiền đó
+                    </p>
+                  </>
+                }
+                type="warning"
+                showIcon
+                icon={<StarFilled className="text-red-500" />}
+                className="mb-6"
+              />
+            </div>
             <h2 className="text-xl font-semibold text-gray-800">
               {room?.price?.toLocaleString("vi-VN")} VNĐ / ngày
             </h2>
@@ -443,12 +470,16 @@ const Detail = () => {
                 placeholder="Chọn giờ check-in"
                 className="w-full mt-1 text-sm"
                 format="HH:mm"
-                disabledHours={() => [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23]}
-                minuteStep={30}
+                disabledHours={() => {
+                  const allowedHours = [9, 14];
+                  return Array.from({ length: 24 }, (_, i) => i).filter((hour) => !allowedHours.includes(hour));
+                }}
+                disabledMinutes={() => {
+                  return Array.from({ length: 60 }, (_, i) => i).filter((minute) => minute !== 0);
+                }}
+                showNow={false}
               />
             </div>
-
-
             <div className="mt-4 flex justify-between items-center space-x-3">
               <div className="w-1/2">
                 <label className="block text-black text-sm font-bold">

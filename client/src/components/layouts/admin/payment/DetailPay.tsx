@@ -50,9 +50,9 @@ const DetailPay = () => {
             if (!res.ok) {
                 throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
             }
-    
+
             setSelectedStatus(statusId);
-    
+
             // Tải lại trang
             window.location.reload();
         } catch (error) {
@@ -60,7 +60,7 @@ const DetailPay = () => {
             alert("Có lỗi xảy ra. Vui lòng thử lại.");
         }
     };
-    
+
 
     if (!data) {
         return <p>Đang tải dữ liệu...</p>;
@@ -74,9 +74,6 @@ const DetailPay = () => {
     const sizeData = paymentData.size;
     const status_pay = paymentData.status_pay;
     const voucherData = paymentData.voucher;
-
-    console.log(paymentData.payment?.status_id);
-
 
     const status_id = paymentData.payment?.status_id;
 
@@ -332,17 +329,21 @@ const DetailPay = () => {
                         )}
 
                         <div className="flex items-center mt-3">
-                            <button className="bg-[#064749] text-white font-bold py-2 px-4 rounded">
-                                <a href={`/admin/change_room/${id}`}>Đổi phòng</a>
-                            </button>
-                            <div className="relative group ml-2">
-                                <div className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold cursor-pointer">
-                                    !
-                                </div>
-                                <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-max px-3 py-2 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                                    Đổi phòng dành cho thú cưng lớn hơn kích cỡ quy định
-                                </div>
-                            </div>
+                            {paymentData?.payment?.status_id < 5 && paymentData?.room?.size?.id < 4 && (
+                                <>
+                                    <button className="bg-[#064749] text-white font-bold py-2 px-4 rounded">
+                                        <a href={`/admin/change_room/${id}`}>Đổi phòng</a>
+                                    </button>
+                                    <div className="relative group ml-2">
+                                        <div className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold cursor-pointer">
+                                            !
+                                        </div>
+                                        <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-max px-3 py-2 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                            Đổi phòng dành cho thú cưng lớn hơn kích cỡ quy định
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
