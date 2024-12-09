@@ -13,7 +13,8 @@ import {
   Space,
   Select,
   Divider,
-  Modal
+  Modal,
+  TimePicker
 } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import moment from "moment";
@@ -282,6 +283,25 @@ const History2 = () => {
           </Row>
 
           <Divider />
+
+          <Row gutter={16} className="mb-8">
+            <Col span={12}>
+              <strong>Giờ check-in</strong>
+              <TimePicker
+                value={bookingData?.start_hour ? moment(bookingData?.start_hour, "HH:mm:ss") : null}
+                disabled
+                style={{ width: '100%' }}
+              />
+            </Col>
+            <Col span={12}>
+              <strong>Giờ check-out</strong>
+              <TimePicker
+                value={bookingData?.end_hour ? moment(bookingData?.end_hour, "HH:mm:ss") : null}
+                disabled
+                style={{ width: '100%' }}
+              />
+            </Col>
+          </Row>
 
           <Row gutter={16} className="mt-5 mb-10">
             <Col span={12}>

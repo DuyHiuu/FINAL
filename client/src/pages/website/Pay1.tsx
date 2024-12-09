@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PulseLoader } from "react-spinners";
-import { Card, Button, Row, Col, Typography, DatePicker, Divider } from 'antd';
+import { Card, Button, Row, Col, Typography, DatePicker, Divider, TimePicker } from 'antd';
 import moment from 'moment';
 
 const { Title, Text } = Typography;
@@ -80,6 +80,8 @@ const Pay1 = () => {
   const toPay = () => {
     navigate(`/pay2/${id}`);
   };
+
+  console.log(booking?.booking?.start_hour);
 
   if (loading) {
     return (
@@ -183,6 +185,25 @@ const Pay1 = () => {
           }
         >
           <Title level={4} className="text-center text-[#333]">{room?.size_name}</Title>
+
+          <Row gutter={16} className="mb-8">
+            <Col span={12}>
+              <strong>Giờ check-in</strong>
+              <TimePicker
+                value={booking?.booking?.start_hour ? moment(booking?.booking?.start_hour, "HH:mm:ss") : null}
+                disabled
+                style={{ width: '100%' }}
+              />
+            </Col>
+            <Col span={12}>
+              <strong>Giờ check-out</strong>
+              <TimePicker
+                value={booking?.booking?.end_hour ? moment(booking?.booking?.end_hour, "HH:mm:ss") : null}
+                disabled
+                style={{ width: '100%' }}
+              />
+            </Col>
+          </Row>
 
           <Row gutter={16} className="mb-8">
             <Col span={12}>

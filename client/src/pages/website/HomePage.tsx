@@ -428,40 +428,42 @@ const HomePage = () => {
 
       <h2 className="text-2xl font-semibold mt-12">Blog</h2>
       <Row gutter={[16, 16]} justify="center" align="stretch" className="mt-6">
-        {blog?.slice(0, 3).map((item: any) => (
-          <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
-            <Card
-              hoverable
-              cover={
-                <img
-                  alt={item.title}
-                  src={item.image}
-                  style={{
-                    height: "200px",
-                    objectFit: "cover",
-                    width: "100%",
-                  }}
-                  data-aos="fade-up"
-                />
-              }
+  {blog?.slice(0, 3).map((item: any) => (
+    <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
+      <Link to={`/blog/${item.id}`}>
+        <Card
+          hoverable
+          cover={
+            <img
+              alt={item.title}
+              src={item.image}
               style={{
-                height: "450px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
+                height: "200px",
+                objectFit: "cover",
+                width: "100%",
               }}
-            >
-              <Card.Meta
-                title={item.title}
-                description={item.description}
-                style={{
-                  textAlign: "center",
-                }}
-              />
-            </Card>
-          </Col>
-        ))}
-      </Row>
+              data-aos="fade-up"
+            />
+          }
+          style={{
+            height: "450px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <Card.Meta
+            title={item.title}
+            description={item.description}
+            style={{
+              textAlign: "center",
+            }}
+          />
+        </Card>
+      </Link>
+    </Col>
+  ))}
+</Row>
 
       <div className="mt-12 w-full text-center">
         <Button

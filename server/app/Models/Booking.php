@@ -17,6 +17,8 @@ class Booking extends Model
         'quantity_service',
         'room_id',
         'service_id',
+        'start_hour',
+        'end_hour'
     ];
 
     public function room()

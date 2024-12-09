@@ -50,12 +50,17 @@ const DetailPay = () => {
             if (!res.ok) {
                 throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
             }
+    
             setSelectedStatus(statusId);
-            navigate('/admin/payments');
+    
+            // Tải lại trang
+            window.location.reload();
         } catch (error) {
-            console.log(error);
+            console.error("Lỗi khi cập nhật trạng thái:", error);
+            alert("Có lỗi xảy ra. Vui lòng thử lại.");
         }
     };
+    
 
     if (!data) {
         return <p>Đang tải dữ liệu...</p>;
@@ -328,7 +333,7 @@ const DetailPay = () => {
 
                         <div className="flex items-center mt-3">
                             <button className="bg-[#064749] text-white font-bold py-2 px-4 rounded">
-                                <a href="/admin/change_room">Đổi phòng</a>
+                                <a href={`/admin/change_room/${id}`}>Đổi phòng</a>
                             </button>
                             <div className="relative group ml-2">
                                 <div className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold cursor-pointer">

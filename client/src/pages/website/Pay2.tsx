@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker, Modal, Checkbox, Row, Col, Divider } from 'antd';
+import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker, Modal, Checkbox, Row, Col, Divider, TimePicker } from 'antd';
 import useFetchPayMethod from '../../api/useFetchPayMethod';
 import { PulseLoader } from 'react-spinners';
 import moment from 'moment';
@@ -202,8 +202,6 @@ const Pay2 = () => {
         }
 
         try {
-
-            if (paymethod_id == 2) {
                 const response = await fetch(`${addPay}/vn_pay`, {
                     method: "POST",
                     body: formData,
@@ -224,19 +222,6 @@ const Pay2 = () => {
                     alert("Thanh toán không thành công, vui lòng thử lại.");
                     setIsLoading(false);
                 }
-            } else {
-                const response = await fetch(`${addPay}`, {
-                    method: "POST",
-                    body: formData,
-                });
-                if (response.ok) {
-                    setIsLoading(false);
-                    navigate("/history1");
-                } else {
-                    console.error("Error:", response.statusText);
-                    setIsLoading(false);
-                }
-            }
 
         } catch (error) {
             console.error("API connection error:", error);
@@ -249,7 +234,13 @@ const Pay2 = () => {
 
     if (selectedVoucher) {
         if (selectedVoucher.type === '%') {
-            finalAmount -= (total_amount * selectedVoucher.discount) / 100;
+            let discount = (total_amount * selectedVoucher.discount) / 100;
+
+            if (selectedVoucher.max_total_amount && discount > selectedVoucher.max_total_amount) {
+                discount = selectedVoucher.max_total_amount;
+            }
+
+            finalAmount -= discount;
         } else {
             finalAmount -= selectedVoucher.discount;
         }
@@ -258,6 +249,7 @@ const Pay2 = () => {
     if (finalAmount < 0) {
         finalAmount = 0;
     }
+
 
     const [loading, setLoading] = useState(true);
 
@@ -432,47 +424,34 @@ const Pay2 = () => {
                                         return !checkEnd_date && !checkStart_date && !checkQuantity;
                                     })
                                     .map((voucher) => {
-                                        const minAmount = voucher.min_total_amount ?? 0; // Gán giá trị mặc định nếu null hoặc undefined
-                                        const maxAmount = voucher.max_total_amount ?? Infinity; // Infinity nếu không có giới hạn tối đa
+                                        const minAmount = voucher.min_total_amount ?? 0;
                                         const checkMin = total_amount < minAmount;
-                                        const checkMax = total_amount > maxAmount;
 
                                         return (
                                             <div key={voucher.id} className="flex items-center space-x-3">
                                                 <Checkbox
                                                     checked={selectedVoucher?.id === voucher.id}
-                                                    onChange={() => !checkMin && !checkMax && handleVoucherSelect(voucher)}
-                                                    disabled={checkMin || checkMax}
+                                                    onChange={() => !checkMin && handleVoucherSelect(voucher)}
+                                                    disabled={checkMin}
                                                 >
                                                     {voucher.name}
                                                 </Checkbox>
-                                                {(checkMin || checkMax) && (
+                                                {checkMin && (
                                                     <div className="flex flex-col text-red-500 text-sm ml-2">
-                                                        {checkMin && (
-                                                            <div className="flex items-center space-x-1">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
-                                                                    <path d="M8 1a7 7 0 1 0 7 7 7 7 0 0 0-7-7zm0 13a6 6 0 1 1 6-6 6 6 0 0 1-6 6zM7.646 5.646a.5.5 0 0 1 .708 0L8 6.293l.646-.647a.5.5 0 0 1 .708.708L8.707 7l.647.646a.5.5 0 0 1-.708.708L8 7.707l-.646.647a.5.5 0 0 1-.708-.708L7.293 7 6.646 6.354a.5.5 0 0 1 0-.708z" />
-                                                                </svg>
-                                                                <span>
-                                                                    Yêu cầu tối thiểu: {minAmount.toLocaleString()} VNĐ
-                                                                </span>
-                                                            </div>
-                                                        )}
-                                                        {checkMax && (
-                                                            <div className="flex items-center space-x-1">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
-                                                                    <path d="M8 1a7 7 0 1 0 7 7 7 7 0 0 0-7-7zm0 13a6 6 0 1 1 6-6 6 6 0 0 1-6 6zM7.646 5.646a.5.5 0 0 1 .708 0L8 6.293l.646-.647a.5.5 0 0 1 .708.708L8.707 7l.647.646a.5.5 0 0 1-.708.708L8 7.707l-.646.647a.5.5 0 0 1-.708-.708L7.293 7 6.646 6.354a.5.5 0 0 1 0-.708z" />
-                                                                </svg>
-                                                                <span>
-                                                                    Yêu cầu tối đa: {maxAmount.toLocaleString()} VNĐ
-                                                                </span>
-                                                            </div>
-                                                        )}
+                                                        <div className="flex items-center space-x-1">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
+                                                                <path d="M8 1a7 7 0 1 0 7 7 7 7 0 0 0-7-7zm0 13a6 6 0 1 1 6-6 6 6 0 0 1-6 6zM7.646 5.646a.5.5 0 0 1 .708 0L8 6.293l.646-.647a.5.5 0 0 1 .708.708L8.707 7l.647.646a.5.5 0 0 1-.708.708L8 7.707l-.646.647a.5.5 0 0 1-.708-.708L7.293 7 6.646 6.354a.5.5 0 0 1 0-.708z" />
+                                                            </svg>
+                                                            <span>
+                                                                Yêu cầu tối thiểu: {minAmount.toLocaleString()} VNĐ
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>
                                         );
                                     })
+
 
 
 
@@ -549,6 +528,25 @@ const Pay2 = () => {
                             </Row>
 
                             <Divider />
+
+                            <Row gutter={16} className="mb-8">
+                                <Col span={12}>
+                                    <strong>Giờ check-in</strong>
+                                    <TimePicker
+                                        value={booking?.booking?.start_hour ? moment(booking?.booking?.start_hour, "HH:mm:ss") : null}
+                                        disabled
+                                        style={{ width: '100%' }}
+                                    />
+                                </Col>
+                                <Col span={12}>
+                                    <strong>Giờ check-out</strong>
+                                    <TimePicker
+                                        value={booking?.booking?.end_hour ? moment(booking?.booking?.end_hour, "HH:mm:ss") : null}
+                                        disabled
+                                        style={{ width: '100%' }}
+                                    />
+                                </Col>
+                            </Row>
 
                             <Row gutter={16} className="mb-8">
                                 <Col span={12}>
