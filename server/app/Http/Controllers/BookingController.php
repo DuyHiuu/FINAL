@@ -74,85 +74,6 @@ class BookingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    // public function addBooking(Request $request)
-    // {
-    //     $validator = Validator::make(
-    //         $request->all(),
-    //         [
-    //             'start_date' => [
-    //                 'required',
-    //                 'date',
-    //                 'after_or_equal:' . now()->format('Y-m-d H:i:s')
-    //             ],
-
-    //             'end_date' => [
-    //                 'required',
-    //                 'date',
-    //                 'after:start_date',
-    //                 function ($attribute, $value, $fail) use ($request) {
-    //                     $startDate = Carbon::parse($request->start_date);
-    //                     $endDate = Carbon::parse($value);
-
-    //                     if ($endDate->gt($startDate->addMonth())) {
-    //                         $fail('Ngày kết thúc phải nằm trong vòng 1 tháng kể từ ngày bắt đầu.');
-    //                     }
-    //                 },
-    //             ],
-    //             'room_id' => 'required|exists:rooms,id',
-    //         ],
-    //         [
-    //             'start_date.required' => 'Ngày bắt đầu không được để trống.',
-    //             'start_date.date' => 'Ngày bắt đầu phải là một ngày hợp lệ.',
-    //             'start_date.after_or_equal' => 'Ngày bắt đầu không thể là ngày trong quá khứ.',
-    //             'end_date.required' => 'Ngày kết thúc không được để trống.',
-    //             'end_date.date' => 'Ngày kết thúc phải là một ngày hợp lệ.',
-    //             'end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
-    //             'room_id.required' => 'Phòng không được để trống',
-    //             'room_id.exists' => 'Phòng phải tồn tại trong bảng phòng',
-    //         ]
-    //     );
-
-    //     if ($validator->fails()) {
-    //         return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
-    //     }
-
-    //     $roomID = $request->input('room_id');
-
-    //     $room = Room::findOrFail($roomID);
-
-    //     $booking = Booking::create([
-    //         'room_id' => $room->id,
-    //         'start_date' => $request->input('start_date'),
-    //         'end_date' => $request->input('end_date'),
-    //         'voucher_id' => $request->input('voucher_id')
-    //     ]);
-
-
-    //     //Kiểm tra nếu có dịch vụ (service_ids k null)
-    //     if ($request->filled('service_ids')) {
-    //         $serviceIDs = json_decode($request->input('service_ids'), true);
-
-    //         $serviceData = []; 
-
-    //         foreach ($serviceIDs as $index => $serviceID) {
-    //             $service = Service::findOrFail($serviceID); 
-
-    //             $serviceData[$serviceID] = [
-    //                 'price' => $service->price
-    //             ];
-    //         }
-
-    //         $booking->services()->attach($serviceData);
-    //     }
-
-    //     return response()->json([
-    //         'message' => 'Thêm đơn đặt thàng công!',
-    //         'booking' => $booking,
-    //         'booking_id' => $booking->id,
-    //         'services' => $serviceData ?? [] 
-    //     ]);
-    // }
-
     public function addBooking(Request $request)
     {
         $validator = Validator::make(
@@ -163,6 +84,7 @@ class BookingController extends Controller
                     'date',
                     'after_or_equal:' . now()->format('Y-m-d H:i:s')
                 ],
+
                 'end_date' => [
                     'required',
                     'date',
@@ -176,9 +98,11 @@ class BookingController extends Controller
                         }
                     },
                 ],
+
                 'start_hour' => [
                     'required',
                 ],
+
                 'room_id' => 'required|exists:rooms,id',
             ],
             [
@@ -188,16 +112,15 @@ class BookingController extends Controller
                 'end_date.required' => 'Ngày kết thúc không được để trống.',
                 'end_date.date' => 'Ngày kết thúc phải là một ngày hợp lệ.',
                 'end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
-                'start_hour.required' => 'Giờ bắt đầu không được để trống.',
-                'start_hour.in' => 'Giờ bắt đầu chỉ có thể là 09:00 hoặc 14:00.',
-                'room_id.required' => 'Phòng không được để trống.',
-                'room_id.exists' => 'Phòng phải tồn tại trong bảng phòng.',
+                'room_id.required' => 'Phòng không được để trống',
+                'room_id.exists' => 'Phòng phải tồn tại trong bảng phòng',
             ]
         );
 
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
         }
+
 
         $allowedHours = ['09:00', '14:00'];
         if (!in_array($request->input('start_hour'), $allowedHours)) {
@@ -213,36 +136,134 @@ class BookingController extends Controller
         $startHour = $request->input('start_hour');
         $endHour = Carbon::parse($startHour)->addDay()->format('H:i'); // nếu dùng kiểu dl là time
 
+
         $roomID = $request->input('room_id');
+
         $room = Room::findOrFail($roomID);
 
         $booking = Booking::create([
             'room_id' => $room->id,
             'start_date' => $request->input('start_date'),
             'end_date' => $request->input('end_date'),
+
+            'voucher_id' => $request->input('voucher_id')
+
             'start_hour' => $startHour, //
             'end_hour' => $endHour, //
+
         ]);
 
-        // Kiểm tra nếu có dịch vụ (service_ids không null)
+
+        //Kiểm tra nếu có dịch vụ (service_ids k null)
         if ($request->filled('service_ids')) {
             $serviceIDs = json_decode($request->input('service_ids'), true);
 
             $serviceData = [];
+
             foreach ($serviceIDs as $index => $serviceID) {
                 $service = Service::findOrFail($serviceID);
-                $serviceData[$serviceID] = ['price' => $service->price];
+
+                $serviceData[$serviceID] = [
+                    'price' => $service->price
+                ];
             }
+
             $booking->services()->attach($serviceData);
         }
 
         return response()->json([
-            'message' => 'Thêm đơn đặt thành công!',
+            'message' => 'Thêm đơn đặt thàng công!',
             'booking' => $booking,
             'booking_id' => $booking->id,
             'services' => $serviceData ?? []
         ]);
     }
+
+    // public function addBooking(Request $request)
+    // {
+    //     $validator = Validator::make(
+    //         $request->all(),
+    //         [
+    //             'start_date' => [
+    //                 'required',
+    //                 'date',
+    //                 'after_or_equal:' . now()->format('Y-m-d H:i:s')
+    //             ],
+    //             'end_date' => [
+    //                 'required',
+    //                 'date',
+    //                 'after:start_date',
+    //                 function ($attribute, $value, $fail) use ($request) {
+    //                     $startDate = Carbon::parse($request->start_date);
+    //                     $endDate = Carbon::parse($value);
+
+    //                     if ($endDate->gt($startDate->addMonth())) {
+    //                         $fail('Ngày kết thúc phải nằm trong vòng 1 tháng kể từ ngày bắt đầu.');
+    //                     }
+    //                 },
+    //             ],
+    //             'start_hour' => [
+    //                 'required',
+    //                 'in:09:00,14:00', // Chỉ cho phép 09:00 hoặc 14:00
+    //             ],
+    //             'room_id' => 'required|exists:rooms,id',
+    //         ],
+    //         [
+    //             'start_date.required' => 'Ngày bắt đầu không được để trống.',
+    //             'start_date.date' => 'Ngày bắt đầu phải là một ngày hợp lệ.',
+    //             'start_date.after_or_equal' => 'Ngày bắt đầu không thể là ngày trong quá khứ.',
+    //             'end_date.required' => 'Ngày kết thúc không được để trống.',
+    //             'end_date.date' => 'Ngày kết thúc phải là một ngày hợp lệ.',
+    //             'end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
+    //             'start_hour.required' => 'Giờ bắt đầu không được để trống.',
+    //             'start_hour.in' => 'Giờ bắt đầu chỉ có thể là 09:00 hoặc 14:00.',
+    //             'room_id.required' => 'Phòng không được để trống.',
+    //             'room_id.exists' => 'Phòng phải tồn tại trong bảng phòng.',
+    //         ]
+    //     );
+
+    //     if ($validator->fails()) {
+    //         return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
+    //     }
+
+    //     $startHour = $request->input('start_hour');
+    //     $endHour = Carbon::parse($startHour)->addDay()->format('H:i'); // nếu dùng kiểu dl là time
+
+    //     // $startHour = Carbon::parse($request->start_date . ' ' . $request->start_hour);
+    //     // $endHour = $startHour->addDay(); // nếu dùng dl datetime
+
+
+    //     $roomID = $request->input('room_id');
+    //     $room = Room::findOrFail($roomID);
+
+    //     $booking = Booking::create([
+    //         'room_id' => $room->id,
+    //         'start_date' => $request->input('start_date'),
+    //         'end_date' => $request->input('end_date'),
+    //         'start_hour' => $startHour, //
+    //         'end_hour' => $endHour, //
+    //         'voucher_id' => $request->input('voucher_id')
+    //     ]);
+
+    //     // Kiểm tra nếu có dịch vụ (service_ids không null)
+    //     if ($request->filled('service_ids')) {
+    //         $serviceIDs = json_decode($request->input('service_ids'), true);
+
+    //         $serviceData = [];
+    //         foreach ($serviceIDs as $index => $serviceID) {
+    //             $service = Service::findOrFail($serviceID);
+    //             $serviceData[$serviceID] = ['price' => $service->price];
+    //         }
+    //         $booking->services()->attach($serviceData);
+    //     }
+
+    //     return response()->json([
+    //         'message' => 'Thêm đơn đặt thành công!',
+    //         'booking' => $booking,
+    //         'booking_id' => $booking->id,
+    //         'services' => $serviceData ?? []
+    //     ]);
+    // }
 
 
     /**

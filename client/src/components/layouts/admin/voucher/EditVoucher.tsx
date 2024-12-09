@@ -79,16 +79,6 @@ const EditVoucher = () => {
         setError("Mức giảm không được lớn hơn số tiền tối thiểu.");
         return;
       }
-
-      if (giamGia > max_total_amount) {
-        setError("Mức giảm không được lớn hơn số tiền tối đa.");
-        return;
-      }
-    }
-
-    if (min_total_amount > max_total_amount) {
-      setError("Số tiền tối thiểu không được lớn hơn số tiền tối đa.");
-      return;
     }
 
     if (isNaN(soLuong) || soLuong <= 0) {
@@ -235,19 +225,21 @@ const EditVoucher = () => {
             className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
           />
         </div>
+
+        {/* Số tiền tối đa được giảm */}
         <div className="mb-4">
           <label htmlFor="max_total_amount" className="block text-sm font-medium text-gray-700">
-            Số tiền tối đa:
+            {type === "amount" ? "Số tiền tối đa" : "Số tiền tối đa được giảm"}
           </label>
           <input
             type="number"
             id="max_total_amount"
             value={max_total_amount}
             onChange={(e) => setMaxTotalAmount(e.target.value)}
+            disabled={type === "amount"}
             className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
           />
         </div>
-
 
         <div className="mb-4">
           <label htmlFor="soLuong" className="block text-sm font-medium text-gray-700">
@@ -264,7 +256,7 @@ const EditVoucher = () => {
 
         <div className="mb-4">
           <label htmlFor="ngayBatDau" className="block text-sm font-medium text-gray-700">
-            Ngày Bắt Đầu:
+            Ngày bắt đầu:
           </label>
           <input
             type="date"
@@ -277,7 +269,7 @@ const EditVoucher = () => {
 
         <div className="mb-4">
           <label htmlFor="ngayKetThuc" className="block text-sm font-medium text-gray-700">
-            Ngày Kết Thúc:
+            Ngày kết thúc:
           </label>
           <input
             type="date"
@@ -288,13 +280,15 @@ const EditVoucher = () => {
           />
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700"
-          disabled={loading}
-        >
-          {loading ? "Đang cập nhật..." : "Cập nhật Voucher"}
-        </button>
+        <div className="flex justify-center mb-4">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white font-semibold p-3 rounded-md"
+            disabled={loading}
+          >
+            {loading ? "Đang cập nhật..." : "Cập nhật voucher"}
+          </button>
+        </div>
       </form>
     </div>
   );
