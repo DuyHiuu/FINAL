@@ -15,6 +15,7 @@ import {
   Tooltip,
   Modal,
   notification,
+  TimePicker,
 } from "antd";
 import moment from "moment";
 import TextArea from "antd/es/input/TextArea";
@@ -46,7 +47,7 @@ const Detail = () => {
   const [message, setMessage] = useState<string>("");
   const [ratings, setRatings] = useState<any[]>([]);
   const [filterRating, setFilterRating] = useState<number | null>(null);
-  console.log(room);
+  const [start_hour, setStart_hour] = useState("");
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -96,6 +97,15 @@ const Detail = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log({
+      start_date,
+      end_date,
+      start_hour,
+      // service_ids: JSON.stringify(safeServiceIds),
+      room_id,
+    });
+
+
     if (!start_date || !end_date) {
       setMessage(
         "Vui lòng chọn ngày check-in và check-out trước khi đặt phòng."
@@ -116,6 +126,7 @@ const Detail = () => {
     formData.append("room_id", room_id);
     formData.append("start_date", start_date);
     formData.append("end_date", end_date);
+    formData.append("start_hour", start_hour);
 
     try {
       const response = await fetch(`${API_URL}/bookings`, {
@@ -266,18 +277,17 @@ const Detail = () => {
         </div>
       )}
 
-<div className="mt-8 max-w-md">
-  <h1 className="text-3xl font-bold">{room?.size_name}</h1>
-  <p
-    className={`${
-      room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
-    }`}
-  >
-    {room?.statusroom === "Còn phòng"
-      ? `Còn ${room?.quantity - room?.is_booked} phòng`
-      : "Không còn phòng"}
-  </p>
-  <div className="flex items-center justify-between mt-3">
+      <div className="mt-8 max-w-md">
+        <h1 className="text-3xl font-bold">{room?.size_name}</h1>
+        <p
+          className={`${room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
+            }`}
+        >
+          {room?.statusroom === "Còn phòng"
+            ? `Còn ${room?.quantity - room?.is_booked} phòng`
+            : "Không còn phòng"}
+        </p>
+        <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-2 text-yellow-500">
             <StarFilled className="text-2xl" />
             <span className="text-xl font-semibold text-gray-800">
@@ -294,7 +304,6 @@ const Detail = () => {
             Xem đánh giá
           </button>
         </div>
-       
 
         <Modal
           title="Chi tiết đánh giá"
@@ -310,11 +319,10 @@ const Detail = () => {
                 <button
                   key={star}
                   onClick={() => setFilterRating(star)}
-                  className={`px-2 py-1 rounded-full ${
-                    filterRating === star
-                      ? "bg-gray-300 text-white"
-                      : "border text-gray-700"
-                  }`}
+                  className={`px-2 py-1 rounded-full ${filterRating === star
+                    ? "bg-gray-300 text-white"
+                    : "border text-gray-700"
+                    }`}
                 >
                   {Array(star)
                     .fill(null)
@@ -418,14 +426,28 @@ const Detail = () => {
               <h3 className="text-xl font-semibold">Mô tả</h3>
               <p className="text-gray-700">{room?.description}</p>
             </div>
-           
-          </div>
-          
 
-          <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-[200px]">
+          </div>
+
+
+          <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-[280px]">
             <h2 className="text-xl font-semibold text-gray-800">
               {room?.price?.toLocaleString("vi-VN")} VNĐ / ngày
             </h2>
+
+            <div className="mt-4">
+              <label className="block text-black text-sm font-bold">Giờ check-in</label>
+              <TimePicker
+                value={start_hour ? moment(start_hour, "HH:mm") : null}
+                onChange={(time) => setStart_hour(time?.format("HH:mm") || "")}
+                placeholder="Chọn giờ check-in"
+                className="w-full mt-1 text-sm"
+                format="HH:mm"
+                disabledHours={() => [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23]}
+                minuteStep={30}
+              />
+            </div>
+
 
             <div className="mt-4 flex justify-between items-center space-x-3">
               <div className="w-1/2">
@@ -465,13 +487,13 @@ const Detail = () => {
             </div>
 
             <Button
-          type="primary"
-          htmlType="submit"
-          className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
-          disabled={room?.statusroom !== "Còn phòng"}
-        >
-          Đặt phòng
-        </Button>
+              type="primary"
+              htmlType="submit"
+              className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
+              disabled={room?.statusroom !== "Còn phòng"}
+            >
+              Đặt phòng
+            </Button>
           </div>
         </div>
       </form>
