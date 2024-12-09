@@ -170,10 +170,6 @@ class PaymentController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'pet_name' => 'string|max:255',
-                'pet_type' => 'string|max:255',
-                'pet_description' => 'string',
-                'pet_health' => 'string',
                 'room_id' => 'exists:rooms,id', // Kiểm tra room_id hợp lệ
             ],
             [
