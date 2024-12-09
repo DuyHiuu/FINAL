@@ -1,8 +1,6 @@
-import { Col, Divider, Row } from "antd";
-import moment from "moment";
+import { message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Text } from "recharts";
 import useFetchRooms from "../../../../api/useFetchRooms";
 
 const ChangeRoom = () => {
@@ -10,11 +8,10 @@ const ChangeRoom = () => {
   const { room, loading, error } = useFetchRooms();
 
   const [data, setData] = useState(null);
-
-  const { id } = useParams();
-
   const [selectedRoom, setSelectedRoom] = useState(null);
   const navigate = useNavigate();
+
+  const { id } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,20 +35,25 @@ const ChangeRoom = () => {
     fetchData();
   }, [id]);
 
+  useEffect(() => {
+    if (room && room.length > 0) {
+      const filteredRooms = room.filter((rooms) => rooms.size_id >= data?.payment?.room?.size?.id);
+      if (filteredRooms.length > 0) {
+        setSelectedRoom(filteredRooms[0].id);
+      }
+    }
+  }, [room, data]);
+
   const handleUpdateRoom = async () => {
     if (!selectedRoom) {
-      alert("Vui lòng chọn phòng!");
+      message.error("Vui lòng chọn phòng!");
       return;
     }
 
     try {
-
       const requestBody = {
         room_id: selectedRoom,
       };
-
-      console.log(selectedRoom);
-
 
       const res = await fetch(`${showUrl}/${id}/changeStatus`, {
         method: "PUT",
@@ -65,14 +67,13 @@ const ChangeRoom = () => {
         throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
       }
 
-      alert("Cập nhật phòng thành công!");
-      navigate(`/admin/payments/detail/${id}`);
+      message.success("Cập nhật phòng thành công!");
+      setTimeout(() => navigate(`/admin/payments/detail/${id}`), 1500);
     } catch (error) {
       console.error(error);
-      alert("Cập nhật phòng thất bại!");
+      message.error("Cập nhật phòng thất bại!");
     }
   };
-
 
   if (!data) {
     return <p>Đang tải dữ liệu...</p>;
@@ -81,8 +82,7 @@ const ChangeRoom = () => {
   const paymentData = data.payment;
   const sizeData = paymentData.size;
 
-  const filteredRooms = room?.filter((rooms) => rooms.size_id >= paymentData?.room?.size?.id);
-
+  const filteredRooms = room?.filter((rooms) => rooms.size_id > paymentData?.room?.size?.id);
 
   return (
     <div className="flex flex-col lg:flex-row">
@@ -97,6 +97,7 @@ const ChangeRoom = () => {
                     <label htmlFor="">Đổi phòng</label> <br />
                     <strong>Phòng cũ: {sizeData}</strong>
                     <select
+                      value={selectedRoom || ""}
                       onChange={(e) => setSelectedRoom(e.target.value)}
                       className="block w-full mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300"
                     >
@@ -110,7 +111,6 @@ const ChangeRoom = () => {
                         <option>Không có phòng phù hợp</option>
                       )}
                     </select>
-
 
                     <button
                       type="button"
