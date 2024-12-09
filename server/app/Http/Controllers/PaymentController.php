@@ -162,250 +162,7 @@ class PaymentController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'pet_name' => 'required|string|max:255',
-                'pet_type' => 'required|string|max:255',
-                'pet_description' => 'required|string',
-                'pet_health' => 'required|string',
-                'user_name' => 'required|string|max:255',
-                'user_address' => 'required|string|max:255',
-                'user_email' => 'required|email|max:255',
-                'user_phone' => 'required|string|max:15',
-                'booking_id' => 'required|exists:bookings,id',
-                'user_id' => 'required|exists:users,id',
-                'paymethod_id' => 'required|exists:paymethods,id',
-            ],
-            [
-                'pet_name.required' => 'Tên thú cưng không được để trống',
-                'pet_name.string' => 'Tên thú cưng phải là chuỗi',
-                'pet_name.max' => 'Tên thú cưng không được vượt quá 255 kis tự',
-                'pet_type.required' => 'Tên Loài thú cưng không được để trống',
-                'pet_type.max' => 'Tên loài không được vượt quá 255 kí tự',
-                'pet_description.required' => 'Mô tả không được để trống',
-                'pet_description.string' => 'Mô tả phải là chuỗi kí tự',
-                'pet_health.required' => 'Sức khẻo thú cưng không được để trống',
-                'user_name.required' => 'Tên nguời đặt không được để trống',
-                'user_name.max' => 'Tên không được vượt quá 255 kí tự',
-                'user_address.required' => 'Địa chỉ không được để trống',
-                'user_address.max' => 'Địa chỉ không được vượt quá 255 kí tự',
-                'user_email.required' => 'Email không được để trống',
-                'user_email.email' => 'Email không đúng định dạng',
-                'user_email.max' => 'Email không được vượt quá 255 kí tự',
-                'user_phone.required' => 'Số điện thoại không được để trống',
-                'user_phone.string' => 'Số điện thoại phải là chuỗi',
-                'user_phone.max' => 'Số điện không vượt quá 255 kí tự',
-            ]
-        );
 
-        if ($validator->fails()) {
-            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
-        }
-
-        if ($request->isMethod('POST')) {
-            DB::beginTransaction();
-
-            try {
-                $params = $request->all();
-
-                // Xử lý tình trạng sức khỏe
-                if ($params['pet_health'] === 'Khỏe mạnh') {
-                    $params['pet_health'] = 'Khỏe mạnh';
-                } else {
-                    $healthIssue = $request->input('healthIssue');
-                    if (!$healthIssue) {
-                        return response()->json(['error' => 'Vui lòng nhập mô tả tình trạng sức khỏe'], 400);
-                    }
-                    $params['pet_health'] = $healthIssue;
-                }
-
-                $booking = Booking::find($params['booking_id']);
-
-                $subTotal_service = 0;
-                $subTotal_room = 0;
-
-                if (!empty($booking)) {
-                    $startDate = Carbon::parse($booking->start_date);
-                    $endDate = Carbon::parse($booking->end_date);
-
-                    $days = max(1, $startDate->diffInDays($endDate));
-
-                    $subTotal_room += $booking->room->price * $days;
-
-
-                    if ($booking->services && $booking->services->isNotEmpty()) {
-                        foreach ($booking->services as $item) {
-                            if ($item->id === 2) {
-                                $quantity = max(1, floor($days / 3));
-                                $subTotal_service += $item->price * $quantity;
-                            } else {
-                                $subTotal_service += $item->price;
-                            }
-                        }
-                    }
-
-                    $total_amount = $subTotal_room + $subTotal_service;
-
-                    $voucherID = $request->input('voucher_id');
-
-                    $discount = 0;
-                    $totalAmount = $total_amount;
-
-                    if ($voucherID) {
-
-                        $voucher = Voucher::where('id', $voucherID)
-                            ->where('is_active', true)
-                            ->first();
-
-                        if (!$voucher) {
-                            return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
-                        }
-
-                        if ($voucher->end_date < now()) {
-                            return response()->json(['message' => 'Voucher đã hết hạn.'], 400);
-                        }
-
-                        if ($voucher->quantity === 0) {
-                            return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
-                        }
-
-                        if ($total_amount < $voucher->min_total_amount) {
-                            return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
-                        }
-
-                        if ($voucher->type === '%') {
-                            $discount = $total_amount * ($voucher->discount / 100);
-                        } else {
-                            $discount = $voucher->discount;
-                        }
-
-                        $totalAmount = max(0, $total_amount - $discount);
-
-                        $params['total_amount'] = $totalAmount;
-                    } else {
-                        $params['total_amount'] = $total_amount;
-                    }
-                }
-
-                // Mặc định status_id = 1 khi thêm
-
-                $params['status_id'] = $params['status_id'] ?? 1;
-
-                $room = $booking->room;
-
-                if ($room->quantity > 0) {
-                    $room->increment('is_booked', 1);
-
-                    if ($room->quantity === $room->is_booked) {
-                        $room->update(['statusroom' => 'Hết phòng']);
-                    }
-                } else {
-                    return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
-                }
-
-                if ($voucherID) {
-                    if ($voucher->quantity > 0) {
-                        $voucher->decrement('quantity', 1);
-
-                        if ($voucher->quantity === 0) {
-                            $voucher->update(['is_active' => 0]);
-                        }
-                    }
-                }
-
-                $payment = Payment::create($params);
-                $payment_id = $payment->id;
-                $paymethod = $payment->paymethod_id;
-
-                DB::commit();
-
-                $data = "
-                Khach hang: {$payment->user_name}
-                Email: {$payment->user_email}
-                So dien thoai: {$payment->user_phone}
-                Ma thanh toan: {$payment->id}
-                Ten thu cung: {$payment->pet_name}
-                Chung loai: {$payment->pet_type}
-                Ngay check-in: {$payment->booking->start_date}
-                Ngay check-out: {$payment->booking->end_date}
-                Tong tien: {$payment->total_amount}
-                ";
-
-                function removeVietnameseAccent($str)
-                {
-                    $trans = array(
-                        'a' => 'áàảãạăắằẳẵặâấầẩẫậ',
-                        'e' => 'éèẻẽẹêếềểễệ',
-                        'i' => 'íìỉĩị',
-                        'o' => 'óòỏõọôốồổỗộơớờởỡợ',
-                        'u' => 'úùủũụưứừửữự',
-                        'y' => 'ýỳỷỹỵ',
-                        'd' => 'đ',
-                    );
-
-                    foreach ($trans as $key => $value) {
-                        $str = preg_replace("/[" . $value . "]/u", $key, $str);
-                    }
-                    return $str;
-                }
-
-                $data = "Khách hàng: {$payment->user_name}
-                Email: {$payment->user_email}
-                Số điện thoại: {$payment->user_phone}
-                Mã thanh toán: {$payment->id}
-                Tên thú cưng: {$payment->pet_name}
-                Chủng loại: {$payment->pet_type}
-                Ngày check-in: {$payment->booking->start_date}
-                Ngày check-out: {$payment->booking->end_date}
-                Tổng tiền: {$payment->total_amount}";
-
-                // Chuyển thành không dấu
-                $dataNoAccent = removeVietnameseAccent($data);
-
-                // Cải thiện trình bày bằng cách sử dụng các dấu ngắt dòng, thêm khoảng cách hoặc ký tự đặc biệt nếu cần.
-                $formattedData = "
-                ----------------------------
-                THONG TIN THANH TOAN
-                ----------------------------
-                Khach hang: {$payment->user_name}
-                Email: {$payment->user_email}
-                So dien thoai: {$payment->user_phone}
-                Ma thanh toan: {$payment->id}
-                Ten thu cung: {$payment->pet_name}
-                Chung loai: {$payment->pet_type}
-                Ngay check-in: {$payment->booking->start_date}
-                Ngay check-out: {$payment->booking->end_date}
-                Tong tien: {$payment->total_amount} VND
-                ----------------------------
-                ";
-
-                // Call external API to generate QR code image (in PNG format)
-                $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($formattedData);
-
-                // Send email with QR code
-                Mail::to($payment->user->email)->send(new PaymentConfirm($payment, qrCodeUrl: $qrCodeUrl));
-
-                return response()->json([
-                    'status' => 'Đơn hàng đã thanh toán thành công',
-                    'payment_id' => $payment_id,
-                    'total_amount' => $totalAmount,
-                    'discount' => $discount,
-                    'paymethod' => $paymethod
-
-                ], 201);
-            } catch (\Exception $e) {
-                DB::rollBack();
-
-                return response()->json(['status' => 'Xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại!', 'message' => $e->getMessage()], 500);
-            }
-        }
-    }
 
 
     public function updatePaymentDetails(Request $request, $id)
@@ -533,7 +290,6 @@ class PaymentController extends Controller
                     'difference' => $difference,
                 ],
             ], 200);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['status' => 'error', 'message' => 'Xảy ra lỗi trong quá trình cập nhật.', 'error' => $e->getMessage()], 500);
@@ -691,7 +447,7 @@ class PaymentController extends Controller
                         }
 
                         if ($voucher->type === '%') {
-                            $discount = $total_amount * ($voucher->discount / 100);
+                            $discount = $voucher->max_total_amount;
                         } else {
                             $discount = $voucher->discount;
                         }
@@ -1038,51 +794,50 @@ class PaymentController extends Controller
         }
     }
 
-    public function applyVoucher(Request $request)
-    {
+    // {
 
-        $params = $request->all();
+    //     $params = $request->all();
 
-        $voucherID = $request->input('voucher_id');
+    //     $voucherID = $request->input('voucher_id');
 
-        $voucher = Voucher::where('id', $voucherID)
-            ->where('is_active', true)
-            ->first();
+    //     $voucher = Voucher::where('id', $voucherID)
+    //         ->where('is_active', true)
+    //         ->first();
 
-        $booking = Booking::findOrFail($params['booking_id']);
+    //     $booking = Booking::findOrFail($params['booking_id']);
 
-        $subTotal = $booking->totalamount;
+    //     $subTotal = $booking->totalamount;
 
-        $discount = 0;
+    //     $discount = 0;
 
-        if (!$voucher) {
-            return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
-        }
+    //     if (!$voucher) {
+    //         return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
+    //     }
 
-        if ($voucher->end_date < now()) {
-            return response()->json(['message' => 'Voucher đã hết hạn.'], 400);
-        }
+    //     if ($voucher->end_date < now()) {
+    //         return response()->json(['message' => 'Voucher đã hết hạn.'], 400);
+    //     }
 
-        if ($voucher->quantity === 0) {
-            return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
-        }
+    //     if ($voucher->quantity === 0) {
+    //         return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
+    //     }
 
-        // Kiểm tra tổng tiền đơn hàng có đủ để sử dụng voucher không
-        if ($subTotal > $voucher->min_total_amount) {
-            return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
-        }
+    //     // Kiểm tra tổng tiền đơn hàng có đủ để sử dụng voucher không
+    //     if ($subTotal > $voucher->min_total_amount) {
+    //         return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
+    //     }
 
-        if ($voucher->type === '%') {
-            $discount = $subTotal * ($voucher->discount / 100);
-        } else {
-            $discount = $voucher->discount;
-        }
+    //     if ($voucher->type === '%') {
+    //         $discount = $subTotal - $voucher->max_total_amount;
+    //     } else {
+    //         $discount = $voucher->discount;
+    //     }
 
-        return response()->json([
-            'discount' => $discount,
-            'subTotal' => $subTotal
-        ], 201);
-    }
+    //     return response()->json([
+    //         'discount' => $discount,
+    //         'subTotal' => $subTotal
+    //     ], 201);
+    // }
 
     public function cancelPay(string $id)
     {
@@ -1110,5 +865,4 @@ class PaymentController extends Controller
 
         return response()->json(['message' => 'Thanh toán đã được hủy!', 'payment' => $payment], 200);
     }
-
 }

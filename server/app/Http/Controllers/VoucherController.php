@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Voucher;
-use Illuminate\Contracts\Validation\Validator;
+// use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
+use Illuminate\Support\Facades\Validator;
 
 class VoucherController extends Controller
 {
@@ -32,67 +33,63 @@ class VoucherController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = FacadesValidator::make(
+        // Kiểm tra nếu loại phiếu là 'amount' mà không có max_total_amount, gán giá trị mặc định
+        if ($request->type === 'amount' && !$request->max_total_amount) {
+            $request->merge(['max_total_amount' => 999999999]);
+        }
+
+        $validator = Validator::make(
             $request->all(),
             [
                 'name' => 'required|max:255',
                 'code' => 'required|unique:vouchers,code',
-                'type' => 'required',
+                'type' => 'required|in:amount,%',
                 'discount' => 'required|numeric|min:0',
                 'start_date' => 'required|date|before:end_date',
                 'end_date' => 'required|date|after:start_date',
-                'quantity' => 'required|numeric|min:0',
-                'min_total_amount' => 'required_if:type,%,numeric|min:0',
-                'max_total_amount' => 'required_if:type,%,numeric|min:0',
+                'quantity' => 'required|numeric|min:1',
+                'min_total_amount' => 'nullable|numeric|min:0',
+                'max_total_amount' => 'nullable|numeric|min:0',
             ],
             [
-                'name.required' => 'Tên không được để trống',
-                'name.max' => 'Tên không được vượt quá 255 kí tự',
-                'code.required' => 'Mã phiếu không được để trống',
-                'code.unique' => 'Mã phiếu không được phép trùng nhau',
-                'type.required' => 'Loại phiếu không được để trống',
-                'discount.required' => 'Mức giảm không được để trống',
-                'discount.numeric' => 'Mức giảm phải là số',
-                'discount.min' => 'Mức giảm phải lớn hơn hoặc bằng 0',
-                'start_date.required' => 'Ngày bắt đầu không được để trống',
-                'start_date.date' => 'Định dạng ngày không đúng',
-                'start_date.before' => 'Ngày bắt đầu phải trước ngày kết thúc',
-                'end_date.required' => 'Ngày kết thúc không được để trống',
-                'end_date.date' => 'Định dạng ngày không đúng',
-                'end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu',
-                'quantity.required' => 'Số lượng không được để trống',
-                'quantity.numeric' => 'Số lượng phải là số',
-                'quantity.min' => 'Số lượng phải lớn hơn hoặc bằng 0',
-                'min_total_amount.required_if' => 'Tổng tiền tối thiểu là bắt buộc khi loại phiếu là %',
-                'max_total_amount.required_if' => 'Tổng tiền tối đa là bắt buộc khi loại phiếu là %',
+                'name.required' => 'Tên không được để trống.',
+                'name.max' => 'Tên không được vượt quá 255 kí tự.',
+                'code.required' => 'Mã phiếu không được để trống.',
+                'code.unique' => 'Mã phiếu không được phép trùng nhau.',
+                'type.required' => 'Loại phiếu không được để trống.',
+                'type.in' => 'Loại phiếu không hợp lệ.',
+                'discount.required' => 'Mức giảm không được để trống.',
+                'discount.numeric' => 'Mức giảm phải là số.',
+                'discount.min' => 'Mức giảm phải lớn hơn hoặc bằng 0.',
+                'start_date.required' => 'Ngày bắt đầu không được để trống.',
+                'start_date.before' => 'Ngày bắt đầu phải trước ngày kết thúc.',
+                'end_date.required' => 'Ngày kết thúc không được để trống.',
+                'end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
+                'quantity.required' => 'Số lượng không được để trống.',
+                'quantity.numeric' => 'Số lượng phải là số.',
+                'quantity.min' => 'Số lượng phải lớn hơn hoặc bằng 1.',
+                'min_total_amount.numeric' => 'Tổng tiền tối thiểu phải là số.',
+                'min_total_amount.min' => 'Tổng tiền tối thiểu phải lớn hơn hoặc bằng 0.',
             ]
         );
 
         $validator->after(function ($validator) use ($request) {
-            // Kiểm tra nếu loại phiếu là %
-            if ($request->type === '%' && ($request->discount < 1 || $request->discount > 100)) {
-                $validator->errors()->add('discount', 'Mức giảm giá phải trong khoảng từ 1% đến 100%.');
+            if ($request->type === '%' && (!$request->max_total_amount || $request->discount > 100)) {
+                $validator->errors()->add('discount', 'Mức giảm không được vượt quá 100% và tổng tiền tối đa phải được nhập.');
             }
 
-            // Kiểm tra min_total_amount và max_total_amount chỉ khi loại phiếu là amount
-            if ($request->type === 'amount') {
-                if (isset($request->discount, $request->min_total_amount) && $request->discount > $request->min_total_amount) {
-                    $validator->errors()->add('discount', 'Mức giảm không được lớn hơn tổng tiền tối thiểu.');
-                }
-                if (isset($request->discount, $request->max_total_amount) && $request->discount > $request->max_total_amount) {
-                    $validator->errors()->add('discount', 'Mức giảm không được lớn hơn tổng tiền tối đa.');
-                }
-                if (isset($request->min_total_amount, $request->max_total_amount) && $request->max_total_amount < $request->min_total_amount) {
-                    $validator->errors()->add('max_total_amount', 'Tổng tiền tối đa không được nhỏ hơn tổng tiền tối thiểu.');
-                }
-                if (isset($request->min_total_amount, $request->max_total_amount) && $request->min_total_amount > $request->max_total_amount) {
-                    $validator->errors()->add('min_total_amount', 'Tổng tiền tối thiểu không được lớn hơn tổng tiền tối đa.');
-                }
-            }
+            // if ($request->type === 'amount' && $request->max_total_amount) {
+            //     $validator->errors()->add('max_total_amount', 'Tổng tiền tối đa không được nhập khi loại phiếu là "amount".');
+            // }
+
+            // if ($request->min_total_amount && $request->max_total_amount && $request->min_total_amount > $request->max_total_amount) {
+            //     $validator->errors()->add('min_total_amount', 'Tổng tiền tối thiểu không được lớn hơn tổng tiền tối đa.');
+            //     $validator->errors()->add('max_total_amount', 'Tổng tiền tối đa phải lớn hơn tổng tiền tối thiểu.');
+            // }
         });
 
         if ($validator->fails()) {
-            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
+            return response()->json(['status' => 'error', 'errors' => $validator->messages()], 400);
         }
 
         $data = $request->only([
@@ -104,78 +101,66 @@ class VoucherController extends Controller
             'end_date',
             'quantity',
             'min_total_amount',
-            'max_total_amount'
+            'max_total_amount',
         ]);
+        $data['is_active'] = true;
 
-        // Kiểm tra min_total_amount và max_total_amount khi type là % hoặc amount
-        if (in_array($request->type, ['%', 'amount'])) {
-            // Kiểm tra và yêu cầu min_total_amount và max_total_amount khi type là % hoặc amount
-            if (!$request->has('min_total_amount') || !$request->has('max_total_amount')) {
-                return response()->json(['status' => 'error', 'message' => 'min_total_amount và max_total_amount là bắt buộc khi type là % hoặc amount.'], 400);
-            }
-
-            $data['min_total_amount'] = $request->min_total_amount;
-            $data['max_total_amount'] = $request->max_total_amount;
-        }
-
-        $data['is_active'] = 1;
-
-        // Lưu phiếu giảm giá vào cơ sở dữ liệu
         Voucher::create($data);
 
-        return response()->json(['status' => 'success', 'message' => 'Phiếu giảm giá đã được thêm thành công', 'data' => $data], 200);
+        return response()->json(['status' => 'success', 'message' => 'Phiếu giảm giá đã được thêm thành công'], 201);
     }
 
 
-
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, string $id)
     {
         $voucher = Voucher::findOrFail($id);
 
-        $validator = FacadesValidator::make(
+        if ($request->type === 'amount' && !$request->max_total_amount) {
+            $request->merge(['max_total_amount' => 999999999]);
+        }
+
+        $validator = Validator::make(
             $request->all(),
             [
                 'name' => 'required|max:255',
-                'code' => 'required',
-                'type' => 'required',
+                'code' => 'required|unique:vouchers,code,' . $id,
+                'type' => 'required|in:amount,%',
                 'discount' => 'required|numeric|min:0',
                 'start_date' => 'required|date|before:end_date',
                 'end_date' => 'required|date|after:start_date',
-                'quantity' => 'required|numeric|min:0',
+                'quantity' => 'required|numeric|min:1',
+                'min_total_amount' => 'nullable|numeric|min:0',
+                'max_total_amount' => 'nullable|numeric|min:0',
             ]
         );
 
         $validator->after(function ($validator) use ($request) {
-            // Kiểm tra nếu loại phiếu là %
-            if ($request->type === '%' && ($request->discount < 1 || $request->discount > 100)) {
-                $validator->errors()->add('discount', 'Mức giảm giá phải trong khoảng từ 1% đến 100%.');
+            if ($request->type === '%' && (!$request->max_total_amount || $request->discount > 100)) {
+                $validator->errors()->add('discount', 'Mức giảm không được vượt quá 100% và tổng tiền tối đa phải được nhập.');
             }
 
-            if ($request->type === 'amount') {
-                if (isset($request->discount, $request->min_total_amount) && $request->discount > $request->min_total_amount) {
-                    $validator->errors()->add('discount', 'Mức giảm không được lớn hơn tổng tiền tối thiểu.');
-                }
-                if (isset($request->discount, $request->max_total_amount) && $request->discount > $request->max_total_amount) {
-                    $validator->errors()->add('discount', 'Mức giảm không được lớn hơn tổng tiền tối đa.');
-                }
-                if (isset($request->min_total_amount, $request->max_total_amount) && $request->max_total_amount < $request->min_total_amount) {
-                    $validator->errors()->add('max_total_amount', 'Tổng tiền tối đa không được nhỏ hơn tổng tiền tối thiểu.');
-                }
-                if (isset($request->min_total_amount, $request->max_total_amount) && $request->min_total_amount > $request->max_total_amount) {
-                    $validator->errors()->add('min_total_amount', 'Tổng tiền tối thiểu không được lớn hơn tổng tiền tối đa.');
-                }
-            }
+            // if ($request->type === 'amount' && $request->max_total_amount) {
+            //     $validator->errors()->add('max_total_amount', 'Tổng tiền tối đa không được nhập khi loại phiếu là "amount".');
+            // }
+
+            // if ($request->min_total_amount && $request->max_total_amount && $request->min_total_amount > $request->max_total_amount) {
+            //     $validator->errors()->add('min_total_amount', 'Tổng tiền tối thiểu không được lớn hơn tổng tiền tối đa.');
+            //     $validator->errors()->add('max_total_amount', 'Tổng tiền tối đa phải lớn hơn tổng tiền tối thiểu.');
+            // }
         });
 
         if ($validator->fails()) {
-            return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
+            return response()->json(['status' => 'error', 'errors' => $validator->messages()], 400);
         }
 
-        // Cập nhật phiếu giảm giá
         $voucher->update($request->all());
 
-        return response()->json(['message' => 'Cập nhật thành công'], 200);
+        return response()->json(['status' => 'success', 'message' => 'Phiếu giảm giá đã được cập nhật thành công'], 200);
     }
+
 
 
 

@@ -32,27 +32,24 @@ const AddVoucher = () => {
     if (!min_total_amount || isNaN(min_total_amount) || parseFloat(min_total_amount) < 0)
       newErrors.min_total_amount = "Số tiền tối thiểu phải là số không âm.";
 
-    if (!max_total_amount || isNaN(max_total_amount) || parseFloat(max_total_amount) < 0)
-      newErrors.max_total_amount = "Số tiền tối đa phải là số không âm.";
+    // Chỉ validate max_total_amount khi loại là %
+    if (type === "%" && (!max_total_amount || isNaN(max_total_amount) || parseFloat(max_total_amount) <= 0)) {
+      newErrors.max_total_amount = "Số tiền tối đa được giảm phải là số lớn hơn 0.";
+    }
 
-    if (
-      min_total_amount &&
-      max_total_amount &&
-      parseFloat(max_total_amount) < parseFloat(min_total_amount)
-    )
-      newErrors.max_total_amount = "Số tiền tối đa phải lớn hơn số tiền tối thiểu.";
-
-    // Kiểm tra giảm giá với loại "amount"
+    // if (
+    //   min_total_amount &&
+    //   max_total_amount &&
+    //   parseFloat(max_total_amount) < parseFloat(min_total_amount)
+    // ) {
+    //   newErrors.max_total_amount = "Số tiền tối đa phải lớn hơn số tiền tối thiểu.";
+    // }
     if (type === "amount") {
       if (min_total_amount && parseFloat(giamGia) > parseFloat(min_total_amount)) {
         newErrors.giamGia = "Mức giảm giá phải nhỏ hơn số tiền tối thiểu.";
       }
-      if (max_total_amount && parseFloat(giamGia) > parseFloat(max_total_amount)) {
-        newErrors.giamGia = "Mức giảm giá phải nhỏ hơn số tiền tối đa.";
-      }
     }
 
-    // Kiểm tra giảm giá với loại "%"
     if (type === "%") {
       if (giamGia < 1 || giamGia > 100) {
         newErrors.giamGia = "Mức giảm giá chỉ từ 1% - 100%.";
@@ -75,6 +72,7 @@ const AddVoucher = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
 
 
 
@@ -253,14 +251,19 @@ const AddVoucher = () => {
           htmlFor="max_total_amount"
           className="block text-sm font-medium text-gray-700"
         >
-          Số tiền tối đa để áp dụng:
+          {type === "%" ? "Số tiền tối đa được giảm:" : "Số tiền tối đa để áp dụng:"}
         </label>
         <input
           type="number"
           id="max_total_amount"
           value={max_total_amount}
           onChange={(e) => setMax_total_amount(e.target.value)}
-          placeholder="Nhập số tiền tối đa để áp dụng"
+          placeholder={
+            type === "%"
+              ? "Nhập số tiền tối đa được giảm"
+              : "Nhập số tiền tối đa để áp dụng"
+          }
+          disabled={type === "amount"} // Disable khi loại là "amount"
           className={`mt-1 block w-full border ${errors.max_total_amount ? "border-red-500" : "border-gray-300"
             } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.max_total_amount ? "focus:ring-red-500" : "focus:ring-blue-500"
             }`}
@@ -269,6 +272,7 @@ const AddVoucher = () => {
           <p className="text-red-500 text-sm mt-1">{errors.max_total_amount}</p>
         )}
       </div>
+
 
 
       <div className="mb-4 relative">
