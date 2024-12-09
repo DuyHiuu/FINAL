@@ -440,7 +440,7 @@ const Detail = () => {
                       <span className="mr-2">✔️</span> Giờ check-in: 9:00 hoặc 14:00 (Chọn bên dưới) của ngày check-in
                     </p>
                     <p className="flex items-center text-red-500">
-                      <span className="mr-2">✔️</span> Giờ check-out: 9:00 hoặc 14:00 (Chọn bên dưới) của ngày check-out
+                      <span className="mr-2">✔️</span> Giờ check-out: 9:00 hoặc 14:00 (Chọn theo ngày check-in) của ngày check-out
                     </p>
                     <p className="flex items-center text-red-500">
                       <span className="mr-2">✔️</span> Nếu quá giờ check-in 3 tiếng, chúng tôi sẽ hủy phòng của
