@@ -145,9 +145,6 @@ class BookingController extends Controller
             'room_id' => $room->id,
             'start_date' => $request->input('start_date'),
             'end_date' => $request->input('end_date'),
-
-            'voucher_id' => $request->input('voucher_id')
-
             'start_hour' => $startHour, //
             'end_hour' => $endHour, //
 
