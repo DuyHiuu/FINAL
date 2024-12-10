@@ -1,4 +1,4 @@
-import { Col, Divider, message, Row } from 'antd';
+import { Col, Divider, message, Row, TimePicker } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -247,6 +247,25 @@ const DetailPay = () => {
 
                 <Divider />
 
+                <Row gutter={16} className="mb-8">
+                    <Col span={12}>
+                        <strong>Giờ check-in</strong>
+                        <TimePicker
+                            value={bookingData?.start_hour ? moment(bookingData?.start_hour, "HH:mm:ss") : null}
+                            disabled
+                            style={{ width: '100%' }}
+                        />
+                    </Col>
+                    <Col span={12}>
+                        <strong>Giờ check-out</strong>
+                        <TimePicker
+                            value={bookingData?.end_hour ? moment(bookingData?.end_hour, "HH:mm:ss") : null}
+                            disabled
+                            style={{ width: '100%' }}
+                        />
+                    </Col>
+                </Row>
+
                 <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 mb-10 mt-5">
                     <label className="text-left block w-full lg:w-1/2">
                         <strong>Ngày check-in</strong>
@@ -400,6 +419,20 @@ const DetailPay = () => {
                         <p className="font-bold mt-2">{Math.trunc(paymentData.payment.total_amount).toLocaleString("vi-VN")} VNĐ</p>
                     </div>
                 </div>
+
+                {paymentData?.payment?.different_amount && (
+                    <>
+                        <p className="text-red-500 font-bold mt-2">ĐÃ ĐỔI PHÒNG!</p>
+                        <div className="flex justify-between">
+                            <div>
+                                <p className="text-left text-red-500 font-bold mt-2">Số tiền phải trả thêm:</p>
+                            </div>
+                            <div className="text-right text-red-500">
+                                <p className="font-bold mt-2">{Math.trunc(paymentData.payment.different_amount).toLocaleString("vi-VN")} VNĐ</p>
+                            </div>
+                        </div>
+                    </>
+                )}
 
             </div>
         </div>
