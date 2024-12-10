@@ -272,7 +272,7 @@ class PaymentController extends Controller
                     'difference' => $difference,
                 ], 400);
             }
-
+            $fieldsToUpdate['different_amount']=$difference;
             $payment->update($fieldsToUpdate);
 
             DB::commit();

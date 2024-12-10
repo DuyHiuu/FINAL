@@ -46,6 +46,7 @@ class Payment extends Model
         'status_id',
         'is_processed',
         'voucher_id',
+        'different_amount',
     ];
 
     public function booking()

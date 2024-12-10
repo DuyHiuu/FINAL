@@ -79,7 +79,7 @@
             <p>Chào {{ $payment->user->name }},</p>
             <p>Chúng tôi đã xác nhận thông tin đặt phòng của bạn. Dưới đây là một số lưu ý:</p>
             <p><strong>Ngày check-in :</strong>{{$payment->booking->start_date}}</p>
-            <p><strong>Ngày check-our :</strong>{{$payment->booking->start_date}}</p>
+            <p><strong>Ngày check-our :</strong>{{$payment->booking->end_date}}</p>
             <p><strong>Giờ check-in :</strong>{{$payment->booking->start_hour}}</p>
             <p><strong>Giờ check-our :</strong>{{$payment->booking->end_hour}}</p>
             <p><strong>Thời hạn hủy phòng:</strong> Trước ngày check-in 48 tiếng</p>
