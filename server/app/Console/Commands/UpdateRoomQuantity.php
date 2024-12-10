@@ -19,7 +19,7 @@ class UpdateRoomQuantity extends Command
         DB::transaction(function () {
             // Lấy tất cả các payments chưa được xử lý, đã thanh toán, và end_date đã qua
             $payments = Payment::where('is_processed', false)
-                ->where('status_id', 2)
+                ->where('status_id', 6)
                 ->whereHas('booking', function ($query) {
                     $query->where('end_date', '<', Carbon::now());
                 })
@@ -35,7 +35,7 @@ class UpdateRoomQuantity extends Command
                     $room = $payment->booking->room;
                    
                    if ($room && isset($room->is_booked)) {
-                    // Tăng số lượng phòng
+                    // Trừ số lượng phòng
                     $room->decrement('is_booked', 1);
 
                     // Kiểm tra và cập nhật trạng thái phòng nếu số lượng lớn hơn 0
