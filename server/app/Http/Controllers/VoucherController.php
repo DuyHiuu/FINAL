@@ -35,7 +35,7 @@ class VoucherController extends Controller
     {
         // Kiểm tra nếu loại phiếu là 'amount' mà không có max_total_amount, gán giá trị mặc định
         if ($request->type === 'amount' && !$request->max_total_amount) {
-            $request->merge(['max_total_amount' => 999999999]);
+            $request->merge(['max_total_amount' => 0]);
         }
 
         $validator = Validator::make(
@@ -119,7 +119,7 @@ class VoucherController extends Controller
         $voucher = Voucher::findOrFail($id);
 
         if ($request->type === 'amount' && !$request->max_total_amount) {
-            $request->merge(['max_total_amount' => 999999999]);
+            $request->merge(['max_total_amount' => 0]);
         }
 
         $validator = Validator::make(

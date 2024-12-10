@@ -130,8 +130,8 @@ class BookingController extends Controller
             ], 400);
         }
 
-        $startHour = $request->input('start_hour'); // Ví dụ: 09:00
-        $endHour = $startHour === '09:00' ? '09:00 ngày hôm sau' : '14:00 ngày hôm sau';
+        // $startHour = $request->input('start_hour'); // Ví dụ: 09:00
+        // $endHour = $startHour === '09:00' ? '09:00 ngày hôm sau' : '14:00 ngày hôm sau';
 
         $startHour = $request->input('start_hour');
         $endHour = Carbon::parse($startHour)->addDay()->format('H:i'); // nếu dùng kiểu dl là time
