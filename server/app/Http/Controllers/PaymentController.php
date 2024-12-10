@@ -790,51 +790,6 @@ class PaymentController extends Controller
         }
     }
 
-    // {
-
-    //     $params = $request->all();
-
-    //     $voucherID = $request->input('voucher_id');
-
-    //     $voucher = Voucher::where('id', $voucherID)
-    //         ->where('is_active', true)
-    //         ->first();
-
-    //     $booking = Booking::findOrFail($params['booking_id']);
-
-    //     $subTotal = $booking->totalamount;
-
-    //     $discount = 0;
-
-    //     if (!$voucher) {
-    //         return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
-    //     }
-
-    //     if ($voucher->end_date < now()) {
-    //         return response()->json(['message' => 'Voucher đã hết hạn.'], 400);
-    //     }
-
-    //     if ($voucher->quantity === 0) {
-    //         return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
-    //     }
-
-    //     // Kiểm tra tổng tiền đơn hàng có đủ để sử dụng voucher không
-    //     if ($subTotal > $voucher->min_total_amount) {
-    //         return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
-    //     }
-
-    //     if ($voucher->type === '%') {
-    //         $discount = $subTotal - $voucher->max_total_amount;
-    //     } else {
-    //         $discount = $voucher->discount;
-    //     }
-
-    //     return response()->json([
-    //         'discount' => $discount,
-    //         'subTotal' => $subTotal
-    //     ], 201);
-    // }
-
     public function cancelPay(string $id)
     {
         $payment = Payment::find($id);
@@ -852,10 +807,51 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Không thể hủy đơn hàng sau 2 ngày!'], 403);
         }
 
-        if ($payment->status_id > 1) {
+        if ($payment->status_id > 4) {
             return response()->json(['message' => 'Không thể hủy đơn hàng!'], status: 403);
         }
 
+
+        $payment->update(['status_id' => 7]);
+
+        return response()->json(['message' => 'Thanh toán đã được hủy!', 'payment' => $payment], 200);
+    }
+
+    public function cancelPayAd(string $id)
+    {
+        $payment = Payment::find($id);
+
+        if (!$payment) {
+            return response()->json(['message' => 'Payment không tồn tại!'], 404);
+        }
+
+        $booking = $payment->booking;
+
+        if (!$booking) {
+            return response()->json(['message' => 'Booking không tồn tại!'], 404);
+        }
+
+        $start_date = Carbon::parse($booking->start_date)->setTimezone('Asia/Ho_Chi_Minh');
+
+        $start_hour = Carbon::createFromFormat(
+            'H:i:s',
+            $booking->start_hour,
+            'Asia/Ho_Chi_Minh'
+        );
+
+        $now = Carbon::now('Asia/Ho_Chi_Minh');
+
+        if (!$now->isSameDay($start_date)) {
+            return response()->json(['message' => 'Ngày thanh toán không trùng ngày với ngày check-in!'], 400);
+        }
+
+        if ($now->lessThan($start_hour->addHours(3))) {
+            return response()->json([
+                'message' => 'Không thể hủy thanh toán trước 3 tiếng kể từ giờ check-in!',
+                'start_hour' => $start_hour->format('H:i:s'),
+                'current_time' => $now->format('H:i:s'),
+            ], 400);
+        }
 
         $payment->update(['status_id' => 7]);
 
