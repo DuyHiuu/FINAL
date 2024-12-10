@@ -112,6 +112,7 @@ class BookingController extends Controller
                 'end_date.required' => 'Ngày kết thúc không được để trống.',
                 'end_date.date' => 'Ngày kết thúc phải là một ngày hợp lệ.',
                 'end_date.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
+                'start_hour.required' => 'Giờ bắt đầu không được để trống.',
                 'room_id.required' => 'Phòng không được để trống',
                 'room_id.exists' => 'Phòng phải tồn tại trong bảng phòng',
             ]
@@ -145,8 +146,9 @@ class BookingController extends Controller
             'room_id' => $room->id,
             'start_date' => $request->input('start_date'),
             'end_date' => $request->input('end_date'),
-            'start_hour' => $startHour, //
-            'end_hour' => $endHour, //
+            'voucher_id' => $request->input('voucher_id'),
+            'start_hour' => $startHour,
+            'end_hour' => $endHour,
 
         ]);
 
