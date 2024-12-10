@@ -54,6 +54,9 @@ const AddVoucher = () => {
       if (giamGia < 1 || giamGia > 100) {
         newErrors.giamGia = "Mức giảm giá chỉ từ 1% - 100%.";
       }
+      if (min_total_amount < max_total_amount) {
+        newErrors.max_total_amount = "Số tiền giảm tối đa không được lớn hơn số tiền tối thiểu.";
+      }
     }
 
     if (!soLuong || isNaN(soLuong) || parseInt(soLuong, 10) <= 0)
