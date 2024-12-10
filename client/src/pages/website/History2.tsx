@@ -440,7 +440,7 @@ const History2 = () => {
             </Col>
           </Row>
 
-          {paymentData?.payment?.status?.id == 1 && (
+          {paymentData?.payment?.status?.id < 5 && (
             <Row gutter={16} className="mt-4">
               <Col span={12}>
                 <Text strong style={{ color: "red" }}>
