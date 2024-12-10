@@ -91,6 +91,10 @@ const EditVoucher = () => {
         setError("Mức giảm phải từ 1% - 100%");
         return;
       }
+      if (min_total_amount < max_total_amount) {
+        setError("Số tiền tối đa được giảm không được lớn hơn số tiền tối thiểu.");
+        return;
+      }
     }
 
     const startDate = new Date(ngayBatDau);
@@ -226,7 +230,6 @@ const EditVoucher = () => {
           />
         </div>
 
-        {/* Số tiền tối đa được giảm */}
         <div className="mb-4">
           <label htmlFor="max_total_amount" className="block text-sm font-medium text-gray-700">
             {type === "amount" ? "Số tiền tối đa" : "Số tiền tối đa được giảm"}

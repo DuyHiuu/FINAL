@@ -401,7 +401,6 @@ class PaymentController extends Controller
 
                     $subTotal_room += $booking->room->price * $days;
 
-
                     if ($booking->services && $booking->services->isNotEmpty()) {
                         foreach ($booking->services as $item) {
                             if ($item->id === 2) {
@@ -421,7 +420,6 @@ class PaymentController extends Controller
                     $totalAmount = $total_amount;
 
                     if ($voucherID) {
-
                         $voucher = Voucher::where('id', $voucherID)
                             ->where('is_active', true)
                             ->first();
@@ -443,9 +441,10 @@ class PaymentController extends Controller
                         }
 
                         if ($voucher->type === '%') {
-                            $discount = $voucher->max_total_amount;
+                            $percentageDiscount = ($total_amount * $voucher->discount) / 100;
+                            $discount = min($percentageDiscount, $voucher->max_total_amount);
                         } else {
-                            $discount = $voucher->discount;
+                            $discount = min($voucher->discount, $total_amount);
                         }
 
                         $totalAmount = max(0, $total_amount - $discount);
@@ -455,6 +454,7 @@ class PaymentController extends Controller
                         $params['total_amount'] = $total_amount;
                     }
                 }
+
 
                 // Mặc định status_id = 3 khi thêm
 

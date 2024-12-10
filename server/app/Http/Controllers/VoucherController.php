@@ -82,10 +82,10 @@ class VoucherController extends Controller
             //     $validator->errors()->add('max_total_amount', 'Tổng tiền tối đa không được nhập khi loại phiếu là "amount".');
             // }
 
-            // if ($request->min_total_amount && $request->max_total_amount && $request->min_total_amount > $request->max_total_amount) {
-            //     $validator->errors()->add('min_total_amount', 'Tổng tiền tối thiểu không được lớn hơn tổng tiền tối đa.');
-            //     $validator->errors()->add('max_total_amount', 'Tổng tiền tối đa phải lớn hơn tổng tiền tối thiểu.');
-            // }
+            if ($request->min_total_amount && $request->max_total_amount && $request->min_total_amount < $request->max_total_amount) {
+                // $validator->errors()->add('min_total_amount', 'Tổng tiền tối thiểu không được lớn hơn tổng tiền tối đa.');
+                $validator->errors()->add('max_total_amount', 'Số tiền tối đa được giảm không được lớn hơn số tiền tối thiểu.');
+            }
         });
 
         if ($validator->fails()) {
@@ -146,10 +146,10 @@ class VoucherController extends Controller
             //     $validator->errors()->add('max_total_amount', 'Tổng tiền tối đa không được nhập khi loại phiếu là "amount".');
             // }
 
-            // if ($request->min_total_amount && $request->max_total_amount && $request->min_total_amount > $request->max_total_amount) {
-            //     $validator->errors()->add('min_total_amount', 'Tổng tiền tối thiểu không được lớn hơn tổng tiền tối đa.');
-            //     $validator->errors()->add('max_total_amount', 'Tổng tiền tối đa phải lớn hơn tổng tiền tối thiểu.');
-            // }
+            if ($request->min_total_amount && $request->max_total_amount && $request->min_total_amount < $request->max_total_amount) {
+                // $validator->errors()->add('min_total_amount', 'Tổng tiền tối thiểu không được lớn hơn tổng tiền tối đa.');
+                $validator->errors()->add('max_total_amount', 'Số tiền tối đa được giảm không được lớn hơn số tiền tối thiểu.');
+            }
         });
 
         if ($validator->fails()) {
