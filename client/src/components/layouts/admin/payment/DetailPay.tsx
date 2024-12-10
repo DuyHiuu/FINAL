@@ -1,4 +1,4 @@
-import { Col, Divider, Row } from 'antd';
+import { Col, Divider, message, Row } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -47,20 +47,51 @@ const DetailPay = () => {
                 },
                 body: JSON.stringify({ status_id: statusId }),
             });
+
             if (!res.ok) {
                 throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
             }
 
-            setSelectedStatus(statusId);
+            message.success('Trạng thái đã được cập nhật thành công.');
 
-            // Tải lại trang
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+
         } catch (error) {
             console.error("Lỗi khi cập nhật trạng thái:", error);
             alert("Có lỗi xảy ra. Vui lòng thử lại.");
         }
     };
 
+    const handleCancelRoom = async () => {
+        try {
+            const res = await fetch(`${updateUrl}/cancel_pay_ad/${id}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ status_id: 7 }),
+            });
+            if (!res.ok) {
+                throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
+            }
+
+            alert("Phòng đã được hủy thành công.");
+            setData(prevData => ({
+                ...prevData,
+                payment: {
+                    ...prevData.payment,
+                    status: 'Đã hủy'
+                }
+            }));
+
+            window.location.reload();
+        } catch (error) {
+            console.error("Lỗi khi hủy phòng:", error);
+            alert("Có lỗi xảy ra. Vui lòng thử lại.");
+        }
+    };
 
     if (!data) {
         return <p>Đang tải dữ liệu...</p>;
@@ -346,6 +377,19 @@ const DetailPay = () => {
                             )}
                         </div>
                     </div>
+                </div>
+
+                <div className="mt-4">
+                    {paymentData?.payment?.status_id < 5 && (
+                        <>
+                            <button
+                                onClick={handleCancelRoom}
+                                className="bg-red-600 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Hủy phòng
+                            </button>
+                        </>
+                    )}
                 </div>
 
                 <div className="flex justify-between mt-4">
