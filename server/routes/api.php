@@ -141,6 +141,8 @@ Route::prefix('payments')->group(function () {
     Route::post('/return_pay', [PaymentController::class, 'returnPay']);
     Route::put('/{id}/changeStatus', [PaymentController::class, 'updatePaymentDetails']);
     Route::post('/cancel_pay_ad/{id}', [PaymentController::class, 'cancelPayAd']);
+    Route::post('/check_out/{id}', [PaymentController::class, 'checkOut']);
+
 });
 
 Route::prefix('users')->group(function () {

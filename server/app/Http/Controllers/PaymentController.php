@@ -857,4 +857,66 @@ class PaymentController extends Controller
 
         return response()->json(['message' => 'Thanh toán đã được hủy!', 'payment' => $payment], 200);
     }
+
+    public function checkOut(Request $request, $id){
+
+        $payment = Payment::findOrFail($id);
+
+        if (!$payment) {
+            return response()->json(['message' => 'Payment không tồn tại!'], 404);
+        }
+
+        $booking = $payment->booking;
+
+        if (!$booking) {
+            return response()->json(['message' => 'Booking không tồn tại!'], 404);
+        }
+
+        $actualCheckOutTime = $request->input('actual_check_out_time');
+
+        if(!$actualCheckOutTime){
+
+            $actualTime = Carbon::now('Asia/Ho_Chi_Minh');
+
+        }else{
+
+            $actualTime = Carbon::parse($actualCheckOutTime)->setTimezone('Asia/Ho_Chi_Minh');
+        }
+
+        $checkOutTime = Carbon::parse($booking->end_date . ' ' . $booking->end_hour)->setTimezone('Asia/Ho_Chi_Minh');
+
+        if ($actualTime->lessThanOrEqualTo($checkOutTime)) {
+            return response()->json([
+                'message' => 'Trả phòng đúng giờ quy định, không có phụ thu!',
+                'room_rate' => $booking->room->price,
+                'lateCheckOut' => 0,
+            ], 200);
+        }
+
+        $minutesLate = $actualTime->diffInMinutes($checkOutTime);
+
+        if ($minutesLate < 180) {
+            return response()->json([
+                'message' => 'Trả phòng muộn dưới 3 tiếng, không có phụ thu!',
+                'room_rate' => $booking->room->price,
+                'lateCheckOut' => 0,
+            ], 200);
+        }
+    
+        // Nếu muộn hơn 3 giờ, tính phí phụ thu
+        $lateCheckOut = 500000; 
+    
+        // Tính tổng số tiền bao gồm phụ thu
+        $total = $payment->total_amount + $lateCheckOut;
+
+        return response()->json([
+            'message' => 'Tính phí trả phòng muộn thành công!',
+            'room' => $booking->room,
+            'lateCheckOut' => $lateCheckOut,
+            'total' => $total,
+        ], 200);
+
+
+
+    }
 }
