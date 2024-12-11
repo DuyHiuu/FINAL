@@ -25,31 +25,41 @@ const Login = () => {
         body: JSON.stringify({
           email: trimmedEmail,
           password: trimmedPassword,
-        }), // Gửi email và password lên API
+        }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("token", data.accessToken); // Lưu token vào localStorage
-        localStorage.setItem("email", data.user.email); // Lưu token vào localStorage
-        localStorage.setItem("user_id", data.user.id); // Lưu user_id vào localStorage
-        localStorage.setItem("name", data.user.name); // Lưu tên người dùng vào localStorage
-        localStorage.setItem("role_id", data.user.role.role_id); // Lưu role_id vào localStorage
-        localStorage.setItem("phone", data.user.phone); // Lưu role_id vào localStorage
-        localStorage.setItem("role_name", data.user.role.role_name); // Lưu role_id vào localStorage
-        message.success("Đăng nhập thành công!");
-        navigate("/"); // Chuyển hướng đến trang chính
-      } else {
-        const data = await response.json();
-        console.log(data);
+      const data = await response.json(); // Parse JSON để kiểm tra phản hồi
 
-        // Nếu có lỗi, hiển thị thông báo lỗi
-        message.error(data.error);
+      if (response.ok) {
+        // Kiểm tra nếu tài khoản chưa kích hoạt
+        if (data.user.is_active === 0) {
+          message.error("Tài khoản chưa được kích hoạt.");
+        } else {
+          // Lưu thông tin vào localStorage nếu đăng nhập thành công
+          localStorage.setItem("token", data.accessToken);
+          localStorage.setItem("email", data.user.email);
+          localStorage.setItem("user_id", data.user.id);
+          localStorage.setItem("name", data.user.name);
+          localStorage.setItem("role_id", data.user.role.role_id);
+          localStorage.setItem("phone", data.user.phone);
+          localStorage.setItem("role_name", data.user.role.role_name);
+          message.success("Đăng nhập thành công!");
+          navigate("/"); // Chuyển hướng đến trang chính
+        }
+      } else {
+        // Nếu phản hồi lỗi, kiểm tra loại lỗi
+        if (data.error === "Invalid email or password") {
+          message.error("Sai email hoặc mật khẩu.");
+        } else {
+          message.error(data.error || "Đã xảy ra lỗi. Vui lòng thử lại.");
+        }
       }
     } catch (error) {
       // Hiển thị lỗi nếu có vấn đề khi gọi API
-      setError("Đã xảy ra lỗi trong quá trình kết nối. Vui lòng thử lại.");
+      message.error("Đã xảy ra lỗi trong quá trình kết nối. Vui lòng thử lại.");
     }
+
+
   };
 
   return (
