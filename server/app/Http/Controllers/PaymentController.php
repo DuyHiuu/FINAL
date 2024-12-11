@@ -272,7 +272,7 @@ class PaymentController extends Controller
                     'difference' => $difference,
                 ], 400);
             }
-            $fieldsToUpdate['different_amount']=$difference;
+            $fieldsToUpdate['different_amount'] = $difference;
             $payment->update($fieldsToUpdate);
 
             DB::commit();
@@ -858,7 +858,8 @@ class PaymentController extends Controller
         return response()->json(['message' => 'Thanh toán đã được hủy!', 'payment' => $payment], 200);
     }
 
-    public function checkOut(Request $request, $id){
+    public function checkOut(Request $request, $id)
+    {
 
         $payment = Payment::findOrFail($id);
 
@@ -874,11 +875,10 @@ class PaymentController extends Controller
 
         $actualCheckOutTime = $request->input('actual_check_out_time');
 
-        if(!$actualCheckOutTime){
+        if (!$actualCheckOutTime) {
 
             $actualTime = Carbon::now('Asia/Ho_Chi_Minh');
-
-        }else{
+        } else {
 
             $actualTime = Carbon::parse($actualCheckOutTime)->setTimezone('Asia/Ho_Chi_Minh');
         }
@@ -887,8 +887,8 @@ class PaymentController extends Controller
 
         if ($actualTime->lessThanOrEqualTo($checkOutTime)) {
             return response()->json([
-                'message' => 'Trả phòng đúng giờ quy định, không có phụ thu!',
-                'room_rate' => $booking->room->price,
+                'message' => 'Vẫn đang đúng giờ quy định, không có phụ thu!',
+                'room_rate' => $payment->total_amount,
                 'lateCheckOut' => 0,
             ], 200);
         }
@@ -898,14 +898,14 @@ class PaymentController extends Controller
         if ($minutesLate < 180) {
             return response()->json([
                 'message' => 'Trả phòng muộn dưới 3 tiếng, không có phụ thu!',
-                'room_rate' => $booking->room->price,
+                'room_rate' => $payment->total_amount,
                 'lateCheckOut' => 0,
             ], 200);
         }
-    
+
         // Nếu muộn hơn 3 giờ, tính phí phụ thu
-        $lateCheckOut = 500000; 
-    
+        $lateCheckOut = 500000;
+
         // Tính tổng số tiền bao gồm phụ thu
         $total = $payment->total_amount + $lateCheckOut;
 
@@ -915,8 +915,5 @@ class PaymentController extends Controller
             'lateCheckOut' => $lateCheckOut,
             'total' => $total,
         ], 200);
-
-
-
     }
 }

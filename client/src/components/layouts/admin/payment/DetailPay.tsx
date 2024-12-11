@@ -1,9 +1,13 @@
-import { Col, Divider, message, Row, TimePicker } from 'antd';
+import { Modal, Button, Col, Divider, message, Row, TimePicker } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Text } from 'recharts';
+import axios from "axios";
 
+interface DetailPayProps {
+    paymentId: string;
+}
 const DetailPay = () => {
 
     const showUrl = "http://localhost:8000/api/payments";
@@ -15,6 +19,12 @@ const DetailPay = () => {
     const updateUrl = "http://localhost:8000/api/payments";
     const [selectedStatus, setSelectedStatus] = useState(null);
     const navigate = useNavigate();
+    const { paymentId } = useParams<{ paymentId: string }>();  // Lấy paymentId từ URL
+    const [checkoutMessage, setCheckoutMessage] = useState<string>('');
+    const [roomRate, setRoomRate] = useState<number>(0);
+    const [lateCheckOut, setLateCheckOut] = useState<number>(0);
+    const [total, setTotal] = useState<number>(0);
+    const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -129,6 +139,38 @@ const DetailPay = () => {
         }
         return total + item.price;
     }, 0);
+
+    const handleCheckout = async () => {
+        try {
+            const response = await axios.post(`http://127.0.0.1:8000/api/payments/check_out/${id}`);
+            console.log(response); // In ra response để kiểm tra
+
+            const { message: backendMessage, room_rate, lateCheckOut, total } = response.data;
+
+            setRoomRate(room_rate);
+            setLateCheckOut(lateCheckOut);
+            setTotal(total);
+            const currencyFormat = new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+            });
+
+            setCheckoutMessage(
+                `${backendMessage}\n\nGiá phòng: ${currencyFormat.format(room_rate)}` +
+                (lateCheckOut > 0
+                    ? `\nPhụ thu trả phòng muộn: ${currencyFormat.format(lateCheckOut)}\nTổng cộng: ${currencyFormat.format(total)}`
+                    : "")
+            );
+
+
+
+            setIsModalVisible(true);
+        } catch (error) {
+            console.log(error); // In ra lỗi để kiểm tra chi tiết
+            message.error(error.response ? error.response.data.message : "Có lỗi xảy ra khi trả phòng!");
+        }
+    };
+
 
     return (
         <div className="flex flex-col lg:flex-row">
@@ -410,6 +452,37 @@ const DetailPay = () => {
                         </>
                     )}
                 </div>
+
+                <div>
+                    <Button
+                        type="primary"
+                        danger
+                        onClick={handleCheckout}
+                        className="mt-4 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-200"
+                    >
+                        Check Phòng
+                    </Button>
+
+                    <Modal
+                        title="Thông báo Checkout"
+                        visible={isModalVisible}
+                        onOk={() => setIsModalVisible(false)}
+                        onCancel={() => setIsModalVisible(false)}
+                        footer={[
+                            <Button
+                                key="close"
+                                onClick={() => setIsModalVisible(false)}
+                                className="bg-gray-200 text-gray-700 hover:bg-gray-300 px-6 py-2 rounded-lg"
+                            >
+                                Đóng
+                            </Button>,
+                        ]}
+                        className="bg-white p-6 rounded-lg shadow-xl max-w-lg mx-auto"
+                    >
+                        <p className="text-gray-700">{checkoutMessage}</p>
+                    </Modal>
+                </div>
+
 
                 <div className="flex justify-between mt-4">
                     <div>
