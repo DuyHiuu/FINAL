@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import useFetchSize from '../../../../api/useFetchSize';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Form, Input, Button, Select, Upload, message } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 
@@ -8,19 +8,21 @@ const { Option } = Select;
 
 const AddRoom = () => {
     const [sizeId, setSizeId] = useState('');
+    const { id } = useParams();
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
     const [quantity, setQuantity] = useState('');
     const [statusRoom, setStatusRoom] = useState('Còn phòng');
     const [imgThumbnail, setImgThumbnail] = useState(null);
-    const [imgSubImages, setImgSubImages] = useState([]); 
-    const [previewImage, setPreviewImage] = useState(null); 
+    const [imgSubImages, setImgSubImages] = useState([]);
+    const [previewImage, setPreviewImage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
     const storeUrl = "http://localhost:8000/api/rooms";
+    const roomImageUrl = "http://localhost:8000/api/roomImages";
     const { sizes } = useFetchSize();
-    
+
 
     const beforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
@@ -56,35 +58,70 @@ const AddRoom = () => {
 
         // Đẩy ảnh phụ vào formData
         imgSubImages.forEach((file) => {
-            formData.append('img_sub_images[]', file.originFileObj); 
+            if (file.originFileObj) {
+                formData.append('img_sub_images[]', file.originFileObj);
+            } else {
+                console.error("Không tìm thấy file gốc:", file);
+            }
         });
 
         try {
-            const response = await fetch(storeUrl, {
+            // Gửi yêu cầu đến storeUrl (Lưu thông tin phòng)
+            const roomResponse = await fetch(storeUrl, {
                 method: 'POST',
                 body: formData,
             });
 
-            setIsLoading(false);
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Phòng đã thêm thành công:', data);
-                message.success("Phòng đã được thêm thành công!");
-                setTimeout(() => {
-                    navigate('/admin');
-                }, 2000);
-            } else {
-                const errorData = await response.json();
-                console.error('Lỗi khi thêm phòng:', errorData.message);
-                message.error(`Thêm phòng thất bại: ${errorData.message}`);
+            if (!roomResponse.ok) {
+                const roomErrorData = await roomResponse.json();
+                console.error('Lỗi khi thêm phòng:', roomErrorData.message);
+                message.error(`Thêm phòng thất bại: ${roomErrorData.message}`);
+                setIsLoading(false);
+                return;
             }
+
+            const roomData = await roomResponse.json();
+            console.log('Phòng đã thêm thành công:', roomData);
+
+            // Sau khi thêm phòng thành công, gửi yêu cầu thêm hình ảnh phòng
+            const imageFormData = new FormData();
+            imgSubImages.forEach((file) => {
+                if (file.originFileObj) {
+                    imageFormData.append('img_sub_images[]', file.originFileObj);
+                }
+            });
+
+            const imageResponse = await fetch(roomImageUrl, {
+                method: 'POST',
+                body: imageFormData,
+            });
+
+            // if (!imageResponse.ok) {
+            //     const imageErrorData = await imageResponse.json();
+            //     console.error('Lỗi khi thêm hình ảnh phòng:', imageErrorData.message);
+            //     message.error(`Thêm hình ảnh phòng thất bại: ${imageErrorData.message}`);
+            //     setIsLoading(false);
+            //     return;
+            // }
+
+            const imageData = await imageResponse.json();
+            console.log('Hình ảnh phòng đã được thêm thành công:', imageData);
+            message.success("Phòng và hình ảnh đã được thêm thành công!");
+
+            setTimeout(() => {
+                navigate('/admin');
+            }, 2000);
         } catch (error) {
             setIsLoading(false);
             console.error('Lỗi kết nối API:', error);
             message.error("Đã xảy ra lỗi khi thêm phòng.");
         }
     };
+
+
+
+
+
 
     return (
         <div className="container mx-auto p-4">

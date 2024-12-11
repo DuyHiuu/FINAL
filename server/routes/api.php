@@ -50,11 +50,11 @@ Route::post('/update_new_pass', [UserController::class, 'update_new_pass'])->nam
 Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
     Route::get('/{id}', [RoomController::class, 'show']);
-    Route::middleware('checkrole')->group(function () {
-        Route::post('/', [RoomController::class, 'store']);
-        Route::put('/{id}', [RoomController::class, 'update']);
-        Route::delete('/{id}', [RoomController::class, 'destroy']);
-    });
+    // Route::middleware('checkrole')->group(function () {
+    Route::post('/', [RoomController::class, 'store']);
+    Route::put('/{id}', [RoomController::class, 'update']);
+    Route::delete('/{id}', [RoomController::class, 'destroy']);
+    // });
 });
 
 
@@ -142,7 +142,6 @@ Route::prefix('payments')->group(function () {
     Route::put('/{id}/changeStatus', [PaymentController::class, 'updatePaymentDetails']);
     Route::post('/cancel_pay_ad/{id}', [PaymentController::class, 'cancelPayAd']);
     Route::post('/check_out/{id}', [PaymentController::class, 'checkOut']);
-
 });
 
 Route::prefix('users')->group(function () {
