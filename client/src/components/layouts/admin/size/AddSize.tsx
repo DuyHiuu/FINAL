@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import authClient from '../../../../api/authClient';
 
 const AddSize = () => {
     const [tenSize, setTenSize] = useState('');
@@ -16,7 +17,7 @@ const AddSize = () => {
         if (!tenSize.trim()) {
             newErrors.tenSize = 'Tên size không được để trống.';
         }
-      
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0; // Trả về true nếu không có lỗi
     };
@@ -39,25 +40,17 @@ const AddSize = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8000/api/sizes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newSize),
-            });
+            const response = await authClient.post('http://localhost:8000/api/sizes', newSize);
 
             setIsLoading(false);
 
-            if (response.ok) {
+            if (response.status >= 200 && response.status < 300) {
                 setMessage('Thêm size thành công!');
                 setTimeout(() => {
                     navigate('/admin/sizes');
                 }, 2000);
             } else {
-                const errorData = await response.json();
-                console.error('Thêm size thất bại:', errorData);
-                setMessage(`Thêm size thất bại: ${errorData.message}`);
+                setMessage('Thêm size thất bại!');
             }
         } catch (error) {
             setIsLoading(false);
@@ -76,9 +69,8 @@ const AddSize = () => {
             {/* Notification message */}
             {message && (
                 <div
-                    className={`mb-4 p-2 rounded ${
-                        message.includes('thất bại') ? 'bg-red-200 text-red-700' : 'bg-green-200 text-green-700'
-                    }`}
+                    className={`mb-4 p-2 rounded ${message.includes('thất bại') ? 'bg-red-200 text-red-700' : 'bg-green-200 text-green-700'
+                        }`}
                 >
                     {message}
                 </div>
@@ -93,11 +85,9 @@ const AddSize = () => {
                     id="tenSize"
                     value={tenSize}
                     onChange={(e) => setTenSize(e.target.value)}
-                    className={`mt-1 block w-full border ${
-                        errors.tenSize ? 'border-red-500' : 'border-gray-300'
-                    } rounded-md shadow-sm p-2 focus:outline-none focus:ring ${
-                        errors.tenSize ? 'focus:ring-red-500' : 'focus:ring-blue-500'
-                    }`}
+                    className={`mt-1 block w-full border ${errors.tenSize ? 'border-red-500' : 'border-gray-300'
+                        } rounded-md shadow-sm p-2 focus:outline-none focus:ring ${errors.tenSize ? 'focus:ring-red-500' : 'focus:ring-blue-500'
+                        }`}
                 />
                 {errors.tenSize && <p className="text-red-500 text-sm mt-1">{errors.tenSize}</p>}
             </div>
@@ -110,11 +100,9 @@ const AddSize = () => {
                     id="moTa"
                     value={moTa}
                     onChange={(e) => setMoTa(e.target.value)}
-                    className={`mt-1 block w-full border ${
-                        errors.moTa ? 'border-red-500' : 'border-gray-300'
-                    } rounded-md shadow-sm p-2 focus:outline-none focus:ring ${
-                        errors.moTa ? 'focus:ring-red-500' : 'focus:ring-blue-500'
-                    }`}
+                    className={`mt-1 block w-full border ${errors.moTa ? 'border-red-500' : 'border-gray-300'
+                        } rounded-md shadow-sm p-2 focus:outline-none focus:ring ${errors.moTa ? 'focus:ring-red-500' : 'focus:ring-blue-500'
+                        }`}
                 />
                 {errors.moTa && <p className="text-red-500 text-sm mt-1">{errors.moTa}</p>}
             </div>

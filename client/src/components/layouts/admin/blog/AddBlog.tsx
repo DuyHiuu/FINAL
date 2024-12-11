@@ -27,7 +27,6 @@ const AddBlog = () => {
     formData.append("description", description);
     formData.append("content", content);
     if (image) formData.append("image", image);
-    formData.append("user_id", "1");
 
     setIsLoading(true);
 

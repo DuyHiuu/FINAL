@@ -36,7 +36,6 @@ import BlogList from "./components/layouts/admin/blog/BlogList";
 import AddBlog from "./components/layouts/admin/blog/AddBlog";
 import EditBlog from "./components/layouts/admin/blog/EditBlog";
 import UserList from "./components/layouts/admin/user/UserList";
-import AddUser from "./components/layouts/admin/user/AddUser";
 import EditUser from "./components/layouts/admin/user/EditUser";
 import RatingList from "./components/layouts/admin/rating/RatingList";
 import ListPay from "./components/layouts/admin/payment/ListPay";
@@ -129,7 +128,6 @@ export const router = createBrowserRouter([
       { path: "/admin/blogs/add", element: <AddBlog /> },
       { path: "/admin/blogs/edit/:id", element: <EditBlog /> },
       { path: "/admin/users", element: <UserList /> },
-      { path: "/admin/users/add", element: <AddUser /> },
       { path: "/admin/users/edit/:id", element: <EditUser /> },
       { path: "/admin/ratings", element: <RatingList /> },
       { path: "/admin/chart", element: <Chart /> },
