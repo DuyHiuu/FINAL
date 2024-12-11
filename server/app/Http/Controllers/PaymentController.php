@@ -887,7 +887,7 @@ class PaymentController extends Controller
 
         if ($actualTime->lessThanOrEqualTo($checkOutTime)) {
             return response()->json([
-                'message' => 'Vẫn đang đúng giờ quy định, không có phụ thu!',
+                'message' => 'Trả phòng đúng giờ quy định, không có phụ thu!',
                 'room_rate' => $payment->total_amount,
                 'lateCheckOut' => 0,
             ], 200);
