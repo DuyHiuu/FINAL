@@ -50,15 +50,18 @@ class BlogController extends Controller
         }
 
         try {
-            // Upload hình ảnh lên Cloudinary
-            $imagePath = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
+            $imgPath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imgPath = Cloudinary::upload($image->getRealPath())->getSecurePath();
+            }
 
             // Tạo blog mới
             $blog = Blog::create([
                 'title' => $request->input('title'),
                 'description' => $request->input('description'),
                 'content' => $request->input('content'),
-                'image' => $imagePath,
+                'image' => $imgPath,
             ]);
 
             return response()->json(['status' => 'success', 'message' => 'Blog đã được tạo thành công', 'data' => $blog], 201);

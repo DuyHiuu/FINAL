@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPercentage, FaCalendarAlt, FaBarcode } from "react-icons/fa";
 import { HiOutlineTicket } from "react-icons/hi";
+import authClient from "../../../../api/authClient";
 
 const AddVoucher = () => {
   const [tenVoucher, setVoucher] = useState("");
@@ -97,28 +98,22 @@ const AddVoucher = () => {
       start_date: ngayBatDau,
       end_date: ngayKetThuc,
     };
-    console.log(newVoucher);
-    try {
-      const response = await fetch("http://localhost:8000/api/vouchers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newVoucher),
-      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.log("Chi tiết lỗi:", errorData);
+    try {
+      const response = await authClient.post('http://localhost:8000/api/vouchers', newVoucher);
+
+      if (response.status >= 200 && response.status < 300) {
+        setSuccessMessage('Thêm size thành công!');
+        setTimeout(() => {
+          navigate('/admin/vouchers');
+        }, 2000);
       }
       else {
-        setSuccessMessage("Thêm voucher thành công!");
-        setTimeout(() => navigate("/admin/vouchers"), 1500);
+        setErrors("Thêm voucher thất bại!");
       }
     } catch (error) {
       setErrors({ general: "Lỗi kết nối với server." });
     }
-
   };
 
   return (

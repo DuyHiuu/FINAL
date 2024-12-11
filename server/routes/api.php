@@ -71,8 +71,8 @@ Route::prefix('sizes')->group(function () {
 Route::prefix('services')->group(function () {
     Route::get('/', [ServiceController::class, 'index']);
     Route::get('/{id}', [ServiceController::class, 'show']);
+    Route::post('/', [ServiceController::class, 'store']);
     route::middleware('checkrole')->group(function () {
-        Route::post('/', [ServiceController::class, 'store']);
         Route::put('/{id}', [ServiceController::class, 'update']);
         Route::delete('/{id}', [ServiceController::class, 'destroy']);
     });
@@ -80,10 +80,12 @@ Route::prefix('services')->group(function () {
 
 Route::prefix('blogs')->group(function () {
     Route::get('/', [BlogController::class, 'index']);
-    Route::post('/', [BlogController::class, 'store']);
     Route::get('/{id}', [BlogController::class, 'show']);
-    Route::put('/{id}', [BlogController::class, 'update']);
-    Route::delete('/{id}', [BlogController::class, 'destroy']);
+    Route::post('/', [BlogController::class, 'store']);
+    route::middleware('checkrole')->group(function () {
+        Route::put('/{id}', [BlogController::class, 'update']);
+        Route::delete('/{id}', [BlogController::class, 'destroy']);
+    });
 });
 
 // route::middleware('checkrole')->group(function () {
@@ -96,9 +98,11 @@ Route::prefix('vouchers')->group(function () {
     Route::get('/', [VoucherController::class, 'index']);
     Route::get('/listVoucher', [VoucherController::class, 'paymentVoucher']);
     Route::get('/{id}', [VoucherController::class, 'show']);
-    Route::post('/', [VoucherController::class, 'store']);
-    Route::put('/{id}', [VoucherController::class, 'update']);
-    Route::delete('/{id}', [VoucherController::class, 'destroy']);
+    route::middleware('checkrole')->group(function () {
+        Route::post('/', [VoucherController::class, 'store']);
+        Route::put('/{id}', [VoucherController::class, 'update']);
+        Route::delete('/{id}', [VoucherController::class, 'destroy']);
+    });
 });
 
 
@@ -142,7 +146,6 @@ Route::prefix('payments')->group(function () {
     Route::put('/{id}/changeStatus', [PaymentController::class, 'updatePaymentDetails']);
     Route::post('/cancel_pay_ad/{id}', [PaymentController::class, 'cancelPayAd']);
     Route::post('/check_out/{id}', [PaymentController::class, 'checkOut']);
-
 });
 
 Route::prefix('users')->group(function () {

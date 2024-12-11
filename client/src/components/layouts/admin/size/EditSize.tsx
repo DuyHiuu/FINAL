@@ -46,6 +46,8 @@ const EditSize = () => {
         };
 
         try {
+            setLoading(true); 
+
             const response = await authClient.put(`http://127.0.0.1:8000/api/sizes/${id}`, updatedSize);
 
             if (response.status === 200) {
@@ -54,10 +56,11 @@ const EditSize = () => {
                     navigate('/admin/sizes');
                 }, 2000);
             } else {
-                const errorData = await response.json();
-                setErrorMessage(`Cập nhật size thất bại: ${errorData.message}`);
+                const errorData = response.data; 
+                setErrorMessage(`Cập nhật size thất bại: ${errorData.message || 'Lỗi không xác định'}`);
             }
         } catch (error) {
+            console.error('Lỗi:', error);
             setErrorMessage('Lỗi kết nối API');
         } finally {
             setLoading(false);
