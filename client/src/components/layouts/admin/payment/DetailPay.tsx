@@ -489,7 +489,7 @@ const DetailPay = () => {
                     )}
                 </div>
 
-                <div>
+                {/* <div>
                     <Button
                         type="primary"
                         danger
@@ -517,7 +517,7 @@ const DetailPay = () => {
                     >
                         <p className="text-gray-700">{checkoutMessage}</p>
                     </Modal>
-                </div>
+                </div> */}
 
 
                 <div className="flex justify-between mt-4">
