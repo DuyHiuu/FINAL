@@ -912,6 +912,7 @@ class PaymentController extends Controller
         return response()->json([
             'message' => 'Tính phí trả phòng muộn thành công!',
             'room' => $booking->room,
+            'room_rate' => $payment->total_amount,
             'lateCheckOut' => $lateCheckOut,
             'total' => $total,
         ], 200);

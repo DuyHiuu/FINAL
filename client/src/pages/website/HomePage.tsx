@@ -311,7 +311,7 @@ const HomePage = () => {
         </Title>
 
         <Row gutter={[16, 16]} justify="center" align="stretch">
-          {room?.map((item: any) => (
+          {room?.slice(0, 8).map((item: any) => (
             <Col
               key={item.id}
               xs={24}
@@ -332,8 +332,18 @@ const HomePage = () => {
                   <h3 className="text-lg font-semibold text-gray-800 truncate">
                     {item.size_name}
                   </h3>
-                  <p className="text-gray-600 mt-1">Giá: <span className="font-medium text-green-500">{item.price.toLocaleString("vi-VN")} VNĐ</span></p>
-                  <p className="text-gray-600">Còn <span className="font-medium">{(item.quantity) - (item.is_booked)} phòng</span></p>
+                  <p className="text-gray-600 mt-1">
+                    Giá:{" "}
+                    <span className="font-medium text-green-500">
+                      {item.price.toLocaleString("vi-VN")} VNĐ
+                    </span>
+                  </p>
+                  <p className="text-gray-600">
+                    Còn{" "}
+                    <span className="font-medium">
+                      {item.quantity - item.is_booked} phòng
+                    </span>
+                  </p>
                   <a
                     href={`/detail/${item.id}`}
                     className="block mt-4 bg-blue-500 text-white text-center py-2 rounded-md hover:bg-blue-600"
@@ -352,6 +362,7 @@ const HomePage = () => {
           </Button>
         </div>
       </div>
+
 
       <h2 className="mt-12 text-2xl font-semibold">Các dịch vụ chăm sóc</h2>
       <p className="text-center mt-4">
@@ -428,42 +439,42 @@ const HomePage = () => {
 
       <h2 className="text-2xl font-semibold mt-12">Blog</h2>
       <Row gutter={[16, 16]} justify="center" align="stretch" className="mt-6">
-  {blog?.slice(0, 3).map((item: any) => (
-    <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
-      <Link to={`/blog/${item.id}`}>
-        <Card
-          hoverable
-          cover={
-            <img
-              alt={item.title}
-              src={item.image}
-              style={{
-                height: "200px",
-                objectFit: "cover",
-                width: "100%",
-              }}
-              data-aos="fade-up"
-            />
-          }
-          style={{
-            height: "450px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-          }}
-        >
-          <Card.Meta
-            title={item.title}
-            description={item.description}
-            style={{
-              textAlign: "center",
-            }}
-          />
-        </Card>
-      </Link>
-    </Col>
-  ))}
-</Row>
+        {blog?.slice(0, 3).map((item: any) => (
+          <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
+            <Link to={`/blog/${item.id}`}>
+              <Card
+                hoverable
+                cover={
+                  <img
+                    alt={item.title}
+                    src={item.image}
+                    style={{
+                      height: "200px",
+                      objectFit: "cover",
+                      width: "100%",
+                    }}
+                    data-aos="fade-up"
+                  />
+                }
+                style={{
+                  height: "450px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Card.Meta
+                  title={item.title}
+                  description={item.description}
+                  style={{
+                    textAlign: "center",
+                  }}
+                />
+              </Card>
+            </Link>
+          </Col>
+        ))}
+      </Row>
 
       <div className="mt-12 w-full text-center">
         <Button
