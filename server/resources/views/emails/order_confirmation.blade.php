@@ -79,10 +79,13 @@
             <p>Chào {{ $payment->user->name }},</p>
             <p>Chúng tôi đã xác nhận thông tin đặt phòng của bạn. Dưới đây là một số lưu ý:</p>
             <p><strong>Ngày check-in :</strong>{{$payment->booking->start_date}}</p>
-            <p><strong>Ngày check-our :</strong>{{$payment->booking->end_date}}</p>
+            <p><strong>Ngày check-out :</strong>{{$payment->booking->end_date}}</p>
             <p><strong>Giờ check-in :</strong>{{$payment->booking->start_hour}}</p>
-            <p><strong>Giờ check-our :</strong>{{$payment->booking->end_hour}}</p>
-            <p><strong>Thời hạn hủy phòng:</strong> Trước ngày check-in 48 tiếng</p>
+            <p><strong>Giờ check-out :</strong>{{$payment->booking->end_hour}}</p>
+            <p><strong>* Lưu ý:</strong></p>
+            <p> Nếu bạn đến trễ sau check-in 3 tiếng thì chúng tôi sẽ tự động hủy phòng của bạn và không hoàn trả tiền.</p>
+            <p> Nếu bạn đến trễ sau giờ check-out 3 tiếng thì chúng tôi sẽ phụ thu thêm 500.000 VNĐ.</p>
+
             <p><strong>Tổng số tiền:</strong> {{ $payment->total_amount }} VND</p>
 
             <p><strong>Chú ý:</strong> Vui lòng kiểm tra kĩ thông tin dưới QR dưới đây, QR này để check-in khi đến
