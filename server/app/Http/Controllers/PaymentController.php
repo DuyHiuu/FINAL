@@ -841,19 +841,23 @@ class PaymentController extends Controller
 
         $now = Carbon::now('Asia/Ho_Chi_Minh');
 
-        if (!$now->isSameDay($start_date)) {
-            return response()->json(['message' => 'Ngày thanh toán không trùng ngày với ngày check-in!'], 400);
-        }
+            if (!$now->isSameDay($start_date)) {
+                return response()->json(['message' => 'Ngày thanh toán không trùng ngày với ngày check-in!'], 400);
+            }
 
-        if ($now->lessThan($start_hour->addHours(3))) {
-            return response()->json([
-                'message' => 'Không thể hủy thanh toán trước 3 tiếng kể từ giờ check-in!',
-                'start_hour' => $start_hour->format('H:i:s'),
-                'current_time' => $now->format('H:i:s'),
-            ], 400);
-        }
+            if ($now->lessThan($start_hour->addHours(3))) {
+                return response()->json([
+                    'message' => 'Không thể hủy thanh toán trước 3 tiếng kể từ giờ check-in!',
+                    'start_hour' => $start_hour->format('H:i:s'),
+                    'current_time' => $now->format('H:i:s'),
+                ], 400);
+            }
 
         $payment->update(['status_id' => 7]);
+
+        $room = $booking->room;
+
+        $room->decrement('is_booked', 1);
 
         return response()->json(['message' => 'Thanh toán đã được hủy!', 'payment' => $payment], 200);
     }
