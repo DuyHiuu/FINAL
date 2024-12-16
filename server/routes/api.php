@@ -109,6 +109,7 @@ Route::prefix('vouchers')->group(function () {
 Route::prefix('bookings')->group(function () {
     Route::get('/{id}', [BookingController::class, 'listBooking']);
     Route::post('/', [BookingController::class, 'addBooking']);
+    Route::get('/{room_id}/status', [BookingController::class, 'checkRoomQuantity']);
 });
 
 Route::prefix('contacts')->group(function () {

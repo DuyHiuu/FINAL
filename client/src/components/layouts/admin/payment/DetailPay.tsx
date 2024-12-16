@@ -66,7 +66,7 @@ const DetailPay = () => {
 
             setTimeout(() => {
                 window.location.reload();
-            }, 3000);
+            }, 5000);
 
         } catch (error) {
             console.error("Lỗi khi cập nhật trạng thái:", error);
@@ -450,7 +450,7 @@ const DetailPay = () => {
                                         Đóng
                                     </Button>,
                                 ]}
-                                className="bg-white p-6 rounded-lg shadow-xl max-w-lg mx-auto"
+                                className=""
                             >
                                 <p className="text-gray-700">{checkoutMessage}</p>
                             </Modal>
