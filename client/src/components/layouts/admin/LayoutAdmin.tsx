@@ -13,16 +13,15 @@ const user = {
 const navigation = [
   { name: "PestSpa", href: "/", current: true },
   { name: "Dashboard", href: "/admin/home", current: false },
-  { name: "Danh sách phòng", href: "/admin/rooms", current: false },
-  { name: "Danh sách size", href: "/admin/sizes", current: false },
-  { name: "Danh sách voucher", href: "/admin/vouchers", current: false },
-  { name: "Danh sách dịch vụ", href: "/admin/services", current: false },
-  { name: "Danh sách bài viết", href: "/admin/blogs", current: false },
-  { name: "Danh sách người dùng", href: "/admin/users", current: false },
-  { name: "Danh sách đánh giá", href: "/admin/ratings", current: false },
-  { name: "Danh sách liên hệ", href: "/admin/contacts", current: false },
+  { name: "Quản lí phòng", href: "/admin/rooms", current: false },
+  { name: "Quản lí size", href: "/admin/sizes", current: false },
+  { name: "Quản lí voucher", href: "/admin/vouchers", current: false },
+  { name: "Quản lí dịch vụ", href: "/admin/services", current: false },
+  { name: "Quản lí bài viết", href: "/admin/blogs", current: false },
+  { name: "Quản lí người dùng", href: "/admin/users", current: false },
+  { name: "Quản lí đánh giá", href: "/admin/ratings", current: false },
+  { name: "Quản lí liên hệ", href: "/admin/contacts", current: false },
   { name: "Quản lí đơn hàng", href: "/admin/payments", current: false },
-  { name: "Biểu đồ", href: "/admin/chart", current: false },
 ];
 
 const userNavigation = [{ name: "Đăng xuất", href: "#" }];

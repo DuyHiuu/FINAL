@@ -220,7 +220,7 @@ const Chart = () => {
   };
   return (
     <>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 mt-10">
         <h1 className="text-3xl font-bold text-gray-800">Thống kê</h1>
       </div>
       <div className="flex gap-[40px] ml-[4%]">

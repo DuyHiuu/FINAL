@@ -54,7 +54,7 @@ const AppHeader = () => {
   };
 
   const handleGoToAdmin = () => {
-    navigate("/admin");
+    navigate("/admin/home");
   };
 
   const handleGoToHistory = () => {

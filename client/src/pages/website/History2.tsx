@@ -27,7 +27,6 @@ const History2 = () => {
   const showUrl = "http://localhost:8000/api/payments";
   const [data, setData] = useState(null);
   const { id } = useParams();
-  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -110,19 +109,6 @@ const History2 = () => {
         content: "Có lỗi xảy ra khi hủy đơn hàng!",
       });
     }
-  };
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleOk = () => {
-    setIsModalVisible(false);
-    cancelPay();
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
   };
 
   const totalServicePrice = servicesData?.reduce((total, item) => {
@@ -439,36 +425,8 @@ const History2 = () => {
               </Text>
             </Col>
           </Row>
-
-          {paymentData?.payment?.status?.id < 5 && (
-            <Row gutter={16} className="mt-4">
-              <Col span={12}>
-                <Text strong style={{ color: "red" }}>
-                  Phòng chỉ có thể hủy trước ngày check-in 2 ngày!
-                </Text>
-              </Col>
-              <Col span={12} className="text-right">
-                <Button onClick={showModal}
-                  style={{ backgroundColor: 'red', color: 'white' }}>
-                  Hủy đơn hàng
-                </Button>
-              </Col>
-            </Row>
-          )}
-
         </Card>
       </div>
-
-      <Modal
-        title="Xác nhận hủy đơn hàng"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Xác nhận"
-        cancelText="Hủy"
-      >
-        <p>Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác.</p>
-      </Modal>
 
     </div>
   );
