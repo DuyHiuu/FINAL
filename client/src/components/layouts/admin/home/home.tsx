@@ -24,6 +24,7 @@ import {
   message,
 } from "antd";
 import { useEffect, useState } from "react";
+import Chart from '../home/Chart';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 const HomeAdmin = () => {
@@ -179,7 +180,7 @@ const HomeAdmin = () => {
           <h1 className="text-3xl font-bold text-gray-800">Bảng xếp hạng</h1>
         </div>
         <div>
-          <div className="mt-[20px] flex justify-around ">
+          <div className="mt-[20px] flex flex-col gap-10 ">
             <div>
               <div className="mb-[25px] text-2xl">Top 3 Room </div>
               <div className="mb-[40px]">
@@ -250,6 +251,63 @@ const HomeAdmin = () => {
                   </span>
                 </div>
               )}
+            </div>
+
+            <div className="overflow-x-auto rounded-lg border border-gray-200">
+              <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm text-center">
+                <thead className="ltr:text-left rtl:text-right bg-gray-100">
+                  <tr>
+                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                      STT
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                      Tên Phòng
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                      Tổng lượng phòng được đặt
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                      Tổng doanh thu (VNĐ)
+                    </th>
+                  </tr>
+                </thead>
+                {dataRooms && dataRooms.length > 0 ? (
+                  <tbody className="divide-y divide-gray-200">
+                    {dataRooms.map((value: any, index: number) => (
+                      <tr
+                        key={index}
+                        className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                      >
+                        <td className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                          {index + 1}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2 text-gray-900">
+                          {value?.description?.length > 20 ? value.description.substring(0, 30) + '...' : value.description}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                          {value?.total_payments_sold}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                          {Number(value?.total_revenue)
+                            ?.toString()
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                ) : (
+                  <tbody>
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="flex items-center justify-center h-40 text-xl text-gray-500"
+                      >
+                        Thông tin trống
+                      </td>
+                    </tr>
+                  </tbody>
+                )}
+              </table>
             </div>
             <div></div>
             <div>
@@ -327,63 +385,7 @@ const HomeAdmin = () => {
               )}
             </div>
           </div>
-          <div className="flex justify-around mt-[30px]">
-            <div className="overflow-x-auto rounded-lg border border-gray-200">
-              <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm text-center">
-                <thead className="ltr:text-left rtl:text-right bg-gray-100">
-                  <tr>
-                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                      STT
-                    </th>
-                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                      Tên Phòng
-                    </th>
-                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                      Tổng lượng phòng được đặt
-                    </th>
-                    <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                      Tổng doanh thu (VNĐ)
-                    </th>
-                  </tr>
-                </thead>
-                {dataRooms && dataRooms.length > 0 ? (
-                  <tbody className="divide-y divide-gray-200">
-                    {dataRooms.map((value: any, index: number) => (
-                      <tr
-                        key={index}
-                        className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                      >
-                        <td className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
-                          {index + 1}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-2 text-gray-900">
-                          {value?.description?.length > 20 ? value.description.substring(0, 30) + '...' : value.description}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                          {value?.total_payments_sold}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                          {Number(value?.total_revenue)
-                            ?.toString()
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                ) : (
-                  <tbody>
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="flex items-center justify-center h-40 text-xl text-gray-500"
-                      >
-                        Thông tin trống
-                      </td>
-                    </tr>
-                  </tbody>
-                )}
-              </table>
-            </div>
+          <div className="flex flex-col gap-10 mt-[30px]">
             <div></div>
             <div className="overflow-x-auto rounded-lg border border-gray-200">
               <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm text-center">
@@ -444,6 +446,8 @@ const HomeAdmin = () => {
           </div>
         </div>
       </div>
+
+      <Chart />
     </>
   );
 };

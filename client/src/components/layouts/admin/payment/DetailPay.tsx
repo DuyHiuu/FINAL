@@ -407,27 +407,29 @@ const DetailPay = () => {
                         <div>
                             {availableStatuses.length > 0 ? (
                                 availableStatuses.map((status) => (
-                                    <button
-                                        key={status}
-                                        onClick={() => {
-                                            if (status_id === 5) {
-                                                // Nếu trạng thái là Check-out
-                                                handleStatusUpdate(status);
-                                                handleCheckout();
-                                            } else {
-                                                handleStatusUpdate(status);
-                                            }
-                                        }}
-                                        className="bg-[#064749] text-white font-bold py-2 px-4 rounded mr-2"
-                                    >
-                                        {status_id === 1
-                                            ? "Xác nhận"
-                                            : status_id === 2 || status_id === 4
-                                                ? "Check-in"
-                                                : status_id === 5
-                                                    ? "Check-out"
-                                                    : "Cập nhật"}
-                                    </button>
+                                    <>
+                                        <button
+                                            key={status}
+                                            onClick={() => {
+                                                if (status_id === 5) {
+                                                    // Nếu trạng thái là Check-out
+                                                    handleStatusUpdate(status);
+                                                    handleCheckout();
+                                                } else {
+                                                    handleStatusUpdate(status);
+                                                }
+                                            }}
+                                            className="bg-[#064749] text-white font-bold py-2 px-4 rounded mr-2"
+                                        >
+                                            {status_id === 1
+                                                ? "Xác nhận"
+                                                : status_id === 2 || status_id === 4
+                                                    ? "Check-in"
+                                                    : status_id === 5
+                                                        ? "Check-out"
+                                                        : "Cập nhật"}
+                                        </button>
+                                    </>
                                 ))
                             ) : (
                                 <p className="text-gray-500">Không thể cập nhật trạng thái.</p>

@@ -41,7 +41,7 @@ import RatingList from "./components/layouts/admin/rating/RatingList";
 import ListPay from "./components/layouts/admin/payment/ListPay";
 import DetailPay from "./components/layouts/admin/payment/DetailPay";
 import Loi404 from "./pages/website/Loi404"; // Import trang lỗi 404
-import Chart from "./components/layouts/admin/chart/Chart";
+import Chart from "./components/layouts/admin/home/Chart";
 import AccoutProfile from "./pages/website/Accout/AccoutProfile";
 import UserInfo from "./pages/website/Accout/UserInfo";
 import EditUserInfo from "./pages/website/Accout/EditUserInfo";
