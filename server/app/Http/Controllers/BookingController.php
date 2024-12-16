@@ -122,7 +122,6 @@ class BookingController extends Controller
             return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
         }
 
-
         $allowedHours = ['09:00', '14:00'];
         if (!in_array($request->input('start_hour'), $allowedHours)) {
             return response()->json([
@@ -141,6 +140,12 @@ class BookingController extends Controller
         $roomID = $request->input('room_id');
 
         $room = Room::findOrFail($roomID);
+
+        $finalQuantity = $room->quantity - $room->is_booked;
+
+        if ($finalQuantity <= 0) {
+            return response()->json(['message' => 'Phòng đã hết'], 400);
+        }
 
         $booking = Booking::create([
             'room_id' => $room->id,
@@ -328,5 +333,21 @@ class BookingController extends Controller
         $booking->delete();
 
         return response()->json(['message' => 'Xóa đặt phòng thành công!'], 200);
+    }
+
+    public function checkRoomQuantity (string $id) {
+        $room = Room::find($id);
+
+        if (!$room) {
+            return response()->json(['message' => 'Không tìm thấy phòng'], 404);
+        }
+
+        $finalQuantity = $room->quantity - $room->is_booked;
+
+        return response()->json([
+            'room_id' => $room->id,
+            'quantity' => $finalQuantity,
+            'status' => $finalQuantity > 0 ? 'Còn phòng' : 'Hết phòng',
+        ]);
     }
 }
