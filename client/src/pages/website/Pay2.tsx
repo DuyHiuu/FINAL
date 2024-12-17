@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Select, Button, Card, Spin, Typography, DatePicker, Modal, Checkbox, Row, Col, Divider, TimePicker } from 'antd';
+import { Form, Input, Select, Button, Card, Spin, Typography, message, DatePicker, Modal, Checkbox, Row, Col, Divider, TimePicker } from 'antd';
 import useFetchPayMethod from '../../api/useFetchPayMethod';
 import { PulseLoader } from 'react-spinners';
 import moment from 'moment';
@@ -202,6 +202,18 @@ const Pay2 = () => {
         }
 
         try {
+            const checkResponse = await fetch(`http://localhost:8000/api/bookings/${booking?.room_id}/status`, {
+            });
+
+            if (!checkResponse.ok) {
+                throw new Error("Không thể kiểm tra trạng thái phòng. Vui lòng thử lại.");
+            }
+
+            const statusData = await checkResponse.json();
+            if (statusData.quantity == 0) {
+                message.error("Phòng đã hết. Vui lòng chọn phòng khác.");
+                navigate('/danhsach');
+            } else {
                 const response = await fetch(`${addPay}/vn_pay`, {
                     method: "POST",
                     body: formData,
@@ -222,6 +234,7 @@ const Pay2 = () => {
                     alert("Thanh toán không thành công, vui lòng thử lại.");
                     setIsLoading(false);
                 }
+            }
 
         } catch (error) {
             console.error("API connection error:", error);

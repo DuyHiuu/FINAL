@@ -118,6 +118,7 @@ const Detail = () => {
     formData.append("start_hour", start_hour);
 
     try {
+
       const response = await fetch(`${API_URL}/bookings`, {
         method: "POST",
         body: formData,
@@ -441,9 +442,13 @@ const Detail = () => {
                       hoàn tiền
                     </p>
                     <p className="flex items-center text-red-500">
+<<<<<<< HEAD
                       <span className="mr-2">✔️</span> Nếu quá giờ check-in 3
                       tiếng, chúng tôi sẽ tự động gia hạn phòng của bạn thêm 1
                       ngày và bạn sẽ phải chi trả khoản tiền đó
+=======
+                      <span className="mr-2">✔️</span> Nếu quá giờ check-in 3 tiếng, bạn sẽ bị phạt 500.000 vnđ
+>>>>>>> f7e7950634d26495820eb9a79a77e1f4aba82c03
                     </p>
                   </>
                 }
