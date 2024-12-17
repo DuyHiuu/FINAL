@@ -3,9 +3,6 @@ import axios from "axios";
 // Khởi tạo một instance của axios
 const authClient = axios.create({
   baseURL: "http://localhost:8000/api", // Đặt URL của API của bạn
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 // Thêm interceptor để tự động gửi token khi có token trong localStorage
