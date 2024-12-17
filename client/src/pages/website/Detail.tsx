@@ -20,7 +20,7 @@ import {
 } from "antd";
 import moment from "moment";
 import TextArea from "antd/es/input/TextArea";
-import { message } from "antd";
+import { message as mesages } from "antd";
 import { StarFilled } from "@ant-design/icons";
 
 const Detail = () => {
@@ -49,7 +49,8 @@ const Detail = () => {
   const [ratings, setRatings] = useState<any[]>([]);
   const [filterRating, setFilterRating] = useState<number | null>(null);
   const [start_hour, setStart_hour] = useState("");
-
+  const token = localStorage.getItem("token");
+  const username = localStorage.getItem("name");
   useEffect(() => {
     const fetchRoom = async () => {
       try {
@@ -78,7 +79,7 @@ const Detail = () => {
 
         setRatings(ratingsData.data || []);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        mesages.error("Error fetching data:", error);
       }
     };
 
@@ -94,29 +95,16 @@ const Detail = () => {
       return [...prevState, serviceId];
     });
   };
-
+  const handleLogin = () => {
+    navigate("/login");
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log({
-      start_date,
-      end_date,
-      start_hour,
-      // service_ids: JSON.stringify(safeServiceIds),
-      room_id,
-    });
-
-
     if (!start_date || !end_date) {
-      setMessage(
+      mesages.error(
         "Vui lòng chọn ngày check-in và check-out trước khi đặt phòng."
       );
-      return;
-    }
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
       return;
     }
 
@@ -141,14 +129,16 @@ const Detail = () => {
       if (response.ok) {
         const data = await response.json();
         const booking_id = data.booking_id;
+
         navigate(`/pay1/${booking_id}`);
       } else {
-        console.error("Lỗi:", response.statusText);
-        setMessage("Đặt phòng thất bại. Vui lòng thử lại.");
+        const data = await response.json();
+        console.log(data);
+        mesages.error(data?.message.start_hour[0]);
       }
     } catch (error) {
       console.error("Lỗi kết nối API:", error);
-      setMessage("Đã xảy ra lỗi khi kết nối đến máy chủ.");
+      mesages.error("Đã xảy ra lỗi khi kết nối đến máy chủ.");
     }
   };
 
@@ -281,8 +271,9 @@ const Detail = () => {
       <div className="mt-8 max-w-md">
         <h1 className="text-3xl font-bold">{room?.size_name}</h1>
         <p
-          className={`${room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
-            }`}
+          className={`${
+            room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
+          }`}
         >
           {room?.statusroom === "Còn phòng"
             ? `Còn ${room?.quantity - room?.is_booked} phòng`
@@ -320,10 +311,11 @@ const Detail = () => {
                 <button
                   key={star}
                   onClick={() => setFilterRating(star)}
-                  className={`px-2 py-1 rounded-full ${filterRating === star
-                    ? "bg-gray-300 text-white"
-                    : "border text-gray-700"
-                    }`}
+                  className={`px-2 py-1 rounded-full ${
+                    filterRating === star
+                      ? "bg-gray-300 text-white"
+                      : "border text-gray-700"
+                  }`}
                 >
                   {Array(star)
                     .fill(null)
@@ -427,7 +419,6 @@ const Detail = () => {
               <h3 className="text-xl font-semibold">Mô tả</h3>
               <p className="text-gray-700">{room?.description}</p>
             </div>
-
           </div>
 
           <div className="bg-gray-50 p-6 rounded-md shadow-md max-w-md mx-auto h-auto">
@@ -437,18 +428,22 @@ const Detail = () => {
                 description={
                   <>
                     <p className="flex items-center text-red-500">
-                      <span className="mr-2">✔️</span> Giờ check-in: 9:00 hoặc 14:00 (Chọn bên dưới) của ngày check-in
+                      <span className="mr-2">✔️</span> Giờ check-in: 9:00 hoặc
+                      14:00 (Chọn bên dưới) của ngày check-in
                     </p>
                     <p className="flex items-center text-red-500">
-                      <span className="mr-2">✔️</span> Giờ check-out: 9:00 hoặc 14:00 (Chọn theo ngày check-in) của ngày check-out
+                      <span className="mr-2">✔️</span> Giờ check-out: 9:00 hoặc
+                      14:00 (Chọn theo ngày check-in) của ngày check-out
                     </p>
                     <p className="flex items-center text-red-500">
-                      <span className="mr-2">✔️</span> Nếu quá giờ check-in 3 tiếng, chúng tôi sẽ hủy phòng của
-                      bạn và sẽ không được hoàn tiền
+                      <span className="mr-2">✔️</span> Nếu quá giờ check-in 3
+                      tiếng, chúng tôi sẽ hủy phòng của bạn và sẽ không được
+                      hoàn tiền
                     </p>
                     <p className="flex items-center text-red-500">
-                      <span className="mr-2">✔️</span> Nếu quá giờ check-in 3 tiếng, chúng tôi sẽ tự động gia hạn phòng của
-                      bạn thêm 1 ngày và bạn sẽ phải chi trả khoản tiền đó
+                      <span className="mr-2">✔️</span> Nếu quá giờ check-in 3
+                      tiếng, chúng tôi sẽ tự động gia hạn phòng của bạn thêm 1
+                      ngày và bạn sẽ phải chi trả khoản tiền đó
                     </p>
                   </>
                 }
@@ -463,7 +458,9 @@ const Detail = () => {
             </h2>
 
             <div className="mt-4">
-              <label className="block text-black text-sm font-bold">Giờ check-in</label>
+              <label className="block text-black text-sm font-bold">
+                Giờ check-in
+              </label>
               <TimePicker
                 value={start_hour ? moment(start_hour, "HH:mm") : null}
                 onChange={(time) => setStart_hour(time?.format("HH:mm") || "")}
@@ -472,10 +469,14 @@ const Detail = () => {
                 format="HH:mm"
                 disabledHours={() => {
                   const allowedHours = [9, 14];
-                  return Array.from({ length: 24 }, (_, i) => i).filter((hour) => !allowedHours.includes(hour));
+                  return Array.from({ length: 24 }, (_, i) => i).filter(
+                    (hour) => !allowedHours.includes(hour)
+                  );
                 }}
                 disabledMinutes={() => {
-                  return Array.from({ length: 60 }, (_, i) => i).filter((minute) => minute !== 0);
+                  return Array.from({ length: 60 }, (_, i) => i).filter(
+                    (minute) => minute !== 0
+                  );
                 }}
                 showNow={false}
               />
@@ -516,15 +517,26 @@ const Detail = () => {
                 />
               </div>
             </div>
-
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
-              disabled={room?.statusroom !== "Còn phòng"}
-            >
-              Đặt phòng
-            </Button>
+            {!token && !username ? (
+              <Button
+                type="primary"
+                htmlType="submit"
+                onClick={handleLogin}
+                className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
+                disabled={room?.statusroom !== "Còn phòng"}
+              >
+                Đăng nhập để đặt phòng
+              </Button>
+            ) : (
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
+                disabled={room?.statusroom !== "Còn phòng"}
+              >
+                Đặt phòng
+              </Button>
+            )}
           </div>
         </div>
       </form>
