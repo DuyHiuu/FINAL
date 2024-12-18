@@ -302,66 +302,86 @@ const HomePage = () => {
       </Row>
 
       <div className="p-8 mt-10" data-aos="fade-up">
-        <h2 className="text-2xl font-semibold mt-12 text-center">
-          PetHouse của chúng tôi
-        </h2>
+  <h2 className="text-2xl font-semibold mt-12 text-center">
+    PetHouse của chúng tôi
+  </h2>
 
-        <Title level={2} className="text-center mb-8">
-          Danh sách phòng
-        </Title>
+  <Title level={2} className="text-center mb-8">
+    Danh sách phòng
+  </Title>
 
-        <Row gutter={[16, 16]} justify="center" align="stretch">
-          {room?.slice(0, 8).map((item: any) => (
-            <Col
-              key={item.id}
-              xs={24}
-              sm={12}
-              md={8}
-              lg={6}
-              className="flex justify-center mb-6"
+  <Row gutter={[16, 16]} justify="center" align="stretch">
+    {room?.slice(0, 8).map((item: any) => (
+      <Col
+        key={item.id}
+        xs={24}
+        sm={12}
+        md={8}
+        lg={6}
+        className="flex justify-center mb-6"
+      >
+        <div className="bg-white shadow-md rounded-lg overflow-hidden max-w-xs transform transition duration-300 hover:scale-105 hover:shadow-lg">
+          {item.quantity - item.is_booked > 0 ? (
+            <a href={`/detail/${item.id}`}>
+              <img
+                alt={item.size_name}
+                src={item.img_thumbnail}
+                className="w-full h-64 object-cover"
+              />
+            </a>
+          ) : (
+            <img
+              alt={item.size_name}
+              src={item.img_thumbnail}
+              className="w-full h-64 object-cover opacity-50"
+            />
+          )}
+          <div className="p-4">
+            <h3 className="text-lg font-semibold text-gray-800 truncate">
+              {item.size_name}
+            </h3>
+            <p className="text-gray-600 mt-1">
+              Giá:{" "}
+              <span className="font-medium text-green-500">
+                {item.price.toLocaleString("vi-VN")} VNĐ
+              </span>
+            </p>
+            <p className="text-gray-600">
+              Còn{" "}
+              <span className="font-medium">
+                {item.quantity - item.is_booked > 0
+                  ? `${item.quantity - item.is_booked} phòng`
+                  : "0 phòng"}
+              </span>
+            </p>
+            <a
+              href={`/detail/${item.id}`}
+              className={`block mt-4 py-2 rounded-md text-center ${
+                item.quantity - item.is_booked > 0
+                  ? "bg-blue-500 text-white hover:bg-blue-600"
+                  : "bg-red-400 text-gray-700 cursor-not-allowed"
+              }`}
+              onClick={(e) =>
+                item.quantity - item.is_booked === 0 && e.preventDefault()
+              }
             >
-              <div className="bg-white shadow-md rounded-lg overflow-hidden max-w-xs transform transition duration-300 hover:scale-105 hover:shadow-lg">
-                <a href={`/detail/${item.id}`}>
-                  <img
-                    alt={item.size_name}
-                    src={item.img_thumbnail}
-                    className="w-full h-64 object-cover"
-                  />
-                </a>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800 truncate">
-                    {item.size_name}
-                  </h3>
-                  <p className="text-gray-600 mt-1">
-                    Giá:{" "}
-                    <span className="font-medium text-green-500">
-                      {item.price.toLocaleString("vi-VN")} VNĐ
-                    </span>
-                  </p>
-                  <p className="text-gray-600">
-                    Còn{" "}
-                    <span className="font-medium">
-                      {item.quantity - item.is_booked} phòng
-                    </span>
-                  </p>
-                  <a
-                    href={`/detail/${item.id}`}
-                    className="block mt-4 bg-blue-500 text-white text-center py-2 rounded-md hover:bg-blue-600"
-                  >
-                    Xem chi tiết
-                  </a>
-                </div>
-              </div>
-            </Col>
-          ))}
-        </Row>
-
-        <div className="mt-12 w-full text-center">
-          <Button type="primary" href="/danhsach" className="mr-4 bg-[#064749]">
-            Danh sách phòng
-          </Button>
+              {item.quantity - item.is_booked > 0
+                ? "Xem chi tiết"
+                : "Hết phòng"}
+            </a>
+          </div>
         </div>
-      </div>
+      </Col>
+    ))}
+  </Row>
+
+  <div className="mt-12 w-full text-center">
+    <Button type="primary" href="/danhsach" className="mr-4 bg-[#064749]">
+      Danh sách phòng
+    </Button>
+  </div>
+</div>
+
 
 
       <h2 className="mt-12 text-2xl font-semibold">Các dịch vụ chăm sóc</h2>

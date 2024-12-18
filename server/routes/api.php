@@ -110,7 +110,7 @@ Route::prefix('bookings')->group(function () {
     Route::get('/{id}', [BookingController::class, 'listBooking']);
     Route::post('/', [BookingController::class, 'addBooking']);
 
-    Route::post('/', [BookingController::class, 'getAvailableRooms']);
+    Route::post('/checking', [BookingController::class, 'getAvailableRooms']);
 
     Route::post('/ad_add', [BookingController::class, 'addBookingPayAd']);
 

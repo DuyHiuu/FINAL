@@ -52,7 +52,7 @@ const Detail = () => {
   const [start_hour, setStart_hour] = useState("");
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("name");
-  const [check, setCheck] = useState();
+  const [check, setCheck] = useState<any>();
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -90,6 +90,8 @@ const Detail = () => {
     fetchRating();
     fetchRoom();
   }, [id]);
+  console.log(check);
+
   const handleCheckBooking = async () => {
     try {
       const payload: any = {
@@ -98,12 +100,12 @@ const Detail = () => {
         room_id: id,
       };
       const res = await axios.post(
-        "http://localhost:8000/api/bookings",
+        "http://localhost:8000/api/bookings/checking",
         payload
       );
-      console.log(res);
+      console.log(check);
 
-      setCheck(res);
+      setCheck(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -111,6 +113,9 @@ const Detail = () => {
   useEffect(() => {
     if (start_date && end_date) {
       handleCheckBooking();
+    }
+    if (check?.available_quantity === "0") {
+      setCheck(0);
     }
   }, [start_date, end_date]);
   const changeService = (serviceId: number) => {
@@ -547,7 +552,7 @@ const Detail = () => {
                 />
               </div>
             </div>
-            {check && (
+            {check?.available_quantity > 0 ? (
               <>
                 {!token && !username ? (
                   <Button
@@ -570,7 +575,20 @@ const Detail = () => {
                   </Button>
                 )}
               </>
-            )}
+            ) : check?.available_quantity === 0 ||
+              check?.available_quantity < 0 ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  marginTop: "20px",
+                  color: "red",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                }}
+              >
+                Đã hết phòng này
+              </div>
+            ) : null}
           </div>
         </div>
       </form>
