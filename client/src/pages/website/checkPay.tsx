@@ -75,7 +75,8 @@ const CheckPay = () => {
           </span>
         </div>
       )}
-      {checkPay === true && checkRequest && (
+      {(checkPay === true || checkRequest ) 
+       && (
         <div className="pay-success-box bg-white h-[500px] w-[600px] rounded-xl">
           <div className="check-icon text-center mt-10 space-y-3">
             <p className="font-medium text-lg">{mess}</p>
@@ -113,7 +114,7 @@ const CheckPay = () => {
         </div>
       )}
 
-      {checkPay === false && checkRequest && (
+      {checkPay === false && !checkRequest && (
         <div className="pay-success-box bg-white h-[500px] w-[600px] rounded-xl">
           <div className="check-icon text-center mt-10 space-y-3">
             <svg
@@ -127,9 +128,6 @@ const CheckPay = () => {
               <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2" />
             </svg>
             <p className="font-medium text-2xl">{mess}</p>
-            <span className="block text-4xl text-red-500 font-medium">
-              {moneny} đ
-            </span>
           </div>
           <div className="pay-content text-center mt-10 space-y-3">
             <p>Đã có sự cố xảy ra trong lúc thanh toán</p>
