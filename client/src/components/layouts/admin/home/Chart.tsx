@@ -64,6 +64,7 @@ const Chart = () => {
         time: valueDate,
       });
       getRevenueAll(traCuu).then((fetchdata: any) => {
+        console.log("Dữ liệu từ API:", fetchdata);
         if (fetchdata?.data?.error) {
           message.error(fetchdata?.data?.error);
           setData({
@@ -84,6 +85,7 @@ const Chart = () => {
               ? fetchdata?.data?.dailyRevenue
               : fetchdata?.data?.monthlyRevenue
           );
+          console.log("Dữ liệu biểu đồ:", dataChart);
         }
       });
     } else {
@@ -124,6 +126,7 @@ const Chart = () => {
               ? fetchdata?.data?.dailyRevenue
               : fetchdata?.data?.monthlyRevenue
           );
+          console.log("Dữ liệu biểu đồ:", dataChart);
         }
       });
     }
@@ -185,8 +188,9 @@ const Chart = () => {
     if (active) {
       return (
         <div className="box-border rounded border-2 bg-slate-300 px-[10px]">
-          <h4>{`${typeSearch === "month" ? `Ngày ${label}` : `Tháng ${label}`
-            }`}</h4>
+          <h4>{`${
+            typeSearch === "month" ? `Ngày ${label}` : `Tháng ${label}`
+          }`}</h4>
           <h4>{`${Number(payload[0]?.value)
             ?.toString()
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}(VNĐ)`}</h4>
@@ -296,7 +300,7 @@ const Chart = () => {
         <div className="ml-[30px] mt-[50px]">
           <LineChart
             width={550}
-            height={350}
+            height={380}
             data={dataChart}
             margin={{
               top: 10,

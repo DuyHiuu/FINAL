@@ -129,7 +129,7 @@ class StatisticalController extends Controller
                     ->select(DB::raw('COALESCE(SUM(total_amount), 0) as total_money'))
                     ->value('total_money');
 
-                $monthlyRevenue[] = ['month' => $month, 'total_amount' => $sum];
+                $monthlyRevenue[] = ['month' => $month, 'total_money' => $sum];
             }
             $total_revenue['monthlyRevenue'] = $monthlyRevenue;
         } elseif ($data['timeline'] == 'month') {
@@ -144,7 +144,7 @@ class StatisticalController extends Controller
 
             while ($firstDay->lte($lastDay) && $firstDay->month == $data['month']) {
                 $dailySum = Payment::whereDate('created_at', $firstDay)->where('status_id', 6)->sum('total_amount');
-                $dailyRevenue[] = ['date' => $firstDay->format('d-m-Y'), 'total_amount' => $dailySum];
+                $dailyRevenue[] = ['date' => $firstDay->format('d-m-Y'), 'total_money' => $dailySum];
                 $firstDay->addDay();
             }
 

@@ -459,7 +459,7 @@ const DetailPay = () => {
 
 
                         <div className="flex items-center mt-3">
-                            {paymentData?.payment?.status_id < 5 && paymentData?.room?.size?.id < 4 && (
+                            {paymentData?.payment?.status_id < 5 && paymentData?.room?.size?.id < 4 && paymentData?.changed_room == 1 && (
                                 <>
                                     <button className="bg-[#064749] text-white font-bold py-2 px-4 rounded">
                                         <a href={`/admin/change_room/${id}`}>Đổi phòng</a>
@@ -479,7 +479,7 @@ const DetailPay = () => {
                 </div>
 
                 <div className="mt-4">
-                    {paymentData?.payment?.status_id < 5 && (
+                    {paymentData?.payment?.status_id < 5 && paymentData?.payment?.status_id != 2 && (
                         <>
                             <button
                                 onClick={handleCancelRoom}
