@@ -190,6 +190,7 @@ class PaymentController extends Controller
             }
 
             $fieldsToUpdate = [];
+            $fieldsToUpdate['changed_room'] = 1;
             $totalAmountOld = $payment->total_amount; // Lưu lại tổng tiền cũ
 
             if ($request->has('room_id')) {
@@ -255,14 +256,14 @@ class PaymentController extends Controller
             $payment->update($fieldsToUpdate);
 
             // Lưu lịch sử thay đổi phòng
-            DB::table('changed_room_history')->insert([
-                'payment_id' => $payment->id,
-                'oldRoomId' => $oldRoomId,
-                'newRoomId' => $newRoomId,
-                'difference' => $difference,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // DB::table('changed_room_history')->insert([
+            //     'payment_id' => $payment->id,
+            //     'oldRoomId' => $oldRoomId,
+            //     'newRoomId' => $newRoomId,
+            //     'difference' => $difference,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
 
             DB::commit();
 
