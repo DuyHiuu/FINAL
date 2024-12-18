@@ -1,13 +1,13 @@
 import React from "react";
-import { Layout, Menu, Avatar, Dropdown, Badge, Space } from "antd";
-import { UserOutlined, BellOutlined, LogoutOutlined } from "@ant-design/icons";
-import { Outlet } from "react-router-dom";
+import { Layout, Menu, Avatar, Dropdown, Space } from "antd";
+import { UserOutlined } from "@ant-design/icons";
+import { Outlet, useLocation } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
 
 const user = {
-  name: localStorage.getItem("name") || "Unknown User", // Lấy tên người dùng từ localStorage
-  email: localStorage.getItem("email") || "unknown@example.com", // Lấy email từ localStorage
+  name: localStorage.getItem("name") || "Unknown User",
+  email: localStorage.getItem("email") || "unknown@example.com",
 };
 
 const navigation = [
@@ -28,7 +28,8 @@ const navigation = [
 const userNavigation = [{ name: "Đăng xuất", href: "#" }];
 
 const LayoutAdmin = () => {
-  // Menu dropdown for user
+  const location = useLocation();
+
   const menu = (
     <Menu>
       {userNavigation.map((item) => (
@@ -43,27 +44,26 @@ const LayoutAdmin = () => {
 
   return (
     <Layout style={{ minHeight: "100vh", backgroundColor: "#fff" }}>
-      {/* Sidebar */}
-      <Sider
-        width={250}
-        className="site-layout-background"
-        style={{ backgroundColor: "#fff" }}
-      >
+      <Sider width={250} className="site-layout-background" style={{ backgroundColor: "#fff" }}>
         <div className="flex items-center justify-center py-6">
           <img className="h-12 w-auto" src="/images/logo.png" alt="Logo" />
         </div>
         <Menu
-          theme="light" // Changed theme to light to match the white background
+          theme="light"
           mode="inline"
-          defaultSelectedKeys={["1"]}
+          selectedKeys={[location.pathname]}
           className="h-full"
-          style={{ backgroundColor: "#fff" }} // Make the sidebar background white
+          style={{ backgroundColor: "#fff" }}
         >
-          {navigation.map((item, index) => (
-            <Menu.Item key={index} icon={null}>
+          {navigation.map((item) => (
+            <Menu.Item key={item.href} icon={null}>
               <a
                 href={item.href}
-                className={item.current ? "text-gray-900" : "text-gray-400"}
+                className={
+                  location.pathname === item.href
+                    ? "text-gray-900"
+                    : "text-gray-400"
+                }
               >
                 {item.name}
               </a>
@@ -72,13 +72,8 @@ const LayoutAdmin = () => {
         </Menu>
       </Sider>
 
-      {/* Main content */}
       <Layout className="site-layout">
-        {/* Header */}
-        <Header
-          className="site-layout-background"
-          style={{ padding: 0, backgroundColor: "#fff" }}
-        >
+        <Header className="site-layout-background" style={{ padding: 0, backgroundColor: "#fff" }}>
           <div className="flex justify-between items-center px-6 py-4">
             <h1 className="text-2xl text-gray-900 font-bold">
               <UserOutlined /> Admin {user.name}
@@ -93,11 +88,10 @@ const LayoutAdmin = () => {
           </div>
         </Header>
 
-        {/* Content */}
         <Content
           style={{
             padding: "0 50px",
-            backgroundColor: "#fff", // Changed background color to white for content
+            backgroundColor: "#fff",
             borderTop: "1px solid #e0e0e0",
           }}
         >

@@ -22,6 +22,7 @@ import moment from "moment";
 import TextArea from "antd/es/input/TextArea";
 import { message as mesages } from "antd";
 import { StarFilled } from "@ant-design/icons";
+import axios from "axios";
 
 const Detail = () => {
   const { service } = useFetchServices();
@@ -51,6 +52,8 @@ const Detail = () => {
   const [start_hour, setStart_hour] = useState("");
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("name");
+  const [check, setCheck] = useState<any>();
+
   useEffect(() => {
     const fetchRoom = async () => {
       try {
@@ -69,6 +72,7 @@ const Detail = () => {
         console.error("Lỗi khi lấy phòng:", error);
       }
     };
+
     const fetchRating = async () => {
       try {
         const ratingsRes = await fetch(`${API_URL}/ratings/${id}`);
@@ -86,7 +90,34 @@ const Detail = () => {
     fetchRating();
     fetchRoom();
   }, [id]);
+  console.log(check);
 
+  const handleCheckBooking = async () => {
+    try {
+      const payload: any = {
+        startDate: start_date,
+        endDate: end_date,
+        room_id: id,
+      };
+      const res = await axios.post(
+        "http://localhost:8000/api/bookings/checking",
+        payload
+      );
+      console.log(check);
+
+      setCheck(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (start_date && end_date) {
+      handleCheckBooking();
+    }
+    if (check?.available_quantity === "0") {
+      setCheck(0);
+    }
+  }, [start_date, end_date]);
   const changeService = (serviceId: number) => {
     setService_ids((prevState) => {
       if (prevState.includes(serviceId)) {
@@ -118,7 +149,6 @@ const Detail = () => {
     formData.append("start_hour", start_hour);
 
     try {
-
       const response = await fetch(`${API_URL}/bookings`, {
         method: "POST",
         body: formData,
@@ -272,8 +302,9 @@ const Detail = () => {
       <div className="mt-8 max-w-md">
         <h1 className="text-3xl font-bold">{room?.size_name}</h1>
         <p
-          className={`${room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
-            }`}
+          className={`${
+            room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
+          }`}
         >
           {room?.statusroom === "Còn phòng"
             ? `Còn ${room?.quantity - room?.is_booked} phòng`
@@ -311,10 +342,11 @@ const Detail = () => {
                 <button
                   key={star}
                   onClick={() => setFilterRating(star)}
-                  className={`px-2 py-1 rounded-full ${filterRating === star
+                  className={`px-2 py-1 rounded-full ${
+                    filterRating === star
                       ? "bg-gray-300 text-white"
                       : "border text-gray-700"
-                    }`}
+                  }`}
                 >
                   {Array(star)
                     .fill(null)
@@ -427,7 +459,8 @@ const Detail = () => {
                 description={
                   <>
                     <p className="flex items-center text-red-500">
-                      <span className="mr-2">✔️</span> Bạn không thể hủy khi đặt phòng thành công
+                      <span className="mr-2">✔️</span> Bạn không thể hủy khi đặt
+                      phòng thành công
                     </p>
                     <p className="flex items-center text-red-500">
                       <span className="mr-2">✔️</span> Giờ check-in: 9:00 hoặc
@@ -519,26 +552,43 @@ const Detail = () => {
                 />
               </div>
             </div>
-            {!token && !username ? (
-              <Button
-                type="primary"
-                htmlType="submit"
-                onClick={handleLogin}
-                className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
-                disabled={room?.statusroom !== "Còn phòng"}
+            {check?.available_quantity > 0 ? (
+              <>
+                {!token && !username ? (
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    onClick={handleLogin}
+                    className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
+                    disabled={room?.statusroom !== "Còn phòng"}
+                  >
+                    Đăng nhập để đặt phòng
+                  </Button>
+                ) : (
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
+                    disabled={room?.statusroom !== "Còn phòng"}
+                  >
+                    Đặt phòng
+                  </Button>
+                )}
+              </>
+            ) : check?.available_quantity === 0 ||
+              check?.available_quantity < 0 ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  marginTop: "20px",
+                  color: "red",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                }}
               >
-                Đăng nhập để đặt phòng
-              </Button>
-            ) : (
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
-                disabled={room?.statusroom !== "Còn phòng"}
-              >
-                Đặt phòng
-              </Button>
-            )}
+                Đã hết phòng này
+              </div>
+            ) : null}
           </div>
         </div>
       </form>
