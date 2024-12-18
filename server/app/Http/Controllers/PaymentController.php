@@ -219,6 +219,15 @@ class PaymentController extends Controller
 
                 $booking->update(['room_id' => $newRoomId]);
                 $fieldsToUpdate['room_id'] = $newRoomId;
+
+                // Lấy tên phòng từ bảng sizes
+                $oldRoomName = $oldRoom ? $oldRoom->size->name : null;
+                $newRoomName = $newRoom ? $newRoom->size->name : null;
+
+                // Đánh dấu là phòng đã được đổi
+                $fieldsToUpdate['changed_room'] = 1;
+            } else {
+                $fieldsToUpdate['changed_room'] = null;
             }
 
             // Tính lại tổng tiền mới
@@ -252,18 +261,19 @@ class PaymentController extends Controller
                     'difference' => $difference,
                 ], 400);
             }
+
             $fieldsToUpdate['different_amount'] = $difference;
             $payment->update($fieldsToUpdate);
 
-            // Lưu lịch sử thay đổi phòng
-            // DB::table('changed_room_history')->insert([
-            //     'payment_id' => $payment->id,
-            //     'oldRoomId' => $oldRoomId,
-            //     'newRoomId' => $newRoomId,
-            //     'difference' => $difference,
-            //     'created_at' => now(),
-            //     'updated_at' => now(),
-            // ]);
+
+            DB::table('changed_room_history')->insert([
+                'payment_id' => $payment->id,
+                'oldRoomId' => $oldRoomName,
+                'newRoomId' => $newRoomName,
+                'difference' => $difference,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
             DB::commit();
 
