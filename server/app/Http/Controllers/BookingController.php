@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
+use App\Models\Payment;
 use App\Models\Room;
 use App\Models\Service;
 use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
@@ -335,7 +337,8 @@ class BookingController extends Controller
         return response()->json(['message' => 'Xóa đặt phòng thành công!'], 200);
     }
 
-    public function checkRoomQuantity (string $id) {
+    public function checkRoomQuantity(string $id)
+    {
         $room = Room::find($id);
 
         if (!$room) {
@@ -349,5 +352,229 @@ class BookingController extends Controller
             'quantity' => $finalQuantity,
             'status' => $finalQuantity > 0 ? 'Còn phòng' : 'Hết phòng',
         ]);
+    }
+
+    public function addBookingPayAd(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make($request->all(), [
+                //Booking
+                'start_date' => [
+                    'required',
+                    'date',
+                    'after_or_equal:' . now()->format('Y-m-d H:i:s')
+                ],
+
+                'end_date' => [
+                    'required',
+                    'date',
+                    'after:start_date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $startDate = Carbon::parse($request->start_date);
+                        $endDate = Carbon::parse($value);
+
+                        if ($endDate->gt($startDate->addMonth())) {
+                            $fail('Ngày kết thúc phải nằm trong vòng 1 tháng kể từ ngày bắt đầu.');
+                        }
+                    },
+                ],
+
+                'start_hour' => [
+                    'required',
+                ],
+
+                'room_id' => 'required|exists:rooms,id',
+
+                //Payment
+                'pet_name' => 'required|string|max:255',
+                'pet_type' => 'required|string|max:255',
+                'pet_description' => 'required|string',
+                'pet_health' => 'required|string',
+                'user_name' => 'required|string|max:255',
+                'user_address' => 'required|string|max:255',
+                'user_email' => 'required|email|max:255',
+                'user_phone' => 'required|string|max:15',
+                'user_id' => 'exists:users,id',
+                'paymethod_id' => 'required|exists:paymethods,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
+            }
+
+            // tao booking
+            $allowedHours = ['09:00', '14:00'];
+            if (!in_array($request->input('start_hour'), $allowedHours)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Giờ bắt đầu chỉ được phép là 09:00 hoặc 14:00.'
+                ], 400);
+            }
+
+            $startHour = $request->input('start_hour');
+            $endHour = Carbon::parse($startHour)->addDay()->format('H:i'); // nếu dùng kiểu dl là time
+
+            $roomID = $request->input('room_id');
+
+            $room = Room::findOrFail($roomID);
+
+            $finalQuantity = $room->quantity - $room->is_booked;
+
+            if ($finalQuantity <= 0) {
+                return response()->json(['message' => 'Phòng đã hết'], 400);
+            }
+
+            $booking = Booking::create([
+                'room_id' => $room->id,
+                'start_date' => $request->input('start_date'),
+                'end_date' => $request->input('end_date'),
+                'voucher_id' => $request->input('voucher_id'),
+                'start_hour' => $startHour,
+                'end_hour' => $endHour,
+
+            ]);
+
+            if ($request->filled('service_ids')) {
+                $serviceIDs = json_decode($request->input('service_ids'), true);
+
+                $serviceData = [];
+
+                foreach ($serviceIDs as $index => $serviceID) {
+                    $service = Service::findOrFail($serviceID);
+
+                    $serviceData[$serviceID] = [
+                        'price' => $service->price
+                    ];
+                }
+
+                $booking->services()->attach($serviceData);
+            }
+
+            DB::commit();
+
+            // Gắn các dịch vụ (nếu có)
+            if ($request->has('services') && is_array($request->services)) {
+                $booking->services()->attach($request->services);
+            }
+
+            // tao pay   
+            if ($booking) {
+                $subTotal_service = 0;
+                $subTotal_room = 0;
+
+                $startDate = Carbon::parse($booking->start_date);
+                $endDate = Carbon::parse($booking->end_date);
+                $days = max(1, $startDate->diffInDays($endDate));
+
+                // Tính tiền phòng
+                $subTotal_room += $booking->room->price * $days;
+
+                // Tính tiền dịch vụ
+                if ($booking->services && $booking->services->isNotEmpty()) {
+                    foreach ($booking->services as $service) {
+                        if ($service->id === 2) {
+                            $quantity = max(1, floor($days / 3));
+                            $subTotal_service += $service->price * $quantity;
+                        } else {
+                            $subTotal_service += $service->price;
+                        }
+                    }
+                }
+
+                $total_amount = $subTotal_room + $subTotal_service;
+
+                // Áp dụng Voucher nếu có
+                $voucherID = $request->input('voucher_id');
+                $discount = 0;
+
+                if ($voucherID) {
+                    $voucher = Voucher::where('id', $voucherID)
+                        ->where('is_active', true)
+                        ->first();
+
+                    if (!$voucher) {
+                        return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
+                    }
+
+                    if ($voucher->end_date < now()) {
+                        return response()->json(['message' => 'Voucher đã hết hạn.'], 400);
+                    }
+
+                    if ($voucher->quantity === 0) {
+                        return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
+                    }
+
+                    if ($total_amount < $voucher->min_total_amount) {
+                        return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
+                    }
+
+                    if ($voucher->type === '%') {
+                        $percentageDiscount = ($total_amount * $voucher->discount) / 100;
+                        $discount = min($percentageDiscount, $voucher->max_total_amount);
+                    } else {
+                        $discount = min($voucher->discount, $total_amount);
+                    }
+
+                    $total_amount = max(0, $total_amount - $discount);
+                    $voucher->decrement('quantity', 1);
+                }
+
+                $paymentData = [
+                    'booking_id' => $booking->id,
+                    'user_id' => $request->input('user_id'),
+                    'paymethod_id' => $request->input('paymethod_id'),
+                    'pet_name' => $request->input('pet_name'),
+                    'pet_type' => $request->input('pet_type'),
+                    'pet_description' => $request->input('pet_description'),
+                    'pet_health' => $request->input('pet_health'),
+                    'user_name' => $request->input('user_name'),
+                    'user_address' => $request->input('user_address'),
+                    'user_email' => $request->input('user_email'),
+                    'user_phone' => $request->input('user_phone'),
+                    'total_amount' => $total_amount,
+                    'status_id' => 2,
+                ];
+
+                $room = $booking->room;
+
+                if ($room->quantity > 0) {
+                    $room->increment('is_booked', 1);
+
+                    if ($room->quantity === $room->is_booked) {
+                        $room->update(['statusroom' => 'Hết phòng']);
+                    }
+                } else {
+                    return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
+                }
+
+                if ($voucherID) {
+                    if ($voucher->quantity > 0) {
+                        $voucher->decrement('quantity', 1);
+
+                        if ($voucher->quantity === 0) {
+                            $voucher->update(['is_active' => 0]);
+                        }
+                    }
+                }
+                $payment = Payment::create($paymentData);
+
+                DB::commit();
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Booking và Payment đã được thêm thành công!',
+                'booking' => $booking,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Có lỗi xảy ra trong quá trình xử lý.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
