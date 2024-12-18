@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { FaPercentage, FaCalendarAlt, FaBarcode } from "react-icons/fa";
 import { HiOutlineTicket } from "react-icons/hi";
 import authClient from "../../../../api/authClient";
+import { DatePicker } from "antd";
+import moment from "moment";
 
 const AddVoucher = () => {
   const [tenVoucher, setVoucher] = useState("");
@@ -18,7 +20,7 @@ const AddVoucher = () => {
   const [successMessage, setSuccessMessage] = useState("");
 
   const navigate = useNavigate();
-
+  const maxEndDate = moment(ngayBatDau).add(30, "days").startOf("day");
   const validate = () => {
     const newErrors = {};
 
@@ -52,8 +54,8 @@ const AddVoucher = () => {
     }
 
     if (type === "%") {
-      if (giamGia < 1 || giamGia > 100) {
-        newErrors.giamGia = "Mức giảm giá chỉ từ 1% - 100%.";
+      if (giamGia < 1 || giamGia > 50) {
+        newErrors.giamGia = "Mức giảm giá chỉ từ 1% - 50%.";
       }
       if (min_total_amount < max_total_amount) {
         newErrors.max_total_amount = "Số tiền giảm tối đa không được lớn hơn số tiền tối thiểu.";
@@ -302,15 +304,16 @@ const AddVoucher = () => {
         >
           Ngày bắt đầu:
         </label>
-        <input
-          type="date"
-          id="ngayBatDau"
-          value={ngayBatDau}
-          onChange={(e) => setNgayBatDau(e.target.value)}
-          min={new Date().toISOString().split("T")[0]} // Giới hạn ngày bắt đầu không được nhỏ hơn hôm nay
-          className={`mt-1 block w-full border ${errors.ngayBatDau ? "border-red-500" : "border-gray-300"
-            } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.ngayBatDau ? "focus:ring-red-500" : "focus:ring-blue-500"
-            }`}
+        <DatePicker
+          value={ngayBatDau ? moment(ngayBatDau) : null}
+          onChange={(date) =>
+            setNgayBatDau(date?.format("YYYY-MM-DD") || "")
+          }
+          placeholder="dd/mm/yyyy"
+          className="w-full mt-1 text-sm"
+          disabledDate={(current) =>
+            current && current < moment().endOf("day")
+          }
         />
         {errors.ngayBatDau && (
           <p className="text-red-500 text-sm mt-1">{errors.ngayBatDau}</p>
@@ -324,16 +327,21 @@ const AddVoucher = () => {
         >
           Ngày kết thúc:
         </label>
-        <input
-          type="date"
-          id="ngayKetThuc"
-          value={ngayKetThuc}
-          onChange={(e) => setNgayKetThuc(e.target.value)}
-          min={ngayBatDau || new Date().toISOString().split("T")[0]} // Ngày kết thúc không được nhỏ hơn ngày bắt đầu
-          className={`mt-1 block w-full border ${errors.ngayKetThuc ? "border-red-500" : "border-gray-300"
-            } rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 ${errors.ngayKetThuc ? "focus:ring-red-500" : "focus:ring-blue-500"
-            }`}
+        <DatePicker
+          value={ngayKetThuc ? moment(ngayKetThuc) : null}
+          onChange={(date) =>
+            setNgayKetThuc(date?.format("YYYY-MM-DD") || "")
+          }
+          placeholder="dd/mm/yyyy"
+          className="w-full mt-1 text-sm"
+          disabledDate={(current) =>
+            (current && current < moment().endOf("day")) ||
+            (current && current < moment(ngayBatDau).endOf("day")) ||
+            (current && current >= maxEndDate)
+          }
+
         />
+
         {errors.ngayKetThuc && (
           <p className="text-red-500 text-sm mt-1">{errors.ngayKetThuc}</p>
         )}

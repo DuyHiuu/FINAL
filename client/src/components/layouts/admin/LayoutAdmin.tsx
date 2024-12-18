@@ -11,17 +11,18 @@ const user = {
 };
 
 const navigation = [
-  { name: "PestSpa", href: "/", key: "home" },
-  { name: "Dashboard", href: "/admin/home", key: "dashboard" },
-  { name: "Quản lí phòng", href: "/admin/rooms", key: "rooms" },
-  { name: "Quản lí size", href: "/admin/sizes", key: "sizes" },
-  { name: "Quản lí voucher", href: "/admin/vouchers", key: "vouchers" },
-  { name: "Quản lí dịch vụ", href: "/admin/services", key: "services" },
-  { name: "Quản lí bài viết", href: "/admin/blogs", key: "blogs" },
-  { name: "Quản lí người dùng", href: "/admin/users", key: "users" },
-  { name: "Quản lí đánh giá", href: "/admin/ratings", key: "ratings" },
-  { name: "Quản lí liên hệ", href: "/admin/contacts", key: "contacts" },
-  { name: "Quản lí đơn hàng", href: "/admin/payments", key: "payments" },
+  { name: "PestSpa", href: "/", current: true },
+  { name: "Dashboard", href: "/admin/home", current: false },
+  { name: "Quản lí phòng", href: "/admin/rooms", current: false },
+  { name: "Quản lí size", href: "/admin/sizes", current: false },
+  { name: "Quản lí voucher", href: "/admin/vouchers", current: false },
+  { name: "Quản lí dịch vụ", href: "/admin/services", current: false },
+  { name: "Quản lí bài viết", href: "/admin/blogs", current: false },
+  { name: "Quản lí người dùng", href: "/admin/users", current: false },
+  { name: "Quản lí đánh giá", href: "/admin/ratings", current: false },
+  { name: "Quản lí liên hệ", href: "/admin/contacts", current: false },
+  { name: "Quản lí đơn hàng", href: "/admin/payments", current: false },
+  { name: "Thêm đơn hàng", href: "/admin/add_pay_ad", current: false },
 ];
 
 const userNavigation = [{ name: "Đăng xuất", href: "#" }];

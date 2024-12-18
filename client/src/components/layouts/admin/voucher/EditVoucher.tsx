@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import authClient from "../../../../api/authClient";
+import { DatePicker } from "antd";
+import moment from "moment";
 
 const EditVoucher = () => {
   const [tenVoucher, setVoucher] = useState("");
@@ -18,7 +20,7 @@ const EditVoucher = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const maxEndDate = moment(ngayBatDau).add(30, "days").startOf("day");
   // Fetch voucher details
   const fetchVoucher = async () => {
     setLoading(true);
@@ -87,8 +89,8 @@ const EditVoucher = () => {
     }
 
     if (type === '%') {
-      if (giamGia < 1 || giamGia > 100) {
-        setError("Mức giảm phải từ 1% - 100%");
+      if (giamGia < 1 || giamGia > 50) {
+        setError("Mức giảm phải từ 1% - 50%");
         return;
       }
       if (min_total_amount < max_total_amount) {
@@ -261,12 +263,16 @@ const EditVoucher = () => {
           <label htmlFor="ngayBatDau" className="block text-sm font-medium text-gray-700">
             Ngày bắt đầu:
           </label>
-          <input
-            type="date"
-            id="ngayBatDau"
-            value={ngayBatDau}
-            onChange={(e) => setNgayBatDau(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
+          <DatePicker
+            value={ngayBatDau ? moment(ngayBatDau) : null}
+            onChange={(date) =>
+              setNgayBatDau(date?.format("YYYY-MM-DD") || "")
+            }
+            placeholder="dd/mm/yyyy"
+            className="w-full mt-1 text-sm"
+            disabledDate={(current) =>
+              current && current < moment().endOf("day")
+            }
           />
         </div>
 
@@ -274,12 +280,19 @@ const EditVoucher = () => {
           <label htmlFor="ngayKetThuc" className="block text-sm font-medium text-gray-700">
             Ngày kết thúc:
           </label>
-          <input
-            type="date"
-            id="ngayKetThuc"
-            value={ngayKetThuc}
-            onChange={(e) => setNgayKetThuc(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500"
+          <DatePicker
+            value={ngayKetThuc ? moment(ngayKetThuc) : null}
+            onChange={(date) =>
+              setNgayKetThuc(date?.format("YYYY-MM-DD") || "")
+            }
+            placeholder="dd/mm/yyyy"
+            className="w-full mt-1 text-sm"
+            disabledDate={(current) =>
+              (current && current < moment().endOf("day")) ||
+              (current && current < moment(ngayBatDau).endOf("day")) ||
+              (current && current >= maxEndDate)
+            }
+
           />
         </div>
 
