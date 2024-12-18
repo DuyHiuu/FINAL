@@ -183,11 +183,12 @@ class StatisticalController extends Controller
             $rooms->whereYear("payments.created_at", $year);
         }
         $result = $rooms->select(
-            "rooms.description",
+
+            "sizes.name as size_name",
             DB::raw("COUNT(payments.id) as total_payments_sold"),
             DB::raw("SUM(rooms.price) as total_revenue")
         )
-            ->groupBy("rooms.description")
+            ->groupBy("sizes.name")
             ->orderByDesc("total_revenue")
             ->take(3)
             ->get();
