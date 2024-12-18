@@ -163,8 +163,6 @@ class PaymentController extends Controller
     }
 
 
-
-
     public function updatePaymentDetails(Request $request, $id)
     {
         $validator = Validator::make(
@@ -186,7 +184,6 @@ class PaymentController extends Controller
             // Lấy thông tin thanh toán
             $payment = Payment::findOrFail($id);
 
-
             $booking = Booking::find($payment->booking_id);
             if (!$booking) {
                 return response()->json(['status' => 'error', 'message' => 'Không tìm thấy thông tin booking.'], 404);
@@ -194,21 +191,6 @@ class PaymentController extends Controller
 
             $fieldsToUpdate = [];
             $totalAmountOld = $payment->total_amount; // Lưu lại tổng tiền cũ
-
-            // // Nếu có yêu cầu thay đổi thông tin
-            // if ($request->has('pet_name')) {
-            //     $fieldsToUpdate['pet_name'] = $request->input('pet_name');
-            // }
-            // if ($request->has('pet_type')) {
-            //     $fieldsToUpdate['pet_type'] = $request->input('pet_type');
-            // }
-            // if ($request->has('pet_description')) {
-            //     $fieldsToUpdate['pet_description'] = $request->input('pet_description');
-            // }
-            // if ($request->has('pet_health')) {
-            //     $fieldsToUpdate['pet_health'] = $request->input('pet_health');
-            // }
-
 
             if ($request->has('room_id')) {
                 $newRoomId = $request->input('room_id');
@@ -233,7 +215,6 @@ class PaymentController extends Controller
                 if ($newRoom->is_booked === $newRoom->quantity) {
                     $newRoom->update(['statusroom' => 'Hết phòng']);
                 }
-
 
                 $booking->update(['room_id' => $newRoomId]);
                 $fieldsToUpdate['room_id'] = $newRoomId;
@@ -261,9 +242,7 @@ class PaymentController extends Controller
             $totalAmountNew = $subTotalRoom + $subTotalService;
             $fieldsToUpdate['total_amount'] = $totalAmountNew;
 
-
             $difference = $totalAmountNew - $totalAmountOld;
-
 
             if ($difference <= 0) {
                 return response()->json([
@@ -274,6 +253,16 @@ class PaymentController extends Controller
             }
             $fieldsToUpdate['different_amount'] = $difference;
             $payment->update($fieldsToUpdate);
+
+            // Lưu lịch sử thay đổi phòng
+            DB::table('changed_room_history')->insert([
+                'payment_id' => $payment->id,
+                'oldRoomId' => $oldRoomId,
+                'newRoomId' => $newRoomId,
+                'difference' => $difference,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
             DB::commit();
 
@@ -291,7 +280,6 @@ class PaymentController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Xảy ra lỗi trong quá trình cập nhật.', 'error' => $e->getMessage()], 500);
         }
     }
-
 
 
     /**
@@ -841,17 +829,17 @@ class PaymentController extends Controller
 
         $now = Carbon::now('Asia/Ho_Chi_Minh');
 
-            if (!$now->isSameDay($start_date)) {
-                return response()->json(['message' => 'Ngày thanh toán không trùng ngày với ngày check-in!'], 400);
-            }
+        if (!$now->isSameDay($start_date)) {
+            return response()->json(['message' => 'Ngày thanh toán không trùng ngày với ngày check-in!'], 400);
+        }
 
-            if ($now->lessThan($start_hour->addHours(3))) {
-                return response()->json([
-                    'message' => 'Không thể hủy thanh toán trước 3 tiếng kể từ giờ check-in!',
-                    'start_hour' => $start_hour->format('H:i:s'),
-                    'current_time' => $now->format('H:i:s'),
-                ], 400);
-            }
+        if ($now->lessThan($start_hour->addHours(3))) {
+            return response()->json([
+                'message' => 'Không thể hủy thanh toán trước 3 tiếng kể từ giờ check-in!',
+                'start_hour' => $start_hour->format('H:i:s'),
+                'current_time' => $now->format('H:i:s'),
+            ], 400);
+        }
 
         $payment->update(['status_id' => 7]);
 
