@@ -190,6 +190,7 @@ class PaymentController extends Controller
             }
 
             $fieldsToUpdate = [];
+            $fieldsToUpdate['changed_room'] = 1;
             $totalAmountOld = $payment->total_amount; // Lưu lại tổng tiền cũ
 
             if ($request->has('room_id')) {
@@ -458,27 +459,7 @@ class PaymentController extends Controller
 
                 $params['status_id'] = $params['status_id'] ?? 3;
 
-                $room = $booking->room;
 
-                if ($room->quantity > 0) {
-                    $room->increment('is_booked', 1);
-
-                    if ($room->quantity === $room->is_booked) {
-                        $room->update(['statusroom' => 'Hết phòng']);
-                    }
-                } else {
-                    return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
-                }
-
-                if ($voucherID) {
-                    if ($voucher->quantity > 0) {
-                        $voucher->decrement('quantity', 1);
-
-                        if ($voucher->quantity === 0) {
-                            $voucher->update(['is_active' => 0]);
-                        }
-                    }
-                }
                 $payment = Payment::create($params);
 
 
@@ -602,6 +583,8 @@ class PaymentController extends Controller
 
         try {
             $payment = Payment::where('id', $payments)->first();
+            $booking = $payment->booking;
+            $voucher = $payment->voucher;
             $payment_id = $payment->id;
             //Check Orderid
             //Kiểm tra checksum của dữ liệu
@@ -678,6 +661,28 @@ class PaymentController extends Controller
                                 Tong tien: {$payment->total_amount} VND
                                 ----------------------------
                                 ";
+                                
+                                $room = $booking->room;
+
+                                if ($room->quantity > 0) {
+                                    $room->increment('is_booked', 1);
+                
+                                    if ($room->quantity === $room->is_booked) {
+                                        $room->update(['statusroom' => 'Hết phòng']);
+                                    }
+                                } else {
+                                    return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
+                                }
+                
+                               
+                                 if ($voucher->quantity > 0) {
+                                       $voucher->decrement('quantity', 1);
+                
+                                        if ($voucher->quantity === 0) {
+                                            $voucher->update(['is_active' => 0]);
+                                        }
+                                    }
+                            
 
                                 // Call external API to generate QR code image (in PNG format)
                                 $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($formattedData);

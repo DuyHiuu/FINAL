@@ -84,8 +84,7 @@ const ListPay = () => {
     };
 
     const statusOptions = [
-        { id: 1, name: "Chờ xác nhận" },
-        { id: 2, name: "Đã xác nhận" },
+        { id: 2, name: "Đã đặt phòng" },
         { id: 4, name: "Thanh toán thành công" },
         { id: 5, name: "Đã check-in" },
         { id: 6, name: "Đã check-out" },
@@ -93,8 +92,8 @@ const ListPay = () => {
     ];
 
     const paymentMethodOptions = [
-        { id: 1, name: "Thanh toán tại cửa hàng" },
-        { id: 2, name: "Thanh toán online" },
+        { id: 2, name: "Thanh toán tại cửa hàng" },
+        { id: 1, name: "Thanh toán online" },
     ];
 
     const columns = [
@@ -113,6 +112,21 @@ const ListPay = () => {
             title: "Size Phòng",
             dataIndex: ["booking", "room", "size", "name"],
             key: "room_size",
+            render: (text, record) => (
+                <div>
+                    {text}
+                    {record.changed_room == 1 && (
+                        <div className="relative group">
+                            <div className="w-3 h-3 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold cursor-pointer">
+                                !
+                            </div>
+                            <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-max px-3 py-2 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                Đã đổi phòng
+                            </div>
+                        </div>
+                    )}
+                </div>
+            ),
         },
         {
             title: "Tổng Tiền (VND)",
@@ -249,6 +263,9 @@ const ListPay = () => {
                     />
                 </Col>
             </Row>
+
+            <a href="/admin/add_pay_ad" className="text-blue-500">
+                Tạo hóa đơn cho khách đặt phòng trực tiếp tại cửa hàng</a>
 
             {loading ? (
                 <div style={{ display: "flex", justifyContent: "center", minHeight: "70vh", alignItems: "center" }}>
