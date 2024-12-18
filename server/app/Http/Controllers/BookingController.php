@@ -181,6 +181,7 @@ class BookingController extends Controller
             'services' => $serviceData ?? []
         ]);
     }
+
     // {
     //     $validator = Validator::make(
     //         $request->all(),
@@ -420,50 +421,53 @@ class BookingController extends Controller
         DB::beginTransaction();
         try {
 
-            // $validator = Validator::make($request->all(), [
-            //     //Booking
-            //     'start_date' => [
-            //         'required',
-            //         'date',
-            //         'after_or_equal:' . now()->format('Y-m-d H:i:s')
-            //     ],
+            $validator = Validator::make($request->all(), [
+                //Booking
+                'start_date' => [
+                    'required',
+                    'date',
+                    'after_or_equal:' . now()->format('Y-m-d H:i:s'), // Check if start_date is not before the current date/time
+                ],
 
-            //     'end_date' => [
-            //         'required',
-            //         'date',
-            //         'after:start_date',
-            //         function ($attribute, $value, $fail) use ($request) {
-            //             $startDate = Carbon::parse($request->start_date);
-            //             $endDate = Carbon::parse($value);
+                'end_date' => [
+                    'required',
+                    'date',
+                    'after:start_date', // Ensure end_date is after start_date
+                    function ($attribute, $value, $fail) use ($request) {
+                        $startDate = Carbon::parse($request->start_date);
+                        $endDate = Carbon::parse($value);
 
-            //             if ($endDate->gt($startDate->addMonth())) {
-            //                 $fail('Ngày kết thúc phải nằm trong vòng 1 tháng kể từ ngày bắt đầu.');
-            //             }
-            //         },
-            //     ],
+                        // Ensure that end_date is within 1 month of start_date
+                        if ($endDate->gt($startDate->copy()->addMonth())) {
+                            $fail('Ngày kết thúc phải nằm trong vòng 1 tháng kể từ ngày bắt đầu.');
+                        }
+                    },
+                ],
 
-            //     'start_hour' => [
-            //         'required',
-            //     ],
+                'start_hour' => [
+                    'required',
+                ],
 
-            //     'room_id' => 'required|exists:rooms,id',
+                'room_id' => 'required|exists:rooms,id',
 
-            //     //Payment
-            //     'pet_name' => 'required|string|max:255',
-            //     'pet_type' => 'required|string|max:255',
-            //     'pet_description' => 'required|string',
-            //     'pet_health' => 'required|string',
-            //     'user_name' => 'required|string|max:255',
-            //     'user_address' => 'required|string|max:255',
-            //     'user_email' => 'required|email|max:255',
-            //     'user_phone' => 'required|string|max:15',
-            //     'user_id' => 'exists:users,id',
-            //     'paymethod_id' => 'required|exists:paymethods,id',
-            // ]);
+                // Payment
+                'pet_name' => 'required|string|max:255',
+                'pet_type' => 'required|string|max:255',
+                'pet_description' => 'required|string',
+                'pet_health' => 'required|string',
+                'user_name' => 'required|string|max:255',
+                'user_address' => 'required|string|max:255',
+                'user_email' => 'required|email|max:255',
+                'user_phone' => 'required|string|max:15',
+                'user_id' => 'exists:users,id',
+                'paymethod_id' => 'required|exists:paymethods,id',
+            ]);
 
-            // if ($validator->fails()) {
-            //     return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
-            // }
+
+
+            if ($validator->fails()) {
+                return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
+            }
 
             // tao booking
             $allowedHours = ['09:00', '14:00'];
@@ -595,8 +599,3 @@ class BookingController extends Controller
     }
 
 }
-
-
-
-
-
