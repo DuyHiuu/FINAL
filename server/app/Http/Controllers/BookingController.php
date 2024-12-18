@@ -353,6 +353,7 @@ class BookingController extends Controller
     {
         DB::beginTransaction();
         try {
+
             // $validator = Validator::make($request->all(), [
             //     //Booking
             //     'start_date' => [
@@ -396,6 +397,50 @@ class BookingController extends Controller
             // if ($validator->fails()) {
             //     return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
             // }
+            $validator = Validator::make($request->all(), [
+                //Booking
+                'start_date' => [
+                    'required',
+                    'date',
+                    'after_or_equal:' . now()->format('Y-m-d H:i:s')
+                ],
+
+                'end_date' => [
+                    'required',
+                    'date',
+                    'after:start_date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $startDate = Carbon::parse($request->start_date);
+                        $endDate = Carbon::parse($value);
+
+                        if ($endDate->gt($startDate->addMonth())) {
+                            $fail('Ngày kết thúc phải nằm trong vòng 1 tháng kể từ ngày bắt đầu.');
+                        }
+                    },
+                ],
+
+                'start_hour' => [
+                    'required',
+                ],
+
+                'room_id' => 'required|exists:rooms,id',
+
+                //Payment
+                'pet_name' => 'required|string|max:255',
+                'pet_type' => 'required|string|max:255',
+                'pet_description' => 'required|string',
+                'pet_health' => 'required|string',
+                'user_name' => 'required|string|max:255',
+                'user_address' => 'required|string|max:255',
+                'user_email' => 'required|email|max:255',
+                'user_phone' => 'required|string|max:15',
+                'user_id' => 'exists:users,id',
+                'paymethod_id' => 'required|exists:paymethods,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['status' => 'error', 'message' => $validator->messages()], 400);
+            }
 
             // tao booking
             $allowedHours = ['09:00', '14:00'];
@@ -408,7 +453,6 @@ class BookingController extends Controller
 
             $startHour = $request->input('start_hour');
             $endHour = Carbon::parse($startHour)->addDay()->format('H:i'); // nếu dùng kiểu dl là time
-
 
             $roomID = $request->input('room_id');
 
@@ -479,6 +523,42 @@ class BookingController extends Controller
 
                 $total_amount = $subTotal_room + $subTotal_service;
 
+                // Áp dụng Voucher nếu có
+                $voucherID = $request->input('voucher_id');
+                $discount = 0;
+
+                if ($voucherID) {
+                    $voucher = Voucher::where('id', $voucherID)
+                        ->where('is_active', true)
+                        ->first();
+
+                    if (!$voucher) {
+                        return response()->json(['message' => 'Voucher không hợp lệ.'], 400);
+                    }
+
+                    if ($voucher->end_date < now()) {
+                        return response()->json(['message' => 'Voucher đã hết hạn.'], 400);
+                    }
+
+                    if ($voucher->quantity === 0) {
+                        return response()->json(['message' => 'Voucher đã hết số lần sử dụng.'], 400);
+                    }
+
+                    if ($total_amount < $voucher->min_total_amount) {
+                        return response()->json(['error' => 'Số tiền không đủ để áp dụng voucher'], 400);
+                    }
+
+                    if ($voucher->type === '%') {
+                        $percentageDiscount = ($total_amount * $voucher->discount) / 100;
+                        $discount = min($percentageDiscount, $voucher->max_total_amount);
+                    } else {
+                        $discount = min($voucher->discount, $total_amount);
+                    }
+
+                    $total_amount = max(0, $total_amount - $discount);
+                    $voucher->decrement('quantity', 1);
+                }
+
                 $paymentData = [
                     'booking_id' => $booking->id,
                     'user_id' => $request->input('user_id'),
@@ -507,11 +587,19 @@ class BookingController extends Controller
                     return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
                 }
 
+                if ($voucherID) {
+                    if ($voucher->quantity > 0) {
+                        $voucher->decrement('quantity', 1);
+
+                        if ($voucher->quantity === 0) {
+                            $voucher->update(['is_active' => 0]);
+                        }
+                    }
+                }
                 $payment = Payment::create($paymentData);
 
                 DB::commit();
             }
-
 
             return response()->json([
                 'status' => 'success',

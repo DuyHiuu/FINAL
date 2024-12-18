@@ -16,6 +16,7 @@ const Pay2 = () => {
     const showRoom = "http://localhost:8000/api/rooms";
 
     const [booking, setBooking] = useState<any>();
+    
     const [room, setRoom] = useState<any>();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -157,6 +158,8 @@ const Pay2 = () => {
     const { vouchers } = useFetchVoucher();
     const [voucherPopUp, setVoucherPopUp] = useState(false);
     const [selectedVoucher, setSelectedVoucher] = useState(null);
+    console.log(selectedVoucher);
+    
     const openVoucherPopUp = () => setVoucherPopUp(true);
     const closeVoucherPopUp = () => setVoucherPopUp(false);
     const servicesData = booking?.booking?.services;
@@ -624,7 +627,20 @@ const Pay2 = () => {
                                     <Text className='font-semibold'>{booking?.subTotal_service === 0 ? "0" : booking?.subTotal_service.toLocaleString("vi-VN")} VNĐ</Text>
                                 </Col>
                             </Row>
-
+                            <Row justify="space-between" className="mt-4 w-full">
+                            <Col span={12} className="text-left">
+                                <Text className='font-semibold'>Giảm giá:</Text>
+                            </Col>
+                            <Col span={12} className="text-right">
+                                <Text className='font-semibold text-500'>
+                                    {selectedVoucher 
+                                        ? `- ${finalAmount !== total_amount ? (total_amount - finalAmount).toLocaleString("vi-VN") : '0'} VNĐ`
+                                        : "0 VNĐ"
+                                    }
+                                </Text>
+                            </Col>
+                        </Row>
+                            
                             <Divider />
 
                             <Text className="text-gray-600 mb-4">Mọi chi phí đã được tính tổng</Text>
