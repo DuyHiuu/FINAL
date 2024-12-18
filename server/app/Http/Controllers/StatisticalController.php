@@ -173,6 +173,7 @@ class StatisticalController extends Controller
 
         $rooms = Room::leftjoin("bookings", "bookings.room_id", "=", "rooms.id")
             ->leftjoin("payments", "payments.booking_id", "=", "bookings.id")
+            ->leftJoin("sizes", "rooms.size_id", "=", "sizes.id")
             ->where("payments.status_id", 6);
         if ($timeline == 'month') {
             $month = $data['month'];
