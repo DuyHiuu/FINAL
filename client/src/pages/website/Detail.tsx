@@ -272,9 +272,8 @@ const Detail = () => {
       <div className="mt-8 max-w-md">
         <h1 className="text-3xl font-bold">{room?.size_name}</h1>
         <p
-          className={`${
-            room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
-          }`}
+          className={`${room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
+            }`}
         >
           {room?.statusroom === "Còn phòng"
             ? `Còn ${room?.quantity - room?.is_booked} phòng`
@@ -312,11 +311,10 @@ const Detail = () => {
                 <button
                   key={star}
                   onClick={() => setFilterRating(star)}
-                  className={`px-2 py-1 rounded-full ${
-                    filterRating === star
+                  className={`px-2 py-1 rounded-full ${filterRating === star
                       ? "bg-gray-300 text-white"
                       : "border text-gray-700"
-                  }`}
+                    }`}
                 >
                   {Array(star)
                     .fill(null)
@@ -428,6 +426,9 @@ const Detail = () => {
                 message="Quy định Check-in và Check-out"
                 description={
                   <>
+                    <p className="flex items-center text-red-500">
+                      <span className="mr-2">✔️</span> Bạn không thể hủy khi đặt phòng thành công
+                    </p>
                     <p className="flex items-center text-red-500">
                       <span className="mr-2">✔️</span> Giờ check-in: 9:00 hoặc
                       14:00 (Chọn bên dưới) của ngày check-in
