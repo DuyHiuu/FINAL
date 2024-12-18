@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Table, Typography, Button, Badge, Spin, Input, Select, DatePicker, Row, Col } from "antd";
+import { Table, Typography, Button, Badge, Spin, Input, Select, DatePicker, Row, Col, Modal, message } from "antd";
 import moment from "moment";
 import useFetchPay from "../../../../api/admin/useFetchPay";
+import axios from "axios";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -17,6 +18,7 @@ const ListPay = () => {
     const [searchOrderId, setSearchOrderId] = useState("");
     const [searchPaymentMethod, setSearchPaymentMethod] = useState("");
     const [searchUser, setSearchUser] = useState("");
+    const [changedRoomHistory, setChangedRoomHistory] = useState([]);
 
     const filteredPayments = payment?.filter((item) => {
         const matchesOrderId = searchOrderId
@@ -83,6 +85,40 @@ const ListPay = () => {
         setSearchUser(e.target.value);
     };
 
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedPaymentId, setSelectedPaymentId] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const showModal = (payment_id) => {
+        setSelectedPaymentId(payment_id);
+        setIsModalVisible(true);
+    };
+
+    const handleOk = () => {
+        setIsModalVisible(false);
+    };
+
+    useEffect(() => {
+        const fetchChangedRoomHistory = async (payment_id) => {
+            setIsLoading(true);
+            try {
+                const response = await fetch(`http://localhost:8000/api/payments/room_history/${payment_id}`);
+                const data1 = await response.json();
+                setChangedRoomHistory(data1);
+                console.log(data1);
+
+            } catch (error) {
+                message.error("Lỗi: " + error.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (selectedPaymentId) {
+            fetchChangedRoomHistory(selectedPaymentId);
+        }
+    }, [selectedPaymentId]);
+
     const statusOptions = [
         { id: 2, name: "Đã đặt phòng" },
         { id: 4, name: "Thanh toán thành công" },
@@ -116,7 +152,7 @@ const ListPay = () => {
                 <div>
                     {text}
                     {record.changed_room == 1 && (
-                        <div className="relative group">
+                        <div className="relative group" onClick={() => showModal(record?.id)}>
                             <div className="w-3 h-3 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold cursor-pointer">
                                 !
                             </div>
@@ -272,14 +308,36 @@ const ListPay = () => {
                     <Spin size="large" />
                 </div>
             ) : (
-                <Table
-                    dataSource={filteredPayments}
-                    columns={columns}
-                    rowKey="id"
-                    bordered
-                    pagination={{ pageSize: 10 }}
-                    style={{ backgroundColor: "#fff", padding: "1rem", borderRadius: "8px" }}
-                />
+                <>
+                    <Table
+                        dataSource={filteredPayments}
+                        columns={columns}
+                        rowKey="id"
+                        bordered
+                        pagination={{ pageSize: 10 }}
+                        style={{ backgroundColor: "#fff", padding: "1rem", borderRadius: "8px" }}
+                    />
+
+                    <Modal
+                        title="Thông Báo"
+                        visible={isModalVisible}
+                        onOk={handleOk}
+                    >
+                        {isLoading ? (
+                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                <Spin size="large" />
+                            </div>
+                        ) : (
+                            <>
+                                <p>Phòng cũ: {changedRoomHistory?.history?.oldRoomId}</p>
+                                <p>Phòng mới: {changedRoomHistory?.history?.newRoomId}</p>
+                                <p>Số tiền phải trả thêm: {parseInt(changedRoomHistory?.history?.difference, 10).toLocaleString("vi-VN")} VND
+                                </p>
+                            </>
+                        )}
+                    </Modal>
+                </>
+
             )}
         </div>
     );

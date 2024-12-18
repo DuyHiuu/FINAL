@@ -12,9 +12,9 @@ class ChangeRoomHis extends Model
     protected $table = 'changed_room_history';
     protected $fillable = [
         'payment_id',
-        'previous_room',
-        'changed_room',
-        'extra_amount'
+        'oldRoomId',
+        'newRoomId',
+        'difference'
     ];
 
     public function payment()

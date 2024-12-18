@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\PaymentConfirm;
+use App\Models\ChangeRoomHis;
 use App\Models\Payment;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
@@ -85,6 +86,15 @@ class PaymentController extends Controller
                 'voucher' => $vouchers,
                 'payMethod' => $payMethods,
             ]
+        ]);
+    }
+
+    public function changeRoomHis(String $id)
+    {
+        $history = ChangeRoomHis::where('payment_id', $id)->first();
+
+        return response()->json([
+            'history' => $history,
         ]);
     }
 
@@ -661,28 +671,28 @@ class PaymentController extends Controller
                                 Tong tien: {$payment->total_amount} VND
                                 ----------------------------
                                 ";
-                                
+
                                 $room = $booking->room;
 
                                 if ($room->quantity > 0) {
                                     $room->increment('is_booked', 1);
-                
+
                                     if ($room->quantity === $room->is_booked) {
                                         $room->update(['statusroom' => 'Hết phòng']);
                                     }
                                 } else {
                                     return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
                                 }
-                
-                               
-                                 if ($voucher->quantity > 0) {
-                                       $voucher->decrement('quantity', 1);
-                
-                                        if ($voucher->quantity === 0) {
-                                            $voucher->update(['is_active' => 0]);
-                                        }
+
+
+                                if ($voucher->quantity > 0) {
+                                    $voucher->decrement('quantity', 1);
+
+                                    if ($voucher->quantity === 0) {
+                                        $voucher->update(['is_active' => 0]);
                                     }
-                            
+                                }
+
 
                                 // Call external API to generate QR code image (in PNG format)
                                 $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($formattedData);
