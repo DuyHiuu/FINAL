@@ -29,54 +29,82 @@ const AddPayAd = () => {
     const [user_addressError, setUser_addressError] = useState("");
     const [pet_nameError, setPet_nameError] = useState("");
     const [pet_descriptionError, setPet_descriptionError] = useState("");
+    const [time_timeError, setTime_timeError] = useState("");
+    const [date_startDateError, setDate_startDateError] = useState("");
+    const [date_endDateError, setDate_endDateError] = useState("");
 
-    // const validateForm = () => {
-    //     let valid = true;
+    const validateForm = () => {
+        let valid = true;
 
-    //     if (!user_name.trim()) {
-    //         setUser_nameError("Tên khách hàng không được bỏ trống!");
-    //         valid = false;
-    //     } else {
-    //         setUser_nameError("");
-    //     }
+        if (!user_name.trim()) {
+            setUser_nameError("Tên khách hàng không được bỏ trống!");
+            valid = false;
+        } else {
+            setUser_nameError("");
+        }
 
-    //     if (!user_email.trim()) {
-    //         setUser_emailError("Email không được bỏ trống!");
-    //         valid = false;
-    //     } else {
-    //         setUser_emailError("");
-    //     }
+        if (!user_email.trim()) {
+            setUser_emailError("Email không được bỏ trống!");
+            valid = false;
+        } else {
+            setUser_emailError("");
+        }
 
-    //     if (!user_phone.trim()) {
-    //         setUser_phoneError("Số điện thoại không được bỏ trống!");
-    //         valid = false;
-    //     } else {
-    //         setUser_phoneError("");
-    //     }
+        if (!user_phone.trim()) {
+            setUser_phoneError("Số điện thoại không được bỏ trống!");
+            valid = false;
+        } else {
+            setUser_phoneError("");
+        }
 
-    //     if (!user_address.trim()) {
-    //         setUser_addressError("Địa chỉ không được bỏ trống!");
-    //         valid = false;
-    //     } else {
-    //         setUser_addressError("");
-    //     }
+        if (!user_address.trim()) {
+            setUser_addressError("Địa chỉ không được bỏ trống!");
+            valid = false;
+        } else {
+            setUser_addressError("");
+        }
 
-    //     if (!pet_name.trim()) {
-    //         setPet_nameError("Tên thú cưng không được bỏ trống!");
-    //         valid = false;
-    //     } else {
-    //         setPet_nameError("");
-    //     }
+        if (!pet_name.trim()) {
+            setPet_nameError("Tên thú cưng không được bỏ trống!");
+            valid = false;
+        } else {
+            setPet_nameError("");
+        }
 
-    //     if (!pet_description.trim()) {
-    //         setPet_descriptionError("Mô tả thú cưng không được bỏ trống!");
-    //         valid = false;
-    //     } else {
-    //         setPet_descriptionError("");
-    //     }
+        if (!pet_description.trim()) {
+            setPet_descriptionError("Mô tả thú cưng không được bỏ trống!");
+            valid = false;
+        } else {
+            setPet_descriptionError("");
+        }
 
-    //     return valid;
-    // };
+        if (!start_date.trim()) {
+            setDate_startDateError("Ngày check-in không được bỏ trống!");
+            valid = false;
+        } else if (moment(start_date).isBefore(moment(), 'day')) {
+            setDate_startDateError("Ngày check-in không được là ngày đã qua!");
+            valid = false;
+        }
+
+        if (!end_date.trim()) {
+            setDate_endDateError("Ngày check-out không được bỏ trống!");
+            valid = false;
+        } else if (moment(end_date).isBefore(moment(start_date), 'day')) {
+            setDate_endDateError("Ngày check-out phải sau ngày check-in!");
+            valid = false;
+        } else if (moment(end_date).isAfter(maxEndDate, 'day')) {
+            setDate_endDateError("Ngày check-out không được vượt quá 30 ngày từ ngày check-in!");
+            valid = false;
+        }
+
+        if (!start_hour.trim()) {
+            setTime_timeError("Giờ check-in không được bỏ trống!");
+            valid = false;
+        }
+
+        return valid;
+    };
+
 
     const { service } = useFetchServices();
 
@@ -115,21 +143,21 @@ const AddPayAd = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // if (!validateForm()) {
-        //     return;
-        // }
+        if (!validateForm()) {
+            return;
+        }
 
         setIsLoading(true);
 
         const safeServiceIds = service_ids.length ? service_ids : [];
-        
+
 
         const formData = new FormData();
 
         for (let [key, value] of formData.entries()) {
             console.log(key, value);
         }
-        
+
         formData.append("pet_name", pet_name);
         formData.append("pet_type", pet_type);
         formData.append("pet_description", pet_description);
@@ -327,7 +355,7 @@ const AddPayAd = () => {
 
                         <div className="mt-10">
                             <p className="block text-black text-sm font-bold">Phương thức thanh toán</p>
-                            <Form.Item>
+                            {/* <Form.Item>
                                 <Select
                                     value={paymethod_id}
                                     onChange={(value) => setPaymethod_id(value)}
@@ -338,7 +366,8 @@ const AddPayAd = () => {
                                         </Select.Option>
                                     ))}
                                 </Select>
-                            </Form.Item>
+                            </Form.Item> */}
+                            <p>Thanh toán tại cửa hàng</p>
                         </div>
 
                         <div className="mt-10">
@@ -427,6 +456,7 @@ const AddPayAd = () => {
                                 }}
                                 showNow={false}
                             />
+                            {time_timeError && <p className="text-red-500 text-sm mt-1">{time_timeError}</p>}
                         </div>
                         <div className="mt-4 flex justify-between items-center space-x-3">
                             <div className="w-1/2">
@@ -444,6 +474,7 @@ const AddPayAd = () => {
                                         current && current < moment().endOf("day")
                                     }
                                 />
+                                {date_startDateError && <p className="text-red-500 text-sm mt-1">{date_startDateError}</p>}
                             </div>
                             <div className="w-1/2">
                                 <label className="block text-black text-sm font-bold">
@@ -462,6 +493,7 @@ const AddPayAd = () => {
                                         (current && current >= maxEndDate)
                                     }
                                 />
+                                {date_endDateError && <p className="text-red-500 text-sm mt-1">{date_endDateError}</p>}
                             </div>
                         </div>
 
