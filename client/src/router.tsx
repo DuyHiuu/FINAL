@@ -52,6 +52,7 @@ import CheckPay from "./pages/website/checkPay";
 import HomeAdmin from "./components/layouts/admin/home/home";
 import BlogDetail from "./pages/website/BlogDetail";
 import ChangeRoom from "./components/layouts/admin/payment/ChangeRoom";
+import AddPayAd from "./components/layouts/admin/payment/AddPayAd";
 
 
 
@@ -137,6 +138,7 @@ export const router = createBrowserRouter([
       { path: "/admin/payments/detail/:id", element: <DetailPay /> },
       { path: "/admin/chart", element: <Chart /> },
       { path: "/admin/change_room/:id", element: <ChangeRoom /> },
+      { path: "/admin/add_pay_ad", element: <AddPayAd /> },
 
     ],
   },

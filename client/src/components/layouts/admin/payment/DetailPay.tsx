@@ -87,7 +87,7 @@ const DetailPay = () => {
                 throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
             }
 
-            alert("Phòng đã được hủy thành công.");
+            message.success("Phòng đã được hủy thành công.");
             setData(prevData => ({
                 ...prevData,
                 payment: {
@@ -99,7 +99,7 @@ const DetailPay = () => {
             window.location.reload();
         } catch (error) {
             console.error("Lỗi khi hủy phòng:", error);
-            alert("Có lỗi xảy ra. Vui lòng thử lại.");
+            message.error("Không thể hủy phòng !");
         }
     };
 

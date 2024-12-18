@@ -250,6 +250,9 @@ const ListPay = () => {
                 </Col>
             </Row>
 
+            <a href="/admin/add_pay_ad" className="text-blue-500">
+                Tạo hóa đơn cho khách đặt phòng trực tiếp tại cửa hàng</a>
+
             {loading ? (
                 <div style={{ display: "flex", justifyContent: "center", minHeight: "70vh", alignItems: "center" }}>
                     <Spin size="large" />
