@@ -24,7 +24,7 @@ import {
   message,
 } from "antd";
 import { useEffect, useState } from "react";
-import Chart from '../home/Chart';
+import Chart from "../home/Chart";
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 const HomeAdmin = () => {
@@ -69,7 +69,7 @@ const HomeAdmin = () => {
         if (fetchdata?.data?.message) {
           message.error(fetchdata?.data?.message);
           setDataRooms({
-            description: "",
+            size_name: "",
             total_payments_sold: 0,
             total_revenue: 0,
           });
@@ -119,7 +119,7 @@ const HomeAdmin = () => {
         if (fetchdata?.data?.message) {
           message.error(fetchdata?.data?.message);
           setDataRooms({
-            description: "",
+            size_name: "",
             total_payments_sold: 0,
             total_revenue: 0,
           });
@@ -200,8 +200,9 @@ const HomeAdmin = () => {
                         `${valueDateRoom}`,
                         `${typeSearchRoom === "month" ? "MM / YYYY" : "YYYY"}`
                       )}
-                      format={`${typeSearchRoom === "month" ? "MM / YYYY" : "YYYY"
-                        }`}
+                      format={`${
+                        typeSearchRoom === "month" ? "MM / YYYY" : "YYYY"
+                      }`}
                       className="w-[100px]"
                     />
                     <Button onClick={() => handleSelectRooms()}>Tra cứu</Button>
@@ -221,7 +222,7 @@ const HomeAdmin = () => {
                   }}
                 >
                   <XAxis
-                    dataKey="description"
+                    dataKey="size_name"
                     tickFormatter={() => ``}
                     padding={{ left: 20 }}
                   />
@@ -282,7 +283,9 @@ const HomeAdmin = () => {
                           {index + 1}
                         </td>
                         <td className="whitespace-nowrap px-4 py-2 text-gray-900">
-                          {value?.description?.length > 20 ? value.description.substring(0, 30) + '...' : value.description}
+                          {value?.size_name?.length > 20
+                            ? value.description.substring(0, 30) + "..."
+                            : value.size_name}
                         </td>
                         <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                           {value?.total_payments_sold}
@@ -327,11 +330,13 @@ const HomeAdmin = () => {
                       onChange={onChangeService}
                       defaultValue={dayjs(
                         `${valueDateService}`,
-                        `${typeSearchService === "month" ? "MM / YYYY" : "YYYY"
+                        `${
+                          typeSearchService === "month" ? "MM / YYYY" : "YYYY"
                         }`
                       )}
-                      format={`${typeSearchService === "month" ? "MM / YYYY" : "YYYY"
-                        }`}
+                      format={`${
+                        typeSearchService === "month" ? "MM / YYYY" : "YYYY"
+                      }`}
                       className="w-[100px]"
                     />
                     <Button onClick={() => handleSelectServices()}>
