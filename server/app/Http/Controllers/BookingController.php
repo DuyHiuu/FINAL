@@ -10,6 +10,7 @@ use App\Models\Service;
 use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
@@ -293,6 +294,8 @@ class BookingController extends Controller
     }
 
 
+
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -350,4 +353,69 @@ class BookingController extends Controller
             'status' => $finalQuantity > 0 ? 'Còn phòng' : 'Hết phòng',
         ]);
     }
+
+    public function getAvailableRooms(Request $request)
+    {
+        $data = $request->all();
+
+        $startDate = Carbon::parse($data['startDate']);
+        $endDate = Carbon::parse($data['endDate']);
+        $roomId = $data['room_id'] ?? null; // ID phòng được truyền vào (nếu có)
+
+        if ($startDate > $endDate) {
+            return response()->json(['error' => 'Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.'], 422);
+        }
+
+        // Lấy danh sách phòng đã được đặt, lọc theo room_id nếu được truyền vào
+        $bookedRooms = Booking::join('payments', 'payments.booking_id', '=', 'bookings.id')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('bookings.start_date', [$startDate, $endDate])
+                    ->orWhereBetween('bookings.end_date', [$startDate, $endDate])
+                    ->orWhere(function ($query) use ($startDate, $endDate) {
+                        $query->where('bookings.start_date', '<=', $startDate)
+                            ->where('bookings.end_date', '>=', $endDate);
+                    });
+            });
+
+        if ($roomId) {
+            $bookedRooms->where('bookings.room_id', $roomId); // Lọc theo room_id nếu có
+        }
+
+        $bookedRooms = $bookedRooms
+            ->select('bookings.room_id', DB::raw('COUNT(bookings.room_id) as booked_quantity'))
+            ->groupBy('bookings.room_id')
+            ->pluck('booked_quantity', 'bookings.room_id');
+
+        // Nếu truyền room_id, chỉ trả về thông tin phòng đó
+        if ($roomId) {
+            $room = Room::select('id', 'quantity')
+                ->where('id', $roomId)
+                ->first();
+
+            if (!$room) {
+                return response()->json(['error' => 'Phòng không tồn tại.'], 404);
+            }
+
+            $bookedQuantity = $bookedRooms[$room->id] ?? 0;
+            $availableQuantity = $room->quantity - $bookedQuantity;
+
+            return response()->json([
+                'room_id' => $room->id,
+                'total_quantity' => $room->quantity,
+                'available_quantity' => $availableQuantity,
+            ]);
+        }
+
+        // Lấy danh sách tất cả các phòng nếu không có room_id
+        $rooms = Room::select('id',  'quantity')
+            ->get()
+            ->map(function ($room) use ($bookedRooms) {
+                $bookedQuantity = $bookedRooms[$room->id] ?? 0;
+                $room->available_quantity = $room->quantity - $bookedQuantity;
+                return $room;
+            });
+
+        return response()->json($rooms);
+    }
+
 }
