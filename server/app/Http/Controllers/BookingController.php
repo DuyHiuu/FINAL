@@ -415,9 +415,6 @@ class BookingController extends Controller
 
         return response()->json($rooms);
     }
-
-}
-
     public function addBookingPayAd(Request $request)
     {
         DB::beginTransaction();
@@ -523,7 +520,7 @@ class BookingController extends Controller
                 $booking->services()->attach($request->services);
             }
 
-            // tao pay   
+            // tao pay
             if ($booking) {
                 $subTotal_service = 0;
                 $subTotal_room = 0;
@@ -596,5 +593,10 @@ class BookingController extends Controller
             ], 500);
         }
     }
+
 }
+
+
+
+
 
