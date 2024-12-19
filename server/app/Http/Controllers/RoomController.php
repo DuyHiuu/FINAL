@@ -233,7 +233,7 @@ class RoomController extends Controller
                 return $room;
             });
 
-        
+
         if ($roomId && $rooms->isEmpty()) {
             return response()->json(['message' => 'Không tìm thấy phòng với ID được cung cấp hoặc phòng không có lượt đặt.'], 404);
         }
