@@ -6,6 +6,7 @@ import useFetchPayMethod from '../../../../api/useFetchPayMethod';
 import useFetchServices from '../../../../api/useFetchServices';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import useFetchRooms from '../../../../api/useFetchRooms';
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -32,6 +33,7 @@ const AddPayAd = () => {
     const [time_timeError, setTime_timeError] = useState("");
     const [date_startDateError, setDate_startDateError] = useState("");
     const [date_endDateError, setDate_endDateError] = useState("");
+    const navigate = useNavigate();
 
     const validateForm = () => {
         let valid = true;
@@ -192,6 +194,8 @@ const AddPayAd = () => {
 
             if (result.status === "success") {
                 message.success("Đặt phòng thành công");
+                setIsLoading(false);
+                navigate("/admin/payments");
             } else {
                 message.error("Đặt phòng không thành công, vui lòng thử lại.");
                 setIsLoading(false);
