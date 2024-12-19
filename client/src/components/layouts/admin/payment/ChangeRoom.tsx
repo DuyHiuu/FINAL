@@ -61,19 +61,19 @@ const ChangeRoom = () => {
       return;
     }
 
-    const formData1 = new FormData();
-    formData1.append("room_id", selectedRoom);
-    formData1.append("start_date", paymentData?.booking?.start_date);
-    formData1.append("end_date", paymentData?.booking?.start_date);
-    const checkResponse = await fetch(`http://localhost:8000/api/bookings/status`, {
-      method: "POST",
-      body: formData1,
-    });
+    // const formData1 = new FormData();
+    // formData1.append("room_id", selectedRoom);
+    // formData1.append("start_date", paymentData?.booking?.start_date);
+    // formData1.append("end_date", paymentData?.booking?.start_date);
+    // const checkResponse = await fetch(`http://localhost:8000/api/bookings/status`, {
+    //   method: "POST",
+    //   body: formData1,
+    // });
 
-    if (!checkResponse.ok) {
-      message.error("Phòng đã hết. Vui lòng chọn phòng khác.");
-      navigate('/danhsach');
-    } else {
+    // if (!checkResponse.ok) {
+    //   message.error("Phòng đã hết. Vui lòng chọn phòng khác.");
+    //   navigate('/danhsach');
+    // } else {
       try {
         const requestBody = {
           room_id: selectedRoom,
@@ -97,7 +97,7 @@ const ChangeRoom = () => {
         console.error(error);
         message.error("Cập nhật phòng thất bại!");
       }
-    }
+    // }
   };
 
 
