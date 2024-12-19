@@ -607,10 +607,6 @@ class BookingController extends Controller
 
                 if ($room->quantity > 0) {
                     $room->increment('is_booked', 1);
-
-                    if ($room->quantity === $room->is_booked) {
-                        $room->update(['statusroom' => 'Hết phòng']);
-                    }
                 } else {
                     return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
                 }
