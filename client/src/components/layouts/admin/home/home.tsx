@@ -117,7 +117,7 @@ const HomeAdmin = () => {
     if (!dataRooms) {
       Top3Rooms(dateData).then((fetchdata: any) => {
         if (fetchdata?.data?.message) {
-          message.error(fetchdata?.data?.message);
+          // message.error(fetchdata?.data?.message);
           setDataRooms({
             size_name: "",
             total_payments_sold: 0,
@@ -134,7 +134,7 @@ const HomeAdmin = () => {
     if (!dataServices) {
       Top3Services(dateData).then((fetchdata: any) => {
         if (fetchdata?.data?.message) {
-          message.error(fetchdata?.data?.message);
+          // message.error(fetchdata?.data?.message);
           setDataServices({
             name: "",
             total_quantity_sold: 0,
