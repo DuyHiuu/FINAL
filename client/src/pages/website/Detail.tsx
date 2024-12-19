@@ -90,7 +90,6 @@ const Detail = () => {
     fetchRating();
     fetchRoom();
   }, [id]);
-  console.log(check);
 
   const handleCheckBooking = async () => {
     try {
@@ -302,9 +301,8 @@ const Detail = () => {
       <div className="mt-8 max-w-md">
         <h1 className="text-3xl font-bold">{room?.size_name}</h1>
         <p
-          className={`${
-            room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
-          }`}
+          className={`${room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
+            }`}
         >
           {room?.statusroom === "Còn phòng"
             ? `Còn ${room?.quantity - room?.is_booked} phòng`
@@ -342,11 +340,10 @@ const Detail = () => {
                 <button
                   key={star}
                   onClick={() => setFilterRating(star)}
-                  className={`px-2 py-1 rounded-full ${
-                    filterRating === star
-                      ? "bg-gray-300 text-white"
-                      : "border text-gray-700"
-                  }`}
+                  className={`px-2 py-1 rounded-full ${filterRating === star
+                    ? "bg-gray-300 text-white"
+                    : "border text-gray-700"
+                    }`}
                 >
                   {Array(star)
                     .fill(null)
@@ -477,8 +474,7 @@ const Detail = () => {
                     </p>
                     <p className="flex items-center text-red-500">
                       <span className="mr-2">✔️</span> Nếu quá giờ check-in 3
-                      tiếng, chúng tôi sẽ tự động gia hạn phòng của bạn thêm 1
-                      ngày và bạn sẽ phải chi trả khoản tiền đó
+                      tiếng, bạn sẽ bị phạt thêm 500.000 vnđ
                     </p>
                   </>
                 }
@@ -492,20 +488,50 @@ const Detail = () => {
               {room?.price?.toLocaleString("vi-VN")} VNĐ / ngày
             </h2>
 
+            <div className="mt-4 flex justify-between items-center space-x-3">
+              <div className="w-1/2">
+                <label className="block text-black text-sm font-bold">Ngày check-in</label>
+                <DatePicker
+                  value={start_date ? moment(start_date) : null}
+                  onChange={(date) => setStart_date(date?.format("YYYY-MM-DD") || "")}
+                  placeholder="Ngày check-in"
+                  className="w-full mt-1 text-sm"
+                  disabledDate={(current) => current && current < moment().startOf("day")}
+                />
+              </div>
+              <div className="w-1/2">
+                <label className="block text-black text-sm font-bold">Ngày check-out</label>
+                <DatePicker
+                  value={end_date ? moment(end_date) : null}
+                  onChange={(date) => setEnd_date(date?.format("YYYY-MM-DD") || "")}
+                  placeholder="Ngày check-out"
+                  className="w-full mt-1 text-sm"
+                  disabledDate={(current) =>
+                    (current && current < moment().startOf("day")) ||
+                    (current && current < moment(start_date).endOf("day")) ||
+                    (current && current >= maxEndDate)
+                  }
+                />
+              </div>
+            </div>
             <div className="mt-4">
-              <label className="block text-black text-sm font-bold">
-                Giờ check-in
-              </label>
+              <label className="block text-black text-sm font-bold">Giờ check-in</label>
               <TimePicker
                 value={start_hour ? moment(start_hour, "HH:mm") : null}
                 onChange={(time) => setStart_hour(time?.format("HH:mm") || "")}
                 placeholder="Chọn giờ check-in"
                 className="w-full mt-1 text-sm"
                 format="HH:mm"
+                disabled={!start_date}
                 disabledHours={() => {
+                  const now = moment();
+                  const currentHour = now.hour();
+
                   const allowedHours = [9, 14];
                   return Array.from({ length: 24 }, (_, i) => i).filter(
-                    (hour) => !allowedHours.includes(hour)
+                    (hour) =>
+                      !allowedHours.includes(hour) ||
+                      (moment(start_date).isSame(now, "day") && hour <= currentHour)
                   );
                 }}
                 disabledMinutes={() => {
@@ -516,42 +542,7 @@ const Detail = () => {
                 showNow={false}
               />
             </div>
-            <div className="mt-4 flex justify-between items-center space-x-3">
-              <div className="w-1/2">
-                <label className="block text-black text-sm font-bold">
-                  Ngày check-in
-                </label>
-                <DatePicker
-                  value={start_date ? moment(start_date) : null}
-                  onChange={(date) =>
-                    setStart_date(date?.format("YYYY-MM-DD") || "")
-                  }
-                  placeholder="Ngày check-in"
-                  className="w-full mt-1 text-sm"
-                  disabledDate={(current) =>
-                    current && current < moment().endOf("day")
-                  }
-                />
-              </div>
-              <div className="w-1/2">
-                <label className="block text-black text-sm font-bold">
-                  Ngày check-out
-                </label>
-                <DatePicker
-                  value={end_date ? moment(end_date) : null}
-                  onChange={(date) =>
-                    setEnd_date(date?.format("YYYY-MM-DD") || "")
-                  }
-                  placeholder="Ngày check-out"
-                  className="w-full mt-1 text-sm"
-                  disabledDate={(current) =>
-                    (current && current < moment().endOf("day")) ||
-                    (current && current < moment(start_date).endOf("day")) ||
-                    (current && current >= maxEndDate)
-                  }
-                />
-              </div>
-            </div>
+
             {check?.available_quantity > 0 ? (
               <>
                 {!token && !username ? (

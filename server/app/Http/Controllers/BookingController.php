@@ -84,7 +84,7 @@ class BookingController extends Controller
                 'start_date' => [
                     'required',
                     'date',
-                    'after_or_equal:' . now()->format('Y-m-d H:i:s')
+                    'after_or_equal:' . now()->format('Y-m-d')
                 ],
 
                 'end_date' => [
@@ -597,5 +597,4 @@ class BookingController extends Controller
             ], 500);
         }
     }
-
 }

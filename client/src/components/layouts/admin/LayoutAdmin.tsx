@@ -22,7 +22,6 @@ const navigation = [
   { name: "Quản lí đánh giá", href: "/admin/ratings", current: false },
   { name: "Quản lí liên hệ", href: "/admin/contacts", current: false },
   { name: "Quản lí đơn hàng", href: "/admin/payments", current: false },
-  { name: "Thêm đơn hàng", href: "/admin/add_pay_ad", current: false },
 ];
 
 const userNavigation = [{ name: "Đăng xuất", href: "#" }];
