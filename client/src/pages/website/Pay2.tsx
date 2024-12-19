@@ -217,7 +217,7 @@ const Pay2 = () => {
             if (!checkResponse.ok) {
                 message.error("Phòng đã hết. Vui lòng chọn phòng khác.");
                 navigate('/danhsach');
-            }else {
+            } else {
                 const response = await fetch(`${addPay}/vn_pay`, {
                     method: "POST",
                     body: formData,
@@ -479,16 +479,7 @@ const Pay2 = () => {
                         <div className="mt-10">
                             <p className="block text-black text-sm font-bold">Phương thức thanh toán</p>
                             <Form.Item>
-                                <Select
-                                    value={paymethod_id}
-                                    onChange={(value) => setPaymethod_id(value)}
-                                >
-                                    {paymethod?.map((item) => (
-                                        <Select.Option key={item.id} value={item.id}>
-                                            {item.name}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
+                                <p>Thanh toán bằng VNPAY</p>
                             </Form.Item>
                         </div>
 

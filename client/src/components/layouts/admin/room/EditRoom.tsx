@@ -202,13 +202,6 @@ const EditRoom = () => {
             </Form.Item>
 
             <Form.Item
-                label="Số lượng phòng đang được đặt"
-                name="is_booked"
-            >
-                <InputNumber style={{ width: "100%" }} disabled />
-            </Form.Item>
-
-            <Form.Item
                 label="Mô Tả"
                 name="description"
                 rules={[{ required: true, message: "Vui lòng nhập mô tả phòng!" }]}

@@ -468,7 +468,7 @@ class PaymentController extends Controller
 
                 $params['size_name'] = $room->size->name;
 
-                $params['img_thumbnail'] = $room->img_thumbnail;
+                $params['room_image'] = $room->img_thumbnail;
 
                 $params['room_price'] = $room->price;
 
