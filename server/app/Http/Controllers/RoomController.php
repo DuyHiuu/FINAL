@@ -215,7 +215,13 @@ class RoomController extends Controller
         $bookedRooms = $bookedRoomsQuery->pluck('booked_quantity', 'bookings.room_id');
 
 
-        $roomsQuery = Room::select('id', 'quantity','price','img_thumbnail');
+        $roomsQuery = Room::join('sizes', 'rooms.size_id', '=', 'sizes.id')
+        ->select(
+            'rooms.id', 'rooms.quantity','rooms.price','rooms.img_thumbnail',
+            'sizes.name as size_name',
+            'sizes.description as size_description',
+            'sizes.id as size_id'
+        );
 
         $rooms = $roomsQuery->get()->map(function ($room) use ($bookedRooms) {
             $bookedQuantity = $bookedRooms[$room->id] ?? 0;
