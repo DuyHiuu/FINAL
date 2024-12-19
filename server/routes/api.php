@@ -49,7 +49,7 @@ Route::post('/update_new_pass', [UserController::class, 'update_new_pass'])->nam
 
 Route::prefix('rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
-    Route::post('/booked', [RoomController::class, 'getBookedRooms']);
+    Route::get('/booked', [RoomController::class, 'getBookedRooms']);
     Route::get('/{id}', [RoomController::class, 'show']);
     // Route::middleware('checkrole')->group(function () {
     Route::post('/', [RoomController::class, 'store']);

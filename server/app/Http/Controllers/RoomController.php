@@ -201,43 +201,27 @@ class RoomController extends Controller
     }
     public function getBookedRooms(Request $request)
     {
-        $data = $request->all();
         $currentDate = Carbon::now()->toDateString();
 
-        $roomId = $data['room_id'] ?? null;
 
-        $query = Booking::join('payments', 'payments.booking_id', '=', 'bookings.id')
-            ->where('payments.status_id', 4)
-            ->orWhere('payments.status_id', 2)
+        $bookedRoomsQuery = Booking::join('payments', 'payments.booking_id', '=', 'bookings.id')
+            ->whereIn('status_id', [4, 2, 5])
             ->whereNull('payments.deleted_at')
             ->whereDate('bookings.start_date', '<=', $currentDate)
             ->whereDate('bookings.end_date', '>=', $currentDate)
             ->select('bookings.room_id', DB::raw('COUNT(bookings.room_id) as booked_quantity'))
             ->groupBy('bookings.room_id');
 
-
-        if ($roomId) {
-            $query->where('bookings.room_id', $roomId);
-        }
-
-        $bookedRooms = $query->pluck('booked_quantity', 'bookings.room_id');
-
-        $rooms = Room::when($roomId, function ($query) use ($roomId) {
-            return $query->where('id', $roomId);
-        })
-            ->select('id', 'quantity')
-            ->get()
-            ->map(function ($room) use ($bookedRooms) {
-                $bookedQuantity = $bookedRooms[$room->id] ?? 0;
-                $room->available_quantity = $room->quantity - $bookedQuantity;
-                $room->booked_quantity = $bookedQuantity;
-                return $room;
-            });
+        $bookedRooms = $bookedRoomsQuery->pluck('booked_quantity', 'bookings.room_id');
 
 
-        if ($roomId && $rooms->isEmpty()) {
-            return response()->json(['message' => 'Không tìm thấy phòng với ID được cung cấp hoặc phòng không có lượt đặt.'], 404);
-        }
+        $roomsQuery = Room::select('id', 'quantity','price','img_thumbnail');
+
+        $rooms = $roomsQuery->get()->map(function ($room) use ($bookedRooms) {
+            $bookedQuantity = $bookedRooms[$room->id] ?? 0;
+            $room->booked_quantity = $bookedQuantity;
+            return $room;
+        });
 
         return response()->json($rooms);
     }
