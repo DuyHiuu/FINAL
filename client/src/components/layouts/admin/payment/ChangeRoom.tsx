@@ -84,10 +84,42 @@ const ChangeRoom = () => {
       return;
     }
 
+
     if (availableQuantity <= 0) {
       message.error("Phòng đã hết. Vui lòng chọn phòng khác.");
       return;
     }
+
+    // const formData1 = new FormData();
+    // formData1.append("room_id", selectedRoom);
+    // formData1.append("start_date", paymentData?.booking?.start_date);
+    // formData1.append("end_date", paymentData?.booking?.start_date);
+    // const checkResponse = await fetch(`http://localhost:8000/api/bookings/status`, {
+    //   method: "POST",
+    //   body: formData1,
+    // });
+
+    // if (!checkResponse.ok) {
+    //   message.error("Phòng đã hết. Vui lòng chọn phòng khác.");
+    //   navigate('/danhsach');
+    // } else {
+      try {
+        const requestBody = {
+          room_id: selectedRoom,
+        };
+
+        const res = await fetch(`${showUrl}/${id}/changeStatus`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!res.ok) {
+          throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
+        }
+
 
     try {
       const requestBody = {
@@ -106,12 +138,16 @@ const ChangeRoom = () => {
         throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
       }
 
+
       message.success("Cập nhật phòng thành công!");
       setTimeout(() => navigate(`/admin/payments/detail/${id}`), 1500);
     } catch (error) {
       console.error(error);
       message.error("Cập nhật phòng thất bại!");
     }
+
+    // }
+
   };
 
   const filteredRooms = room?.filter((rooms) => rooms.size_id >= paymentData.room.size_id);
