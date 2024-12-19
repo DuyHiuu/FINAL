@@ -1,15 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Table, Button, Input, message, Popconfirm, Checkbox } from "antd";
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons'; // Thêm icon
-import useFetchRooms from "../../../../api/useFetchRooms";
+import { Table, Button, message, Popconfirm, Checkbox } from "antd";
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import authClient from "../../../../api/authClient";
 
 const RoomList = () => {
-  const { room, loading, error } = useFetchRooms(); // Giả định useFetchRooms cũng có trạng thái loading và error
-  const [sizeFilter, setSizeFilter] = useState(""); // Trạng thái cho bộ lọc kích thước
+  const [room, setRoom] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [sizeFilter, setSizeFilter] = useState("");
 
-  // Nếu đang tải, hiển thị thông báo
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/rooms/booked");
+        if (!response.ok) {
+          throw new Error("Không thể lấy dữ liệu phòng.");
+        }
+        const data = await response.json();
+        setRoom(data);
+      } catch (err) {
+        setError("Không thể lấy dữ liệu phòng.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRooms();
+  }, []);
+
   if (loading)
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -17,22 +35,20 @@ const RoomList = () => {
       </div>
     );
 
-  // Nếu có lỗi, hiển thị thông báo lỗi
   if (error)
     return <div className="text-center text-red-600 mt-5">{error}</div>;
 
-  // Hàm xử lý thay đổi bộ lọc kích thước
   const handleSizeChange = (checkedValues) => {
-    setSizeFilter(checkedValues); // Cập nhật giá trị đã chọn
+    setSizeFilter(checkedValues);
   };
 
   // Hàm xóa phòng
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa phòng này?");
     if (!confirmDelete) return;
-  
+
     try {
-      const response = await authClient.delete(`/rooms/${id}`); 
+      const response = await authClient.delete(`/rooms/${id}`);
       if (response.status === 200) {
         message.success("Phòng đã được xóa thành công");
         window.location.reload();
@@ -48,13 +64,11 @@ const RoomList = () => {
       }
     }
   };
-  
-  // Lọc danh sách phòng dựa trên kích thước
+
   const filteredRooms = sizeFilter.length > 0
     ? room.filter((r) => sizeFilter.includes(r.size_name))
     : room;
 
-  // Cấu hình cho bảng
   const columns = [
     {
       title: "ID",
@@ -91,22 +105,25 @@ const RoomList = () => {
     },
     {
       title: "Đang Đặt",
-      dataIndex: "is_booked",
-      key: "is_booked",
-      sorter: (a, b) => a.is_booked - b.is_booked,
+      dataIndex: "booked_quantity",
+      key: "booked_quantity",
+      sorter: (a, b) => a.booked_quantity - b.booked_quantity,
       sortDirections: ['ascend', 'descend'],
     },
     {
       title: "Trạng Thái",
       dataIndex: "statusroom",
       key: "statusroom",
-      render: (text) => (
-        <span
-          className={`px-2 py-1 rounded text-sm ${text === "Còn phòng" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
-        >
-          {text}
-        </span>
-      ),
+      render: (text, record) => {
+        const status = record.quantity - record.booked_quantity === 0 ? "Hết phòng" : "Còn phòng";
+        return (
+          <span
+            className={`px-2 py-1 rounded text-sm ${status === "Còn phòng" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+          >
+            {status}
+          </span>
+        );
+      },
     },
     {
       title: "Hành Động",

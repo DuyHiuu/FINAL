@@ -49,7 +49,7 @@ class Payment extends Model
         'different_amount',
         'changed_room',
         'size_name',
-        'img_thumbnail',
+        'room_image',
         'room_price'
     ];
 
