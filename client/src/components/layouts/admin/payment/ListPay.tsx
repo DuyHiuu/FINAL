@@ -319,7 +319,7 @@ const ListPay = () => {
                     />
 
                     <Modal
-                        title="Thông Báo"
+                        title="Lịch sử đổi phòng"
                         visible={isModalVisible}
                         onOk={handleOk}
                     >

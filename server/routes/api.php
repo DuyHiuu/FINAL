@@ -115,7 +115,7 @@ Route::prefix('bookings')->group(function () {
 
     Route::post('/ad_add', [BookingController::class, 'addBookingPayAd']);
 
-    Route::get('/{room_id}/status', [BookingController::class, 'checkRoomQuantity']);
+    Route::post('/status', [BookingController::class, 'checkRoomQuantity']);
 });
 
 Route::prefix('contacts')->group(function () {
