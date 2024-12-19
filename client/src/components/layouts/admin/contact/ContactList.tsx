@@ -14,7 +14,7 @@ const ContactList = () => {
     setSearchTerm(e.target.value);
   };
 
-  const handleFilterChange = (filter) =>{
+  const handleFilterChange = (filter) => {
     setFilterBy(filter);
   };
 
@@ -32,40 +32,12 @@ const ContactList = () => {
 
   const totalPages = Math.ceil(filteredContacts?.length / contactsPerPage);
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa địa chỉ liên hệ này không?");
-    if (!confirmDelete) return;
-
-    try {
-      const response = await fetch(`http://localhost:8000/api/contacts/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        alert("Đã xóa liên hệ thành công");
-        window.location.reload();
-      } else {
-        const errorData = await response.json();
-        console.error("Xóa không thành công:", errorData.message);
-        alert(`Xóa không thành công: ${errorData.message}`);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Đã xảy ra lỗi khi xóa liên hệ");
-    }
-  };
-
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Danh sách liên hệ</h1>
-        {/* <Link
-          to="/admin/contacts/add"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300"
-        >
-          Add Contact
-        </Link> */}
       </div>
 
       {/* Thanh tìm kiếm và lọc */}
@@ -99,8 +71,8 @@ const ContactList = () => {
             Số điện thoại
           </button>
         </div>
-    </div>
-      
+      </div>
+
       {loading ? (
         <div className="flex justify-center items-center">
           <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
@@ -118,7 +90,6 @@ const ContactList = () => {
                 <th className="px-4 py-3 text-left text-sm font-semibold">Email</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">Số điện thoại</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">Tin nhắn</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Actions</th>
               </tr>
             </thead>
 
@@ -131,22 +102,6 @@ const ContactList = () => {
                     <td className="px-4 py-3 border-b">{contact.email}</td>
                     <td className="px-4 py-3 border-b">{contact.phone_number}</td>
                     <td className="px-4 py-3 border-b">{contact.message}</td>
-                    <td className="px-4 py-3 border-b">
-                      <div className="flex items-center space-x-3">
-                        <Link
-                          to={`/admin/contacts/${contact.id}`}
-                          className="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition duration-200"
-                        >
-                          Edit
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(contact.id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition duration-200"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
                   </tr>
                 ))
               ) : (
