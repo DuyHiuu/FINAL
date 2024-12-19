@@ -231,7 +231,7 @@ const AddPayAd = () => {
                 </div>
             ) : (
                 <>
-                    <form onSubmitCapture={handleSubmit} className="lg:w-1/2 p-4 mx-auto">
+                    <form onSubmitCapture={handleSubmit} className="p-4 mx-auto">
                         <Title level={2}>Thông tin khách hàng</Title>
 
                         <Card>
@@ -355,18 +355,6 @@ const AddPayAd = () => {
 
                         <div className="mt-10">
                             <p className="block text-black text-sm font-bold">Phương thức thanh toán</p>
-                            {/* <Form.Item>
-                                <Select
-                                    value={paymethod_id}
-                                    onChange={(value) => setPaymethod_id(value)}
-                                >
-                                    {paymethod?.map((item) => (
-                                        <Select.Option key={item.id} value={item.id}>
-                                            {item.name}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item> */}
                             <p>Thanh toán tại cửa hàng</p>
                         </div>
 
@@ -441,7 +429,7 @@ const AddPayAd = () => {
                                 value={start_hour ? moment(start_hour, "HH:mm") : null}
                                 onChange={(time) => setStart_hour(time?.format("HH:mm") || "")}
                                 placeholder="Chọn giờ check-in"
-                                className="w-full mt-1 text-sm"
+                                className="w-1/2 mt-1 text-sm"
                                 format="HH:mm"
                                 disabledHours={() => {
                                     const allowedHours = [9, 14];
