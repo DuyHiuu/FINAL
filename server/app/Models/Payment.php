@@ -47,7 +47,10 @@ class Payment extends Model
         'is_processed',
         'voucher_id',
         'different_amount',
-        'changed_room'
+        'changed_room',
+        'size_name',
+        'img_thumbnail',
+        'room_price'
     ];
 
     public function booking()
