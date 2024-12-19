@@ -84,25 +84,11 @@ const ChangeRoom = () => {
       return;
     }
 
-
     if (availableQuantity <= 0) {
       message.error("Phòng đã hết. Vui lòng chọn phòng khác.");
       return;
     }
 
-    // const formData1 = new FormData();
-    // formData1.append("room_id", selectedRoom);
-    // formData1.append("start_date", paymentData?.booking?.start_date);
-    // formData1.append("end_date", paymentData?.booking?.start_date);
-    // const checkResponse = await fetch(`http://localhost:8000/api/bookings/status`, {
-    //   method: "POST",
-    //   body: formData1,
-    // });
-
-    // if (!checkResponse.ok) {
-    //   message.error("Phòng đã hết. Vui lòng chọn phòng khác.");
-    //   navigate('/danhsach');
-    // } else {
     try {
       const requestBody = {
         room_id: selectedRoom,
@@ -120,101 +106,79 @@ const ChangeRoom = () => {
         throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
       }
 
+      message.success("Cập nhật phòng thành công!");
+      setTimeout(() => navigate(`/admin/payments/detail/${id}`), 1500);
+    } catch (error) {
+      console.error(error);
+      message.error("Cập nhật phòng thất bại!");
+    }
+  };
 
-      try {
-        const requestBody = {
-          room_id: selectedRoom,
-        };
+  const filteredRooms = room?.filter((rooms) => rooms.size_id >= paymentData.room.size_id);
 
-        const res = await fetch(`${showUrl}/${id}/changeStatus`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        });
-
-        if (!res.ok) {
-          throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
-        }
-
-
-        message.success("Cập nhật phòng thành công!");
-        setTimeout(() => navigate(`/admin/payments/detail/${id}`), 1500);
-      } catch (error) {
-        console.error(error);
-        message.error("Cập nhật phòng thất bại!");
-      }
-
-      // }
-
-    };
-
-    const filteredRooms = room?.filter((rooms) => rooms.size_id >= paymentData.room.size_id);
-
-    return (
-      <div className="flex flex-col lg:flex-row">
-        <div className="lg:w-1/2 p-4">
-          <div className="text-left">
-            <strong className="text-2xl">Đổi phòng cho đơn hàng: #{paymentData.id}</strong>
-            <div className="antialiased text-gray-900">
-              <div className="max-w-xl py-12 divide-y md:max-w-4xl">
-                <div className="max-w-md">
-                  <div className="grid grid-cols-1 gap-6">
-                    <form>
-                      <label htmlFor="room-select">Đổi phòng</label> <br />
-                      <strong>Phòng cũ: {sizeData}</strong>
-                      <select
-                        id="room-select"
-                        value={selectedRoom || ""}
-                        onChange={(e) => setSelectedRoom(e.target.value)}
-                        className="block w-full mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300"
-                      >
-                        {filteredRooms && filteredRooms.length > 0 ? (
-                          filteredRooms.map((rooms) => (
-                            <option key={rooms.id} value={rooms.id}>
-                              {rooms.size_name}
-                            </option>
-                          ))
-                        ) : (
-                          <option>Không có phòng phù hợp</option>
-                        )}
-                      </select>
-
-                      {availableQuantity !== null && (
-                        <div
-                          className={`mt-2 text-sm ${availableQuantity > 0 ? "text-green-500" : "text-red-500"
-                            }`}
-                        >
-                          {availableQuantity > 0
-                            ? `Còn ${availableQuantity} phòng.`
-                            : "Đã hết phòng này."}
-                        </div>
+  return (
+    <div className="flex flex-col lg:flex-row">
+      <div className="lg:w-1/2 p-4">
+        <div className="text-left">
+          <strong className="text-2xl">Đổi phòng cho đơn hàng: #{paymentData.id}</strong>
+          <div className="antialiased text-gray-900">
+            <div className="max-w-xl py-12 divide-y md:max-w-4xl">
+              <div className="max-w-md">
+                <div className="grid grid-cols-1 gap-6">
+                  <form>
+                    <label htmlFor="room-select">Đổi phòng</label> <br />
+                    <strong>Phòng cũ: {sizeData}</strong>
+                    <select
+                      id="room-select"
+                      value={selectedRoom || ""}
+                      onChange={(e) => setSelectedRoom(e.target.value)}
+                      className="block w-full mt-1 rounded-md bg-gray-100 p-2 border-2 border-black-300"
+                    >
+                      {filteredRooms && filteredRooms.length > 0 ? (
+                        filteredRooms.map((rooms) => (
+                          <option key={rooms.id} value={rooms.id}>
+                            {rooms.size_name}
+                          </option>
+                        ))
+                      ) : (
+                        <option>Không có phòng phù hợp</option>
                       )}
+                    </select>
 
-                      <Button
-                        type="primary"
-                        onClick={handleUpdateRoom}
-                        className="mt-4 w-full"
-                        disabled={availableQuantity <= 0}
+                    {availableQuantity !== null && (
+                      <div
+                        className={`mt-2 text-sm ${availableQuantity > 0 ? "text-green-500" : "text-red-500"
+                          }`}
                       >
-                        Hoàn tất
-                      </Button>
-                    </form>
+                        {availableQuantity > 0
+                          ? `Còn ${availableQuantity} phòng.`
+                          : "Đã hết phòng này."}
+                      </div>
+                    )}
 
-                    <center>
-                      <Button className="text-white px-10 py-2 rounded-full bg-[#064749]">
-                        <a href={`/admin/payments/detail/${paymentData?.id}`}>Quay lại</a>
-                      </Button>
-                    </center>
-                  </div>
+                    <Button
+                      type="primary"
+                      onClick={handleUpdateRoom}
+                      className="mt-4 w-full"
+                      disabled={availableQuantity <= 0}
+                    >
+                      Hoàn tất
+                    </Button>
+                  </form>
+
+                  <center>
+                    <Button className="text-white px-10 py-2 rounded-full bg-[#064749]">
+                      <a href={`/admin/payments/detail/${paymentData?.id}`}>Quay lại</a>
+                    </Button>
+                  </center>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
-  export default ChangeRoom;
+export default ChangeRoom;
