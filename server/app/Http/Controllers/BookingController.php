@@ -401,8 +401,7 @@ class BookingController extends Controller
 
 
         $bookedRooms = Booking::join('payments', 'payments.booking_id', '=', 'bookings.id')
-            ->where('payments.status_id', 4)
-            ->orWhere('payments.status_id', 2)
+            ->whereIn('status_id', [4,2,5])
             ->whereNull('payments.deleted_at')
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('bookings.start_date', [$startDate, $endDate])
@@ -414,7 +413,7 @@ class BookingController extends Controller
             });
 
         if ($roomId) {
-            $bookedRooms->where('bookings.room_id', $roomId); // Lọc theo room_id nếu có
+            $bookedRooms->where('bookings.room_id', $roomId);
         }
 
         $bookedRooms = $bookedRooms
