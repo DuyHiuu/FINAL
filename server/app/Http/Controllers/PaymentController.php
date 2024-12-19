@@ -482,8 +482,8 @@ class PaymentController extends Controller
                 $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
                 $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
                 $vnp_Returnurl = "http://localhost:5173/check_pay";
-                $vnp_TmnCode = "O4XUI4RI"; //Mã website tại VNPAY
-                $vnp_HashSecret = "76Y95K5BK7Q2AIQADYYS3YSQ3XQ6D68F"; //Chuỗi bí mật
+                $vnp_TmnCode = "6V6WZUFM"; //Mã website tại VNPAY
+                $vnp_HashSecret = "VLDQM6BHVHZKSGGF6KBPFIVOKLJUNF5B"; //Chuỗi bí mật
 
                 $vnp_TxnRef = $payment->id; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
                 $vnp_OrderInfo = 'Thanh tóán hoá đơn';
@@ -562,7 +562,7 @@ class PaymentController extends Controller
 
         $inputData = array();
         $returnData = array();
-        $vnp_HashSecret = "76Y95K5BK7Q2AIQADYYS3YSQ3XQ6D68F";
+        $vnp_HashSecret = "VLDQM6BHVHZKSGGF6KBPFIVOKLJUNF5B";
         foreach ($request->all() as $key => $value) {
             if (substr($key, 0, 4) == "vnp_") {
                 $inputData[$key] = $value;
@@ -684,12 +684,13 @@ class PaymentController extends Controller
                                     return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
                                 }
 
+                                if ($voucher) {
+                                    if ($voucher->quantity > 0) {
+                                        $voucher->decrement('quantity', 1);
 
-                                if ($voucher->quantity > 0) {
-                                    $voucher->decrement('quantity', 1);
-
-                                    if ($voucher->quantity === 0) {
-                                        $voucher->update(['is_active' => 0]);
+                                        if ($voucher->quantity === 0) {
+                                            $voucher->update(['is_active' => 0]);
+                                        }
                                     }
                                 }
 

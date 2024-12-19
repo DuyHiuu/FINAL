@@ -300,14 +300,6 @@ const Detail = () => {
 
       <div className="mt-8 max-w-md">
         <h1 className="text-3xl font-bold">{room?.size_name}</h1>
-        <p
-          className={`${room?.statusroom === "Còn phòng" ? "text-green-500" : "text-red-500"
-            }`}
-        >
-          {room?.statusroom === "Còn phòng"
-            ? `Còn ${room?.quantity - room?.is_booked} phòng`
-            : "Không còn phòng"}
-        </p>
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-2 text-yellow-500">
             <StarFilled className="text-2xl" />
@@ -488,6 +480,8 @@ const Detail = () => {
               {room?.price?.toLocaleString("vi-VN")} VNĐ / ngày
             </h2>
 
+            <p className="text-red-500 mt-3">Vui lòng chọn ngày check-in , check-out để chúng tôi kiểm tra số lượng phòng!</p>
+
             <div className="mt-4 flex justify-between items-center space-x-3">
               <div className="w-1/2">
                 <label className="block text-black text-sm font-bold">Ngày check-in</label>
@@ -551,19 +545,20 @@ const Detail = () => {
                     htmlType="submit"
                     onClick={handleLogin}
                     className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
-                    disabled={room?.statusroom !== "Còn phòng"}
                   >
                     Đăng nhập để đặt phòng
                   </Button>
                 ) : (
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
-                    disabled={room?.statusroom !== "Còn phòng"}
-                  >
-                    Đặt phòng
-                  </Button>
+                  <>
+                    <p className="text-blue-500 mt-2">Còn: {check?.available_quantity} phòng</p>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      className="w-full py-2 mt-4 text-sm font-medium rounded-md bg-[#064749]"
+                    >
+                      Đặt phòng
+                    </Button>
+                  </>
                 )}
               </>
             ) : check?.available_quantity === 0 ||

@@ -114,50 +114,19 @@ const ListRoom = () => {
                   .map((room) => (
                     <Col key={room.id} xs={24} sm={12} md={8}>
                       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-                        {room.quantity - room.is_booked > 0 ? (
-                          <Link to={`/detail/${room.id}`}>
-                            <img
-                              src={room.img_thumbnail}
-                              alt={`room-${room.id}`}
-                              className="w-full h-[200px] object-cover"
-                            />
-                            <div className="p-4">
-                              <h2 className="text-lg font-semibold">{room.size_name}</h2>
-                              <p className="text-black font-semibold">
-                                Giá: {room.price.toLocaleString("vi-VN")} VNĐ
-                              </p>
-                              <p className="text-black font-semibold">
-                                Còn {room.quantity - room.is_booked} phòng
-                              </p>
-                              <div
-                                className={`mt-2 px-3 py-1 inline-block text-sm rounded ${room.statusroom === "Còn phòng"
-                                    ? "bg-green-500 text-white"
-                                    : "bg-red-500 text-white"
-                                  }`}
-                              >
-                                {room.statusroom}
-                              </div>
-                            </div>
-                          </Link>
-                        ) : (
-                          <div className="cursor-not-allowed opacity-50">
-                            <img
-                              src={room.img_thumbnail}
-                              alt={`room-${room.id}`}
-                              className="w-full h-[200px] object-cover"
-                            />
-                            <div className="p-4">
-                              <h2 className="text-lg font-semibold">{room.size_name}</h2>
-                              <p className="text-black font-semibold">
-                                Giá: {room.price.toLocaleString("vi-VN")} VNĐ
-                              </p>
-                              <p className="text-black font-semibold">Hết phòng</p>
-                              <div className="mt-2 px-3 py-1 inline-block text-sm rounded bg-red-500 text-white">
-                                Hết phòng
-                              </div>
-                            </div>
+                        <Link to={`/detail/${room.id}`}>
+                          <img
+                            src={room.img_thumbnail}
+                            alt={`room-${room.id}`}
+                            className="w-full h-[200px] object-cover"
+                          />
+                          <div className="p-4">
+                            <h2 className="text-lg font-semibold">{room.size_name}</h2>
+                            <p className="text-black font-semibold">
+                              Giá: {room.price.toLocaleString("vi-VN")} VNĐ
+                            </p>
                           </div>
-                        )}
+                        </Link>
                       </div>
                     </Col>
                   ))}
