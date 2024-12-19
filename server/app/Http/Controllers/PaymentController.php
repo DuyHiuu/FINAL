@@ -485,7 +485,9 @@ class PaymentController extends Controller
                 $vnp_TmnCode = "6V6WZUFM"; //Mã website tại VNPAY
                 $vnp_HashSecret = "VLDQM6BHVHZKSGGF6KBPFIVOKLJUNF5B"; //Chuỗi bí mật
 
-                $vnp_TxnRef = $payment->id; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
+                if ($payment->id) {
+                    $vnp_TxnRef = $payment->id; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
+                }
                 $vnp_OrderInfo = 'Thanh tóán hoá đơn';
                 $vnp_OrderType = 'PetSpa';
                 $vnp_Amount = $payment->total_amount * 100;
@@ -686,39 +688,34 @@ class PaymentController extends Controller
                                     return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
                                 }
 
-                                if ($voucher) {
-                                    if ($voucher->quantity > 0) {
-                                        $voucher->decrement('quantity', 1);
+                                // if ($voucher) {
+                                //     if ($voucher->quantity > 0) {
+                                //         $voucher->decrement('quantity', 1);
 
-                                        if ($voucher->quantity === 0) {
-                                            $voucher->update(['is_active' => 0]);
-                                        }
-                                    }
-                                }
-
-
-
+                                //         if ($voucher->quantity === 0) {
+                                //             $voucher->update(['is_active' => 0]);
+                                //         }
+                                //     }
+                                // }
                                 // Call external API to generate QR code image (in PNG format)
                                 $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($formattedData);
 
-//                                 Send email with QR code
+                                //                                 Send email with QR code
                                 Mail::to($payment->user->email)->send(new PaymentConfirm($payment, qrCodeUrl: $qrCodeUrl));
                             } else {
                                 $payment->delete();
                                 $returnData['RspCode'] = '99';
                                 $returnData['error'] = 'Thanh toán thất bại / lỗi';
                             }
-
                         } elseif ($payment["status_id"] == 2) {
                             $returnData['RspCode'] = '02';
                             $returnData['Message'] = 'Đơn hàng đã được xác thực';
+                        } else {
+                            // Trạng thái thanh toán thất bại / lỗi
+                            $payment->delete();
+                            $returnData['RspCode'] = '99';
+                            $returnData['error'] = 'Thanh toán thất bại / lỗi';
                         }
-                                                else {
-                                                    // Trạng thái thanh toán thất bại / lỗi
-                                                    $payment->delete();
-                                                    $returnData['RspCode'] = '99';
-                                                    $returnData['error'] = 'Thanh toán thất bại / lỗi';
-                                                }
                     } else {
                         $payment->delete();
                         $returnData['RspCode'] = '04';
