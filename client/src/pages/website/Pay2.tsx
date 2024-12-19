@@ -16,7 +16,7 @@ const Pay2 = () => {
     const showRoom = "http://localhost:8000/api/rooms";
 
     const [booking, setBooking] = useState<any>();
-    
+
     const [room, setRoom] = useState<any>();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -158,8 +158,7 @@ const Pay2 = () => {
     const { vouchers } = useFetchVoucher();
     const [voucherPopUp, setVoucherPopUp] = useState(false);
     const [selectedVoucher, setSelectedVoucher] = useState(null);
-    console.log(selectedVoucher);
-    
+
     const openVoucherPopUp = () => setVoucherPopUp(true);
     const closeVoucherPopUp = () => setVoucherPopUp(false);
     const servicesData = booking?.booking?.services;
@@ -205,18 +204,20 @@ const Pay2 = () => {
         }
 
         try {
-            const checkResponse = await fetch(`http://localhost:8000/api/bookings/${booking?.room_id}/status`, {
+
+            const formData1 = new FormData();
+            formData1.append("room_id", booking?.room_id);
+            formData1.append("start_date", booking?.start_date);
+            formData1.append("end_date", booking?.end_date);
+            const checkResponse = await fetch(`http://localhost:8000/api/bookings/status`, {
+                method: "POST",
+                body: formData1,
             });
 
             if (!checkResponse.ok) {
-                throw new Error("Không thể kiểm tra trạng thái phòng. Vui lòng thử lại.");
-            }
-
-            const statusData = await checkResponse.json();
-            if (statusData.quantity == 0) {
                 message.error("Phòng đã hết. Vui lòng chọn phòng khác.");
                 navigate('/danhsach');
-            } else {
+            }else {
                 const response = await fetch(`${addPay}/vn_pay`, {
                     method: "POST",
                     body: formData,
@@ -628,19 +629,19 @@ const Pay2 = () => {
                                 </Col>
                             </Row>
                             <Row justify="space-between" className="mt-4 w-full">
-                            <Col span={12} className="text-left">
-                                <Text className='font-semibold'>Giảm giá:</Text>
-                            </Col>
-                            <Col span={12} className="text-right">
-                                <Text className='font-semibold text-500'>
-                                    {selectedVoucher 
-                                        ? `- ${finalAmount !== total_amount ? (total_amount - finalAmount).toLocaleString("vi-VN") : '0'} VNĐ`
-                                        : "0 VNĐ"
-                                    }
-                                </Text>
-                            </Col>
-                        </Row>
-                            
+                                <Col span={12} className="text-left">
+                                    <Text className='font-semibold'>Giảm giá:</Text>
+                                </Col>
+                                <Col span={12} className="text-right">
+                                    <Text className='font-semibold text-500'>
+                                        {selectedVoucher
+                                            ? `- ${finalAmount !== total_amount ? (total_amount - finalAmount).toLocaleString("vi-VN") : '0'} VNĐ`
+                                            : "0 VNĐ"
+                                        }
+                                    </Text>
+                                </Col>
+                            </Row>
+
                             <Divider />
 
                             <Text className="text-gray-600 mb-4">Mọi chi phí đã được tính tổng</Text>

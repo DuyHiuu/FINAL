@@ -464,11 +464,16 @@ class PaymentController extends Controller
                     }
                 }
 
-
                 // Mặc định status_id = 3 khi thêm
-
                 $params['status_id'] = $params['status_id'] ?? 3;
 
+                $room = $booking->room;
+
+                $params['size_name'] = $room->size->name;
+
+                $params['img_thumbnail'] = $room->img_thumbnail;
+
+                $params['room_price'] = $room->price;
 
                 $payment = Payment::create($params);
 
@@ -688,15 +693,15 @@ class PaymentController extends Controller
                                     return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
                                 }
 
-//                                if ($voucher) {
-//                                    if ($voucher->quantity > 0) {
-//                                        $voucher->decrement('quantity', 1);
-//
-//                                        if ($voucher->quantity === 0) {
-//                                            $voucher->update(['is_active' => 0]);
-//                                        }
-//                                    }
-//                                }
+                                //                                if ($voucher) {
+                                //                                    if ($voucher->quantity > 0) {
+                                //                                        $voucher->decrement('quantity', 1);
+                                //
+                                //                                        if ($voucher->quantity === 0) {
+                                //                                            $voucher->update(['is_active' => 0]);
+                                //                                        }
+                                //                                    }
+                                //                                }
 
 
 
@@ -721,6 +726,7 @@ class PaymentController extends Controller
 //                                                    $returnData['RspCode'] = '99';
 //                                                    $returnData['error'] = 'Thanh toán thất bại / lỗi';
 //                                                }
+
                     } else {
                         $payment->delete();
                         $returnData['RspCode'] = '04';
@@ -878,7 +884,7 @@ class PaymentController extends Controller
         $room = $booking->room;
 
         $room->decrement('is_booked', 1);
-        if($room->quantity > $room->is_booked){
+        if ($room->quantity > $room->is_booked) {
             $room->statusroom = 'Còn phòng';
             $room->save();
         }

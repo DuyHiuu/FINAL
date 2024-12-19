@@ -140,12 +140,6 @@ class BookingController extends Controller
 
         $room = Room::findOrFail($roomID);
 
-        $finalQuantity = $room->quantity - $room->is_booked;
-
-        if ($finalQuantity <= 0) {
-            return response()->json(['message' => 'Phòng đã hết'], 400);
-        }
-
         $booking = Booking::create([
             'room_id' => $room->id,
             'start_date' => $request->input('start_date'),
@@ -333,21 +327,63 @@ class BookingController extends Controller
         return response()->json(['message' => 'Xóa đặt phòng thành công!'], 200);
     }
 
-    public function checkRoomQuantity(string $id)
+    public function checkRoomQuantity(Request $request)
     {
-        $room = Room::find($id);
+        $data = $request->all();
 
-        if (!$room) {
-            return response()->json(['message' => 'Không tìm thấy phòng'], 404);
+        $startDate = Carbon::parse($data['start_date']);
+        $endDate = Carbon::parse($data['end_date']);
+        $roomId = $data['room_id'] ?? null;
+
+        if ($startDate > $endDate) {
+            return response()->json(['error' => 'Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.'], 422);
         }
 
-        $finalQuantity = $room->quantity - $room->is_booked;
 
-        return response()->json([
-            'room_id' => $room->id,
-            'quantity' => $finalQuantity,
-            'status' => $finalQuantity > 0 ? 'Còn phòng' : 'Hết phòng',
-        ]);
+        $bookedRooms = Booking::join('payments', 'payments.booking_id', '=', 'bookings.id')
+            ->whereNull('payments.deleted_at')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('bookings.start_date', [$startDate, $endDate])
+                    ->orWhereBetween('bookings.end_date', [$startDate, $endDate])
+                    ->orWhere(function ($query) use ($startDate, $endDate) {
+                        $query->where('bookings.start_date', '<=', $startDate)
+                            ->where('bookings.end_date', '>=', $endDate);
+                    });
+            });
+
+        if ($roomId) {
+            $bookedRooms->where('bookings.room_id', $roomId); // Lọc theo room_id nếu có
+        }
+
+        $bookedRooms = $bookedRooms
+            ->select('bookings.room_id', DB::raw('COUNT(bookings.room_id) as booked_quantity'))
+            ->groupBy('bookings.room_id')
+            ->pluck('booked_quantity', 'bookings.room_id');
+
+
+        if ($roomId) {
+            $room = Room::select('id', 'quantity')
+                ->where('id', $roomId)
+                ->first();
+
+            if (!$room) {
+                return response()->json(['error' => 'Phòng không tồn tại.'], 404);
+            }
+
+            $bookedQuantity = $bookedRooms[$room->id] ?? 0;
+            $availableQuantity = $room->quantity - $bookedQuantity;
+
+
+            if ($availableQuantity == 0) {
+                return response()->json(['error' => 'Phòng đã hết.'], 422);
+            } else {
+                return response()->json([
+                    'room_id' => $room->id,
+                    'total_quantity' => $room->quantity,
+                    'available_quantity' => $availableQuantity,
+                ]);
+            }
+        }
     }
 
 
