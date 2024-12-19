@@ -135,17 +135,24 @@ const Chart = () => {
     const currentTime = new Date();
     if (data) {
       const total_money =
-        Number(data?.total_money)
-          ?.toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
+        Number(data?.total_money) && !isNaN(Number(data?.total_money))
+          ? Number(data?.total_money)
+              ?.toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          : 0;
       const total_money_room =
-        Number(data?.total_money_room)
-          ?.toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
+        Number(data?.total_money_room) && !isNaN(Number(data?.total_money_room))
+          ? Number(data?.total_money_room)
+              ?.toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          : 0;
       const total_money_service =
-        Number(data?.total_money_service)
-          ?.toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
+        Number(data?.total_money_service) &&
+        !isNaN(Number(data?.total_money_service))
+          ? Number(data?.total_money_service)
+              ?.toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          : 0;
       setData_money(total_money);
       setData_room(total_money_room);
       setData_service(total_money_service);
@@ -169,16 +176,16 @@ const Chart = () => {
             total_money_service: 0,
           });
           if (typeSearch === "month") {
-            setDataChart(fetchdata?.data?.dailyRevenue);
+            setDataChart(fetchdata?.data?.dailyRevenue || []);
           } else {
-            setDataChart(fetchdata?.data?.monthlyRevenue);
+            setDataChart(fetchdata?.data?.monthlyRevenue || []);
           }
         } else {
           setData(fetchdata?.data);
           if (typeSearch === "month") {
-            setDataChart(fetchdata?.data?.dailyRevenue);
+            setDataChart(fetchdata?.data?.dailyRevenue || []);
           } else {
-            setDataChart(fetchdata?.data?.monthlyRevenue);
+            setDataChart(fetchdata?.data?.monthlyRevenue || []);
           }
         }
       });

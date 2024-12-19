@@ -223,9 +223,6 @@ class PaymentController extends Controller
                 }
 
                 $newRoom->increment('is_booked', 1);
-                if ($newRoom->is_booked === $newRoom->quantity) {
-                    $newRoom->update(['statusroom' => 'Hết phòng']);
-                }
 
                 $booking->update(['room_id' => $newRoomId]);
                 $fieldsToUpdate['room_id'] = $newRoomId;
@@ -685,23 +682,19 @@ class PaymentController extends Controller
 
                                 if ($room->quantity > 0) {
                                     $room->increment('is_booked', 1);
-
-                                    if ($room->quantity === $room->is_booked) {
-                                        $room->update(['statusroom' => 'Hết phòng']);
-                                    }
                                 } else {
                                     return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
                                 }
 
-                                //                                if ($voucher) {
-                                //                                    if ($voucher->quantity > 0) {
-                                //                                        $voucher->decrement('quantity', 1);
-                                //
-                                //                                        if ($voucher->quantity === 0) {
-                                //                                            $voucher->update(['is_active' => 0]);
-                                //                                        }
-                                //                                    }
-                                //                                }
+                                                               if ($voucher) {
+                                                                   if ($voucher->quantity > 0) {
+                                                                       $voucher->decrement('quantity', 1);
+                                
+                                                                       if ($voucher->quantity === 0) {
+                                                                           $voucher->update(['is_active' => 0]);
+                                                                       }
+                                                                   }
+                                                               }
 
 
 
