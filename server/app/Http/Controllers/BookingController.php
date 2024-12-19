@@ -585,6 +585,8 @@ class BookingController extends Controller
 
                 $total_amount = $subTotal_room + $subTotal_service;
 
+                $room = $booking->room;
+
                 $paymentData = [
                     'booking_id' => $booking->id,
                     'user_id' => $request->input('user_id'),
@@ -598,10 +600,11 @@ class BookingController extends Controller
                     'user_email' => $request->input('user_email'),
                     'user_phone' => $request->input('user_phone'),
                     'total_amount' => $total_amount,
+                    'size_name' => $room->size->name,
+                    'room_price' => $room->price,
+                    'room_image' => $room->img_thumbnail,
                     'status_id' => 2,
                 ];
-
-                $room = $booking->room;
 
                 if ($room->quantity > 0) {
                     $room->increment('is_booked', 1);
