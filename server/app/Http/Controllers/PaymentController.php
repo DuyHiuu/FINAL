@@ -720,12 +720,21 @@ class PaymentController extends Controller
                             $returnData['RspCode'] = '02';
                             $returnData['Message'] = 'Đơn hàng đã được xác thực';
                         }
+
+                        //                                                else {
+                        //                                                    // Trạng thái thanh toán thất bại / lỗi
+                        //                                                    $payment->delete();
+                        //                                                    $returnData['RspCode'] = '99';
+                        //                                                    $returnData['error'] = 'Thanh toán thất bại / lỗi';
+                        //                                                }
+
 //                                                else {
 //                                                    // Trạng thái thanh toán thất bại / lỗi
 //                                                    $payment->delete();
 //                                                    $returnData['RspCode'] = '99';
 //                                                    $returnData['error'] = 'Thanh toán thất bại / lỗi';
 //                                                }
+
 
                     } else {
                         $payment->delete();
