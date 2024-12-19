@@ -181,8 +181,6 @@ class BookingController extends Controller
             'services' => $serviceData ?? []
         ]);
     }
-
-    // {
     //     $validator = Validator::make(
     //         $request->all(),
     //         [
