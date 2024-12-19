@@ -876,6 +876,10 @@ class PaymentController extends Controller
         $room = $booking->room;
 
         $room->decrement('is_booked', 1);
+        if($room->quantity > $room->is_booked){
+            $room->statusroom = 'Còn phòng';
+            $room->save();
+        }
 
         return response()->json(['message' => 'Thanh toán đã được hủy!', 'payment' => $payment], 200);
     }
