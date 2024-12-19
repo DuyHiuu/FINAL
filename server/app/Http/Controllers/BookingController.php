@@ -401,6 +401,7 @@ class BookingController extends Controller
 
 
         $bookedRooms = Booking::join('payments', 'payments.booking_id', '=', 'bookings.id')
+            ->where('payments.status_id', 4)
             ->whereNull('payments.deleted_at')
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('bookings.start_date', [$startDate, $endDate])
