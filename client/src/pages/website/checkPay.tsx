@@ -41,10 +41,12 @@ const CheckPay = () => {
       checkPayment(data).then((req: any) => {
         if (req?.data?.Message) {
           setMess(req?.data?.Message);
+          console.log("Thanh toán thành công:", req?.data?.Message);
           setRequest(true);
           setCheckPay(true);
         } else if (req?.data?.Error) {
           setMess(req?.data?.Error);
+          console.log("Thanh toán thất bại:", req?.data?.Error);
           setRequest(true);
           setCheckPay(false);
         }
