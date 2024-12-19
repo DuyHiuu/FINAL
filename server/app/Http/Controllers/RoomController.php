@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\Room;
 use App\Http\Requests\StoreRoomRequest;
 use App\Http\Requests\UpdateRoomRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -196,4 +199,33 @@ class RoomController extends Controller
             "message" => "delete successfully"
         ]);
     }
+    public function getBookedRooms(Request $request)
+    {
+        $currentDate = Carbon::now()->toDateString();
+
+
+        $bookedRooms = Booking::join('payments', 'payments.booking_id', '=', 'bookings.id')
+            ->where('payments.status_id', 4) // Chỉ lấy các payment có status = 4
+            ->whereDate('bookings.start_date', '<=', $currentDate)
+            ->whereDate('bookings.end_date', '>=', $currentDate)
+            ->select('bookings.room_id', DB::raw('COUNT(bookings.room_id) as booked_quantity'))
+            ->groupBy('bookings.room_id')
+            ->pluck('booked_quantity', 'bookings.room_id');
+
+
+        $rooms = Room::select('id', 'quantity')
+            ->get()
+            ->map(function ($room) use ($bookedRooms) {
+                $bookedQuantity = $bookedRooms[$room->id] ?? 0;
+                $room->available_quantity = $room->quantity - $bookedQuantity;
+                $room->booked_quantity = $bookedQuantity;
+                return $room;
+            })
+            ->filter(function ($room) {
+                return $room->booked_quantity > 0;
+            });
+
+        return response()->json($rooms);
+    }
+
 }
