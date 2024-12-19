@@ -708,14 +708,13 @@ class PaymentController extends Controller
                                 // Call external API to generate QR code image (in PNG format)
                                 $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($formattedData);
 
-//                                 Send email with QR code
+                                //                                 Send email with QR code
                                 Mail::to($payment->user->email)->send(new PaymentConfirm($payment, qrCodeUrl: $qrCodeUrl));
                             } else {
                                 $payment->delete();
                                 $returnData['RspCode'] = '99';
                                 $returnData['Error'] = 'Thanh toán thất bại / lỗi';
                             }
-
                         } elseif ($payment["status_id"] == 2) {
                             $returnData['RspCode'] = '02';
                             $returnData['Message'] = 'Đơn hàng đã được xác thực';
@@ -728,12 +727,12 @@ class PaymentController extends Controller
                         //                                                    $returnData['error'] = 'Thanh toán thất bại / lỗi';
                         //                                                }
 
-//                                                else {
-//                                                    // Trạng thái thanh toán thất bại / lỗi
-//                                                    $payment->delete();
-//                                                    $returnData['RspCode'] = '99';
-//                                                    $returnData['error'] = 'Thanh toán thất bại / lỗi';
-//                                                }
+                        //                                                else {
+                        //                                                    // Trạng thái thanh toán thất bại / lỗi
+                        //                                                    $payment->delete();
+                        //                                                    $returnData['RspCode'] = '99';
+                        //                                                    $returnData['error'] = 'Thanh toán thất bại / lỗi';
+                        //                                                }
 
 
                     } else {
