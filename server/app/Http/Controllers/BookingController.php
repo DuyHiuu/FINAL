@@ -357,14 +357,15 @@ class BookingController extends Controller
 
         $startDate = Carbon::parse($data['startDate']);
         $endDate = Carbon::parse($data['endDate']);
-        $roomId = $data['room_id'] ?? null; // ID phòng được truyền vào (nếu có)
+        $roomId = $data['room_id'] ?? null;
 
         if ($startDate > $endDate) {
             return response()->json(['error' => 'Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.'], 422);
         }
 
-        // Lấy danh sách phòng đã được đặt, lọc theo room_id nếu được truyền vào
+
         $bookedRooms = Booking::join('payments', 'payments.booking_id', '=', 'bookings.id')
+            ->whereNull('payments.deleted_at')
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('bookings.start_date', [$startDate, $endDate])
                     ->orWhereBetween('bookings.end_date', [$startDate, $endDate])
@@ -383,7 +384,7 @@ class BookingController extends Controller
             ->groupBy('bookings.room_id')
             ->pluck('booked_quantity', 'bookings.room_id');
 
-        // Nếu truyền room_id, chỉ trả về thông tin phòng đó
+
         if ($roomId) {
             $room = Room::select('id', 'quantity')
                 ->where('id', $roomId)
@@ -403,7 +404,7 @@ class BookingController extends Controller
             ]);
         }
 
-        // Lấy danh sách tất cả các phòng nếu không có room_id
+
         $rooms = Room::select('id',  'quantity')
             ->get()
             ->map(function ($room) use ($bookedRooms) {

@@ -686,15 +686,15 @@ class PaymentController extends Controller
                                     return response()->json(['error' => 'Phòng đã hết, vui lòng chọn phòng khác'], 400);
                                 }
 
-                                if ($voucher) {
-                                    if ($voucher->quantity > 0) {
-                                        $voucher->decrement('quantity', 1);
-
-                                        if ($voucher->quantity === 0) {
-                                            $voucher->update(['is_active' => 0]);
-                                        }
-                                    }
-                                }
+//                                if ($voucher) {
+//                                    if ($voucher->quantity > 0) {
+//                                        $voucher->decrement('quantity', 1);
+//
+//                                        if ($voucher->quantity === 0) {
+//                                            $voucher->update(['is_active' => 0]);
+//                                        }
+//                                    }
+//                                }
 
 
 
@@ -706,19 +706,19 @@ class PaymentController extends Controller
                             } else {
                                 $payment->delete();
                                 $returnData['RspCode'] = '99';
-                                $returnData['error'] = 'Thanh toán thất bại / lỗi';
+                                $returnData['Error'] = 'Thanh toán thất bại / lỗi';
                             }
 
                         } elseif ($payment["status_id"] == 2) {
                             $returnData['RspCode'] = '02';
                             $returnData['Message'] = 'Đơn hàng đã được xác thực';
                         }
-                                                else {
-                                                    // Trạng thái thanh toán thất bại / lỗi
-                                                    $payment->delete();
-                                                    $returnData['RspCode'] = '99';
-                                                    $returnData['error'] = 'Thanh toán thất bại / lỗi';
-                                                }
+//                                                else {
+//                                                    // Trạng thái thanh toán thất bại / lỗi
+//                                                    $payment->delete();
+//                                                    $returnData['RspCode'] = '99';
+//                                                    $returnData['error'] = 'Thanh toán thất bại / lỗi';
+//                                                }
                     } else {
                         $payment->delete();
                         $returnData['RspCode'] = '04';
@@ -732,7 +732,7 @@ class PaymentController extends Controller
             } else {
                 $payment->delete();
                 $returnData['RspCode'] = '97';
-                $returnData['Message'] = 'Chữ ký không hợp lệ';
+                $returnData['Error'] = 'Chữ ký không hợp lệ';
             }
         } catch (\Exception $e) {
             $payment->delete();
