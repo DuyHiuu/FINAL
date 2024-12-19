@@ -208,6 +208,7 @@ class RoomController extends Controller
 
         $query = Booking::join('payments', 'payments.booking_id', '=', 'bookings.id')
             ->where('payments.status_id', 4)
+            ->orWhere('payments.status_id', 2)
             ->whereNull('payments.deleted_at')
             ->whereDate('bookings.start_date', '<=', $currentDate)
             ->whereDate('bookings.end_date', '>=', $currentDate)
