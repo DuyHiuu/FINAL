@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 const { Title, Text } = Typography;
 
 const AddPayAd = () => {
-
+    
     const [isLoading, setIsLoading] = useState(false);
     const [pet_name, setPet_name] = useState("");
     const [pet_type, setPet_type] = useState("Chó");
@@ -34,6 +34,7 @@ const AddPayAd = () => {
     const [date_startDateError, setDate_startDateError] = useState("");
     const [date_endDateError, setDate_endDateError] = useState("");
     const navigate = useNavigate();
+
 
     const validateForm = () => {
         let valid = true;
@@ -124,6 +125,7 @@ const AddPayAd = () => {
     const [start_date, setStart_date] = useState<string>("");
     const [end_date, setEnd_date] = useState<string>("");
     const [start_hour, setStart_hour] = useState("");
+    const [selectedRoomQuantity, setSelectedRoomQuantity] = useState(null);
 
     const changeService = (serviceId: number) => {
         setService_ids((prevState) => {
@@ -225,6 +227,7 @@ const AddPayAd = () => {
             </div>
         );
     }
+    
 
     return (
         <div className="flex flex-col lg:flex-row pb-20 mt-24">
@@ -362,7 +365,7 @@ const AddPayAd = () => {
                             <p>Thanh toán tại cửa hàng</p>
                         </div>
 
-                        <div className="mt-10">
+                        {/* <div className="mt-10">
                             <p className="block text-black text-sm font-bold">Chọn phòng</p>
                             <Form.Item>
                                 <Select
@@ -384,7 +387,7 @@ const AddPayAd = () => {
                                     })}
                                 </Select>
                             </Form.Item>
-                        </div>
+                        </div> */}
 
                         <h3 className="text-xl font-semibold">Dịch vụ kèm theo</h3>
                         <div className="space-y-2">
@@ -484,11 +487,49 @@ const AddPayAd = () => {
                                 showNow={false}
                             />
                         </div>
-                        <div className="text-center">
-                            <Button type="primary" htmlType="submit" className="mt-20 bg-[#064749]">
-                                Xác nhận
-                            </Button>
-                        </div>
+                        <p className="block text-black text-sm font-bold mt-5">Chọn phòng</p>
+            <Form.Item>
+                <Select
+                    value={room_id}
+                    onChange={(value) => {
+                        setRoom_id(value);
+                        const selectedRoom = room.find((item) => item.id === value);
+                        const remainingRooms = selectedRoom
+                            ? selectedRoom.quantity - selectedRoom.is_booked
+                            : 0;
+                        setSelectedRoomQuantity(remainingRooms);
+                    }}
+                >
+                    {room?.map((item) => (
+                        <Select.Option key={item.id} value={item.id}>
+                            <span>{item.size_name}</span>
+                        </Select.Option>
+                    ))}
+                </Select>
+            </Form.Item>
+            <div className="mt-4">
+                {selectedRoomQuantity !== null && (
+                    selectedRoomQuantity > 0 ? (
+                        <p className="text-sm text-gray-600">
+                            Số lượng phòng còn lại: <span className="font-bold">{selectedRoomQuantity}</span>
+                        </p>
+                    ) : (
+                        <p className="text-sm text-red-500 font-bold">
+                            Không còn phòng trống
+                        </p>
+                    )
+                )}
+            </div>
+            <div className="text-center">
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="mt-20 bg-[#064749]"
+                    disabled={selectedRoomQuantity === 0}
+                >
+                    Xác nhận
+                </Button>
+            </div>
                     </form>
                 </>
             )}
