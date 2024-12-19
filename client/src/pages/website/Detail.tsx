@@ -490,7 +490,12 @@ const Detail = () => {
                   onChange={(date) => setStart_date(date?.format("YYYY-MM-DD") || "")}
                   placeholder="Ngày check-in"
                   className="w-full mt-1 text-sm"
-                  disabledDate={(current) => current && current < moment().startOf("day")}
+                  disabledDate={(current) => {
+                    const now = moment();
+                    const isTodayDisabled = current && current.isSame(now, 'day') && now.hour() >= 14;
+                    const isBeforeToday = current && current < now.startOf("day");
+                    return isTodayDisabled || isBeforeToday;
+                  }}
                 />
               </div>
               <div className="w-1/2">
@@ -505,6 +510,7 @@ const Detail = () => {
                     (current && current < moment(start_date).endOf("day")) ||
                     (current && current >= maxEndDate)
                   }
+                  disabled={!start_date}
                 />
               </div>
             </div>
@@ -516,7 +522,7 @@ const Detail = () => {
                 placeholder="Chọn giờ check-in"
                 className="w-full mt-1 text-sm"
                 format="HH:mm"
-                disabled={!start_date}
+                disabled={!end_date}
                 disabledHours={() => {
                   const now = moment();
                   const currentHour = now.hour();

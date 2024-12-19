@@ -6,11 +6,12 @@ import useFetchPayMethod from '../../../../api/useFetchPayMethod';
 import useFetchServices from '../../../../api/useFetchServices';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import useFetchRooms from '../../../../api/useFetchRooms';
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
 const AddPayAd = () => {
-
+    
     const [isLoading, setIsLoading] = useState(false);
     const [pet_name, setPet_name] = useState("");
     const [pet_type, setPet_type] = useState("Chó");
@@ -32,6 +33,8 @@ const AddPayAd = () => {
     const [time_timeError, setTime_timeError] = useState("");
     const [date_startDateError, setDate_startDateError] = useState("");
     const [date_endDateError, setDate_endDateError] = useState("");
+    const navigate = useNavigate();
+
 
     const validateForm = () => {
         let valid = true;
@@ -122,6 +125,7 @@ const AddPayAd = () => {
     const [start_date, setStart_date] = useState<string>("");
     const [end_date, setEnd_date] = useState<string>("");
     const [start_hour, setStart_hour] = useState("");
+    const [selectedRoomQuantity, setSelectedRoomQuantity] = useState(null);
 
     const changeService = (serviceId: number) => {
         setService_ids((prevState) => {
@@ -192,6 +196,8 @@ const AddPayAd = () => {
 
             if (result.status === "success") {
                 message.success("Đặt phòng thành công");
+                setIsLoading(false);
+                navigate("/admin/payments");
             } else {
                 message.error("Đặt phòng không thành công, vui lòng thử lại.");
                 setIsLoading(false);
@@ -221,6 +227,7 @@ const AddPayAd = () => {
             </div>
         );
     }
+    
 
     return (
         <div className="flex flex-col lg:flex-row pb-20 mt-24">
@@ -358,7 +365,7 @@ const AddPayAd = () => {
                             <p>Thanh toán tại cửa hàng</p>
                         </div>
 
-                        <div className="mt-10">
+                        {/* <div className="mt-10">
                             <p className="block text-black text-sm font-bold">Chọn phòng</p>
                             <Form.Item>
                                 <Select
@@ -366,24 +373,21 @@ const AddPayAd = () => {
                                     onChange={(value) => setRoom_id(value)}
                                 >
                                     {room?.map((item) => {
-                                        const checkQuantity = item.quantity - item.is_booked === 0;
 
                                         return (
                                             <Select.Option
                                                 key={item.id}
                                                 value={item.id}
-                                                disabled={checkQuantity}
                                             >
                                                 <span>
                                                     {item.size_name}
-                                                    {checkQuantity && <span style={{ color: 'red', marginLeft: '10px' }}>Đã hết phòng</span>}
                                                 </span>
                                             </Select.Option>
                                         );
                                     })}
                                 </Select>
                             </Form.Item>
-                        </div>
+                        </div> */}
 
                         <h3 className="text-xl font-semibold">Dịch vụ kèm theo</h3>
                         <div className="space-y-2">
@@ -421,20 +425,58 @@ const AddPayAd = () => {
                             ))}
                         </div>
 
+                        <p className="text-red-500 mt-3">Vui lòng chọn ngày check-in , check-out để chúng tôi kiểm tra số lượng phòng!</p>
+
+                        <div className="mt-4 flex justify-between items-center space-x-3">
+                            <div className="w-1/2">
+                                <label className="block text-black text-sm font-bold">Ngày check-in</label>
+                                <DatePicker
+                                    value={start_date ? moment(start_date) : null}
+                                    onChange={(date) => setStart_date(date?.format("YYYY-MM-DD") || "")}
+                                    placeholder="Ngày check-in"
+                                    className="w-full mt-1 text-sm"
+                                    disabledDate={(current) => {
+                                        const now = moment();
+                                        const isTodayDisabled = current && current.isSame(now, 'day') && now.hour() >= 17;
+                                        const isBeforeToday = current && current < now.startOf("day");
+                                        return isTodayDisabled || isBeforeToday;
+                                    }}
+                                />
+                            </div>
+                            <div className="w-1/2">
+                                <label className="block text-black text-sm font-bold">Ngày check-out</label>
+                                <DatePicker
+                                    value={end_date ? moment(end_date) : null}
+                                    onChange={(date) => setEnd_date(date?.format("YYYY-MM-DD") || "")}
+                                    placeholder="Ngày check-out"
+                                    className="w-full mt-1 text-sm"
+                                    disabledDate={(current) =>
+                                        (current && current < moment().startOf("day")) ||
+                                        (current && current < moment(start_date).endOf("day")) ||
+                                        (current && current >= maxEndDate)
+                                    }
+                                    disabled={!start_date}
+                                />
+                            </div>
+                        </div>
                         <div className="mt-4">
-                            <label className="block text-black text-sm font-bold">
-                                Giờ check-in
-                            </label>
+                            <label className="block text-black text-sm font-bold">Giờ check-in</label>
                             <TimePicker
                                 value={start_hour ? moment(start_hour, "HH:mm") : null}
                                 onChange={(time) => setStart_hour(time?.format("HH:mm") || "")}
                                 placeholder="Chọn giờ check-in"
-                                className="w-1/2 mt-1 text-sm"
+                                className="w-full mt-1 text-sm"
                                 format="HH:mm"
+                                disabled={!end_date}
                                 disabledHours={() => {
+                                    const now = moment();
+                                    const currentHour = now.hour();
+
                                     const allowedHours = [9, 14];
                                     return Array.from({ length: 24 }, (_, i) => i).filter(
-                                        (hour) => !allowedHours.includes(hour)
+                                        (hour) =>
+                                            !allowedHours.includes(hour) ||
+                                            (moment(start_date).isSame(now, "day") && hour <= currentHour)
                                     );
                                 }}
                                 disabledMinutes={() => {
@@ -444,52 +486,50 @@ const AddPayAd = () => {
                                 }}
                                 showNow={false}
                             />
-                            {time_timeError && <p className="text-red-500 text-sm mt-1">{time_timeError}</p>}
                         </div>
-                        <div className="mt-4 flex justify-between items-center space-x-3">
-                            <div className="w-1/2">
-                                <label className="block text-black text-sm font-bold">
-                                    Ngày check-in
-                                </label>
-                                <DatePicker
-                                    value={start_date ? moment(start_date) : null}
-                                    onChange={(date) =>
-                                        setStart_date(date?.format("YYYY-MM-DD") || "")
-                                    }
-                                    placeholder="Ngày check-in"
-                                    className="w-full mt-1 text-sm"
-                                    disabledDate={(current) =>
-                                        current && current < moment().endOf("day")
-                                    }
-                                />
-                                {date_startDateError && <p className="text-red-500 text-sm mt-1">{date_startDateError}</p>}
-                            </div>
-                            <div className="w-1/2">
-                                <label className="block text-black text-sm font-bold">
-                                    Ngày check-out
-                                </label>
-                                <DatePicker
-                                    value={end_date ? moment(end_date) : null}
-                                    onChange={(date) =>
-                                        setEnd_date(date?.format("YYYY-MM-DD") || "")
-                                    }
-                                    placeholder="Ngày check-out"
-                                    className="w-full mt-1 text-sm"
-                                    disabledDate={(current) =>
-                                        (current && current < moment().endOf("day")) ||
-                                        (current && current < moment(start_date).endOf("day")) ||
-                                        (current && current >= maxEndDate)
-                                    }
-                                />
-                                {date_endDateError && <p className="text-red-500 text-sm mt-1">{date_endDateError}</p>}
-                            </div>
-                        </div>
-
-                        <div className="text-center">
-                            <Button type="primary" htmlType="submit" className="mt-20 bg-[#064749]">
-                                Xác nhận
-                            </Button>
-                        </div>
+                        <p className="block text-black text-sm font-bold mt-5">Chọn phòng</p>
+            <Form.Item>
+                <Select
+                    value={room_id}
+                    onChange={(value) => {
+                        setRoom_id(value);
+                        const selectedRoom = room.find((item) => item.id === value);
+                        const remainingRooms = selectedRoom
+                            ? selectedRoom.quantity - selectedRoom.is_booked
+                            : 0;
+                        setSelectedRoomQuantity(remainingRooms);
+                    }}
+                >
+                    {room?.map((item) => (
+                        <Select.Option key={item.id} value={item.id}>
+                            <span>{item.size_name}</span>
+                        </Select.Option>
+                    ))}
+                </Select>
+            </Form.Item>
+            <div className="mt-4">
+                {selectedRoomQuantity !== null && (
+                    selectedRoomQuantity > 0 ? (
+                        <p className="text-sm text-gray-600">
+                            Số lượng phòng còn lại: <span className="font-bold">{selectedRoomQuantity}</span>
+                        </p>
+                    ) : (
+                        <p className="text-sm text-red-500 font-bold">
+                            Không còn phòng trống
+                        </p>
+                    )
+                )}
+            </div>
+            <div className="text-center">
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="mt-20 bg-[#064749]"
+                    disabled={selectedRoomQuantity === 0}
+                >
+                    Xác nhận
+                </Button>
+            </div>
                     </form>
                 </>
             )}

@@ -50,28 +50,40 @@ const ChangeRoom = () => {
       return;
     }
 
-    try {
-      const requestBody = {
-        room_id: selectedRoom,
-      };
+    const checkResponse = await fetch(`http://localhost:8000/api/bookings/${id}/status`, {
+    });
 
-      const res = await fetch(`${showUrl}/${id}/changeStatus`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+    if (!checkResponse.ok) {
+      throw new Error("Không thể kiểm tra trạng thái phòng. Vui lòng thử lại.");
+    }
 
-      if (!res.ok) {
-        throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
+    const statusData = await checkResponse.json();
+    if (statusData.quantity == 0) {
+      message.error("Phòng đã hết. Vui lòng chọn phòng khác.");
+    } else {
+      try {
+        const requestBody = {
+          room_id: selectedRoom,
+        };
+
+        const res = await fetch(`${showUrl}/${id}/changeStatus`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!res.ok) {
+          throw new Error(`Lỗi: ${res.status} - ${res.statusText}`);
+        }
+
+        message.success("Cập nhật phòng thành công!");
+        setTimeout(() => navigate(`/admin/payments/detail/${id}`), 1500);
+      } catch (error) {
+        console.error(error);
+        message.error("Cập nhật phòng thất bại!");
       }
-
-      message.success("Cập nhật phòng thành công!");
-      setTimeout(() => navigate(`/admin/payments/detail/${id}`), 1500);
-    } catch (error) {
-      console.error(error);
-      message.error("Cập nhật phòng thất bại!");
     }
   };
 
