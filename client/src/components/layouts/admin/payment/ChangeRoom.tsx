@@ -34,6 +34,7 @@ const ChangeRoom = () => {
     };
     fetchData();
   }, [id]);
+  
 
   useEffect(() => {
     if (room && room.length > 0) {
@@ -44,22 +45,34 @@ const ChangeRoom = () => {
     }
   }, [room, data]);
 
+  if (!data) {
+    return <p>Đang tải dữ liệu...</p>;
+  }
+
+  const paymentData = data.payment;
+  const sizeData = paymentData.size;
+
+  console.log(paymentData);
+  
+
   const handleUpdateRoom = async () => {
     if (!selectedRoom) {
       message.error("Vui lòng chọn phòng!");
       return;
     }
 
-    const checkResponse = await fetch(`http://localhost:8000/api/bookings/${id}/status`, {
+    const formData1 = new FormData();
+    formData1.append("room_id", selectedRoom);
+    formData1.append("start_date", paymentData?.booking?.start_date);
+    formData1.append("end_date", paymentData?.booking?.start_date);
+    const checkResponse = await fetch(`http://localhost:8000/api/bookings/status`, {
+      method: "POST",
+      body: formData1,
     });
 
     if (!checkResponse.ok) {
-      throw new Error("Không thể kiểm tra trạng thái phòng. Vui lòng thử lại.");
-    }
-
-    const statusData = await checkResponse.json();
-    if (statusData.quantity == 0) {
       message.error("Phòng đã hết. Vui lòng chọn phòng khác.");
+      navigate('/danhsach');
     } else {
       try {
         const requestBody = {
@@ -87,12 +100,6 @@ const ChangeRoom = () => {
     }
   };
 
-  if (!data) {
-    return <p>Đang tải dữ liệu...</p>;
-  }
-
-  const paymentData = data.payment;
-  const sizeData = paymentData.size;
 
   const filteredRooms = room?.filter((rooms) => rooms.size_id > paymentData?.room?.size?.id);
 
